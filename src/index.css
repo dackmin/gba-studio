@@ -1,6 +1,16 @@
-@import "tailwindcss";
+/* Tailwind */
+@import 'tailwindcss';
 @plugin "@junipero/tailwind-plugin";
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Junipero */
+@import '@junipero/theme/dist/css/reset.min.css';
+@import '@junipero/theme/dist/css/reset.dark.min.css';
+@import '@junipero/theme/dist/css/InfiniteCanvas.min.css';
+@import '@junipero/theme/dist/css/InfiniteCanvas.dark.min.css';
+
+/* Radix */
+@import '@radix-ui/themes/styles.css';
 
 body {
   font-family:

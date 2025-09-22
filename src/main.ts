@@ -1,7 +1,17 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import url from 'node:url';
 
-import { app, BrowserWindow, dialog, ipcMain, nativeTheme } from 'electron';
+import {
+  BrowserWindow,
+  app,
+  dialog,
+  ipcMain,
+  nativeTheme,
+  net,
+  protocol,
+  session,
+} from 'electron';
 import started from 'electron-squirrel-startup';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -10,11 +20,16 @@ if (started) {
   app.quit();
 }
 
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'project', privileges: { bypassCSP: true } },
+]);
+
 const createSelectionWindow = () => {
   const win = new BrowserWindow({
     width: 500,
     height: 400,
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#121212' : '#FFFFFF',
+    backgroundColor: nativeTheme.shouldUseDarkColors
+      ? '#121212' : '#FFFFFF',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -38,6 +53,9 @@ const createSelectionWindow = () => {
 };
 
 const createProjectWindow = (projectPath: string) => {
+  const projectName = path.basename(projectPath, '.gbasproj');
+  const ses = session.fromPartition(projectName);
+
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -45,7 +63,20 @@ const createProjectWindow = (projectPath: string) => {
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      partition: projectName,
     },
+  });
+
+  ses.protocol.handle('project', req => {
+    const filePath = req.url.replace('project://', '');
+
+    return net.fetch(url.pathToFileURL(path
+      .join(path.dirname(projectPath), filePath)).toString());
+  });
+
+  win.on('close', () => {
+    ses.protocol.unhandle('project');
   });
 
   win.maximize();
@@ -56,6 +87,7 @@ const createProjectWindow = (projectPath: string) => {
     const url = new URL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
 
     url.searchParams.set('projectPath', projectPath);
+    url.searchParams.set('projectBase', path.dirname(projectPath));
     url.searchParams.set('theme',
       nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
 
@@ -65,6 +97,7 @@ const createProjectWindow = (projectPath: string) => {
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
       { query: {
         projectPath,
+        projectBase: path.dirname(projectPath),
         theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
       } },
     );

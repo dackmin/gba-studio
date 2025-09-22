@@ -18,5 +18,6 @@ export interface GameMap {
 export interface GameScene {
   type: 'scene';
   name: string;
+  background?: string;
   map?: GameMap;
 }

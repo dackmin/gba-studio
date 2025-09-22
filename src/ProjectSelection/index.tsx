@@ -1,4 +1,4 @@
-import { Button } from '@junipero/react';
+import { Button } from '@radix-ui/themes';
 
 const ProjectSelection = () => {
   const onClick = async () => {

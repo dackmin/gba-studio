@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useLayoutEffect, useReducer } from 'react';
+import { Theme } from '@radix-ui/themes';
 import { mockState } from '@junipero/react';
 
-import '@junipero/theme/dist/junipero.min.css';
-
 import type { GameScene } from '../types';
-import { AppContext } from '../contexts';
+import { type AppContextType, AppContext } from '../contexts';
 import { useQuery } from '../hooks';
 import Canvas from '../Canvas';
 import ProjectSelection from '../ProjectSelection';
 
 export interface AppState {
-  currentProject?: string;
+  projectPath: string;
+  projectBase: string;
   theme: string;
   scenes: GameScene[];
   loading: boolean;
@@ -18,10 +18,11 @@ export interface AppState {
 }
 
 const App = () => {
-  const { projectPath, theme } = useQuery();
+  const { projectPath, projectBase, theme } = useQuery();
   const [state, dispatch] = useReducer(mockState<AppState>, {
     theme,
-    currentProject: projectPath,
+    projectPath,
+    projectBase,
     loading: true,
     ready: false,
     scenes: [],
@@ -47,22 +48,28 @@ const App = () => {
   const init = async () => {
     if (projectPath) {
       const scenes = await window.electron.loadScenes(projectPath);
-      dispatch({ scenes, loading: false, ready: true });
+      dispatch({ scenes, projectPath, loading: false, ready: true });
     }
   };
 
-  const getContext = useCallback(() => ({
+  const getContext = useCallback((): AppContextType => ({
     scenes: state.scenes,
-  }), [state.scenes]);
+    projectPath: state.projectPath,
+    projectBase: state.projectBase,
+  }), [
+    state.scenes, state.projectPath, state.projectBase,
+  ]);
 
   return (
-    <AppContext.Provider value={getContext()}>
-      { projectPath ? (
-        <Canvas />
-      ) : (
-        <ProjectSelection />
-      ) }
-    </AppContext.Provider>
+    <Theme>
+      <AppContext.Provider value={getContext()}>
+        { projectPath ? (
+          <Canvas />
+        ) : (
+          <ProjectSelection />
+        ) }
+      </AppContext.Provider>
+    </Theme>
   );
 };
 
