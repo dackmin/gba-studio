@@ -9,7 +9,7 @@ import type {
   GameSprite,
   GameVariables,
   ToolType,
-} from './types';
+} from '../../types';
 
 export interface AppContextType {
   scenes: GameScene[];

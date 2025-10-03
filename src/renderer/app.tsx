@@ -11,10 +11,10 @@ import type {
   GameSprite,
   GameVariables,
 } from '../types';
-import { type AppContextType, AppContext } from '../contexts';
-import { useBridgeListener, useQuery } from '../hooks';
-import Canvas from '../Canvas';
-import ProjectSelection from '../ProjectSelection';
+import { type AppContextType, AppContext } from './services/contexts';
+import { useBridgeListener, useQuery } from './services/hooks';
+import Canvas from './pages/canvas';
+import ProjectSelection from './pages/project-selection';
 
 export interface AppState {
   projectBase: string;

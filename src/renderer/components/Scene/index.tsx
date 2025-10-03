@@ -14,9 +14,9 @@ import {
 } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 
-import type { GameScene, GameSensor } from '../types';
-import { useApp, useCanvas } from '../hooks';
-import { getImageSize, pixelToTile, tileToPixel } from '../services/utils';
+import type { GameScene, GameSensor } from '../../../types';
+import { useApp, useCanvas } from '../../services/hooks';
+import { getImageSize, pixelToTile, tileToPixel } from '../../../helpers';
 
 export interface SceneProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect' | 'onChange'> {

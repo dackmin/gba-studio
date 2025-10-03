@@ -9,8 +9,8 @@ import {
 import { Card, DropdownMenu, IconButton, Tooltip } from '@radix-ui/themes';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import { useCanvas } from '../hooks';
-import { AddSubtoolType, ToolType } from '../types';
+import { useCanvas } from '../../services/hooks';
+import { AddSubtoolType, ToolType } from '../../../types';
 
 export interface ToolbarProps extends ComponentPropsWithoutRef<'div'> {
   onSelectTool?: (tool: ToolType) => void;

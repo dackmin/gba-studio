@@ -3,9 +3,9 @@ import { classNames, mockState } from '@junipero/react';
 import { Button, Card, Heading, Text } from '@radix-ui/themes';
 import { Cross2Icon } from '@radix-ui/react-icons';
 
-import { RecentProject } from '../types';
-import pkg from '../../package.json' with { type: 'json' };
-import icon from '../../public/icon.svg?url';
+import type { RecentProject } from '../../../types';
+import pkg from '../../../../package.json' with { type: 'json' };
+import icon from '../../../../public/icon.svg?url';
 
 export interface ProjectSelectionState {
   recentProjects: RecentProject[];

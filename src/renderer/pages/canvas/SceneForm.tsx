@@ -1,10 +1,10 @@
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from 'react';
+import { ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import { Heading, Inset, Select, Separator, Text } from '@radix-ui/themes';
-import { classNames, cloneDeep, mockState, set } from '@junipero/react';
+import { classNames, set } from '@junipero/react';
 
-import type { GameScene } from '../types';
-import { getGraphicName, pixelToTile } from '../services/utils';
-import { useApp } from '../hooks';
+import type { GameScene } from '../../../types';
+import { getGraphicName, pixelToTile } from '../../../helpers';
+import { useApp } from '../../services/hooks';
 import BackgroundsListField from './BackgroundsListField';
 
 export interface SceneFormProps {

@@ -22,9 +22,9 @@ import type {
   GameScene,
   GameSprite,
   GameVariables,
-} from './types';
+} from '../types';
 import { createMenus } from './menus';
-import Storage from './services/storage';
+import Storage from './storage';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 

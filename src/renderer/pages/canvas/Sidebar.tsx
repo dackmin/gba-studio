@@ -1,8 +1,8 @@
 import { classNames } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 
-import type { GameScene } from '../types';
-import { useCanvas } from '../hooks';
+import type { GameScene } from '../../../types';
+import { useCanvas } from '../../services/hooks';
 import SceneForm from './SceneForm';
 
 export interface SidebarProps {

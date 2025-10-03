@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron/renderer';
 
-import type { AppPayload, RecentProject } from './types';
+import type { AppPayload, RecentProject } from '../types';
 
 contextBridge.exposeInMainWorld('electron', {
   // EventTarget

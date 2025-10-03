@@ -1,7 +1,7 @@
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
-import { useApp } from '../hooks';
-import { getGraphicName } from '../services/utils';
+import { useApp } from '../../services/hooks';
+import { getGraphicName } from '../../../helpers';
 
 export interface BackgroundsListFieldProps {
   value?: string;

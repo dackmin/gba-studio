@@ -9,10 +9,10 @@ import {
 } from '@junipero/react';
 import { Resizable } from 're-resizable';
 
-import type { GameActor, GameScene, GameSensor, ToolType } from '../types';
-import { type CanvasContextType, CanvasContext } from '../contexts';
-import { useApp } from '../hooks';
-import Scene from '../Scene';
+import type { GameActor, GameScene, GameSensor, ToolType } from '../../../types';
+import { type CanvasContextType, CanvasContext } from '../../services/contexts';
+import { useApp } from '../../services/hooks';
+import Scene from '../../components/Scene';
 import Toolbar from './Toolbar';
 import TitleBar from './TitleBar';
 import Sidebar from './Sidebar';

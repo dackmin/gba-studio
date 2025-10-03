@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "paths": {
+      "~/*": ["./*"]
+    },
     "lib": ["ESNext", "DOM"],
     "module": "esnext",
     "target": "esnext",

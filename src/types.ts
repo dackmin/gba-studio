@@ -86,3 +86,23 @@ export interface AppPayload {
   sprites: GameSprite[];
   backgrounds: GameBackground[];
 };
+
+export interface SceneEvent {
+  id: string;
+  type: string;
+}
+
+export interface WaitEvent extends SceneEvent {
+  type: 'wait';
+  duration: number; // in ms
+}
+
+export interface FadeInEvent extends SceneEvent {
+  type: 'fade-in';
+  duration: number; // in ms
+}
+
+export interface FadeOutEvent extends SceneEvent {
+  type: 'fade-out';
+  duration: number; // in ms
+}

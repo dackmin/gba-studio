@@ -1,7 +1,7 @@
 import { type CardProps, Card, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { useApp } from '../hooks';
+import { useApp } from '../../services/hooks';
 
 const TitleBar = ({
   className,
