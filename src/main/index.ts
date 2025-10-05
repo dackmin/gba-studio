@@ -191,7 +191,7 @@ ipcMain.handle('get-recent-projects', async () => {
   return recentProjects || [];
 });
 
-ipcMain.handle('open-recent-project', async (event, projectPath: string) => {
+ipcMain.handle('load-recent-project', async (event, projectPath: string) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   win?.hide();
   win?.close();
@@ -199,7 +199,7 @@ ipcMain.handle('open-recent-project', async (event, projectPath: string) => {
   createProjectWindow(projectPath);
 });
 
-ipcMain.handle('open-file-dialog', async event => {
+ipcMain.handle('browse-projects', async event => {
   const paths = await dialog.showOpenDialog({
     properties: ['openDirectory', 'openFile'],
   });
@@ -435,4 +435,15 @@ ipcMain.handle('save-project', async (
         JSON.stringify(scene, null, 2) + '\n', 'utf-8');
     }
   }
+});
+
+ipcMain.handle('get-directory-path', async (_event, opts?: {
+  prefix?: string;
+  suffix?: string;
+}) => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  });
+
+  return path.join(opts?.prefix || '', result.filePaths[0], opts?.suffix || '');
 });

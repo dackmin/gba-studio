@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "GBA Butano",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "BN_CFG_ASSERT_ENABLED",
+                "BN_CFG_PROFILER_ENABLED",
+                "__GBADEV__",
+                "BN_CFG_LOG_ENABLED"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

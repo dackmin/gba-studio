@@ -1,0 +1,10 @@
+{
+  "$schema": "../.schemas/scene.json",
+  "type": "scene",
+  "name": "default",
+  "background": "bg_default",
+  "events": [{
+    "type": "wait-for-button",
+    "buttons": ["Start"]
+  }]
+}

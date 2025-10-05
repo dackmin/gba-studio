@@ -3287,6 +3287,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/fs-extra@npm:^11":
+  version: 11.0.4
+  resolution: "@types/fs-extra@npm:11.0.4"
+  dependencies:
+    "@types/jsonfile": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/9e34f9b24ea464f3c0b18c3f8a82aefc36dc524cc720fc2b886e5465abc66486ff4e439ea3fb2c0acebf91f6d3f74e514f9983b1f02d4243706bdbb7511796ad
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.1":
   version: 9.0.13
   resolution: "@types/fs-extra@npm:9.0.13"
@@ -3314,6 +3324,15 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10c0/6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
+  languageName: node
+  linkType: hard
+
+"@types/jsonfile@npm:*":
+  version: 6.1.4
+  resolution: "@types/jsonfile@npm:6.1.4"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/b12d068b021e4078f6ac4441353965769be87acf15326173e2aea9f3bf8ead41bd0ad29421df5bbeb0123ec3fc02eb0a734481d52903704a1454a1845896b9eb
   languageName: node
   linkType: hard
 
@@ -5542,6 +5561,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:11.3.2, fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
+  version: 11.3.2
+  resolution: "fs-extra@npm:11.3.2"
+  dependencies:
+    graceful-fs: "npm:^4.2.0"
+    jsonfile: "npm:^6.0.1"
+    universalify: "npm:^2.0.0"
+  checksum: 10c0/f5d629e1bb646d5dedb4d8b24c5aad3deb8cc1d5438979d6f237146cd10e113b49a949ae1b54212c2fbc98e2d0995f38009a9a1d0520f0287943335e65fe919b
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^10.0.0, fs-extra@npm:^10.1.0":
   version: 10.1.0
   resolution: "fs-extra@npm:10.1.0"
@@ -5550,17 +5580,6 @@ __metadata:
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
   checksum: 10c0/5f579466e7109719d162a9249abbeffe7f426eb133ea486e020b89bc6d67a741134076bf439983f2eb79276ceaf6bd7b7c1e43c3fd67fe889863e69072fb0a5e
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
-  version: 11.3.2
-  resolution: "fs-extra@npm:11.3.2"
-  dependencies:
-    graceful-fs: "npm:^4.2.0"
-    jsonfile: "npm:^6.0.1"
-    universalify: "npm:^2.0.0"
-  checksum: 10c0/f5d629e1bb646d5dedb4d8b24c5aad3deb8cc1d5438979d6f237146cd10e113b49a949ae1b54212c2fbc98e2d0995f38009a9a1d0520f0287943335e65fe919b
   languageName: node
   linkType: hard
 
@@ -5709,6 +5728,7 @@ __metadata:
     "@radix-ui/themes": "npm:3.2.1"
     "@tailwindcss/vite": "npm:4.1.14"
     "@types/electron-squirrel-startup": "npm:1.0.2"
+    "@types/fs-extra": "npm:^11"
     "@types/react": "npm:19.2.0"
     "@types/react-dom": "npm:19.2.0"
     "@vitejs/plugin-react": "npm:5.0.4"
@@ -5716,10 +5736,12 @@ __metadata:
     electron-squirrel-startup: "npm:1.0.1"
     electron-window-corner-addon: "npm:0.1.1"
     eslint: "npm:9.36.0"
+    fs-extra: "npm:11.3.2"
     re-resizable: "npm:6.11.2"
     react: "npm:19.2.0"
     react-dom: "npm:19.2.0"
     react-hotkeys-hook: "npm:5.1.0"
+    slugify: "npm:1.6.6"
     tailwindcss: "npm:4.1.14"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.45.0"
@@ -8639,6 +8661,13 @@ __metadata:
     ansi-styles: "npm:^6.0.0"
     is-fullwidth-code-point: "npm:^4.0.0"
   checksum: 10c0/2d4d40b2a9d5cf4e8caae3f698fe24ae31a4d778701724f578e984dcb485ec8c49f0c04dab59c401821e80fcdfe89cace9c66693b0244e40ec485d72e543914f
+  languageName: node
+  linkType: hard
+
+"slugify@npm:1.6.6":
+  version: 1.6.6
+  resolution: "slugify@npm:1.6.6"
+  checksum: 10c0/e7e63f08f389a371d6228bc19d64ec84360bf0a538333446cc49dbbf3971751a6d180d2f31551188dd007a65ca771e69f574e0283290a7825a818e90b75ef44d
   languageName: node
   linkType: hard
 

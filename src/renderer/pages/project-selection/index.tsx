@@ -1,11 +1,12 @@
-import { MouseEvent, useCallback, useEffect, useReducer } from 'react';
+import { type MouseEvent, useCallback, useEffect, useReducer } from 'react';
 import { classNames, mockState } from '@junipero/react';
-import { Button, Card, Heading, Text } from '@radix-ui/themes';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { Button, Card, Dialog, Heading, Text } from '@radix-ui/themes';
 
 import type { RecentProject } from '../../../types';
 import pkg from '../../../../package.json' with { type: 'json' };
 import icon from '../../../../public/icon.svg?url';
+import NewProjectForm from './NewProjectForm';
+import Close from './Close';
 
 export interface ProjectSelectionState {
   recentProjects: RecentProject[];
@@ -18,12 +19,8 @@ const ProjectSelection = () => {
     selectedProject: undefined,
   });
 
-  const onCreate = () => {
-
-  };
-
   const onOpenExisting = async () => {
-    await window.electron.openFileDialog();
+    await window.electron.browseProjects();
   };
 
   const getRecentProjects = useCallback(async () => {
@@ -44,7 +41,7 @@ const ProjectSelection = () => {
     e: MouseEvent<HTMLAnchorElement>
   ) => {
     if (e.detail >= 2) {
-      window.electron.openRecentProject(project.path);
+      window.electron.loadRecentProject(project.path);
 
       return;
     }
@@ -59,21 +56,7 @@ const ProjectSelection = () => {
         'app-drag',
       )}
     >
-      <a
-        className={classNames(
-          'rounded-full block w-4 h-4 flex items-center justify-center',
-          'absolute top-4 left-4 app-no-drag bg-alabaster dark:bg-nevada',
-          'hover:bg-mischka hover:dark:bg-slate group transition-all',
-          'duration-200 ease-in-out',
-        )}
-        onClick={onClose}
-      >
-        <Cross2Icon
-          width={12}
-          height={12}
-          className="[&_path]:fill-seashell dark:[&_path]:fill-onyx"
-        />
-      </a>
+      <Close onClick={onClose} />
       <div
         className={classNames(
           'flex-auto flex flex-col items-center p-8 gap-4'
@@ -82,7 +65,7 @@ const ProjectSelection = () => {
         <div
           className={classNames(
             'w-[100px] aspect-square bg-alabaster dark:bg-nevada rounded-2xl',
-            'mt-12'
+            'mt-12 shadow-2xl shadow-[#7c28bb]/50 relative z-1'
           )}
           style={{
             backgroundImage: `url(${icon})`,
@@ -90,18 +73,30 @@ const ProjectSelection = () => {
             backgroundPosition: 'center',
           }}
         />
-        <div className="text-center">
+        <div className="text-center relative z-10">
           <Heading as="h1">GBA Studio</Heading>
           <Text>v{ pkg.version }</Text>
         </div>
         <div className="mt-12 flex flex-col items-stretch gap-2">
-          <Button
-            variant="solid"
-            onClick={onCreate}
-            className="!app-no-drag"
-          >
-            <Text>Create a new project</Text>
-          </Button>
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <Button
+                variant="solid"
+                className="!app-no-drag"
+              >
+                <Text>Create a new project</Text>
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Content className="!app-no-drag">
+              <Dialog.Close>
+                <Close />
+              </Dialog.Close>
+              <Dialog.Title align="center" className="pb-4">
+                Create a new project
+              </Dialog.Title>
+              <NewProjectForm />
+            </Dialog.Content>
+          </Dialog.Root>
           <div>
             <Button
               variant="soft"

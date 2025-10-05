@@ -1,0 +1,27 @@
+{
+  "name": "my-awesome-game",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node --import=tsx ./scripts/build.ts",
+    "build:font": "node --import=tsx ./scripts/fonts.ts"
+  },
+  "devDependencies": {
+    "@poool/eslint-config": "5.0.6",
+    "@types/node": "24.6.2",
+    "@types/yargs": "17.0.33",
+    "eslint": "9.36.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.45.0"
+  },
+  "packageManager": "yarn@4.10.3",
+  "dependencies": {
+    "colors": "1.4.0",
+    "handlebars": "4.7.8",
+    "jimp": "1.6.0",
+    "jsonschema": "1.5.0",
+    "slugify": "1.6.6",
+    "yargs": "18.0.0"
+  }
+}

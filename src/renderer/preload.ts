@@ -17,11 +17,17 @@ contextBridge.exposeInMainWorld('electron', {
 
   getRecentProjects: (): Promise<RecentProject[]> =>
     ipcRenderer.invoke('get-recent-projects'),
-  openRecentProject: (projectPath: string) =>
-    ipcRenderer.invoke('open-recent-project', projectPath),
-  openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
+  loadRecentProject: (projectPath: string) =>
+    ipcRenderer.invoke('load-recent-project', projectPath),
+  browseProjects: () =>
+    ipcRenderer.invoke('browse-projects'),
   loadProject: (path: string): Promise<AppPayload> =>
     ipcRenderer.invoke('load-project', path),
   saveProject: (path: string, payload: AppPayload): Promise<void> =>
     ipcRenderer.invoke('save-project', path, payload),
-});
+  getDirectoryPath: (opts?: {
+    prefix?: string;
+    suffix?: string;
+  }): Promise<string> =>
+    ipcRenderer.invoke('get-directory-path', opts),
+} as Omit<AppBridge, 'dispatchEvent'>);

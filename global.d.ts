@@ -13,10 +13,14 @@ interface AppBridge extends EventTarget {
   ): void;
 
   getRecentProjects(): Promise<RecentProject[]>;
-  openRecentProject(projectPath: string): Promise<void>;
-  openFileDialog(): Promise<string>;
+  loadRecentProject(projectPath: string): Promise<void>;
+  browseProjects(): Promise<string>;
   loadProject(path: string): Promise<AppPayload>;
   saveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
+  getDirectoryPath(opts?: {
+    prefix?: string;
+    suffix?: string;
+  }): Promise<string>;
 }
 
 interface Window {

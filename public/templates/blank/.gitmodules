@@ -1,0 +1,4 @@
+[submodule "butano"]
+	path = butano
+	url = https://github.com/GValiente/butano.git
+	ignore = dirty
