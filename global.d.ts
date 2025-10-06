@@ -26,6 +26,7 @@ interface AppBridge extends EventTarget {
     name: string;
     path: string;
   }): Promise<void>;
+  isFullscreen(): Promise<boolean>;
 }
 
 interface Window {

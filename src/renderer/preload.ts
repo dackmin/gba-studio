@@ -36,4 +36,6 @@ contextBridge.exposeInMainWorld('electron', {
     path: string;
   }): Promise<void> =>
     ipcRenderer.invoke('create-project', opts),
+  isFullscreen: (): Promise<boolean> =>
+    ipcRenderer.invoke('is-fullscreen'),
 } as Omit<AppBridge, 'dispatchEvent'>);

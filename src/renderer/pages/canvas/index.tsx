@@ -8,7 +8,6 @@ import {
   mockState,
   useEventListener,
 } from '@junipero/react';
-import { Resizable } from 're-resizable';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import type {
@@ -22,7 +21,8 @@ import { useApp } from '../../services/hooks';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
 import TitleBar from './TitleBar';
-import Sidebar from './Sidebar';
+import EditSidebar from './EditSidebar';
+import ProjectSidebar from './ProjectSidebar';
 
 export interface CanvasProps {
   onMoveScene: (scene: GameScene, e: Partial<MoveableState>) => void;
@@ -143,23 +143,11 @@ const Canvas = ({
           'flex items-stretch',
         )}
       >
-        <div
-          className="flex-auto p-2"
-        >
-          <TitleBar className="pointer-events-auto" />
-        </div>
-        <Resizable
-          defaultSize={{ width: 400 }}
-          maxWidth="80%"
-          minWidth={400}
-          className={classNames(
-            'flex-none pointer-events-auto',
-          )}
-        >
-          <Sidebar
-            onSceneChange={onSceneChange}
-          />
-        </Resizable>
+        <ProjectSidebar />
+        <TitleBar />
+        <EditSidebar
+          onSceneChange={onSceneChange}
+        />
       </div>
       <div
         className={classNames(

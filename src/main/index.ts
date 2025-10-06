@@ -533,3 +533,9 @@ ipcMain.handle('create-project', async (event, opts: {
 
   createProjectWindow(projectPath);
 });
+
+ipcMain.handle('is-fullscreen', async event => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+
+  return win?.isFullScreen() || false;
+});

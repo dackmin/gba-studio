@@ -1,28 +1,37 @@
-import { type CardProps, Card, Text } from '@radix-ui/themes';
+import type { ComponentPropsWithoutRef } from 'react';
+import { Card, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import { useApp } from '../../services/hooks';
 
 const TitleBar = ({
   className,
-}: CardProps) => {
+  ...rest
+}: ComponentPropsWithoutRef<'div'>) => {
   const { project, dirty } = useApp();
 
   return (
-    <Card
+    <div
+      { ...rest }
       className={classNames(
-        '!rounded-[20px] before:!rounded-[20px] after:!rounded-[20px]',
-        'h-[48px] app-drag',
+        'flex-auto p-2',
         className,
       )}
     >
-      <div className="text-center">
-        <Text>{ project?.name }</Text>
-        { dirty && (
-          <Text size="2" className="text-slate"> (modified)</Text>
-        ) }
-      </div>
-    </Card>
+      <Card
+        className={classNames(
+          '!rounded-[20px] before:!rounded-[20px] after:!rounded-[20px]',
+          'h-[48px] app-drag pointer-events-auto',
+        )}
+      >
+        <div className="text-center">
+          <Text>{ project?.name }</Text>
+          { dirty && (
+            <Text size="2" className="text-slate"> (modified)</Text>
+          ) }
+        </div>
+      </Card>
+    </div>
   );
 };
 
