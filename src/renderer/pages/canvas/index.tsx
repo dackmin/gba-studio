@@ -61,12 +61,34 @@ const Canvas = ({
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === ' ' && state.tool !== 'pan') {
+      if (
+        e.target &&
+        (
+          ['INPUT', 'TEXTAREA', 'SELECT']
+            .includes((e.target as HTMLElement).nodeName) ||
+          (e.target as HTMLElement).isContentEditable
+        )
+      ) {
+        return;
+      }
+
       dispatch({ tool: 'pan', previousTool: state.tool });
     }
   }, [state.tool]);
 
   useEventListener('keyup', (e: KeyboardEvent) => {
     if (e.key === ' ' && state.tool === 'pan') {
+      if (
+        e.target &&
+        (
+          ['INPUT', 'TEXTAREA', 'SELECT']
+            .includes((e.target as HTMLElement).nodeName) ||
+          (e.target as HTMLElement).isContentEditable
+        )
+      ) {
+        return;
+      }
+
       dispatch({ tool: state.previousTool });
     }
   }, [state.previousTool, state.tool]);

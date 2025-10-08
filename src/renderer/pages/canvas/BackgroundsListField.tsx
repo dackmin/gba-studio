@@ -26,9 +26,7 @@ const BackgroundsListField = ({
               src={`project://graphics/${val}.bmp`}
               fallback=""
             />
-            <div>
-              <Text>{ val }</Text>
-            </div>
+            <Text>{ val }</Text>
           </div>
         </Card>
       </DropdownMenu.Trigger>

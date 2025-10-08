@@ -1,10 +1,11 @@
-import type { ChangeEvent } from 'react';
+import { useCallback, useState, type ChangeEvent } from 'react';
 import { set } from '@junipero/react';
 import { Text, TextField } from '@radix-ui/themes';
 
 import type {
   SetVariableEvent,
 } from '../../../types';
+import { useDelayedCallback } from '../../services/hooks';
 import VariablesListField from '../VariablesListField';
 
 export interface EventSetVariableProps {
@@ -15,18 +16,27 @@ export interface EventSetVariableProps {
 }
 
 const EventSetVariable = ({
-  event,
+  event: eventProp,
   onValueChange,
 }: EventSetVariableProps) => {
-  const onChange = (name: string, e: ChangeEvent<HTMLInputElement>) => {
-    set(event, name, e.target.value);
-    onValueChange?.(event);
-  };
+  const [event, setEvent] = useState(eventProp);
+  // Performance optimizations
+  const onDelayedValueChange = useDelayedCallback(onValueChange, 300);
 
-  const onValueChange_ = (name: string, value: any) => {
-    set(event, name, value);
-    onValueChange?.(event);
-  };
+  const onChange = useCallback((
+    name: string,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    set(event, name, e.target.value);
+    setEvent(event);
+    onDelayedValueChange?.(event);
+  }, [event, onDelayedValueChange]);
+
+  const onValueChange_ = useCallback((name: string, val: any) => {
+    set(event, name, val);
+    setEvent(event);
+    onDelayedValueChange?.(event);
+  }, [event, onDelayedValueChange]);
 
   return (
     <div className="flex flex-col gap-4">

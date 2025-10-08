@@ -8,10 +8,12 @@ import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import type {
+  EnableActorEvent,
   GoToSceneEvent,
   PlayMusicEvent,
   SceneEvent,
   SetVariableEvent,
+  ShowDialogEvent,
   WaitEvent,
   WaitForButtonEvent,
 } from '../../../types';
@@ -22,6 +24,8 @@ import EventGoToScene from './EventGoToScene';
 import EventPlayMusic from './EventPlayMusic';
 import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
+import EventShowDialog from './EventShowDialog';
+import EventActor from './EventActor';
 
 export interface EventProps {
   event: SceneEvent;
@@ -162,6 +166,18 @@ const Event = ({
             <Switch.Case value="set-variable">
               <EventSetVariable
                 event={event as SetVariableEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="show-dialog">
+              <EventShowDialog
+                event={event as ShowDialogEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value={['enable-actor', 'disable-actor']}>
+              <EventActor
+                event={event as EnableActorEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

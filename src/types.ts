@@ -47,14 +47,15 @@ export interface GameMap {
 }
 
 export interface GameScene {
-  id?: string;
   type: 'scene';
   sceneType: 'logos' | '2d-top-down';
   name: string;
   background?: string;
   map?: GameMap;
   events?: SceneEvent[];
+  actors?: GameActor[];
   // Internals
+  id?: string;
   _file?: string;
 }
 
@@ -63,6 +64,8 @@ export interface GameActor {
   x: number;
   y: number;
   sprite: string;
+  // Internals
+  id?: string;
 }
 
 export interface GameSensor {
@@ -71,6 +74,8 @@ export interface GameSensor {
   y: number;
   width: number;
   height: number;
+  // Internals
+  id?: string;
 }
 
 export interface ProjectSceneData {
@@ -120,10 +125,10 @@ export type EventValue =
   | DynamicValue;
 
 export interface SceneEvent {
-  id: string;
   type: string;
   name?: string;
   // Internals
+  id?: string;
   _collapsed?: boolean;
 }
 
@@ -181,4 +186,19 @@ export interface SetVariableEvent extends SceneEvent {
   type: 'set-variable';
   name: string;
   value: EventValue;
+}
+
+export interface ShowDialogEvent extends SceneEvent {
+  type: 'show-dialog';
+  text: string;
+}
+
+export interface DisableActorEvent extends SceneEvent {
+  type: 'disable-actor';
+  actor: string;
+}
+
+export interface EnableActorEvent extends SceneEvent {
+  type: 'enable-actor';
+  actor: string;
 }

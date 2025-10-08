@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { set } from '@junipero/react';
 import { Text, TextField } from '@radix-ui/themes';
 
@@ -7,6 +8,7 @@ import type {
   FadeOutEvent,
   WaitEvent,
 } from '../../../types';
+import { useDelayedCallback } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
 export interface EventDurationProps {
@@ -17,13 +19,17 @@ export interface EventDurationProps {
 }
 
 const EventDuration = ({
-  event,
+  event: eventProp,
   onValueChange,
 }: EventDurationProps) => {
-  const onDurationChange = (value: EventValue) => {
+  const [event, setEvent] = useState(eventProp);
+  const onDelayedValueChange = useDelayedCallback(onValueChange, 300);
+
+  const onDurationChange = useCallback((value: EventValue) => {
     set(event, 'duration', value);
-    onValueChange?.(event);
-  };
+    setEvent(event);
+    onDelayedValueChange?.(event);
+  }, [event, onDelayedValueChange]);
 
   return (
     <div className="flex flex-col gap-2">

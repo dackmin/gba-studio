@@ -1,7 +1,7 @@
 import { useContext, useDeferredValue, useEffect, useState } from 'react';
 import { useTimeout } from '@junipero/react';
 
-import { AppContext, CanvasContext } from './contexts';
+import { AppContext, CanvasContext, SceneFormContext } from './contexts';
 
 const queryParams = () => {
   const params = new URLSearchParams(window.location.search);
@@ -39,6 +39,7 @@ export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
 
 export const useApp = () => useContext(AppContext);
 export const useCanvas = () => useContext(CanvasContext);
+export const useSceneForm = () => useContext(SceneFormContext);
 
 export const useBridgeListener = (
   channel: string,
@@ -71,4 +72,28 @@ export function useDelayedValue<T> (
   }, delay, [value, setDelayedValue]);
 
   return useDeferredValue<T>(delayedValue);
+}
+
+export function useDelayedCallback<T extends (...args: any[]) => void> (
+  /**
+   * Effect to run after delay
+   */
+  callback?: T,
+  /**
+   * Delay in ms
+   */
+  delay = 400,
+  /**
+   * Effect dependencies
+   */
+  deps: any[] = [],
+) {
+  const [args, setArgs] = useState<Parameters<T>>();
+
+  useTimeout(() => {
+    callback?.(...args || []);
+    setArgs(undefined);
+  }, delay, [callback, args, ...deps], { enabled: !!args });
+
+  return (...args: Parameters<T>) => setArgs(args);
 }

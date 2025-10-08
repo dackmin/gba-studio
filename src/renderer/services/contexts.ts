@@ -43,3 +43,11 @@ export interface CanvasContextType {
 export const CanvasContext = createContext<CanvasContextType>({
   tool: 'default',
 });
+
+export interface SceneFormContextType {
+  scene?: GameScene;
+}
+
+export const SceneFormContext = createContext<SceneFormContextType>({
+  scene: undefined,
+});

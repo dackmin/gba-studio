@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { classNames } from '@junipero/react';
-import { Button, Dialog, Text } from '@radix-ui/themes';
+import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
 
@@ -101,6 +101,12 @@ const EventsField = ({
               </Button>
             </Dialog.Trigger>
             <Dialog.Content>
+              <VisuallyHidden>
+                <Dialog.Title>Event Palette</Dialog.Title>
+                <Dialog.Description>
+                  Select an event to add to the list
+                </Dialog.Description>
+              </VisuallyHidden>
               <Catalogue onSelect={onAddEvent} />
             </Dialog.Content>
           </Dialog.Root>
