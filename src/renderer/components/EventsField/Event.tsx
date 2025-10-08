@@ -4,13 +4,14 @@ import {
   CaretRightIcon,
   DotsVerticalIcon,
 } from '@radix-ui/react-icons';
-import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import type {
   GoToSceneEvent,
   PlayMusicEvent,
   SceneEvent,
+  SetVariableEvent,
   WaitEvent,
   WaitForButtonEvent,
 } from '../../../types';
@@ -20,6 +21,7 @@ import EventDuration from './EventDuration';
 import EventGoToScene from './EventGoToScene';
 import EventPlayMusic from './EventPlayMusic';
 import EventButtons from './EventButtons';
+import EventSetVariable from './EventSetVariable';
 
 export interface EventProps {
   event: SceneEvent;
@@ -149,6 +151,17 @@ const Event = ({
             <Switch.Case value="wait-for-button">
               <EventButtons
                 event={event as WaitForButtonEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="stop-music">
+              <Text className="text-xs text-slate text-center">
+                This event has no properties
+              </Text>
+            </Switch.Case>
+            <Switch.Case value="set-variable">
+              <EventSetVariable
+                event={event as SetVariableEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

@@ -1,9 +1,13 @@
 import {
+  ChatBubbleIcon,
   CodeIcon,
+  EyeClosedIcon,
+  EyeOpenIcon,
   GroupIcon,
   LapTimerIcon,
   LayersIcon,
   MixIcon,
+  Pencil1Icon,
   PlayIcon,
   ShadowIcon,
   ShadowNoneIcon,
@@ -46,6 +50,48 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'go-to-scene',
       target: '',
+    }),
+  }],
+}, {
+  name: 'Dialogs',
+  items: [{
+    icon: ChatBubbleIcon,
+    name: 'Show Dialog',
+    value: 'show-dialog',
+    construct: () => ({
+      type: 'show-dialog',
+      text: '',
+    }),
+  }],
+}, {
+  name: 'Actors',
+  items: [{
+    icon: EyeClosedIcon,
+    name: 'Disable Actor',
+    value: 'disable-actor',
+    construct: () => ({
+      type: 'disable-actor',
+      actor: '',
+    }),
+  }, {
+    icon: EyeOpenIcon,
+    name: 'Enable Actor',
+    value: 'enable-actor',
+    construct: () => ({
+      type: 'enable-actor',
+      actor: '',
+    }),
+  }],
+}, {
+  name: 'Variables',
+  items: [{
+    icon: Pencil1Icon,
+    name: 'Set Variable',
+    value: 'set-variable',
+    construct: () => ({
+      type: 'set-variable',
+      name: '',
+      value: '',
     }),
   }],
 }, {

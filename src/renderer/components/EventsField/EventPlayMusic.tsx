@@ -57,13 +57,18 @@ const EventPlayMusic = ({
         <div className="flex items-center gap-2">
           <Slider
             min={0}
-            max={1}
-            step={0.01}
-            value={[event.volume ?? 1]}
+            max={100}
+            value={[
+              (event.volume ?? 100) > 0 && (event.volume ?? 100) < 1
+                ? (event.volume ?? 100) * 100
+                : event.volume ?? 100,
+            ]}
             onValueChange={onValueChange_.bind(null, 'volume')}
           />
           <Text className="block w-[60px] text-right">
-            { Math.round((event.volume ?? 1) * 100) }%
+            { (event.volume ?? 100) > 0 && (event.volume ?? 100) < 1
+              ? (event.volume ?? 100) * 100
+              : event.volume ?? 100 }%
           </Text>
         </div>
       </div>

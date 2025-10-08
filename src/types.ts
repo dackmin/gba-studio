@@ -176,3 +176,9 @@ export interface WaitForButtonEvent extends SceneEvent {
   type: 'wait-for-button';
   buttons: string[];
 }
+
+export interface SetVariableEvent extends SceneEvent {
+  type: 'set-variable';
+  name: string;
+  value: EventValue;
+}
