@@ -9,7 +9,9 @@ import { classNames } from '@junipero/react';
 
 import type {
   EnableActorEvent,
+  ExecuteScriptEvent,
   GoToSceneEvent,
+  IfEvent,
   PlayMusicEvent,
   SceneEvent,
   SetVariableEvent,
@@ -26,6 +28,8 @@ import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
 import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
+import EventIf from './EventIf';
+import EventScript from './EventScript';
 
 export interface EventProps {
   event: SceneEvent;
@@ -60,6 +64,7 @@ const Event = ({
     onValueChange?.(event);
   }, [renaming, opened, event]);
 
+  // TODO: allow to rename events
   // const onRenameClick = () => {
   //   setRenaming(true);
   //   nameRef.current?.focus();
@@ -178,6 +183,18 @@ const Event = ({
             <Switch.Case value={['enable-actor', 'disable-actor']}>
               <EventActor
                 event={event as EnableActorEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="if">
+              <EventIf
+                event={event as IfEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="execute-script">
+              <EventScript
+                event={event as ExecuteScriptEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

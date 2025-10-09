@@ -18,6 +18,7 @@ const EventValueField = ({
   defaultValue,
   children,
   onValueChange,
+  ...rest
 }: EventValueFieldProps) => {
   const val = value ?? defaultValue ?? '';
   const isDynamicValue = useMemo(() => (
@@ -47,6 +48,7 @@ const EventValueField = ({
 
   return (
     <TextField.Root
+      { ...rest }
       type={isDynamicValue ? 'text' : type}
       value={isDynamicValue
         ? (val as DynamicValue).name || '' : (val as string | number)}

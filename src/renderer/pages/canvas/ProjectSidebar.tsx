@@ -4,10 +4,12 @@ import {
   type MouseEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { classNames, useEventListener } from '@junipero/react';
 import {
+  CodeIcon,
   ListBulletIcon,
   PlayIcon,
   PlusCircledIcon,
@@ -15,27 +17,36 @@ import {
 } from '@radix-ui/react-icons';
 import { Card, IconButton, Inset, Text } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
+import { v4 as uuid } from 'uuid';
 
-import type { GameScene, GameVariables } from '../../../types';
+import type { GameScene, GameScript, GameVariables } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
 export interface ProjectSidebarProps extends ResizableProps {
   onSelectScene: (scene: GameScene) => void;
+  onSelectScript: (script: GameScript) => void;
   onVariablesChange: (registry: GameVariables) => void;
+  onScriptsChange: (scripts: GameScript[]) => void;
 }
 
 const ProjectSidebar = ({
   className,
   onSelectScene,
+  onSelectScript,
   onVariablesChange,
+  onScriptsChange,
   ...rest
 }: ProjectSidebarProps) => {
   const [opened, setOpened] = useState(true);
   const [width, setWidth] = useState(300);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const { scenes, variables } = useApp();
-  const { selectedScene } = useCanvas();
+  const { scenes, scripts, variables } = useApp();
+  const { selectedScene, selectedItem } = useCanvas();
+
+  const allVariables = useMemo(() => (
+    variables.flatMap(v => Object.keys(v.values || {}))
+  ), [variables]);
 
   const checkFullscreen = useCallback(async () => {
     setIsFullScreen(await window.electron.isFullscreen());
@@ -131,6 +142,21 @@ const ProjectSidebar = ({
     }, 10);
   }, [variables, onVariablesChange]);
 
+  const onAddScript = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    const name = `Script ${scripts.length + 1}`;
+    const script: GameScript = {
+      _file: `script_${scripts.length + 1}.json`,
+      id: uuid(),
+      type: 'script',
+      name,
+      events: [],
+    };
+
+    onScriptsChange?.([...scripts, script]);
+  }, [scripts, onScriptsChange]);
+
   return (
     <>
       <div
@@ -193,7 +219,14 @@ const ProjectSidebar = ({
                   <Text>Scenes</Text>
                 </Collapsible.Trigger>
                 <Collapsible.Content>
-                  { scenes.map(scene => (
+                  { scenes?.length <= 0 ? (
+                    <Text
+                      size="1"
+                      className="block text-center text-slate pb-3"
+                    >
+                      No scenes
+                    </Text>
+                  ) : scenes.map(scene => (
                     <a
                       key={scene._file}
                       href="#"
@@ -218,6 +251,52 @@ const ProjectSidebar = ({
               <Collapsible.Root>
                 <Collapsible.Trigger>
                   <div className="flex items-center justify-between w-full">
+                    <Text>Scripts</Text>
+                    <IconButton
+                      variant="ghost"
+                      radius="full"
+                      onClick={onAddScript}
+                    >
+                      <PlusCircledIcon
+                        width={16}
+                        height={16}
+                      />
+                    </IconButton>
+                  </div>
+                </Collapsible.Trigger>
+                <Collapsible.Content>
+                  { scripts.length <= 0 ? (
+                    <Text
+                      size="1"
+                      className="block text-center text-slate pb-3"
+                    >
+                      No scripts
+                    </Text>
+                  ) : scripts.map(script => (
+                    <a
+                      key={script._file}
+                      href="#"
+                      className={classNames(
+                        'flex items-center gap-2 px-3 py-1',
+                        { 'bg-(--accent-9)': selectedItem === script },
+                      )}
+                      onClick={onSelectScript.bind(null, script)}
+                    >
+                      <CodeIcon
+                        className={classNames(
+                          '[&_path]:fill-(--accent-9)',
+                          { '[&_path]:fill-seashell': selectedItem === script },
+                        )}
+                      />
+                      <Text>{ script.name }</Text>
+                    </a>
+                  )) }
+                </Collapsible.Content>
+              </Collapsible.Root>
+
+              <Collapsible.Root>
+                <Collapsible.Trigger>
+                  <div className="flex items-center justify-between w-full">
                     <Text>Variables</Text>
                     <IconButton
                       variant="ghost"
@@ -232,7 +311,14 @@ const ProjectSidebar = ({
                   </div>
                 </Collapsible.Trigger>
                 <Collapsible.Content>
-                  { variables.map(registry => (
+                  { allVariables?.length <= 0 ? (
+                    <Text
+                      size="1"
+                      className="block text-center text-slate pb-3"
+                    >
+                      No variables
+                    </Text>
+                  ) : variables.map(registry => (
                     Object.keys(registry?.values || {}).map(v => (
                       <div
                         key={v}

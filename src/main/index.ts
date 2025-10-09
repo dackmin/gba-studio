@@ -22,6 +22,7 @@ import type {
   GameBackground,
   GameProject,
   GameScene,
+  GameScript,
   GameSprite,
   GameVariables,
   ProjectTemplate,
@@ -292,6 +293,17 @@ const getSoundFiles = async (
   }
 };
 
+const getScriptsFiles = async (
+  base: string,
+) => {
+  return getDataFiles(
+    base,
+    file =>
+      file.startsWith('script_') &&
+      file.endsWith('.json')
+  );
+};
+
 ipcMain.handle('load-project', async (event, projectPath: string) => {
   const projectDir = path.dirname(projectPath);
 
@@ -344,6 +356,10 @@ ipcMain.handle('load-project', async (event, projectPath: string) => {
     file => file.endsWith('.mod') || file.endsWith('.wav')
   );
   total += soundFiles.length;
+
+  // Prepare scripts
+  const scriptFiles = await getScriptsFiles(projectDir);
+  total += scriptFiles.length;
 
   // Load variables
   const variables: GameVariables[] = [];
@@ -409,6 +425,19 @@ ipcMain.handle('load-project', async (event, projectPath: string) => {
     win?.setProgressBar(current / total);
   }
 
+  // Load scripts
+  const scripts: GameScript[] = [];
+
+  for (const file of scriptFiles) {
+    const script: GameScript = JSON.parse(await fs
+      .readFile(path.join(projectDir, 'data', file), 'utf-8'));
+
+    script._file = file;
+    current++;
+    win?.setProgressBar(current / total);
+    scripts.push(script);
+  }
+
   win?.setProgressBar(-1);
 
   return {
@@ -418,6 +447,7 @@ ipcMain.handle('load-project', async (event, projectPath: string) => {
     sprites,
     backgrounds,
     sounds,
+    scripts,
   } as AppPayload;
 });
 
@@ -477,6 +507,27 @@ ipcMain.handle('save-project', async (
 
       await fs.writeFile(path.join(projectDir, 'data', fileName),
         JSON.stringify(scene, null, 2) + '\n', 'utf-8');
+    }
+  }
+
+  // Delete obsolete scripts
+  const existingScriptFiles: string[] = await getScriptsFiles(projectDir);
+  const newScriptFiles = (data.scripts || []).map(s => s._file).filter(f => f);
+
+  for (const file of existingScriptFiles) {
+    if (!newScriptFiles.includes(file)) {
+      await fs.unlink(path.join(projectDir, 'data', file));
+    }
+  }
+
+  // Save scripts
+  for (const script of data.scripts || []) {
+    if (script._file) {
+      const fileName = script._file;
+      delete script._file;
+
+      await fs.writeFile(path.join(projectDir, 'data', fileName),
+        JSON.stringify(script, null, 2) + '\n', 'utf-8');
     }
   }
 });

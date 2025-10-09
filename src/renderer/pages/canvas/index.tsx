@@ -14,6 +14,7 @@ import type {
   AppPayload,
   GameActor,
   GameScene,
+  GameScript,
   GameSensor,
   GameVariables,
   ToolType,
@@ -33,7 +34,7 @@ export interface CanvasProps {
 
 export interface CanvasState {
   selectedScene?: string;
-  selectedItem?: GameActor | GameSensor;
+  selectedItem?: GameActor | GameSensor | GameScript;
   tool: ToolType;
   previousTool: ToolType;
 }
@@ -124,6 +125,14 @@ const Canvas = ({
     dispatch({ selectedScene: scene?._file, selectedItem: sensor });
   }, [state.selectedItem]);
 
+  const onSelectScript = useCallback((script: GameScript) => {
+    if (state.selectedItem === script) {
+      return;
+    }
+
+    dispatch({ selectedItem: script, selectedScene: undefined });
+  }, [state.selectedItem]);
+
   const onSelectTool = useCallback((tool: ToolType) => {
     dispatch({ tool });
   }, []);
@@ -170,6 +179,23 @@ const Canvas = ({
     });
   }, [onChange, appPayload]);
 
+  const onScriptsChange = useCallback((scripts: GameScript[]) => {
+    onChange?.({
+      ...appPayload,
+      scripts,
+    });
+    dispatch({ selectedItem: scripts.find(s => s === state.selectedItem) });
+  }, [onChange, appPayload]);
+
+  const onScriptChange = useCallback((script: GameScript) => {
+    onChange?.({
+      ...appPayload,
+      scripts: appPayload.scripts
+        .map(s => s._file === script._file ? script : s),
+    });
+    dispatch({ selectedItem: script });
+  }, [onChange, appPayload]);
+
   const getContext = useCallback((): CanvasContextType => ({
     selectedScene,
     selectedItem: state.selectedItem,
@@ -192,11 +218,14 @@ const Canvas = ({
         />
         <ProjectSidebar
           onSelectScene={onSelectScene}
+          onSelectScript={onSelectScript}
           onVariablesChange={onVariablesChange}
+          onScriptsChange={onScriptsChange}
         />
         <TitleBar />
         <EditSidebar
           onSceneChange={onSceneChange}
+          onScriptChange={onScriptChange}
         />
       </div>
       <div

@@ -8,6 +8,7 @@ import type {
   GameBackground,
   GameProject,
   GameScene,
+  GameScript,
   GameSprite,
   GameVariables,
 } from '../types';
@@ -24,6 +25,7 @@ export interface AppState {
   sprites: GameSprite[];
   backgrounds: GameBackground[];
   sounds: string[];
+  scripts: GameScript[];
   history: Partial<AppPayload>[];
   historyIndex: number;
   loading: boolean;
@@ -44,6 +46,7 @@ const App = () => {
     sprites: [],
     backgrounds: [],
     sounds: [],
+    scripts: [],
     project: undefined,
     dirty: false,
     history: [],
@@ -86,11 +89,12 @@ const App = () => {
         project: state.project,
         scenes: state.scenes,
         variables: state.variables,
+        scripts: state.scripts,
       });
     }
   }, [
     projectPath,
-    state.project, state.scenes, state.variables,
+    state.project, state.scenes, state.variables, state.scripts,
   ]);
 
   useHotkeys('mod+s', e => {
@@ -148,6 +152,7 @@ const App = () => {
       project: cloneDeep(currentState.project!),
       scenes: cloneDeep(currentState.scenes),
       variables: cloneDeep(currentState.variables),
+      scripts: cloneDeep(currentState.scripts),
     };
 
     const newHistory = currentState.history.slice(currentState.historyIndex);
@@ -205,12 +210,14 @@ const App = () => {
     sprites: state.sprites,
     backgrounds: state.backgrounds,
     sounds: state.sounds,
+    scripts: state.scripts,
     projectPath: projectPath || '',
     projectBase: state.projectBase,
   }), [
     projectPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
+    state.scripts,
   ]);
 
   return (

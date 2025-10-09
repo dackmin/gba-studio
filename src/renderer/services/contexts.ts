@@ -5,6 +5,7 @@ import type {
   GameBackground,
   GameProject,
   GameScene,
+  GameScript,
   GameSensor,
   GameSprite,
   GameVariables,
@@ -18,6 +19,7 @@ export interface AppContextType {
   sprites: GameSprite[];
   backgrounds: GameBackground[];
   sounds: string[];
+  scripts: GameScript[];
   projectPath: string;
   projectBase: string;
   dirty: boolean;
@@ -29,6 +31,7 @@ export const AppContext = createContext<AppContextType>({
   sprites: [],
   backgrounds: [],
   sounds: [],
+  scripts: [],
   projectPath: '',
   projectBase: '',
   dirty: false,
@@ -36,7 +39,7 @@ export const AppContext = createContext<AppContextType>({
 
 export interface CanvasContextType {
   selectedScene?: GameScene;
-  selectedItem?: GameActor | GameSensor;
+  selectedItem?: GameActor | GameSensor | GameScript;
   tool: ToolType;
 };
 

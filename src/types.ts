@@ -59,7 +59,17 @@ export interface GameScene {
   _file?: string;
 }
 
+export interface GameScript {
+  type: 'script';
+  name: string;
+  events?: SceneEvent[];
+  // Internals
+  id?: string;
+  _file?: string;
+}
+
 export interface GameActor {
+  type: 'actor';
   name: string;
   x: number;
   y: number;
@@ -69,6 +79,7 @@ export interface GameActor {
 }
 
 export interface GameSensor {
+  type: 'sensor';
   name: string;
   x: number;
   y: number;
@@ -109,6 +120,7 @@ export interface AppPayload {
   sprites: GameSprite[];
   backgrounds: GameBackground[];
   sounds: string[];
+  scripts: GameScript[];
 };
 
 export interface DynamicVariableValue {
@@ -122,6 +134,7 @@ export type DynamicValue =
 export type EventValue =
   | string
   | number
+  | boolean
   | DynamicValue;
 
 export interface SceneEvent {
@@ -201,4 +214,23 @@ export interface DisableActorEvent extends SceneEvent {
 export interface EnableActorEvent extends SceneEvent {
   type: 'enable-actor';
   actor: string;
+}
+
+export interface IfEventCondition {
+  type: 'condition';
+  left: EventValue | IfEventCondition;
+  operator: 'eq' | 'neq' | '&&' | '||';
+  right: EventValue | IfEventCondition;
+}
+
+export interface IfEvent extends SceneEvent {
+  type: 'if';
+  conditions: IfEventCondition[];
+  then?: SceneEvent[];
+  else?: SceneEvent[];
+}
+
+export interface ExecuteScriptEvent extends SceneEvent {
+  type: 'execute-script';
+  name: string;
 }

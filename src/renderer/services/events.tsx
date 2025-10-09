@@ -122,7 +122,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({ type: 'wait', duration: 500 }),
   }, {
     icon: GroupIcon,
-    name: 'If Condition',
+    name: 'If',
     value: 'if',
     construct: () => ({
       type: 'if',

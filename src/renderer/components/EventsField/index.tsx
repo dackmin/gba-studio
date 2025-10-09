@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react';
-import { classNames } from '@junipero/react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
@@ -73,46 +72,42 @@ const EventsField = ({
   }, [onValueChange, value, selected]);
 
   return (
-    <>
-      <div
-        className={classNames(
-          'flex flex-col gap-[1px]',
-        )}
-      >
-        { value.length === 0 ? (
-          <div className="p-3 text-sm italic text-gray-500">No events</div>
-        ) : value.map((event, index) => (
-          <Event
-            key={event.id || index}
-            event={event}
-            onValueChange={onChangeEvent.bind(null, event.id || index)}
-            onDelete={onDeleteEvent.bind(null, event)}
-            onPrepend={onPrependClick.bind(null, event)}
-            onAppend={onAppendClick.bind(null, event)}
-          />
-        )) }
+    <div className="flex flex-col gap-[1px]">
+      { value.length === 0 ? (
+        <Text size="2" className="block p-3 text-center text-slate">
+          No events
+        </Text>
+      ) : value.map((event, index) => (
+        <Event
+          key={event.id || index}
+          event={event}
+          onValueChange={onChangeEvent.bind(null, event.id || index)}
+          onDelete={onDeleteEvent.bind(null, event)}
+          onPrepend={onPrependClick.bind(null, event)}
+          onAppend={onAppendClick.bind(null, event)}
+        />
+      )) }
 
-        <div className="px-3 mt-3">
-          <Dialog.Root>
-            <Dialog.Trigger>
-              <Button ref={addEventButtonRef} className="block !w-full">
-                <PlusIcon />
-                <Text>Add Event</Text>
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Content>
-              <VisuallyHidden>
-                <Dialog.Title>Event Palette</Dialog.Title>
-                <Dialog.Description>
-                  Select an event to add to the list
-                </Dialog.Description>
-              </VisuallyHidden>
-              <Catalogue onSelect={onAddEvent} />
-            </Dialog.Content>
-          </Dialog.Root>
-        </div>
+      <div className="px-3 my-3">
+        <Dialog.Root>
+          <Dialog.Trigger>
+            <Button ref={addEventButtonRef} className="block !w-full">
+              <PlusIcon />
+              <Text>Add Event</Text>
+            </Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <VisuallyHidden>
+              <Dialog.Title>Event Palette</Dialog.Title>
+              <Dialog.Description>
+                Select an event to add to the list
+              </Dialog.Description>
+            </VisuallyHidden>
+            <Catalogue onSelect={onAddEvent} />
+          </Dialog.Content>
+        </Dialog.Root>
       </div>
-    </>
+    </div>
   );
 };
 

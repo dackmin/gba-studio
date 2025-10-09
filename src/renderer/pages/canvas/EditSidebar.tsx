@@ -2,17 +2,20 @@ import { classNames } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
 
-import type { GameScene } from '../../../types';
+import type { GameScene, GameScript } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import SceneForm from './SceneForm';
+import ScriptForm from './ScriptForm';
 
 export interface EditSidebarProps extends ResizableProps {
   onSceneChange?: (scene: GameScene) => void;
+  onScriptChange?: (script: GameScript) => void;
 }
 
 const EditSidebar = ({
   className,
   onSceneChange,
+  onScriptChange,
   ...rest
 }: EditSidebarProps) => {
   const { selectedScene, selectedItem } = useCanvas();
@@ -34,8 +37,11 @@ const EditSidebar = ({
           'before:!rounded-none after:!rounded-none !rounded-none',
         )}
       >
-        { selectedItem ? (
-          <></>
+        { selectedItem?.type === 'script' ? (
+          <ScriptForm
+            script={selectedItem}
+            onChange={onScriptChange}
+          />
         ) : selectedScene ? (
           <SceneForm
             scene={selectedScene}
