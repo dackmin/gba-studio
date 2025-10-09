@@ -59,17 +59,6 @@ const buildScenes = async () => {
     if (content.type === 'scene') {
       scenes[filename] = content;
 
-      try {
-        const mapFileName = `${filename}.map.json`;
-        await fs.access(path.join(dataRoot, mapFileName));
-
-        const mapData = JSON.parse(
-          await fs.readFile(path.join(dataRoot, mapFileName), 'utf-8')
-        );
-
-        content.map = mapData;
-      } catch {}
-
       // const { valid, errors } = validator.validate(content, sceneSchema);
 
       // if (!valid) {
@@ -82,8 +71,22 @@ const buildScenes = async () => {
     }
   }
 
+  const scripts: Record<string, any> = {};
+
+  for (const file of dataFolder.filter(f => f.startsWith('script'))) {
+    const filename = path.basename(file, '.json');
+    const content = JSON.parse(
+      await fs.readFile(path.join(dataRoot, file), 'utf-8')
+    );
+
+    if (content.type === 'script') {
+      scripts[filename] = content;
+    }
+  }
+
   await buildTemplate('neo_scenes', {
     scenes: Object.values(scenes),
+    scripts: Object.values(scripts),
   });
 
   // eslint-disable-next-line no-console

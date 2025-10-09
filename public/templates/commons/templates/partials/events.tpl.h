@@ -110,6 +110,8 @@ neo::types::play_music_event {{../prefix}}_{{@index}}("play-music", "{{this.name
 neo::types::stop_music_event {{../prefix}}_{{@index}}("stop-music");
 {{else if (eq this.type "play-sound")}}
 neo::types::play_sound_event {{../prefix}}_{{@index}}("play-sound", "{{this.name}}", {{this.volume}}, {{this.speed}}, {{this.panning}}, {{this.priority}});
+{{else if (eq this.type "execute-script")}}
+neo::types::execute_script_event {{../prefix}}_{{@index}}("execute-script", "{{this.script}}");
 {{else}}
 neo::types::event {{../prefix}}_{{@index}}("{{this.type}}");
 {{/if}}

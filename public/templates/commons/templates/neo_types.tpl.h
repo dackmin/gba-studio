@@ -203,6 +203,13 @@ namespace neo::types
       priority(priority_) {}
   };
 
+  struct execute_script_event: event
+  {
+    bn::string_view name;
+    execute_script_event(bn::string_view type_, bn::string_view name_):
+      event(type_), name(name_) {}
+  };
+
   struct sensor
   {
     int x;
@@ -303,6 +310,13 @@ namespace neo::types
     event** interact_events;
     int update_events_count;
     event** update_events;
+  };
+
+  struct script
+  {
+    bn::string_view name;
+    int events_count;
+    event** events;
   };
 
   struct scene

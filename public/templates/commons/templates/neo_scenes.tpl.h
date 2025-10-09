@@ -8,8 +8,9 @@
 #include "neo_types.h"
 
 // Assets
+#include <bn_regular_bg_items_bg_default.h>
 {{#each scenes}}
-#include <bn_regular_bg_items_{{valuedef this.background "default"}}.h>
+#include <bn_regular_bg_items_{{valuedef this.background "bg_default"}}.h>
 {{#each this.actors}}
 #include <bn_sprite_items_sprite_{{this.sprite}}.h>
 {{/each}}
@@ -203,15 +204,67 @@ namespace neo::scenes
     {{/if}}
   };
   //////////////////////////
-
   {{/each}}
+
+  // Default scene
+  neo::types::scene scene_default = {
+    "default",
+    bn::regular_bg_items::bg_default,
+    0,
+    nullptr,
+    false,
+    { 0, 0 },
+    neo::types::direction::DOWN,
+    nullptr,
+    0,
+    nullptr
+  };
 
   neo::types::scene get_scene(bn::string_view name)
   {
+    if (name == "") return scene_default;
     {{#each scenes}}
     if (name == "{{this.name}}") return scene_{{slug this.name}};
     {{/each}}
-    else return scene_default;
+    return scene_default;
+  }
+
+  // Scripts
+  {{#each scripts}}
+  {{#if this.events}}
+  {{>eventsPartial prefix=(concat (slug this.name) "_script_event") events=this.events}}
+  neo::types::event* {{slug this.name}}_script_events[] = {
+    {{#each this.events}}
+    &{{slug ../this.name}}_script_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
+  neo::types::script script_{{slug this.name}} = {
+    "{{this.name}}",
+    {{this.events.length}},
+    {{#if this.events}}
+    {{slug this.name}}_script_events
+    {{else}}
+    nullptr
+    {{/if}}
+  };
+  {{/each}}
+
+  // Default script
+  neo::types::script script_default = {
+    "default",
+    0,
+    nullptr
+  };
+
+  neo::types::script get_script(bn::string_view name)
+  {
+    if (name == "") return script_default;
+    {{#each scripts}}
+    if (name == "{{this.name}}") return script_{{slug this.name}};
+    {{/each}}
+
+    return script_default;
   }
 }
 
