@@ -1,4 +1,5 @@
 import {
+  AllSidesIcon,
   ChatBubbleIcon,
   CodeIcon,
   EyeClosedIcon,
@@ -26,7 +27,12 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: MixIcon,
     name: 'Wait For Button',
     value: 'wait-for-button',
-    construct: () => ({ type: 'wait-for-button', buttons: [] }),
+    construct: () => ({ type: 'wait-for-button', buttons: [], every: false }),
+  }, {
+    icon: AllSidesIcon,
+    name: 'On Button Press',
+    value: 'on-button-press',
+    construct: () => ({ type: 'on-button-press', buttons: [], events: [] }),
   }],
 }, {
   name: 'Camera',

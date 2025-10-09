@@ -35,7 +35,7 @@ const EventScript = ({
         <Select.Trigger placeholder="Select" />
         <Select.Content>
           { scripts.map(script => (
-            <Select.Item key={script.name} value={script.name}>
+            <Select.Item key={script.id} value={script.id}>
               { script.name }
             </Select.Item>
           )) }

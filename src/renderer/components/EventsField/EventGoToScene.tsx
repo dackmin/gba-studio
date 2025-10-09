@@ -42,7 +42,7 @@ const EventGoToScene = ({
             { scenes.map(scene => (
               <Select.Item
                 key={scene.id || scene._file}
-                value={scene.name}
+                value={scene.id}
               >
                 { scene.name }
               </Select.Item>

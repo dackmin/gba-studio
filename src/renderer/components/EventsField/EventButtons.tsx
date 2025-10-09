@@ -1,4 +1,10 @@
-import { Separator, Text } from '@radix-ui/themes';
+import {
+  Card,
+  Inset,
+  SegmentedControl,
+  Separator,
+  Text,
+} from '@radix-ui/themes';
 import { ToggleGroup } from 'radix-ui';
 import { classNames, set } from '@junipero/react';
 import {
@@ -8,11 +14,12 @@ import {
   TriangleUpIcon,
 } from '@radix-ui/react-icons';
 
-import type { WaitForButtonEvent } from '../../../types';
+import type { OnButtonPressEvent, WaitForButtonEvent } from '../../../types';
+import EventsField from '.';
 
 export interface EventButtonsProps {
-  event: WaitForButtonEvent;
-  onValueChange?: (event: WaitForButtonEvent) => void;
+  event: WaitForButtonEvent | OnButtonPressEvent;
+  onValueChange?: (event: WaitForButtonEvent | OnButtonPressEvent) => void;
 }
 
 const EventButtons = ({
@@ -26,6 +33,23 @@ const EventButtons = ({
 
   return (
     <div className="flex flex-col gap-4">
+      { event.type === 'wait-for-button' && (
+        <div className="flex flex-col items-start gap-2">
+          <Text size="1" className="text-slate">Mode</Text>
+          <SegmentedControl.Root
+            size="1"
+            value={'' + (event.every ?? false)}
+            onValueChange={v => onValueChange_('every', v === 'true')}
+          >
+            <SegmentedControl.Item value="false">
+              Some
+            </SegmentedControl.Item>
+            <SegmentedControl.Item value="true">
+              Every
+            </SegmentedControl.Item>
+          </SegmentedControl.Root>
+        </div>
+      ) }
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Buttons</Text>
         <ToggleGroup.Root
@@ -77,6 +101,19 @@ const EventButtons = ({
           <ToggleGroup.Item value="R">R</ToggleGroup.Item>
         </ToggleGroup.Root>
       </div>
+      { event.type === 'on-button-press' && (
+        <div className="flex flex-col gap-2">
+          <Text size="1" className="text-slate">Events</Text>
+          <Card>
+            <Inset>
+              <EventsField
+                value={event.events ?? []}
+                onValueChange={onValueChange_.bind(null, 'events')}
+              />
+            </Inset>
+          </Card>
+        </div>
+      ) }
     </div>
   );
 };

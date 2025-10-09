@@ -8,10 +8,12 @@ import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import type {
+  DisableActorEvent,
   EnableActorEvent,
   ExecuteScriptEvent,
   GoToSceneEvent,
   IfEvent,
+  OnButtonPressEvent,
   PlayMusicEvent,
   SceneEvent,
   SetVariableEvent,
@@ -157,9 +159,9 @@ const Event = ({
                 onValueChange={onValueChange}
               />
             </Switch.Case>
-            <Switch.Case value="wait-for-button">
+            <Switch.Case value={['wait-for-button', 'on-button-press']}>
               <EventButtons
-                event={event as WaitForButtonEvent}
+                event={event as WaitForButtonEvent | OnButtonPressEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>
@@ -182,7 +184,7 @@ const Event = ({
             </Switch.Case>
             <Switch.Case value={['enable-actor', 'disable-actor']}>
               <EventActor
-                event={event as EnableActorEvent}
+                event={event as EnableActorEvent | DisableActorEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

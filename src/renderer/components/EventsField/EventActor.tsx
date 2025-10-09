@@ -36,7 +36,7 @@ const EventActor = ({
         <Select.Trigger placeholder="Select" />
         <Select.Content>
           { scene?.actors?.map(actor => (
-            <Select.Item key={actor.name} value={actor.name}>
+            <Select.Item key={actor.id} value={actor.id}>
               { actor.name }
             </Select.Item>
           )) }

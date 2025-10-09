@@ -32,7 +32,7 @@ export interface GameVariables {
   type: 'variables';
   values: Record<string, VariableValue>;
   // Internals
-  id?: string;
+  id: string;
   _file?: string;
 }
 
@@ -44,8 +44,6 @@ export interface GameMap {
   scene: string;
   collisions: string[];
   sensors: GameSensor[];
-  // Internals
-  _file?: string;
 }
 
 export interface GameScene {
@@ -57,7 +55,7 @@ export interface GameScene {
   events?: SceneEvent[];
   actors?: GameActor[];
   // Internals
-  id?: string;
+  id: string;
   _file?: string;
 }
 
@@ -66,7 +64,7 @@ export interface GameScript {
   name: string;
   events?: SceneEvent[];
   // Internals
-  id?: string;
+  id: string;
   _file?: string;
 }
 
@@ -82,7 +80,7 @@ export interface GameActor {
     update?: SceneEvent[];
   };
   // Internals
-  id?: string;
+  id: string;
 }
 
 export interface GameSensor {
@@ -94,13 +92,14 @@ export interface GameSensor {
   height: number;
   events?: SceneEvent[];
   // Internals
-  id?: string;
+  id: string;
 }
 
 export interface ProjectSceneData {
   x: number;
   y: number;
   // Internals
+  id: string;
   _file?: string;
 }
 
@@ -149,7 +148,7 @@ export interface SceneEvent {
   type: string;
   name?: string;
   // Internals
-  id?: string;
+  id: string;
   _collapsed?: boolean;
 }
 
