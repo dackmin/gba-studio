@@ -212,6 +212,7 @@ namespace neo::types
 
   struct sensor
   {
+    bn::string_view _id;
     int x;
     int y;
     int width;
@@ -299,6 +300,7 @@ namespace neo::types
 
   struct actor
   {
+    bn::string_view _id;
     bn::string_view name;
     int x;
     int y;
@@ -314,6 +316,7 @@ namespace neo::types
 
   struct script
   {
+    bn::string_view _id;
     bn::string_view name;
     int events_count;
     event** events;
@@ -322,6 +325,7 @@ namespace neo::types
   struct scene
   {
     // Scene
+    bn::string_view _id;
     bn::string_view name;
     bn::regular_bg_item background;
     int event_count;

@@ -68,6 +68,7 @@ namespace neo::scenes
 
   // -- Sensor
   neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
+    "{{this.id}}",
     {{this.x}},
     {{this.y}},
     {{valuedef this.width 1}},
@@ -136,6 +137,7 @@ namespace neo::scenes
   };
   {{/if}}
   neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
+    "{{this.id}}",
     "{{this.name}}",
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
@@ -173,6 +175,7 @@ namespace neo::scenes
 
   // Scene
   neo::types::scene scene_{{slug this.name}} = {
+    "{{this.id}}",
     "{{this.name}}",
     {{#if this.background}}
     bn::regular_bg_items::{{this.background}},
@@ -208,6 +211,7 @@ namespace neo::scenes
 
   // Default scene
   neo::types::scene scene_default = {
+    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     "default",
     bn::regular_bg_items::bg_default,
     0,
@@ -224,7 +228,7 @@ namespace neo::scenes
   {
     if (name == "") return scene_default;
     {{#each scenes}}
-    if (name == "{{this.name}}") return scene_{{slug this.name}};
+    if (name == "{{this.name}}" || name == "{{this.id}}") return scene_{{slug this.name}};
     {{/each}}
     return scene_default;
   }
@@ -240,6 +244,7 @@ namespace neo::scenes
   };
   {{/if}}
   neo::types::script script_{{slug this.name}} = {
+    "{{this.id}}",
     "{{this.name}}",
     {{this.events.length}},
     {{#if this.events}}
@@ -252,6 +257,7 @@ namespace neo::scenes
 
   // Default script
   neo::types::script script_default = {
+    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     "default",
     0,
     nullptr
@@ -261,7 +267,7 @@ namespace neo::scenes
   {
     if (name == "") return script_default;
     {{#each scripts}}
-    if (name == "{{this.name}}") return script_{{slug this.name}};
+    if (name == "{{this.name}}" || name == "{{this.id}}") return script_{{slug this.name}};
     {{/each}}
 
     return script_default;

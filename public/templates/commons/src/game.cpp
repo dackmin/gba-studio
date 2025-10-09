@@ -305,13 +305,13 @@ namespace neo
         for (int i = 0; i < if_evt->then_events_count; ++i)
         {
           neo::types::event* ev = if_evt->then_events[i];
-          exec_event(ev, true);
+          exec_event(ev, is_loop);
         }
       } else {
         for (int i = 0; i < if_evt->else_events_count; ++i)
         {
           neo::types::event* ev = if_evt->else_events[i];
-          exec_event(ev, true);
+          exec_event(ev, is_loop);
         }
       }
     }
@@ -327,8 +327,10 @@ namespace neo
 
       for (int i = 0; i < actors_count; ++i)
       {
-        if (actors[i]->definition->name == disable_actor_evt->actor)
-        {
+        if (
+          actors[i]->definition->name == disable_actor_evt->actor ||
+          actors[i]->definition->_id == disable_actor_evt->actor
+        ) {
           BN_LOG("Disabling actor: ", actors[i]->definition->name);
           actors[i]->disable();
           break;
@@ -347,7 +349,10 @@ namespace neo
 
       for (int i = 0; i < actors_count; ++i)
       {
-        if (actors[i]->definition->name == enable_actor_evt->actor)
+        if (
+          actors[i]->definition->name == enable_actor_evt->actor ||
+          actors[i]->definition->_id == enable_actor_evt->actor
+        )
         {
           BN_LOG("Enabling actor: ", actors[i]->definition->name);
           actors[i]->enable();
@@ -369,10 +374,10 @@ namespace neo
 
       for (const auto& [item, name] : bn::music_items_info::span)
       {
-        if (name == music_evt->music_name)
+        if (name == music_evt->music_name && !bn::music::playing())
         {
           BN_LOG("Playing music: ", name);
-          item.play(music_evt->volume, true); // Game crash when loop=false and music ends
+          item.play(music_evt->volume, music_evt->loop);
 
           break;
         }
@@ -415,6 +420,28 @@ namespace neo
           );
 
           break;
+        }
+      }
+    }
+
+    /**
+     * @name execute-script
+     * @param name string — Script name
+     */
+    else if (e->type == "execute-script")
+    {
+      const neo::types::execute_script_event* script_evt =
+        static_cast<const neo::types::execute_script_event*>(e);
+      auto script = neo::scenes::get_script(script_evt->name);
+
+      if (script.events_count > 0 && script.events != nullptr)
+      {
+        BN_LOG("Executing script: ", script.name);
+
+        for (int i = 0; i < script.events_count; ++i)
+        {
+          neo::types::event* ev = script.events[i];
+          exec_event(ev, is_loop);
         }
       }
     }
