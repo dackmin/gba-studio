@@ -8,7 +8,6 @@ import {
 } from '@radix-ui/react-icons';
 
 import type { GoToSceneEvent } from '../../../types';
-import { getSceneName } from '../../../helpers';
 import { useApp } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
@@ -43,7 +42,7 @@ const EventGoToScene = ({
             { scenes.map(scene => (
               <Select.Item
                 key={scene.id || scene._file}
-                value={getSceneName(scene._file)}
+                value={scene.name}
               >
                 { scene.name }
               </Select.Item>

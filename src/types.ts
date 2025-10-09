@@ -76,6 +76,11 @@ export interface GameActor {
   x: number;
   y: number;
   sprite: string;
+  events?: {
+    init?: SceneEvent[];
+    interact?: SceneEvent[];
+    update?: SceneEvent[];
+  };
   // Internals
   id?: string;
 }
@@ -87,6 +92,7 @@ export interface GameSensor {
   y: number;
   width: number;
   height: number;
+  events?: SceneEvent[];
   // Internals
   id?: string;
 }
@@ -195,6 +201,13 @@ export interface PlaySoundEvent extends SceneEvent {
 export interface WaitForButtonEvent extends SceneEvent {
   type: 'wait-for-button';
   buttons: string[];
+  every?: boolean;
+}
+
+export interface OnButtonPressEvent extends SceneEvent {
+  type: 'on-button-press';
+  buttons: string[];
+  events?: SceneEvent[];
 }
 
 export interface SetVariableEvent extends SceneEvent {
