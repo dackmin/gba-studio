@@ -29,8 +29,8 @@ const EventScript = ({
     <div className="flex flex-col gap-2">
       <Text size="1" className="text-slate">Script</Text>
       <Select.Root
-        value={event.name || ''}
-        onValueChange={onValueChange_.bind(null, 'name')}
+        value={event.script || ''}
+        onValueChange={onValueChange_.bind(null, 'script')}
       >
         <Select.Trigger placeholder="Select" />
         <Select.Content>

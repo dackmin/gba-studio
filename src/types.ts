@@ -232,5 +232,5 @@ export interface IfEvent extends SceneEvent {
 
 export interface ExecuteScriptEvent extends SceneEvent {
   type: 'execute-script';
-  name: string;
+  script: string;
 }
