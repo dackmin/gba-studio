@@ -59,10 +59,18 @@ export default async (
   );
   total += graphicsFiles.length;
 
+  // Prepare music
+  const musicFiles = await getSoundFiles(
+    projectDir,
+    file => file.endsWith('.mod') || file.endsWith('.s3m') ||
+      file.endsWith('.xm') || file.endsWith('.it') || file.endsWith('.vgm')
+  );
+  total += musicFiles.length;
+
   // Prepare sounds
   const soundFiles = await getSoundFiles(
     projectDir,
-    file => file.endsWith('.mod') || file.endsWith('.wav')
+    file => file.endsWith('.wav')
   );
   total += soundFiles.length;
 
@@ -116,6 +124,15 @@ export default async (
     win?.setProgressBar(current / total);
   }
 
+  // Load music
+  const music: string[] = [];
+
+  for (const file of musicFiles) {
+    music.push(file);
+    current++;
+    win?.setProgressBar(current / total);
+  }
+
   // Load sounds
   const sounds: string[] = [];
 
@@ -140,13 +157,16 @@ export default async (
 
   win?.setProgressBar(-1);
 
-  return {
+  const payload: AppPayload = {
     project,
     scenes,
     variables,
     sprites,
     backgrounds,
+    music,
     sounds,
     scripts,
-  } as AppPayload;
+  };
+
+  return payload;
 };

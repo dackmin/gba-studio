@@ -5,27 +5,17 @@ import { useHotkeys } from 'react-hotkeys-hook';
 
 import type {
   AppPayload,
-  GameBackground,
   GameProject,
   GameScene,
-  GameScript,
-  GameSprite,
-  GameVariables,
 } from '../types';
 import { type AppContextType, AppContext } from './services/contexts';
 import { useBridgeListener, useQuery } from './services/hooks';
 import Canvas from './pages/canvas';
 import ProjectSelection from './pages/project-selection';
 
-export interface AppState {
+export interface AppState extends Omit<AppPayload, 'project'> {
   projectBase: string;
   theme: string;
-  scenes: GameScene[];
-  variables: GameVariables[];
-  sprites: GameSprite[];
-  backgrounds: GameBackground[];
-  sounds: string[];
-  scripts: GameScript[];
   history: Partial<AppPayload>[];
   historyIndex: number;
   loading: boolean;
@@ -45,6 +35,7 @@ const App = () => {
     variables: [],
     sprites: [],
     backgrounds: [],
+    music: [],
     sounds: [],
     scripts: [],
     project: undefined,
@@ -211,6 +202,7 @@ const App = () => {
     variables: state.variables,
     sprites: state.sprites,
     backgrounds: state.backgrounds,
+    music: state.music,
     sounds: state.sounds,
     scripts: state.scripts,
     projectPath: projectPath || '',
@@ -219,7 +211,7 @@ const App = () => {
     projectPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
-    state.scripts,
+    state.scripts, state.music,
   ]);
 
   return (

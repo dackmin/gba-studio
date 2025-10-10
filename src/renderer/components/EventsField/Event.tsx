@@ -15,6 +15,7 @@ import type {
   IfEvent,
   OnButtonPressEvent,
   PlayMusicEvent,
+  PlaySoundEvent,
   SceneEvent,
   SetVariableEvent,
   ShowDialogEvent,
@@ -32,6 +33,7 @@ import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
 import EventIf from './EventIf';
 import EventScript from './EventScript';
+import EventPlaySound from './EventPlaySound';
 
 export interface EventProps {
   event: SceneEvent;
@@ -197,6 +199,12 @@ const Event = ({
             <Switch.Case value="execute-script">
               <EventScript
                 event={event as ExecuteScriptEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="play-sound">
+              <EventPlaySound
+                event={event as PlaySoundEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

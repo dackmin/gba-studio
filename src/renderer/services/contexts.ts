@@ -1,25 +1,17 @@
 import { createContext } from 'react';
 
 import type {
+  AppPayload,
   GameActor,
-  GameBackground,
   GameProject,
   GameScene,
   GameScript,
   GameSensor,
-  GameSprite,
-  GameVariables,
   ToolType,
 } from '../../types';
 
-export interface AppContextType {
-  scenes: GameScene[];
+export interface AppContextType extends Omit<AppPayload, 'project'> {
   project?: GameProject;
-  variables: GameVariables[];
-  sprites: GameSprite[];
-  backgrounds: GameBackground[];
-  sounds: string[];
-  scripts: GameScript[];
   projectPath: string;
   projectBase: string;
   dirty: boolean;
@@ -30,6 +22,7 @@ export const AppContext = createContext<AppContextType>({
   variables: [],
   sprites: [],
   backgrounds: [],
+  music: [],
   sounds: [],
   scripts: [],
   projectPath: '',

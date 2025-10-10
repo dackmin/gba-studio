@@ -126,6 +126,7 @@ export interface AppPayload {
   variables: GameVariables[];
   sprites: GameSprite[];
   backgrounds: GameBackground[];
+  music: string[];
   sounds: string[];
   scripts: GameScript[];
 };

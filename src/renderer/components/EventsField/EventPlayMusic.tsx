@@ -18,7 +18,7 @@ const EventPlayMusic = ({
   event,
   onValueChange,
 }: EventPlayMusicProps) => {
-  const { sounds } = useApp();
+  const { music } = useApp();
 
   const onValueChange_ = (name: string, value: any) => {
     set(event, name, value);
@@ -36,9 +36,9 @@ const EventPlayMusic = ({
           >
             <Select.Trigger placeholder="Select" />
             <Select.Content>
-              { sounds.map(sound => (
-                <Select.Item key={sound} value={getSoundName(sound)}>
-                  { getSoundName(sound) }
+              { music.map(track => (
+                <Select.Item key={track} value={getSoundName(track)}>
+                  { getSoundName(track) }
                 </Select.Item>
               )) }
             </Select.Content>

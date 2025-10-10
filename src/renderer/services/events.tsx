@@ -12,6 +12,7 @@ import {
   PlayIcon,
   ShadowIcon,
   ShadowNoneIcon,
+  SpeakerLoudIcon,
   StopIcon,
 } from '@radix-ui/react-icons';
 
@@ -117,6 +118,13 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     value: 'stop-music',
     construct: () => ({
       type: 'stop-music',
+    }),
+  }, {
+    icon: SpeakerLoudIcon,
+    name: 'Play Sound',
+    value: 'play-sound',
+    construct: () => ({
+      type: 'play-sound',
     }),
   }],
 }, {
