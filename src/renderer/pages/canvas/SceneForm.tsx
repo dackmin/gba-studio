@@ -11,9 +11,9 @@ import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
 import { getGraphicName, pixelToTile } from '../../../helpers';
-import BackgroundsListField from './BackgroundsListField';
-import EventsField from '../../components/EventsField';
 import { SceneFormContext } from '../../services/contexts';
+import BackgroundsListField from '../../components/BackgroundsListField';
+import EventsField from '../../components/EventsField';
 
 export interface SceneFormProps {
   scene: GameScene;

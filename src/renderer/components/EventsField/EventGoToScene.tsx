@@ -1,15 +1,10 @@
 import { set } from '@junipero/react';
-import { SegmentedControl, Select, Text } from '@radix-ui/themes';
-import {
-  TriangleDownIcon,
-  TriangleLeftIcon,
-  TriangleRightIcon,
-  TriangleUpIcon,
-} from '@radix-ui/react-icons';
+import { Select, Text } from '@radix-ui/themes';
 
 import type { GoToSceneEvent } from '../../../types';
 import { useApp } from '../../services/hooks';
 import EventValueField from '../EventValueField';
+import DirectionField from '../DirectionField';
 
 export interface EventGoToSceneProps {
   event: GoToSceneEvent;
@@ -70,24 +65,10 @@ const EventGoToScene = ({
           </div>
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">Direction</Text>
-            <SegmentedControl.Root
+            <DirectionField
               value={event.start?.direction ?? 'down'}
               onValueChange={onValueChange_.bind(null, 'start.direction')}
-              className="[&_span]:!px-0"
-            >
-              <SegmentedControl.Item title="Down" value="down">
-                <TriangleDownIcon />
-              </SegmentedControl.Item>
-              <SegmentedControl.Item title="Left" value="left">
-                <TriangleLeftIcon />
-              </SegmentedControl.Item>
-              <SegmentedControl.Item title="Up" value="up">
-                <TriangleUpIcon />
-              </SegmentedControl.Item>
-              <SegmentedControl.Item title="Right" value="right">
-                <TriangleRightIcon />
-              </SegmentedControl.Item>
-            </SegmentedControl.Root>
+            />
           </div>
         </div>
       </div>

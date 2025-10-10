@@ -6,7 +6,7 @@ import type {
   DisableActorEvent,
   EnableActorEvent,
 } from '../../../types';
-import { useSceneForm } from '../../services/hooks';
+import { useCanvas } from '../../services/hooks';
 
 export interface EventActorProps {
   event: EnableActorEvent | DisableActorEvent;
@@ -19,7 +19,7 @@ const EventActor = ({
   event,
   onValueChange,
 }: EventActorProps) => {
-  const { scene } = useSceneForm();
+  const { selectedScene } = useCanvas();
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
@@ -35,7 +35,7 @@ const EventActor = ({
       >
         <Select.Trigger placeholder="Select" />
         <Select.Content>
-          { scene?.actors?.map(actor => (
+          { selectedScene?.actors?.map(actor => (
             <Select.Item key={actor.id} value={actor.id}>
               { actor.name }
             </Select.Item>

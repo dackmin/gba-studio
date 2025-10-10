@@ -14,16 +14,17 @@ import {
 } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 
-import type { GameScene, GameSensor } from '../../../types';
+import type { GameActor, GameScene, GameSensor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { getImageSize, pixelToTile, tileToPixel } from '../../../helpers';
+import Sprite from '../../components/Sprite';
 
 export interface SceneProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect' | 'onChange'> {
   scene: GameScene;
   onChange?: (scene: GameScene) => void;
   onSelect?: (scene: GameScene) => void;
-  onSelectSensor?: (scene: GameScene, sensor: GameSensor) => void;
+  onSelectItem?: (scene: GameScene, item: GameActor | GameSensor) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
 }
 
@@ -32,11 +33,11 @@ const Scene = ({
   className,
   onChange,
   onSelect,
-  onSelectSensor,
+  onSelectItem,
   onMove,
 }: SceneProps) => {
   const { zoom } = useInfiniteCanvas();
-  const { projectBase, project } = useApp();
+  const { projectBase, project, sprites } = useApp();
   const { selectedScene, selectedItem, tool } = useCanvas();
   const [size, setSize] = useState([240, 160]);
 
@@ -72,11 +73,15 @@ const Scene = ({
 
   const collisions = useMemo(() => (
     scene.map?.collisions?.map(line => line.split(','))
-  ), [scene]);
+  ), [scene.map?.collisions]);
 
   const sensors = useMemo(() => (
     scene.map?.sensors || []
-  ), [scene]);
+  ), [scene.map?.sensors]);
+
+  const actors = useMemo(() => (
+    scene.actors || []
+  ), [scene.actors]);
 
   const gridSize = useMemo(() => (
     scene.map?.gridSize || 16
@@ -104,8 +109,27 @@ const Scene = ({
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelectSensor?.(scene, sensor);
-  }, [onSelectSensor, scene]);
+    onSelectItem?.(scene, sensor);
+  }, [onSelectItem, scene]);
+
+  const onMovedActor = useCallback((actor: GameActor, e: MoveableState) => {
+    actor.x = pixelToTile(e.deltaX, gridSize);
+    actor.y = pixelToTile(e.deltaY, gridSize);
+    onChange?.(scene);
+  }, [onChange, scene, gridSize]);
+
+  const onSelectActor_ = useCallback((
+    actor: GameActor,
+    e: MouseEvent<HTMLDivElement>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectItem?.(scene, actor);
+  }, [onSelectItem, scene]);
+
+  const getSprite = useCallback((name: string) => (
+    sprites?.find(s => s._file === `sprite_${name}.json`)
+  ), [sprites]);
 
   return (
     <Moveable
@@ -182,6 +206,50 @@ const Scene = ({
               />
             </Moveable>
           )) }
+
+          { actors.map((actor, i) => (
+            <Moveable
+              key={i}
+              transformScale={zoom}
+              x={tileToPixel(actor.x || 0, gridSize)}
+              y={tileToPixel(actor.y || 0, gridSize)}
+              onMouseDown={e => e.stopPropagation()}
+              onMoveEnd={onMovedActor.bind(null, actor)}
+              step={gridSize}
+              style={{
+                left: 0,
+                top: 0,
+                width: actor.width
+                  ? tileToPixel(actor.width, gridSize)
+                  : getSprite(actor.sprite)?.width ?? gridSize,
+                height: actor.height
+                  ? tileToPixel(actor.height, gridSize)
+                  : getSprite(actor.sprite)?.height ?? gridSize,
+              }}
+            >
+              <div className="absolute w-full h-full">
+                <div className="relative w-full h-full">
+                  <div
+                    className={classNames(
+                      'absolute bg-pink-500/50 border-2',
+                      'border-pink-500 z-2 w-full h-full top-0 left-0',
+                      { 'bg-pink-500/70': selectedItem === actor }
+                    )}
+                    onClick={onSelectActor_.bind(null, actor)}
+                  />
+                  <Sprite
+                    className="absolute z-1 top-0 left-0"
+                    sprite={getSprite(actor.sprite)}
+                    width={actor.width}
+                    height={actor.height}
+                    direction={actor.direction}
+                    gridSize={gridSize}
+                  />
+                </div>
+              </div>
+            </Moveable>
+          )) }
+
         </Card>
         <span className="absolute block w-full left-0 bottom-full text-center">
           { scene.name }

@@ -2,12 +2,13 @@ import { classNames } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
 
-import type { GameScene, GameScript, GameSensor } from '../../../types';
+import type { GameActor, GameScene, GameScript, GameSensor } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import SceneForm from './SceneForm';
 import ScriptForm from './ScriptForm';
 import SensorForm from './SensorForm';
 import Switch from '../../components/Switch';
+import ActorForm from './ActorForm';
 
 export interface EditSidebarProps extends ResizableProps {
   onSceneChange?: (scene?: GameScene) => void;
@@ -49,6 +50,12 @@ const EditSidebar = ({
           <Switch.Case value="sensor">
             <SensorForm
               sensor={selectedItem as GameSensor}
+              onChange={onSceneChange}
+            />
+          </Switch.Case>
+          <Switch.Case value="actor">
+            <ActorForm
+              actor={selectedItem as GameActor}
               onChange={onSceneChange}
             />
           </Switch.Case>

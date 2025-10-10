@@ -16,6 +16,7 @@ export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
 export type AddSubtoolType = 'scene' | 'sensor' | 'actor';
+export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export interface ListItem {
   name: string;
@@ -73,6 +74,9 @@ export interface GameActor {
   name: string;
   x: number;
   y: number;
+  direction?: Direction;
+  width?: number;
+  height?: number;
   sprite: string;
   events?: {
     init?: SceneEvent[];
@@ -110,6 +114,8 @@ export interface GameProject {
 
 export interface GameSprite {
   type: string;
+  width?: number;
+  height?: number;
   // Internals
   _file?: string;
 }
@@ -174,7 +180,7 @@ export interface GoToSceneEvent extends SceneEvent {
   start?: {
     x?: EventValue;
     y?: EventValue;
-    direction?: string;
+    direction?: Direction;
   };
 }
 
@@ -249,3 +255,11 @@ export interface ExecuteScriptEvent extends SceneEvent {
   type: 'execute-script';
   script: string;
 }
+
+export type AnimationType = 'idle' | 'walk';
+
+export type FramesDefinition = {
+  [key in AnimationType]: {
+    [key in Direction]: number | number[];
+  };
+};

@@ -6,6 +6,7 @@ import {
   InfiniteCanvas,
   classNames,
   mockState,
+  set,
   useEventListener,
 } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -99,14 +100,34 @@ const Canvas = ({
     e.preventDefault();
     e.stopPropagation();
 
+    if (state.selectedItem?.type === 'sensor') {
+      set(selectedScene, 'map.sensors',
+        selectedScene?.map?.sensors
+          ?.filter(s => s !== state.selectedItem) || []);
+      onChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene?.id ||
+          s._file === selectedScene?._file
+            ? selectedScene! : s
+        )),
+      });
+      dispatch({ selectedItem: undefined });
+
+      return;
+    }
+
     if (state.selectedScene) {
       onChange?.({
         ...appPayload,
-        scenes: appPayload.scenes.filter(s => s._file !== state.selectedScene),
+        scenes: appPayload.scenes.filter(s => (
+          s.id !== selectedScene?.id &&
+          s._file !== selectedScene?._file
+        )),
       });
       dispatch({ selectedScene: undefined, selectedItem: undefined });
     }
-  }, [state.selectedScene, appPayload, onChange]);
+  }, [selectedScene, state.selectedItem, appPayload, onChange]);
 
   const onSelectScene = useCallback((scene?: GameScene) => {
     if (selectedScene === scene) {
@@ -118,12 +139,15 @@ const Canvas = ({
     dispatch({ selectedScene: scene?._file, selectedItem: undefined });
   }, [selectedScene]);
 
-  const onSelectSensor = useCallback((scene: GameScene, sensor: GameSensor) => {
-    if (state.selectedItem === sensor) {
+  const onSelectItem = useCallback((
+    scene: GameScene,
+    item: GameActor | GameSensor
+  ) => {
+    if (state.selectedItem === item) {
       return;
     }
 
-    dispatch({ selectedScene: scene?._file, selectedItem: sensor });
+    dispatch({ selectedScene: scene?._file, selectedItem: item });
   }, [state.selectedItem]);
 
   const onSelectScript = useCallback((script: GameScript) => {
@@ -260,7 +284,7 @@ const Canvas = ({
                 key={scene.name}
                 scene={scene}
                 onSelect={onSelectScene}
-                onSelectSensor={onSelectSensor}
+                onSelectItem={onSelectItem}
                 onMove={onMoveScene}
                 onChange={onSceneChange}
               />
