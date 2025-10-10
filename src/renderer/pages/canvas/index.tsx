@@ -138,10 +138,12 @@ const Canvas = ({
     dispatch({ tool });
   }, []);
 
-  const onSceneChange = useCallback((scene: GameScene) => {
+  const onSceneChange = useCallback((scene?: GameScene) => {
     onChange?.({
       ...appPayload,
-      scenes: appPayload.scenes.map(s => s._file === scene._file ? scene : s),
+      scenes: appPayload.scenes.map(s => (
+        s.id === scene?.id || s._file === scene?._file ? scene! : s
+      )),
     });
   }, [onChange, appPayload.scenes]);
 
