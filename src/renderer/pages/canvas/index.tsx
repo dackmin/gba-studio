@@ -9,6 +9,7 @@ import {
   useEventListener,
 } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { v4 as uuid } from 'uuid';
 
 import type {
   AppPayload,
@@ -147,6 +148,7 @@ const Canvas = ({
   const onCanvasClick = useCallback(() => {
     if (state.tool === 'add') {
       const scene: GameScene = {
+        id: uuid(),
         _file: `scene_${appPayload.scenes.length + 1}.json`,
         name: `Scene ${appPayload.scenes.length + 1}`,
         background: 'bg_default',

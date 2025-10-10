@@ -167,7 +167,7 @@ const App = () => {
   ) => {
     dispatch(s => {
       const foundScene = s.project?.scenes
-        ?.find(sc => sc._file === scene._file);
+        ?.find(sc => sc.id === scene.id || sc._file === scene._file);
 
       if (foundScene) {
         if (
@@ -177,14 +177,16 @@ const App = () => {
           return s;
         }
 
+        foundScene.id = scene.id;
         foundScene.x = Math.round(e.deltaX || 0);
         foundScene.y = Math.round(e.deltaY || 0);
       } else if (s.project && scene._file) {
         s.project.scenes = s.project.scenes || [];
         s.project.scenes.push({
-          _file: scene._file,
           x: Math.round(e.deltaX || 0),
           y: Math.round(e.deltaY || 0),
+          id: scene.id,
+          _file: scene._file,
         });
       }
 
