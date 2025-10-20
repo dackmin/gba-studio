@@ -7,7 +7,7 @@ import Switch from '../Switch';
 
 export interface EventValueFieldProps
   extends Omit<TextField.RootProps, 'value' | 'defaultValue'> {
-  value: EventValue;
+  value?: EventValue;
   defaultValue?: EventValue;
   onValueChange?: (value: EventValue) => void;
 }

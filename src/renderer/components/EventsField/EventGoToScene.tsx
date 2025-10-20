@@ -51,7 +51,7 @@ const EventGoToScene = ({
             <Text size="1" className="text-slate">X</Text>
             <EventValueField
               type="number"
-              value={event.start?.x ?? 0}
+              value={event.start?.x}
               onValueChange={onValueChange_.bind(null, 'start.x')}
             />
           </div>
@@ -59,7 +59,7 @@ const EventGoToScene = ({
             <Text size="1" className="text-slate">Y</Text>
             <EventValueField
               type="number"
-              value={event.start?.y ?? 0}
+              value={event.start?.y}
               onValueChange={onValueChange_.bind(null, 'start.y')}
             />
           </div>

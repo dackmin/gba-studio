@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { GameScene, GoToSceneEvent } from '../../../types';
+import type { GameScene, GameSensor, GoToSceneEvent } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
 import Arrow from './Arrow';
@@ -29,14 +29,36 @@ const Arrows = ({
       ))
   ), [scenes, scripts, selectedScene]);
 
-  return sceneArrows.map(([scene, events]) => events.map(e => (
-    <Arrow
-      key={scene.id || scene._file}
-      source={scene}
-      event={e}
-      gridSize={scene.map?.gridSize || gridSize}
-    />
-  )));
+  const sensorArrows = useMemo(() => (
+    selectedScene?.map?.sensors?.map<[GameSensor, GoToSceneEvent[]]>(sensor => [
+      sensor,
+      getEventsOfType<
+        GoToSceneEvent
+      >('go-to-scene', sensor.events || [], { scripts }),
+    ]).filter(([_, events]) => !!events.length) || []
+  ), [scenes, scripts, selectedScene]);
+
+  return (
+    <>
+      { sceneArrows.map(([scene, events]) => events.map(e => (
+        <Arrow
+          key={scene.id || scene._file}
+          source={scene}
+          event={e}
+          gridSize={scene.map?.gridSize || gridSize}
+        />
+      ))) }
+      { sensorArrows.map(([sensor, events]) => events.map(e => (
+        <Arrow
+          key={sensor.id}
+          source={sensor}
+          event={e}
+          gridSize={selectedScene?.map?.gridSize || gridSize}
+          color="var(--orange-9)"
+        />
+      ))) }
+    </>
+  );
 };
 
 export default Arrows;
