@@ -11,7 +11,8 @@ import type {
 import { type AppContextType, AppContext } from './services/contexts';
 import { useBridgeListener, useQuery } from './services/hooks';
 import Canvas from './pages/canvas';
-import ProjectSelection from './pages/project-selection';
+import ProjectSelection from './windows/project-selection';
+import Editor from './windows/editor';
 
 export interface AppState extends Omit<AppPayload, 'project'> {
   projectBase: string;
@@ -21,6 +22,7 @@ export interface AppState extends Omit<AppPayload, 'project'> {
   loading: boolean;
   ready: boolean;
   dirty: boolean;
+  building: boolean;
   project?: GameProject;
 }
 
@@ -42,6 +44,7 @@ const App = () => {
     dirty: false,
     history: [],
     historyIndex: 0,
+    building: false,
   });
 
   useLayoutEffect(() => {
@@ -195,10 +198,15 @@ const App = () => {
     }));
   }, [addToHistory]);
 
+  const setBuilding = useCallback((building: boolean) => {
+    dispatch({ building });
+  }, []);
+
   const getContext = useCallback((): AppContextType => ({
     project: state.project,
     scenes: state.scenes,
     dirty: state.dirty,
+    building: state.building,
     variables: state.variables,
     sprites: state.sprites,
     backgrounds: state.backgrounds,
@@ -207,21 +215,22 @@ const App = () => {
     scripts: state.scripts,
     projectPath: projectPath || '',
     projectBase: state.projectBase,
+    setBuilding,
+    onMoveScene,
+    onCanvasChange,
   }), [
     projectPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
-    state.scripts, state.music,
+    state.scripts, state.music, state.building,
+    setBuilding, onCanvasChange, onMoveScene,
   ]);
 
   return (
     <Theme hasBackground={false}>
       <AppContext.Provider value={getContext()}>
         { projectPath ? (
-          <Canvas
-            onMoveScene={onMoveScene}
-            onChange={onCanvasChange}
-          />
+          <Editor />
         ) : (
           <ProjectSelection />
         ) }

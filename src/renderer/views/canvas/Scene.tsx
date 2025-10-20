@@ -24,7 +24,7 @@ export interface SceneProps
   scene: GameScene;
   onChange?: (scene: GameScene) => void;
   onSelect?: (scene: GameScene) => void;
-  onSelectItem?: (scene: GameScene, item: GameActor | GameSensor) => void;
+  onSelectItem?: (scene?: GameScene, item?: GameActor | GameSensor) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
 }
 

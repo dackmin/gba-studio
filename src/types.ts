@@ -1,7 +1,17 @@
 import type { InfiniteCanvasCursorMode } from '@junipero/react';
-import type { ForwardRefExoticComponent } from 'react';
+import type { FC, ForwardRefExoticComponent } from 'react';
 
 export type ProjectTemplate = '2d-sample' | 'blank';
+
+export interface ViewDefinition {
+  name: string;
+  title: string;
+  icon: FC;
+  view: FC;
+  provider?: FC;
+  leftSidebar?: FC;
+  rightSidebar?: FC;
+}
 
 export interface RecentProject {
   name: string;
@@ -273,3 +283,14 @@ export type FramesDefinition = {
     [key in Direction]: number | number[];
   };
 };
+
+export interface Build {
+  id: string;
+  projectPath: string;
+  controller: AbortController;
+}
+
+export interface BuildMessage {
+  id: string;
+  message: string;
+}

@@ -20,6 +20,8 @@ import {
   getDirectoryPath,
   createProject,
   isFullscreen,
+  startBuildProject,
+  abortBuildProject,
 } from './handles';
 import Storage from './storage';
 
@@ -64,3 +66,5 @@ ipcMain.handle('save-project', saveProject);
 ipcMain.handle('get-directory-path', getDirectoryPath);
 ipcMain.handle('create-project', createProject.bind(null, storage));
 ipcMain.handle('is-fullscreen', isFullscreen);
+ipcMain.handle('start-build-project', startBuildProject);
+ipcMain.handle('abort-build-project', abortBuildProject);

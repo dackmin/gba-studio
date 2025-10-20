@@ -27,6 +27,8 @@ interface AppBridge extends EventTarget {
     path: string;
   }): Promise<void>;
   isFullscreen(): Promise<boolean>;
+  startBuildProject(projectPath: string): Promise<string>;
+  abortBuildProject(buildId?: string): Promise<void>;
 }
 
 interface Window {

@@ -1,7 +1,8 @@
+import type { IpcRendererEvent } from 'electron';
 import { useContext, useDeferredValue, useEffect, useState } from 'react';
 import { useTimeout } from '@junipero/react';
 
-import { AppContext, CanvasContext, SceneFormContext } from './contexts';
+import { AppContext, CanvasContext, EditorContext, SceneFormContext } from './contexts';
 
 const queryParams = () => {
   const params = new URLSearchParams(window.location.search);
@@ -38,6 +39,7 @@ export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
 };
 
 export const useApp = () => useContext(AppContext);
+export const useEditor = () => useContext(EditorContext);
 export const useCanvas = () => useContext(CanvasContext);
 export const useSceneForm = () => useContext(SceneFormContext);
 
@@ -47,7 +49,12 @@ export const useBridgeListener = (
   deps: any[] = [],
 ) => {
   useEffect(() => {
-    return window.electron.addEventListener(channel, func);
+    return window.electron.addEventListener(channel, (
+      event: IpcRendererEvent,
+      ...args: any[]
+    ) => {
+      func(...args);
+    });
   }, [func, ...deps]);
 };
 
