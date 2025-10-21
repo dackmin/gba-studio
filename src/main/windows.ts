@@ -82,8 +82,23 @@ export const createProjectWindow = async (projectPath: string) => {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       partition: projectName,
+      ...MAIN_WINDOW_VITE_DEV_SERVER_URL && { webSecurity: false },
     },
   });
+
+  // Enable crossOriginIsolated for mgba/wasm
+  win.webContents.session.webRequest
+    .onHeadersReceived((details, callback) => {
+      if (!details.responseHeaders) {
+        details.responseHeaders = {};
+      }
+
+      details.responseHeaders['Cross-Origin-Opener-Policy'] = ['same-origin'];
+      details.responseHeaders['Cross-Origin-Embedder-Policy'] =
+        ['require-corp'];
+
+      callback({ responseHeaders: details.responseHeaders });
+    });
 
   ses.protocol.handle('project', req => {
     const filePath = req.url.replace('project://', '');
@@ -107,7 +122,10 @@ export const createProjectWindow = async (projectPath: string) => {
     url.searchParams.set('theme',
       nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
 
-    win.loadURL(url.toString());
+    win.loadURL(url.toString(), {
+      extraHeaders: 'Cross-Origin-Opener-Policy: same-origin\n' +
+        'Cross-Origin-Embedder-Policy: require-corp',
+    });
   } else {
     win.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),

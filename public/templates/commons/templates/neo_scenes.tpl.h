@@ -12,18 +12,25 @@
 {{#each scenes}}
 #include <bn_regular_bg_items_{{valuedef this.background "bg_default"}}.h>
 {{#each this.actors}}
-#include <bn_sprite_items_sprite_{{this.sprite}}.h>
+#include <bn_sprite_items_{{valuedef this.sprite "sprite_default"}}.h>
 {{/each}}
 {{/each}}
 
 namespace neo::scenes
 {
-  bn::vector<bn::string_view, 10> make_button_vector() {
+  bn::string_view get_starting_scene ()
+  {
+    return "{{valuedef project.startingScene scenes.[0].id}}";
+  }
+
+  bn::vector<bn::string_view, 10> make_button_vector()
+  {
     return bn::vector<bn::string_view, 10>();
   }
 
   template<typename... Args>
-  bn::vector<bn::string_view, 10> make_button_vector(Args... buttons) {
+  bn::vector<bn::string_view, 10> make_button_vector(Args... buttons)
+  {
     bn::vector<bn::string_view, 10> vec;
     ((vec.push_back(buttons)), ...);
     return vec;
@@ -142,7 +149,7 @@ namespace neo::scenes
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
     neo::types::direction::{{uppercase (valuedef this.direction "down")}},
-    bn::sprite_items::sprite_{{valuedef this.sprite "default"}},
+    bn::sprite_items::{{valuedef this.sprite "sprite_default"}},
     {{#if this.events.init.length}}
     {{this.events.init.length}},
     {{slug ../this.name}}_actor_{{@index}}_init_events,

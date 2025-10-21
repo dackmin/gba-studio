@@ -1,22 +1,43 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { classNames } from '@junipero/react';
+import mGBA, { type mGBAEmulator } from '@thenick775/mgba-wasm';
 
-import { useEditor } from '../../services/hooks';
+import { useApp, useEditor } from '../../services/hooks';
 
 const Preview = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [_emulator, setEmulator] = useState<mGBAEmulator | null>(null);
+  const { projectPath } = useApp();
   const { leftSidebarOpened, leftSidebarWidth } = useEditor();
   const scale = 2;
+
+  const init = useCallback(async () => {
+    if (!canvasRef.current) {
+      return;
+    }
+
+    const module = await mGBA({ canvas: canvasRef.current });
+    // eslint-disable-next-line new-cap
+    await module.FSInit();
+    await module.loadGame(await window.electron.getRomPath(projectPath));
+    setEmulator(module);
+  }, [projectPath]);
+
+  useEffect(() => {
+    init();
+  }, [init]);
 
   return (
     <div
       className={classNames(
         'w-screen h-screen relative flex items-center justify-center',
-        'bg-onyx',
       )}
       style={{
         ...(leftSidebarOpened ? { paddingLeft: leftSidebarWidth } : {}),
       }}
     >
-      <div
+      <canvas
+        ref={canvasRef}
         className="bg-black rounded-lg"
         style={{ width: 240 * scale, height: 160 * scale }}
       />

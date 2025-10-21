@@ -15,7 +15,6 @@ int main()
   neo::game game(camera, player);
 
   player.set_game(game);
-  game.current_scene = "menu"; // "neo_logo";
 
   while (true)
   {

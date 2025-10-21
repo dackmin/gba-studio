@@ -29,6 +29,7 @@ interface AppBridge extends EventTarget {
   isFullscreen(): Promise<boolean>;
   startBuildProject(projectPath: string): Promise<string>;
   abortBuildProject(buildId?: string): Promise<void>;
+  getRomPath(projectPath: string): Promise<string>;
 }
 
 interface Window {

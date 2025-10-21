@@ -9,7 +9,18 @@ import { buildTemplate } from './utils';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const dataRoot = path.join(__dirname, '../data');
+const projectRoot = path.join(__dirname, '../');
+const dataRoot = path.join(projectRoot, './data');
+
+interface LoadedFile {
+  name: string;
+  content: any;
+}
+
+interface LoadedFiles {
+  dataFiles: LoadedFile[];
+  projectFile: LoadedFile;
+}
 
 const buildTypes = async () => {
   await buildTemplate('neo_types');
@@ -18,16 +29,12 @@ const buildTypes = async () => {
   console.log('Built neo_types.h');
 };
 
-const buildVariables = async () => {
-  const dataFolder = await fs.readdir(dataRoot);
-  const variables: Record<string, any> = (await Promise.all(dataFolder
-    .filter(f => f.startsWith('variables'))
-    .map(f => fs.readFile(path.join(dataRoot, f), 'utf-8'))))
+const buildVariables = async (data: LoadedFiles) => {
+  const variables: Record<string, any> = data.dataFiles
+    .filter(f => f.name.startsWith('variables'))
     .reduce((acc, file) => {
-      const content = JSON.parse(file);
-
-      Object.entries(content.values).forEach(([key, value]) => {
-        if (acc.find(v => v.key === key)) {
+      Object.entries(file.content.values).forEach(([key, value]) => {
+        if (acc.find((v: any) => v.key === key)) {
           console.warn(colors.yellow(`Duplicate variable key found: ${key}`));
         }
 
@@ -45,19 +52,13 @@ const buildVariables = async () => {
   console.log('Built neo_variables.h');
 };
 
-const buildScenes = async () => {
-  const dataFolder = await fs.readdir(dataRoot);
+const buildScenes = async (data: LoadedFiles) => {
   const scenes: Record<string, any> = {};
   // const validator = new Validator();
 
-  for (const file of dataFolder.filter(f => f.startsWith('scene'))) {
-    const filename = path.basename(file, '.json');
-    const content = JSON.parse(
-      await fs.readFile(path.join(dataRoot, file), 'utf-8')
-    );
-
-    if (content.type === 'scene') {
-      scenes[filename] = content;
+  for (const file of data.dataFiles.filter(f => f.name.startsWith('scene'))) {
+    if (file.content.type === 'scene') {
+      scenes[file.name] = file.content;
 
       // const { valid, errors } = validator.validate(content, sceneSchema);
 
@@ -73,20 +74,16 @@ const buildScenes = async () => {
 
   const scripts: Record<string, any> = {};
 
-  for (const file of dataFolder.filter(f => f.startsWith('script'))) {
-    const filename = path.basename(file, '.json');
-    const content = JSON.parse(
-      await fs.readFile(path.join(dataRoot, file), 'utf-8')
-    );
-
-    if (content.type === 'script') {
-      scripts[filename] = content;
+  for (const file of data.dataFiles.filter(f => f.name.startsWith('script'))) {
+    if (file.content.type === 'script') {
+      scripts[file.name] = file.content;
     }
   }
 
   await buildTemplate('neo_scenes', {
     scenes: Object.values(scenes),
     scripts: Object.values(scripts),
+    project: data.projectFile.content,
   });
 
   // eslint-disable-next-line no-console
@@ -94,7 +91,31 @@ const buildScenes = async () => {
 };
 
 (async () => {
+  // Load data files
+  const dataFolder = await fs.readdir(dataRoot);
+  const dataFiles = await Promise.all(dataFolder
+    .filter(f => f.endsWith('.json'))
+    .map(async f => ({
+      name: f,
+      content: JSON.parse(await fs.readFile(path.join(dataRoot, f), 'utf-8')),
+    })));
+
+  // Load project file
+  const projectFolder = await fs.readdir(projectRoot);
+  const projectFileName = projectFolder.find(f => f.endsWith('.gbasproj'));
+  const projectFile = {
+    name: projectFileName!,
+    content: JSON.parse(
+      await fs.readFile(
+        path.join(projectRoot, projectFileName!),
+        'utf-8'
+      )
+    ),
+  };
+
+  const data = { dataFiles, projectFile };
+
   await buildTypes();
-  await buildVariables();
-  await buildScenes();
+  await buildVariables(data);
+  await buildScenes(data);
 })();

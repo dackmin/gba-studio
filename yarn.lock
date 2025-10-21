@@ -3576,6 +3576,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thenick775/mgba-wasm@npm:2.3.4":
+  version: 2.3.4
+  resolution: "@thenick775/mgba-wasm@npm:2.3.4"
+  checksum: 10c0/2abe9b21a2e0f0ac048998c31713a57efac08bc20226f31aafa3dd6a9af99b270df28106ef43054f05c5bce3619b735a0d7a47d07b74f04e2af5bcb922bb823a
+  languageName: node
+  linkType: hard
+
 "@tokenizer/token@npm:^0.3.0":
   version: 0.3.0
   resolution: "@tokenizer/token@npm:0.3.0"
@@ -6530,6 +6537,7 @@ __metadata:
     "@radix-ui/react-icons": "npm:1.3.2"
     "@radix-ui/themes": "npm:3.2.1"
     "@tailwindcss/vite": "npm:4.1.14"
+    "@thenick775/mgba-wasm": "npm:2.3.4"
     "@types/electron-squirrel-startup": "npm:1.0.2"
     "@types/fs-extra": "npm:11.0.4"
     "@types/react": "npm:19.2.2"

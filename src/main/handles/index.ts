@@ -6,5 +6,6 @@ export { default as saveProject } from './save-project';
 export { default as getDirectoryPath } from './get-directory-path';
 export { default as createProject } from './create-project';
 export { default as isFullscreen } from './is-fullscreen';
+export { default as getRomPath } from './get-rom-path';
 
 export * from './build-project';

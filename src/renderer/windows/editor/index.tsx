@@ -2,6 +2,7 @@ import { useCallback, useMemo, useReducer } from 'react';
 import { classNames, mockState } from '@junipero/react';
 
 import { type EditorContextType, EditorContext } from '../../services/contexts';
+import { useBridgeListener } from '../../services/hooks';
 import views, { defaultView } from '../../views';
 import LeftSidebar from './LeftSidebar';
 import TitleBar from './TitleBar';
@@ -21,6 +22,10 @@ const Editor = () => {
     leftSidebarWidth: 300,
     rightSidebarWidth: 300,
   });
+
+  useBridgeListener('build-completed', () => {
+    dispatch({ view: 'preview' });
+  }, []);
 
   const {
     view: View,

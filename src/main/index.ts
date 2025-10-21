@@ -22,6 +22,7 @@ import {
   isFullscreen,
   startBuildProject,
   abortBuildProject,
+  getRomPath,
 } from './handles';
 import Storage from './storage';
 
@@ -68,3 +69,4 @@ ipcMain.handle('create-project', createProject.bind(null, storage));
 ipcMain.handle('is-fullscreen', isFullscreen);
 ipcMain.handle('start-build-project', startBuildProject);
 ipcMain.handle('abort-build-project', abortBuildProject);
+ipcMain.handle('get-rom-path', getRomPath);

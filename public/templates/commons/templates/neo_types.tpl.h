@@ -1,8 +1,6 @@
 #ifndef NEO_TYPES_H
 #define NEO_TYPES_H
 
-#define BN_CFG_LOG_ENABLED true
-
 #include <bn_core.h>
 #include <bn_log.h>
 #include <bn_regular_bg_ptr.h>
@@ -339,6 +337,11 @@ namespace neo::types
     // Actors
     int actors_count;
     actor** actors;
+
+    inline bool is (bn::string_view name_)
+    {
+      return _id == name_ || name == name_;
+    }
   };
 }
 

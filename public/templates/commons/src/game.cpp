@@ -35,7 +35,7 @@ namespace neo
     active_scene(nullptr),
     scene_bg(nullptr)
   {
-    current_scene = "";
+    current_scene = neo::scenes::get_starting_scene();
     scene_changed = false;
 
     scripted_events_count = 0;
@@ -89,11 +89,12 @@ namespace neo
 
       if (
         last_goto_event != nullptr &&
-        last_goto_event->target == active_scene->name &&
+        active_scene->is(last_goto_event->target) &&
         last_goto_event->start_position[0] != -1 &&
         last_goto_event->start_position[1] != -1
       )
       {
+        BN_LOG("Using last go-to-scene event position");
         x = last_goto_event->start_position[0];
         y = last_goto_event->start_position[1];
         dir = last_goto_event->start_direction;

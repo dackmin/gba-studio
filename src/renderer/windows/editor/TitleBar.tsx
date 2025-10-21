@@ -14,7 +14,6 @@ const TitleBar = ({
   const [step, setStep] = useState('Initializing build...');
 
   useBridgeListener('build-step', ({ message }: BuildMessage) => {
-    console.log('Build step:', message);
     setStep(message);
   }, []);
 

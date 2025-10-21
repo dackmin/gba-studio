@@ -10,7 +10,6 @@ import type {
 } from '../types';
 import { type AppContextType, AppContext } from './services/contexts';
 import { useBridgeListener, useQuery } from './services/hooks';
-import Canvas from './pages/canvas';
 import ProjectSelection from './windows/project-selection';
 import Editor from './windows/editor';
 
@@ -46,6 +45,10 @@ const App = () => {
     historyIndex: 0,
     building: false,
   });
+
+  useBridgeListener('build-completed', () => {
+    dispatch({ building: false });
+  }, []);
 
   useLayoutEffect(() => {
     const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches

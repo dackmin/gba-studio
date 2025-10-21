@@ -5,8 +5,11 @@ import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
 import { simpleGit } from 'simple-git';
+import fse from 'fs-extra';
 
 import type { Build } from '../../types';
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
@@ -85,6 +88,78 @@ async function checkButano (event: IpcMainInvokeEvent, build: Build) {
   await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
+async function checkJsDependencies (event: IpcMainInvokeEvent, build: Build) {
+  if (build.controller.signal.aborted) {
+    return;
+  }
+
+  sendStep(event, build.id, 'Checking project dependencies...');
+
+  const process = spawn('yarn', ['install'], {
+    cwd: path.dirname(build.projectPath),
+    stdio: 'inherit',
+  });
+
+  process.stdout?.on('data', data => {
+    sendLog(event, build.id, data.toString());
+  });
+
+  process.stderr?.on('data', data => {
+    sendError(event, build.id, data.toString());
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    build.controller.signal.addEventListener('abort', () => {
+      process.kill();
+      reject(new Error('Dependency installation aborted'));
+    });
+
+    process.on('close', code => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Dependency installation exited with code ${code}`));
+      }
+    });
+  });
+}
+
+async function checkTemplates (event: IpcMainInvokeEvent, build: Build) {
+  if (build.controller.signal.aborted) {
+    return;
+  }
+
+  sendStep(event, build.id, 'Updating project templates...');
+
+  // Copy includes
+  await fse.copy(
+    path.join(__dirname, '../../public/templates/commons/include'),
+    path.join(path.dirname(build.projectPath), 'include'),
+    { overwrite: true, errorOnExist: false }
+  );
+
+  // Copy src
+  await fse.copy(
+    path.join(__dirname, '../../public/templates/commons/src'),
+    path.join(path.dirname(build.projectPath), 'src'),
+    { overwrite: true, errorOnExist: false }
+  );
+
+  // Copy templates
+  await fse.copy(
+    path.join(__dirname, '../../public/templates/commons/templates'),
+    path.join(path.dirname(build.projectPath), 'templates'),
+    { overwrite: true, errorOnExist: false }
+  );
+
+  // Copy scripts
+  await fse.copy(
+    path.join(__dirname, '../../public/templates/commons/scripts'),
+    path.join(path.dirname(build.projectPath), 'scripts'),
+    { overwrite: true, errorOnExist: false }
+  );
+}
+
 async function buildProject (event: IpcMainInvokeEvent, build: Build) {
   if (build.controller.signal.aborted) {
     return;
@@ -92,7 +167,7 @@ async function buildProject (event: IpcMainInvokeEvent, build: Build) {
 
   sendStep(event, build.id, 'Building project...');
 
-  const process = spawn('npm', ['run', 'build'], {
+  const process = spawn('make', [], {
     cwd: path.dirname(build.projectPath),
     stdio: 'inherit',
   });
@@ -134,13 +209,31 @@ async function buildProject (event: IpcMainInvokeEvent, build: Build) {
     build.controller.abort();
     sendAbort(event, build.id);
   }
+
+  const runner = spawn('open', [
+    '-a', 'mGBA',
+    builtGbaPath,
+  ], {
+    stdio: 'inherit',
+  });
+  runner.unref();
 }
 
 async function startBuild (event: IpcMainInvokeEvent, build: Build) {
-  await checkButano(event, build);
-  await buildProject(event, build);
+  try {
+    await checkButano(event, build);
+    await checkJsDependencies(event, build);
+    await checkTemplates(event, build);
+    await buildProject(event, build);
 
-  event.sender.send('build-completed', build.id);
+    event.sender.send('build-completed', build.id);
+  } catch (e) {
+    if (build.controller.signal.aborted) {
+      sendAbort(event, build.id);
+    } else {
+      sendError(event, build.id, (e as Error).message);
+    }
+  }
 }
 
 export function startBuildProject (
