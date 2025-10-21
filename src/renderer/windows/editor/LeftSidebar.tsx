@@ -22,10 +22,16 @@ const LeftSidebar = ({
   children,
   ...rest
 }: LeftSidebarProps) => {
-  const [width, setWidth] = useState(300);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const { projectPath, building, setBuilding } = useApp();
-  const { view, setView, leftSidebarOpened, toggleLeftSidebar } = useEditor();
+  const {
+    view,
+    leftSidebarOpened,
+    leftSidebarWidth,
+    setView,
+    toggleLeftSidebar,
+    setLeftSidebarWidth,
+  } = useEditor();
 
   const checkFullscreen = useCallback(async () => {
     setIsFullScreen(await window.electron.isFullscreen());
@@ -54,6 +60,14 @@ const LeftSidebar = ({
     setView(newView);
   }, [setView]);
 
+  const onResize = useCallback((
+    _: any, // don't care, MouseEvent
+    __: any, // re-resizable not-exported Direction type
+    ref: HTMLElement
+  ) => {
+    setLeftSidebarWidth(ref.offsetWidth);
+  }, [setLeftSidebarWidth]);
+
   return (
     <>
       <div
@@ -66,7 +80,7 @@ const LeftSidebar = ({
             'pl-6': isFullScreen,
           },
         )}
-        style={{ width: leftSidebarOpened ? width : 'auto' }}
+        style={{ width: leftSidebarOpened ? leftSidebarWidth : 'auto' }}
       >
         <IconButton variant="ghost" radius="full" onClick={toggleLeftSidebar}>
           <ListBulletIcon
@@ -95,9 +109,9 @@ const LeftSidebar = ({
       </div>
       <Resizable
         defaultSize={{ width: 300 }}
-        onResize={(_, __, ref) => setWidth(ref.offsetWidth)}
-        onResizeStart={(_, __, ref) => setWidth(ref.offsetWidth)}
-        onResizeStop={(_, __, ref) => setWidth(ref.offsetWidth)}
+        onResize={onResize}
+        onResizeStart={onResize}
+        onResizeStop={onResize}
         maxWidth="40vw"
         minWidth={200}
         { ...rest }
@@ -107,7 +121,7 @@ const LeftSidebar = ({
           className,
         )}
         style={{
-          marginLeft: -(leftSidebarOpened ? 0 : (width * 1)),
+          marginLeft: -(leftSidebarOpened ? 0 : leftSidebarWidth),
         }}
       >
         <div className="p-2 pr-0 w-full h-full relative">

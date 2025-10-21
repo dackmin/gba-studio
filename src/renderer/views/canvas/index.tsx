@@ -162,7 +162,6 @@ const Canvas = () => {
   return (
     <div
       className={classNames(
-        'fixed top-0 left-0',
         'w-screen h-screen relative flex items-stretch overflow-hidden',
       )}
       onMouseDown={() => selectScene?.()}

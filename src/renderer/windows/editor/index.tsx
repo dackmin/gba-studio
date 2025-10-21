@@ -10,19 +10,23 @@ import RightSidebar from './RightSidebar';
 export interface EditorState {
   view: string;
   leftSidebarOpened: boolean;
+  leftSidebarWidth: number;
+  rightSidebarWidth: number;
 }
 
 const Editor = () => {
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
     leftSidebarOpened: true,
+    leftSidebarWidth: 300,
+    rightSidebarWidth: 300,
   });
 
   const {
     view: View,
     provider: Provider = defaultView.provider,
     leftSidebar: LeftSidebarContent = defaultView.leftSidebar,
-    rightSidebar: RightSidebarContent = defaultView.rightSidebar,
+    rightSidebar: RightSidebarContent,
   } = useMemo(() => (
     views.find(v => v.name === state.view) || defaultView
   ), [state.view]);
@@ -35,14 +39,27 @@ const Editor = () => {
     dispatch({ view });
   }, []);
 
+  const setLeftSidebarWidth = useCallback((width: number) => {
+    dispatch({ leftSidebarWidth: width });
+  }, []);
+
+  const setRightSidebarWidth = useCallback((width: number) => {
+    dispatch({ rightSidebarWidth: width });
+  }, []);
+
   const getContext = useCallback((): EditorContextType => ({
     view: state.view,
     leftSidebarOpened: state.leftSidebarOpened,
+    leftSidebarWidth: state.leftSidebarWidth,
+    rightSidebarWidth: state.rightSidebarWidth,
     setView,
     toggleLeftSidebar,
+    setLeftSidebarWidth,
+    setRightSidebarWidth,
   }), [
-    state.view, state.leftSidebarOpened,
-    setView, toggleLeftSidebar,
+    state.view, state.leftSidebarOpened, state.leftSidebarWidth,
+    state.rightSidebarWidth,
+    setView, toggleLeftSidebar, setLeftSidebarWidth, setRightSidebarWidth,
   ]);
 
   return (
@@ -65,9 +82,11 @@ const Editor = () => {
             <LeftSidebarContent />
           </LeftSidebar>
           <TitleBar />
-          <RightSidebar>
-            <RightSidebarContent />
-          </RightSidebar>
+          { RightSidebarContent && (
+            <RightSidebar>
+              <RightSidebarContent />
+            </RightSidebar>
+          ) }
         </div>
         <View />
       </Provider>

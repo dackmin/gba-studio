@@ -7,8 +7,7 @@ import Canvas, {
   RightSidebar as CanvasRightSidebar,
   Provider as CanvasProvider,
 } from './canvas';
-
-const Preview = () => <div>Preview view</div>;
+import Preview from './preview';
 
 export const defaultView = {
   view: () => null,

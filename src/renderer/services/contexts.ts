@@ -41,15 +41,23 @@ export const AppContext = createContext<AppContextType>({
 export interface EditorContextType {
   view: string;
   leftSidebarOpened: boolean;
+  leftSidebarWidth: number;
+  rightSidebarWidth: number;
   setView(view: string): void;
   toggleLeftSidebar(): void;
+  setLeftSidebarWidth(width: number): void;
+  setRightSidebarWidth(width: number): void;
 }
 
 export const EditorContext = createContext<EditorContextType>({
   view: '',
   leftSidebarOpened: true,
+  leftSidebarWidth: 300,
+  rightSidebarWidth: 300,
   setView: () => {},
   toggleLeftSidebar: () => {},
+  setLeftSidebarWidth: _ => {},
+  setRightSidebarWidth: _ => {},
 });
 
 export interface CanvasContextType {
