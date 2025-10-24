@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { CardStackIcon, LayersIcon } from '@radix-ui/react-icons';
 
 import type { ViewDefinition } from '../../types';
@@ -9,11 +9,12 @@ import Canvas, {
 } from './canvas';
 import Preview from './preview';
 
-export const defaultView = {
+export const defaultView: ViewDefinition = {
   view: () => null,
-  provider: ({ children }: { children: ReactNode }) => children,
+  provider: ({ children }: ComponentPropsWithoutRef<any>) => children,
   leftSidebar: () => null,
   rightSidebar: () => null,
+  bottomBar: () => null,
 };
 
 const views: ViewDefinition[] = [{

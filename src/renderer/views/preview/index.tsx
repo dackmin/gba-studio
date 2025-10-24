@@ -2,13 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { classNames } from '@junipero/react';
 import mGBA, { type mGBAEmulator } from '@thenick775/mgba-wasm';
 
-import { useApp, useEditor } from '../../services/hooks';
+import { useApp } from '../../services/hooks';
+import ConstrainedView from '../../windows/editor/ConstrainedView';
 
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [_emulator, setEmulator] = useState<mGBAEmulator | null>(null);
   const { projectPath } = useApp();
-  const { leftSidebarOpened, leftSidebarWidth } = useEditor();
   const scale = 2;
 
   const init = useCallback(async () => {
@@ -28,20 +28,17 @@ const Preview = () => {
   }, [init]);
 
   return (
-    <div
+    <ConstrainedView
       className={classNames(
-        'w-screen h-screen relative flex items-center justify-center',
+        'flex items-center justify-center',
       )}
-      style={{
-        ...(leftSidebarOpened ? { paddingLeft: leftSidebarWidth } : {}),
-      }}
     >
       <canvas
         ref={canvasRef}
         className="bg-black rounded-lg"
         style={{ width: 240 * scale, height: 160 * scale }}
       />
-    </div>
+    </ConstrainedView>
   );
 };
 

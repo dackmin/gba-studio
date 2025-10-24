@@ -11,13 +11,15 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
 import type { GameScene } from '../../../types';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useApp, useCanvas, useEditor } from '../../services/hooks';
+import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
 import Arrows from './Arrows';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
+  const { bottomBarOpened, bottomBarHeight } = useEditor();
   const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
   const {
     selectedScene,
@@ -160,12 +162,7 @@ const Canvas = () => {
   }, [tool, appPayload]);
 
   return (
-    <div
-      className={classNames(
-        'w-screen h-screen relative flex items-stretch overflow-hidden',
-      )}
-      onMouseDown={() => selectScene?.()}
-    >
+    <FullscreenView onMouseDown={() => selectScene?.()}>
       <InfiniteCanvas
         ref={infiniteCanvasRef}
         cursorMode={
@@ -200,11 +197,15 @@ const Canvas = () => {
 
       <Toolbar
         className={classNames(
-          '!fixed bottom-8 left-1/2 transform -translate-x-1/2 z-1000'
+          '!fixed left-1/2 transform -translate-x-1/2 z-1000',
+          { 'bottom-8': !bottomBarOpened }
         )}
+        style={{
+          ...bottomBarOpened && { bottom: 32 /* bottom-8 */ + bottomBarHeight },
+        }}
         onSelectTool={setTool}
       />
-    </div>
+    </FullscreenView>
   );
 };
 

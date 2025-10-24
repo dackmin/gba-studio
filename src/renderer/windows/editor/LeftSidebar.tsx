@@ -9,7 +9,7 @@ import {
   PlayIcon,
   StopIcon,
 } from '@radix-ui/react-icons';
-import { Card, IconButton, Inset, ScrollArea, Tabs, Tooltip } from '@radix-ui/themes';
+import { Card, IconButton, Inset, ScrollArea, Tabs, Text, Tooltip } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
 
 import { useApp, useEditor } from '../../services/hooks';
@@ -140,9 +140,9 @@ const LeftSidebar = ({
               <Inset side="all">
                 <Tabs.List>
                   { views.map(({ name, title, icon: Icon }) => (
-                    <Tabs.Trigger key={name} value={name}>
+                    <Tabs.Trigger key={name} value={name || ''}>
                       <Tooltip side="bottom" content={title}>
-                        <Icon />
+                        { Icon ? <Icon /> : <Text>Unknown</Text> }
                       </Tooltip>
                     </Tabs.Trigger>
                   )) }

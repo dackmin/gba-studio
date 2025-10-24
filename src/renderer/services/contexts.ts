@@ -42,22 +42,34 @@ export interface EditorContextType {
   view: string;
   leftSidebarOpened: boolean;
   leftSidebarWidth: number;
+  rightSidebarOpened: boolean;
   rightSidebarWidth: number;
+  bottomBarOpened: boolean;
+  bottomBarHeight: number;
   setView(view: string): void;
   toggleLeftSidebar(): void;
   setLeftSidebarWidth(width: number): void;
+  toggleRightSidebar(): void;
   setRightSidebarWidth(width: number): void;
+  toggleBottomBar(): void;
+  setBottomBarHeight(height: number): void;
 }
 
 export const EditorContext = createContext<EditorContextType>({
   view: '',
   leftSidebarOpened: true,
   leftSidebarWidth: 300,
+  rightSidebarOpened: true,
   rightSidebarWidth: 300,
+  bottomBarOpened: true,
+  bottomBarHeight: 300,
   setView: () => {},
   toggleLeftSidebar: () => {},
   setLeftSidebarWidth: _ => {},
   setRightSidebarWidth: _ => {},
+  toggleRightSidebar: () => {},
+  setBottomBarHeight: _ => {},
+  toggleBottomBar: () => {},
 });
 
 export interface CanvasContextType {
@@ -89,4 +101,16 @@ export interface SceneFormContextType {
 
 export const SceneFormContext = createContext<SceneFormContextType>({
   scene: undefined,
+});
+
+export interface BottomBarContextType {
+  manualScroll: boolean;
+  scrollToBottom(): void;
+  isScrolledToBottom(): boolean;
+}
+
+export const BottomBarContext = createContext<BottomBarContextType>({
+  manualScroll: false,
+  scrollToBottom: () => {},
+  isScrolledToBottom: () => false,
 });

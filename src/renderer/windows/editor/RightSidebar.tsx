@@ -12,7 +12,12 @@ const RightSidebar = ({
   children,
   ...rest
 }: RightSidebarProps) => {
-  const { setRightSidebarWidth } = useEditor();
+  const {
+    bottomBarOpened,
+    bottomBarHeight,
+    rightSidebarOpened,
+    setRightSidebarWidth,
+  } = useEditor();
 
   const onResize = useCallback((
     _: any, // don't care, MouseEvent
@@ -33,8 +38,14 @@ const RightSidebar = ({
       { ...rest }
       className={classNames(
         'flex-none pointer-events-auto',
+        { '!hidden': !rightSidebarOpened },
         className,
       )}
+      style={{
+        ...bottomBarOpened && {
+          paddingBottom: bottomBarHeight,
+        },
+      }}
     >
       <Card
         className={classNames(

@@ -4,7 +4,6 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
-import { simpleGit } from 'simple-git';
 import fse from 'fs-extra';
 
 import type { Build } from '../../types';
@@ -65,15 +64,22 @@ function runCommand (
     build?: Build;
   }
 ) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const process = spawn(command, args, {
       cwd: opts?.cwd,
-      stdio: 'inherit',
+      stdio: 'pipe',
     });
 
+    let res = '';
+    let line = '';
+
     process.stdout?.on('data', data => {
-      if (opts?.event && opts?.build) {
-        sendLog(opts.event, opts.build.id, data.toString());
+      res += data.toString();
+      line += data.toString();
+
+      if (opts?.event && opts?.build && line.includes('\n')) {
+        sendLog(opts.event, opts.build.id, line.trim());
+        line = '';
       }
     });
 
@@ -90,7 +96,7 @@ function runCommand (
 
     process.on('close', code => {
       if (code === 0) {
-        resolve();
+        resolve(res);
       } else {
         reject(new Error(`${command} process exited with code ${code}`));
       }
@@ -103,31 +109,34 @@ async function checkButano (event: IpcMainInvokeEvent, build: Build) {
     return;
   }
 
-  const git = simpleGit({
-    baseDir: path.dirname(build.projectPath),
-  });
-
   sendStep(event, build.id, 'Checking Butano submodule...');
+  sendLog(event, build.id, 'Verifying Butano submodule status...');
 
   await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Check if Butano submodule is initialized
-  const submodules = await git.subModule(['status']);
+  const submodules = await runCommand('git', ['submodule', 'status'], {
+    cwd: path.dirname(build.projectPath),
+    event,
+    build,
+  });
 
   if (submodules.includes('butano')) {
-    sendLog(event, build.id, 'Butano submodule is up-to-date');
+    sendLog(event, build.id, 'Butano submodule is up-to-date, skipping');
 
     return;
   }
 
-  sendStep(event, build.id, 'Butano submodule not found.');
-
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  sendStep(event, build.id, 'Butano submodule not found, initializing...');
 
   // Initialize Butano submodule
-  sendLog(event, build.id, await git.subModule(['update', '--init', 'butano']));
+  await runCommand('git', ['submodule', 'update', '--init', 'butano'], {
+    cwd: path.dirname(build.projectPath),
+    event,
+    build,
+  });
 
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  sendLog(event, build.id, 'Butano submodule initialized');
 }
 
 async function checkJsDependencies (event: IpcMainInvokeEvent, build: Build) {

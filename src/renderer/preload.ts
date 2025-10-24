@@ -44,4 +44,5 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('abort-build-project', buildId),
   getRomPath: (projectPath: string): Promise<string> =>
     ipcRenderer.invoke('get-rom-path', projectPath),
+  platform: process.platform,
 } as Omit<AppBridge, 'dispatchEvent'>);

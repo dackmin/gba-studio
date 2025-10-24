@@ -30,6 +30,7 @@ interface AppBridge extends EventTarget {
   startBuildProject(projectPath: string): Promise<string>;
   abortBuildProject(buildId?: string): Promise<void>;
   getRomPath(projectPath: string): Promise<string>;
+  platform: string;
 }
 
 interface Window {

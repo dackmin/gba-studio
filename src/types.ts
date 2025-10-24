@@ -4,13 +4,14 @@ import type { FC, ForwardRefExoticComponent } from 'react';
 export type ProjectTemplate = '2d-sample' | 'blank';
 
 export interface ViewDefinition {
-  name: string;
-  title: string;
-  icon: FC;
+  name?: string;
+  title?: string;
+  icon?: FC;
   view: FC;
   provider?: FC;
   leftSidebar?: FC;
   rightSidebar?: FC;
+  bottomBar?: FC;
 }
 
 export interface RecentProject {
