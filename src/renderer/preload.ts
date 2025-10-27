@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.removeListener(channel, func);
   },
 
+  // Invokables
   getRecentProjects: (): Promise<RecentProject[]> =>
     ipcRenderer.invoke('get-recent-projects'),
   loadRecentProject: (projectPath: string) =>
@@ -47,5 +48,9 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('abort-build-project', buildId),
   getRomPath: (projectPath: string): Promise<string> =>
     ipcRenderer.invoke('get-rom-path', projectPath),
+
+  // Info
   platform: process.platform,
+  isDarwin: process.platform === 'darwin',
+  isWindows: process.platform === 'win32',
 } as Omit<AppBridge, 'dispatchEvent'>);

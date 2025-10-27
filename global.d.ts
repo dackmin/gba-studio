@@ -34,6 +34,8 @@ interface AppBridge extends EventTarget {
   abortBuildProject(buildId?: string): Promise<void>;
   getRomPath(projectPath: string): Promise<string>;
   platform: string;
+  isDarwin: boolean;
+  isWindows: boolean;
 }
 
 interface Window {

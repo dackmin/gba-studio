@@ -13,14 +13,21 @@ export const createSelectionWindow = async () => {
   const win = new BrowserWindow({
     width: 720,
     height: 480,
-    frame: false,
     maximizable: false,
     resizable: false,
-    vibrancy: 'under-window',
-    minimizable: false,
-    transparent: true,
-    // backgroundColor: '#1A1A1A1A',
-    titleBarStyle: 'hidden',
+    ...process.platform === 'darwin' && {
+      titleBarStyle: 'hidden',
+      frame: false,
+      transparent: true,
+      minimizable: false,
+      vibrancy: 'under-window',
+    },
+    ...process.platform === 'win32' && {
+      autoHideMenuBar: true,
+      backgroundColor: nativeTheme.shouldUseDarkColors
+        ? '#1A1A1A'
+        : '#FAFAFA',
+    },
     show: false,
     webPreferences: {
       preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
@@ -28,7 +35,9 @@ export const createSelectionWindow = async () => {
     },
   });
 
-  win.setWindowButtonVisibility(false);
+  if (process.platform === 'darwin') {
+    win.setWindowButtonVisibility(false);
+  }
 
   // WindowCorner.setCornerRadius(
   //   win,
@@ -71,16 +80,23 @@ export const createProjectWindow = async (projectPath: string) => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: false,
-    transparent: true,
-    vibrancy: 'under-window',
-    // backgroundColor: '#1A1A1A1A',
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: {
-      x: 24,
-      y: 24,
-    },
     show: false,
+    ...process.platform === 'darwin' && {
+      titleBarStyle: 'hiddenInset',
+      trafficLightPosition: {
+        x: 24,
+        y: 24,
+      },
+      frame: false,
+      transparent: true,
+      vibrancy: 'under-window',
+    },
+    ...process.platform === 'win32' && {
+      autoHideMenuBar: true,
+      backgroundColor: nativeTheme.shouldUseDarkColors
+        ? '#1A1A1A'
+        : '#FAFAFA',
+    },
     webPreferences: {
       preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
       contextIsolation: true,

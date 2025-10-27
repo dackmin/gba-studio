@@ -9,10 +9,18 @@ import {
   PlayIcon,
   StopIcon,
 } from '@radix-ui/react-icons';
-import { Card, IconButton, Inset, ScrollArea, Tabs, Text, Tooltip } from '@radix-ui/themes';
+import {
+  Card,
+  IconButton,
+  Inset,
+  ScrollArea,
+  Tabs,
+  Text,
+  Tooltip,
+} from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
 
-import { useApp, useBridgeListener, useEditor } from '../../services/hooks';
+import { useApp, useEditor } from '../../services/hooks';
 import views from '../../views';
 
 export interface LeftSidebarProps extends ResizableProps {}
@@ -95,8 +103,8 @@ const LeftSidebar = ({
           'z-2000 gap-8 items-center w-full pr-4 justify-between !app-no-drag',
           'pointer-events-auto transition-[padding-left] duration-100',
           {
-            'pl-[100px]': !isFullScreen,
-            'pl-6': isFullScreen,
+            'pl-[100px]': !isFullScreen && window.electron.isDarwin,
+            'pl-6': isFullScreen || !window.electron.isDarwin,
           },
         )}
         style={{ width: leftSidebarOpened ? leftSidebarWidth : 'auto' }}

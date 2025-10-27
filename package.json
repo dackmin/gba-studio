@@ -17,7 +17,7 @@
     "publish": "electron-forge publish",
     "lint": "eslint --max-warnings=0 --cache ."
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "@neoframe/electron-window-corner-addon": "0.1.4",
     "@thenick775/mgba-wasm": "2.3.4"
   },

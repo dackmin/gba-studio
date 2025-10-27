@@ -15,7 +15,7 @@ export default async (event: IpcMainInvokeEvent) => {
   }
 
   const selectionWin = BrowserWindow.fromWebContents(event.sender);
-  selectionWin?.close();
+  selectionWin?.hide();
 
   const stats = await fs.stat(paths.filePaths[0]);
 
@@ -30,4 +30,7 @@ export default async (event: IpcMainInvokeEvent) => {
   } else if (stats.isFile() && paths.filePaths[0].endsWith('.gbasproj')) {
     createProjectWindow(paths.filePaths[0]);
   }
+
+  await new Promise(resolve => setTimeout(resolve, 100));
+  selectionWin?.close();
 };

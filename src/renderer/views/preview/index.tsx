@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { classNames } from '@junipero/react';
-import mGBA, { type mGBAEmulator } from '@thenick775/mgba-wasm';
+// import mGBA, { type mGBAEmulator } from '@thenick775/mgba-wasm';
 
 import { useApp } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [_emulator, setEmulator] = useState<mGBAEmulator | null>(null);
+  // const [_emulator, setEmulator] = useState<mGBAEmulator | null>(null);
   const { projectPath } = useApp();
   const scale = 2;
 
@@ -16,11 +16,11 @@ const Preview = () => {
       return;
     }
 
-    const module = await mGBA({ canvas: canvasRef.current });
-    // eslint-disable-next-line new-cap
-    await module.FSInit();
-    await module.loadGame(await window.electron.getRomPath(projectPath));
-    setEmulator(module);
+    // const module = await mGBA({ canvas: canvasRef.current });
+    // e slint-disable-next-line new-cap
+    // await module.FSInit();
+    // await module.loadGame(await window.electron.getRomPath(projectPath));
+    // setEmulator(module);
   }, [projectPath]);
 
   useEffect(() => {

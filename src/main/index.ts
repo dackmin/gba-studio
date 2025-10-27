@@ -1,5 +1,5 @@
-import path from 'node:path';
-import { createRequire } from 'node:module';
+// import path from 'node:path';
+// import { createRequire } from 'node:module';
 
 import {
   BrowserWindow,
@@ -26,10 +26,8 @@ import {
 } from './handles';
 import Storage from './storage';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 // electron-window-corner-addon polyfill
-global.require = createRequire(import.meta.url);
+// global.require = createRequire(import.meta.url);
 
 if (started) {
   app.quit();
