@@ -1,6 +1,6 @@
 import { type MouseEvent, useCallback, useEffect, useReducer } from 'react';
-import { classNames, mockState } from '@junipero/react';
 import { Button, Card, Dialog, Heading, Text } from '@radix-ui/themes';
+import { classNames, mockState } from '@junipero/react';
 
 import type { RecentProject } from '../../../types';
 import pkg from '../../../../package.json' with { type: 'json' };
@@ -47,6 +47,11 @@ const ProjectSelection = () => {
     }
 
     dispatch({ selectedProject: project });
+  };
+
+  const onClearRecentProjects = async () => {
+    await window.electron.clearRecentProjects();
+    dispatch({ recentProjects: [], selectedProject: undefined });
   };
 
   return (
@@ -104,6 +109,16 @@ const ProjectSelection = () => {
               className="!app-no-drag"
             >
               <Text>Open an existing project</Text>
+            </Button>
+          </div>
+          <div className="text-center mt-2">
+            <Button
+              variant="ghost"
+              onClick={onClearRecentProjects}
+              className="!app-no-drag"
+              size="1"
+            >
+              <Text>Clear recent projects</Text>
             </Button>
           </div>
         </div>

@@ -13,6 +13,7 @@ interface AppBridge extends EventTarget {
   ): void;
 
   getRecentProjects(): Promise<RecentProject[]>;
+  clearRecentProjects(): Promise<void>;
   loadRecentProject(projectPath: string): Promise<void>;
   browseProjects(): Promise<string>;
   loadProject(path: string): Promise<AppPayload>;

@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('electron', {
   // Invokables
   getRecentProjects: (): Promise<RecentProject[]> =>
     ipcRenderer.invoke('get-recent-projects'),
+  clearRecentProjects: () =>
+    ipcRenderer.invoke('clear-recent-projects'),
   loadRecentProject: (projectPath: string) =>
     ipcRenderer.invoke('load-recent-project', projectPath),
   browseProjects: () =>

@@ -45,4 +45,13 @@ export default class Storage {
 
     return this.save();
   }
+
+  clearRecentProjects () {
+    this.config = {
+      ...this.config,
+      recentProjects: [],
+    };
+
+    return this.save();
+  }
 }
