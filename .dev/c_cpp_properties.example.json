@@ -1,17 +1,17 @@
 {
     "configurations": [
         {
-            "name": "GBA Butano",
+            "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "BN_CFG_ASSERT_ENABLED",
-                "BN_CFG_PROFILER_ENABLED",
-                "__GBADEV__",
-                "BN_CFG_LOG_ENABLED"
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
             ],
-            "compilerPath": "/usr/bin/g++",
+            "configurationProvider": "none",
+            "compilerPath": "C:\\mingw64\\bin\\g++",
             "cStandard": "c17",
             "cppStandard": "c++20",
             "intelliSenseMode": "gcc-arm"
