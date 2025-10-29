@@ -127,10 +127,10 @@ const ProjectSelection = () => {
         <Card
           className={classNames(
             'h-full app-no-drag !rounded-[20px] before:!rounded-[20px]',
-            'after:!rounded-[20px]',
+            'after:!rounded-[20px] !p-0',
           )}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 h-full overflow-y-scroll p-2">
             { state.recentProjects.length > 0
               ? state.recentProjects.map(project => (
                 <a
