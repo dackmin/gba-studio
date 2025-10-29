@@ -7,10 +7,15 @@ import { useApp, useBridgeListener, useEditor } from '../../services/hooks';
 import BottomBarIcon from '../../components/BottomBarIcon';
 import RightSidebarIcon from '../../components/RightSidebarIcon';
 
+export interface TitleBarProps extends ComponentPropsWithoutRef<'div'> {
+  rightSidebarEnabled: boolean;
+}
+
 const TitleBar = ({
   className,
+  rightSidebarEnabled,
   ...rest
-}: ComponentPropsWithoutRef<'div'>) => {
+}: TitleBarProps) => {
   const { project, dirty, building } = useApp();
   const {
     leftSidebarOpened,
@@ -40,7 +45,7 @@ const TitleBar = ({
       <Card
         className={classNames(
           '!rounded-[20px] before:!rounded-[20px] after:!rounded-[20px]',
-          'h-[48px] pointer-events-auto',
+          'h-12 pointer-events-auto',
         )}
       >
         <div className="flex items-center">
@@ -94,18 +99,20 @@ const TitleBar = ({
                 />
               </Tooltip>
             </IconButton>
-            <IconButton
-              className="!m-0 !w-6 !h-6 !p-0"
-              size="2"
-              variant={rightSidebarOpened ? 'solid' : 'ghost'}
-              onClick={toggleRightSidebar}
-            >
-              <RightSidebarIcon
-                width={12}
-                height={12}
-                className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
-              />
-            </IconButton>
+            { rightSidebarEnabled && (
+              <IconButton
+                className="!m-0 !w-6 !h-6 !p-0"
+                size="2"
+                variant={rightSidebarOpened ? 'solid' : 'ghost'}
+                onClick={toggleRightSidebar}
+              >
+                <RightSidebarIcon
+                  width={12}
+                  height={12}
+                  className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+                />
+              </IconButton>
+            ) }
           </div>
         </div>
       </Card>

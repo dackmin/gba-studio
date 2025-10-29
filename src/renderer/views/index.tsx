@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { CardStackIcon, LayersIcon } from '@radix-ui/react-icons';
+import { CardStackIcon, GearIcon, LayersIcon } from '@radix-ui/react-icons';
 
 import type { ViewDefinition } from '../../types';
 import Canvas, {
@@ -8,6 +8,7 @@ import Canvas, {
   Provider as CanvasProvider,
 } from './canvas';
 import Preview from './preview';
+import Settings from './settings';
 
 export const defaultView: ViewDefinition = {
   view: () => null,
@@ -30,6 +31,11 @@ const views: ViewDefinition[] = [{
   title: 'Preview',
   icon: CardStackIcon,
   view: Preview,
+}, {
+  name: 'settings',
+  title: 'Settings',
+  icon: GearIcon,
+  view: Settings,
 }];
 
 export default views;

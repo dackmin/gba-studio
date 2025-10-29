@@ -205,6 +205,16 @@ const App = () => {
     }));
   }, [addToHistory]);
 
+  const onProjectChange = useCallback((project: GameProject) => {
+    dispatch(s => ({
+      ...s,
+      project,
+      history: addToHistory(s),
+      historyIndex: 0,
+      dirty: true,
+    }));
+  }, [addToHistory]);
+
   const setBuilding = useCallback((building: boolean) => {
     dispatch({ building });
   }, []);
@@ -226,12 +236,13 @@ const App = () => {
     setBuilding,
     onMoveScene,
     onCanvasChange,
+    onProjectChange,
   }), [
     projectPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building,
-    save, setBuilding, onCanvasChange, onMoveScene,
+    save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
   ]);
 
   return (

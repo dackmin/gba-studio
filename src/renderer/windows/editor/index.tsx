@@ -128,7 +128,9 @@ const Editor = () => {
           <LeftSidebar>
             <LeftSidebarContent />
           </LeftSidebar>
-          <TitleBar />
+          <TitleBar
+            rightSidebarEnabled={!!RightSidebarContent}
+          />
           { RightSidebarContent && (
             <RightSidebar>
               <RightSidebarContent />

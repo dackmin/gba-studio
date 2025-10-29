@@ -26,11 +26,13 @@ async function checkGit (event: IpcMainInvokeEvent, build: Build) {
     return;
   }
 
+  const projectSettings = build.data?.project?.settings;
+
   sendStep(event, build.id, 'Checking project configuration...');
   sendLog(event, build.id, 'Verifying Git repository...');
 
   try {
-    await runCommand('git', ['status'], {
+    await runCommand(projectSettings?.gitPath || 'git', ['status'], {
       cwd: path.dirname(build.projectPath),
       event,
       build,
@@ -45,7 +47,7 @@ async function checkGit (event: IpcMainInvokeEvent, build: Build) {
       sendStep(event, build.id, 'Initializing project...');
       sendLog(event, build.id, 'Initializing Git repository...');
 
-      await runCommand('git', ['init'], {
+      await runCommand(projectSettings?.gitPath || 'git', ['init'], {
         cwd: path.dirname(build.projectPath),
         event,
         build,
@@ -61,14 +63,20 @@ async function checkButano (event: IpcMainInvokeEvent, build: Build) {
     return;
   }
 
+  const projectSettings = build.data?.project?.settings;
+
   sendLog(event, build.id, 'Verifying Butano submodule status...');
 
   // Check if Butano submodule is initialized
-  const submodules = await runCommand('git', ['submodule', 'status'], {
-    cwd: path.dirname(build.projectPath),
-    event,
-    build,
-  });
+  const submodules = await runCommand(
+    projectSettings?.gitPath || 'git',
+    ['submodule', 'status'],
+    {
+      cwd: path.dirname(build.projectPath),
+      event,
+      build,
+    }
+  );
 
   if (submodules.includes('butano')) {
     sendSuccessLog(event, build.id, 'Butano submodule is up-to-date, skipping');
@@ -77,7 +85,7 @@ async function checkButano (event: IpcMainInvokeEvent, build: Build) {
   }
 
   // Initialize Butano submodule
-  await runCommand('git', [
+  await runCommand(projectSettings?.gitPath || 'git', [
     'submodule', 'add', 'https://github.com/GValiente/butano.git',
   ], {
     cwd: path.dirname(build.projectPath),
@@ -93,25 +101,35 @@ async function checkPython (event: IpcMainInvokeEvent, build: Build) {
     return;
   }
 
+  const projectSettings = build.data?.project?.settings;
+
   sendLog(event, build.id, 'Checking Python path...');
 
   try {
-    const pythonVersion = await runCommand('python', ['--version'], {
-      cwd: path.dirname(build.projectPath),
-      event,
-      build,
-      logErrors: false,
-    });
-
-    sendSuccessLog(event, build.id, 'Python found: ' + pythonVersion.trim());
-  } catch {
-    try {
-      const python3Version = await runCommand('python3', ['--version'], {
+    const pythonVersion = await runCommand(
+      projectSettings?.pythonPath || 'python',
+      ['--version'],
+      {
         cwd: path.dirname(build.projectPath),
         event,
         build,
         logErrors: false,
-      });
+      },
+    );
+
+    sendSuccessLog(event, build.id, 'Python found: ' + pythonVersion.trim());
+  } catch {
+    try {
+      const python3Version = await runCommand(
+        projectSettings?.pythonPath || 'python3',
+        ['--version'],
+        {
+          cwd: path.dirname(build.projectPath),
+          event,
+          build,
+          logErrors: false,
+        },
+      );
 
       if (!python3Version.startsWith('Python')) {
         throw new Error('Invalid python3 version output');

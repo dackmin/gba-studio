@@ -16,7 +16,9 @@ namespace neo::variables
     inline void init ()
     {
       {{#each variables}}
-      all.insert("{{this.key}}", "{{this.value}}");
+      {{#each (entries this.values) }}
+      all.insert("{{this.[0]}}", "{{this.[1]}}");
+      {{/each}}
       {{/each}}
     }
 

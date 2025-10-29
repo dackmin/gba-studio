@@ -128,9 +128,24 @@ export interface ProjectSceneData {
   _file?: string;
 }
 
+export interface ProjectSettings {
+  gitPath?: string;
+  pythonPath?: string;
+  gppPath?: string;
+  emulatorCommand?: string;
+}
+
+export interface ProjectConfiguration {
+  id: string;
+  name?: string;
+  settings?: ProjectSettings;
+}
+
 export interface GameProject {
   name: string;
   scenes: ProjectSceneData[];
+  settings?: ProjectSettings;
+  configurations?: ProjectConfiguration[];
 }
 
 export interface GameSprite {

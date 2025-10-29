@@ -31,6 +31,7 @@ export const buildSingleTemplate = async (
   Handlebars.registerHelper('isset', v => !!v);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
   Handlebars.registerHelper('or', (a, b) => a || b);
+  Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
   Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase());
   Handlebars.registerHelper('isRawValue', (obj: any) =>

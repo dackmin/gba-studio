@@ -58,7 +58,7 @@
     "@vitejs/plugin-react": "5.1.0",
     "debug": "4.4.3",
     "dotenv": "17.2.3",
-    "electron": "38.4.0",
+    "electron": "39.0.0",
     "eslint": "9.38.0",
     "tailwindcss": "4.1.16",
     "typescript": "5.9.3",
