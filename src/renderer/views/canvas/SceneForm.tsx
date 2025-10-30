@@ -14,6 +14,9 @@ import { getGraphicName, pixelToTile } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import EventsField from '../../components/EventsField';
+import EventValueField from '../../components/EventValueField';
+import DirectionField from '../../components/DirectionField';
+import SpritesListField from '../../components/SpritesListField';
 
 export interface SceneFormProps {
   scene: GameScene;
@@ -86,7 +89,7 @@ const SceneForm = ({
           size="4"
           className={classNames(
             'whitespace-nowrap overflow-scroll focus:outline-2',
-            'outline-(--accent-9) rounded-xs',
+            'outline-(--accent-9) rounded-xs editable',
           )}
           onKeyDown={onNameKeyDown}
           onBlur={onNameChange}
@@ -116,7 +119,59 @@ const SceneForm = ({
               onValueChange={onBackgroundChange}
             />
           </div>
+          { scene.sceneType === '2d-top-down' && (
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Grid size</Text>
+              <EventValueField
+                type="number"
+                value={scene.map?.gridSize ?? 16}
+                onValueChange={onValueChange.bind(null, 'map.gridSize')}
+              />
+            </div>
+          ) }
         </div>
+        { scene.sceneType === '2d-top-down' && (
+          <>
+            <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Text className="block text-slate" size="1">Player sprite</Text>
+                <SpritesListField
+                  value={scene.player?.sprite ?? 'sprite_default'}
+                  onValueChange={onValueChange.bind(null, 'player.sprite')}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-col gap-2">
+                    <Text size="1" className="text-slate">Start X</Text>
+                    <EventValueField
+                      type="number"
+                      value={scene.player?.x}
+                      onValueChange={onValueChange.bind(null, 'player.x')}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Text size="1" className="text-slate">Start Y</Text>
+                    <EventValueField
+                      type="number"
+                      value={scene.player?.y}
+                      onValueChange={onValueChange.bind(null, 'player.y')}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Text size="1" className="text-slate">Direction</Text>
+                    <DirectionField
+                      value={scene.player?.direction ?? 'down'}
+                      onValueChange={onValueChange
+                        .bind(null, 'player.direction')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        ) }
         <Inset side="x"><Separator className="!w-full my-4" /></Inset>
         <div className="flex flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">

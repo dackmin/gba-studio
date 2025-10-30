@@ -67,6 +67,12 @@ export const sanitizeScene = (scene: GameScene): GameScene => {
   scene.actors?.forEach(actor => sanitizeActor(actor));
   scene.map?.sensors?.forEach(sensor => sanitizeSensor(sensor));
 
+  // Ensure player exists for 2d-top-down scenes & has type "player"
+  if (scene.sceneType === '2d-top-down') {
+    scene.player = scene.player || { type: 'player', x: 0, y: 0 };
+    scene.player.type = 'player';
+  }
+
   return scene;
 };
 
@@ -87,6 +93,7 @@ export const sanitizeProject = (project: GameProject, opts?: {
     project.scenes = [];
   }
 
+  // Add missing ids
   project.scenes = project.scenes.map(sceneData => {
     if (!sceneData.id) {
       sceneData.id = opts?.scenes?.find(s => s._file === sceneData._file)?.id;
@@ -94,6 +101,11 @@ export const sanitizeProject = (project: GameProject, opts?: {
 
     return sceneData;
   });
+
+  // Remove deleted scenes
+  project.scenes = project.scenes.filter(sceneData => (
+    opts?.scenes?.some(s => s._file === sceneData._file)
+  ));
 
   return project;
 };

@@ -27,7 +27,9 @@ export interface AppStorage {
 export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
-export type AddSubtoolType = 'scene' | 'sensor' | 'actor';
+export type AddSubToolType = 'scene' | 'sensor' | 'actor';
+export type SubToolType = AddSubToolType;
+
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export interface ListItem {
@@ -60,12 +62,13 @@ export interface GameMap {
 }
 
 export interface GamePlayer {
+  type: 'player';
   x: number;
   y: number;
   width?: number;
   height?: number;
   direction?: Direction;
-  sprite: string;
+  sprite?: string;
 }
 
 export interface GameScene {

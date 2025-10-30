@@ -27,6 +27,11 @@ const EventPlaySound = ({
     onDelayedValueChange?.(event);
   }, [event, onDelayedValueChange]);
 
+  const onSliderChange = useCallback((name: string, value: number[]) => {
+    set(event, name, value[0]);
+    onDelayedValueChange?.(event);
+  }, [event, onDelayedValueChange]);
+
   const onTextChange = useCallback((
     name: string,
     e: ChangeEvent<HTMLInputElement>
@@ -64,7 +69,7 @@ const EventPlaySound = ({
                 ? (event.volume ?? 100) * 100
                 : event.volume ?? 100,
             ]}
-            onValueChange={onValueChange_.bind(null, 'volume')}
+            onValueChange={onSliderChange.bind(null, 'volume')}
           />
           <Text className="block w-[60px] text-right">
             { (event.volume ?? 100) > 0 && (event.volume ?? 100) < 1
@@ -80,7 +85,7 @@ const EventPlaySound = ({
             min={0}
             max={64}
             value={[event.speed ?? 1]}
-            onValueChange={onValueChange_.bind(null, 'speed')}
+            onValueChange={onSliderChange.bind(null, 'speed')}
           />
           <Text className="block w-[60px] text-right">
             { event.speed ?? 1 }x
@@ -98,7 +103,7 @@ const EventPlaySound = ({
                 ? (event.pan ?? 0) * 100
                 : event.pan ?? 0,
             ]}
-            onValueChange={onValueChange_.bind(null, 'pan')}
+            onValueChange={onSliderChange.bind(null, 'pan')}
           />
           <Text className="block w-[60px] text-right">
             { (event.pan ?? 0) > -1 && (event.pan ?? 0) < 1

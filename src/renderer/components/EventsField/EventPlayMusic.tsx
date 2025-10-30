@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { set } from '@junipero/react';
 import { Select, Slider, Switch, Text } from '@radix-ui/themes';
 
@@ -20,10 +21,15 @@ const EventPlayMusic = ({
 }: EventPlayMusicProps) => {
   const { music } = useApp();
 
-  const onValueChange_ = (name: string, value: any) => {
+  const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
     onValueChange?.(event);
-  };
+  }, [event, onValueChange]);
+
+  const onSliderChange = useCallback((name: string, value: number[]) => {
+    set(event, name, value[0]);
+    onValueChange?.(event);
+  }, [event, onValueChange]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -63,7 +69,7 @@ const EventPlayMusic = ({
                 ? (event.volume ?? 100) * 100
                 : event.volume ?? 100,
             ]}
-            onValueChange={onValueChange_.bind(null, 'volume')}
+            onValueChange={onSliderChange.bind(null, 'volume')}
           />
           <Text className="block w-[60px] text-right">
             { (event.volume ?? 100) > 0 && (event.volume ?? 100) < 1

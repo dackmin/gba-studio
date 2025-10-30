@@ -49,7 +49,7 @@ const ScriptForm = ({
         size="4"
         className={classNames(
           'whitespace-nowrap overflow-scroll focus:outline-2',
-          'outline-(--accent-9) rounded-xs',
+          'outline-(--accent-9) rounded-xs editable',
         )}
         onKeyDown={onNameKeyDown}
         onBlur={onNameChange}

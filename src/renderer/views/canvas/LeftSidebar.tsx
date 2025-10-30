@@ -140,8 +140,8 @@ const LeftSidebar = ({
   }, [scripts, onScriptsChange]);
 
   return (
-    <div className={classNames('flex flex-col gap-px', className)}>
-      <Collapsible.Root>
+    <div className={classNames('flex flex-col !w-full gap-px', className)}>
+      <Collapsible.Root className="!w-full">
         <Collapsible.Trigger>
           <Text>Scenes</Text>
         </Collapsible.Trigger>
@@ -221,7 +221,7 @@ const LeftSidebar = ({
         </Collapsible.Content>
       </Collapsible.Root>
 
-      <Collapsible.Root>
+      <Collapsible.Root className="w-full">
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
             <Text>Variables</Text>
@@ -237,7 +237,7 @@ const LeftSidebar = ({
             </IconButton>
           </div>
         </Collapsible.Trigger>
-        <Collapsible.Content>
+        <Collapsible.Content className="flex flex-col w-full">
           { allVariables?.length <= 0 ? (
             <Text
               size="1"
@@ -249,7 +249,7 @@ const LeftSidebar = ({
             Object.keys(registry?.values || {}).map(v => (
               <div
                 key={v}
-                className="px-3 flex items-center gap-2 py-1"
+                className="px-3 flex items-center w-full gap-2 py-1 flex-nowrap"
                 data-variable={v}
               >
                 <Text className="text-(--accent-9) cursor-default">
@@ -259,7 +259,8 @@ const LeftSidebar = ({
                   contentEditable
                   suppressContentEditableWarning
                   className={classNames(
-                    'whitespace-nowrap flex-auto overflow-scroll',
+                    'whitespace-nowrap flex-auto w-full overflow-x-scroll',
+                    'editable',
                     'outline-(--accent-9) rounded-xs focus:outline-2',
                   )}
                   onKeyDown={onVariableNameKeyDown}

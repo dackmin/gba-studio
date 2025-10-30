@@ -14,7 +14,7 @@ import {
 } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 
-import type { GameActor, GameScene, GameSensor } from '../../../types';
+import type { GameActor, GamePlayer, GameScene, GameSensor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { getImageSize, pixelToTile, tileToPixel } from '../../../helpers';
 import Sprite from '../../components/Sprite';
@@ -24,7 +24,10 @@ export interface SceneProps
   scene: GameScene;
   onChange?: (scene: GameScene) => void;
   onSelect?: (scene: GameScene) => void;
-  onSelectItem?: (scene?: GameScene, item?: GameActor | GameSensor) => void;
+  onSelectItem?: (
+    scene?: GameScene,
+    item?: GameActor | GameSensor | GamePlayer
+  ) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
 }
 
@@ -108,6 +111,12 @@ const Scene = ({
     onSelectItem?.(scene, sensor);
   }, [onSelectItem, scene]);
 
+  const onSelectPlayer = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectItem?.(scene, scene.player);
+  }, [onSelectItem, scene, scene.player]);
+
   const onMovedActor = useCallback((actor: GameActor, e: MoveableState) => {
     actor.x = pixelToTile(e.deltaX, gridSize);
     actor.y = pixelToTile(e.deltaY, gridSize);
@@ -124,7 +133,7 @@ const Scene = ({
   }, [onSelectItem, scene]);
 
   const onMovedPlayer = useCallback((e: MoveableState) => {
-    scene.player = scene.player || { x: 0, y: 0, sprite: 'sprite_default' };
+    scene.player = scene.player || { type: 'player', x: 0, y: 0 };
 
     scene.player.x = pixelToTile(e.deltaX, gridSize);
     scene.player.y = pixelToTile(e.deltaY, gridSize);
@@ -216,6 +225,7 @@ const Scene = ({
             <Moveable
               key={i}
               transformScale={zoom}
+              disabled={tool !== 'default' || selectedItem !== actor}
               x={tileToPixel(actor.x || 0, gridSize)}
               y={tileToPixel(actor.y || 0, gridSize)}
               onMouseDown={e => e.stopPropagation()}
@@ -260,6 +270,7 @@ const Scene = ({
               transformScale={zoom}
               x={tileToPixel(scene.player.x || 0, gridSize)}
               y={tileToPixel(scene.player.y || 0, gridSize)}
+              disabled={tool !== 'default' || selectedItem !== scene.player}
               onMouseDown={e => e.stopPropagation()}
               onMoveEnd={onMovedPlayer}
               step={gridSize}
@@ -268,23 +279,29 @@ const Scene = ({
                 top: 0,
                 width: scene.player.width
                   ? tileToPixel(scene.player.width, gridSize)
-                  : getSprite(scene.player.sprite)?.width ?? gridSize,
+                  : getSprite(scene.player.sprite || 'sprite_default')
+                    ?.width ?? gridSize,
                 height: scene.player.height
                   ? tileToPixel(scene.player.height, gridSize)
-                  : getSprite(scene.player.sprite)?.height ?? gridSize,
+                  : getSprite(scene.player.sprite || 'sprite_default')
+                    ?.height ?? gridSize,
               }}
             >
-              <div className="absolute w-full h-full">
+              <div
+                className="absolute w-full h-full"
+                onClick={onSelectPlayer}
+              >
                 <div className="relative w-full h-full">
                   <div
                     className={classNames(
                       'absolute bg-blue-500/50 border-2 border-blue-500',
                       'z-2 w-full h-full top-0 left-0',
+                      { 'bg-blue-500/70': selectedItem === scene.player }
                     )}
                   />
                   <Sprite
                     className="absolute z-1 top-0 left-0"
-                    sprite={getSprite(scene.player.sprite)}
+                    sprite={getSprite(scene.player.sprite || 'sprite_default')}
                     width={scene.player.width}
                     height={scene.player.height}
                     direction={scene.player.direction}

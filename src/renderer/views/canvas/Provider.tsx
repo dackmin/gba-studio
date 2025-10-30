@@ -8,10 +8,12 @@ import { mockState } from '@junipero/react';
 
 import type {
   GameActor,
+  GamePlayer,
   GameScene,
   GameScript,
   GameSensor,
   GameVariables,
+  SubToolType,
   ToolType,
 } from '../../../types';
 import { type CanvasContextType, CanvasContext } from '../../services/contexts';
@@ -19,8 +21,9 @@ import { useApp } from '../../services/hooks';
 
 export interface CanvasState {
   selectedScene?: string;
-  selectedItem?: GameActor | GameSensor | GameScript;
+  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
   tool: ToolType;
+  subTool?: SubToolType;
   previousTool: ToolType;
 }
 
@@ -32,6 +35,7 @@ const Provider = ({
     selectedScene: undefined,
     selectedItem: undefined,
     tool: 'default',
+    subTool: undefined,
     previousTool: 'default',
   });
 
@@ -65,10 +69,11 @@ const Provider = ({
     });
   }, [onCanvasChange, appPayload]);
 
-  const setTool = useCallback((tool: ToolType) => {
+  const setTool = useCallback((tool: ToolType, subTool?: SubToolType) => {
     dispatch({
       previousTool: state.tool,
       tool,
+      subTool,
     });
   }, [state.tool]);
 
@@ -78,7 +83,7 @@ const Provider = ({
 
   const selectItem = useCallback((
     scene: GameScene,
-    item: GameActor | GameSensor | undefined
+    item: GameActor | GameSensor | GamePlayer | undefined
   ) => {
     if (state.selectedItem === item) {
       return;

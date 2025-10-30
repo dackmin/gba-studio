@@ -208,7 +208,7 @@ const LeftSidebar = ({
                     </Tabs.Trigger>
                   )) }
                 </Tabs.List>
-                <ScrollArea>
+                <ScrollArea className="!w-full" scrollbars="vertical">
                   { children }
                 </ScrollArea>
               </Inset>

@@ -5,6 +5,7 @@ import type {
   AppPayload,
   AppStorage,
   GameActor,
+  GamePlayer,
   GameProject,
   GameScene,
   GameScript,
@@ -81,13 +82,13 @@ export const EditorContext = createContext<EditorContextType>({
 
 export interface CanvasContextType {
   selectedScene?: GameScene;
-  selectedItem?: GameActor | GameSensor | GameScript;
+  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
   tool: ToolType;
   setTool?(tool: ToolType): void;
   resetTool?(): void;
   selectItem?(
     scene?: GameScene,
-    item?: GameActor | GameSensor
+    item?: GameActor | GameSensor | GamePlayer
   ): void;
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;

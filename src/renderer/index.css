@@ -30,3 +30,9 @@ body {
   max-width: 1000px;
   margin: auto;
 }
+
+@utility editable {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

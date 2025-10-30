@@ -16,20 +16,16 @@ import {
 } from '@radix-ui/themes';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import type { AddSubtoolType, ToolType } from '../../../types';
+import type { AddSubToolType, ToolType } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 
 export interface ToolbarProps extends ComponentPropsWithoutRef<'div'> {
-  onSelectTool?: (tool: ToolType) => void;
+  onSelectTool?: (tool: ToolType, subTool?: AddSubToolType) => void;
 }
 
 const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
   const [opened, setOpened] = useState(false);
   const { tool } = useCanvas();
-
-  const onAddClick = useCallback((_: AddSubtoolType) => {
-    onSelectTool?.('add');
-  }, [onSelectTool]);
 
   useHotkeys('v', () => {
     onSelectTool?.('default');
@@ -44,6 +40,14 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
     onSelectTool?.('collisions');
   }, [], { useKey: true });
 
+  const onAddClick = useCallback((subTool: AddSubToolType) => {
+    onSelectTool?.('add', subTool);
+  }, [onSelectTool]);
+
+  const onSelectTool_ = useCallback((tool: ToolType) => {
+    onSelectTool?.(tool);
+  }, [onSelectTool]);
+
   return (
     <Card
       size="2"
@@ -57,7 +61,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         className="!m-0"
         size="2"
         variant={tool === 'default' ? 'solid' : 'ghost'}
-        onClick={onSelectTool?.bind(null, 'default')}
+        onClick={onSelectTool_?.bind(null, 'default',)}
       >
         <Tooltip
           content={(
@@ -78,7 +82,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         className="!m-0 !ml-2"
         size="2"
         variant={tool === 'pan' ? 'solid' : 'ghost'}
-        onClick={onSelectTool?.bind(null, 'pan')}
+        onClick={onSelectTool_?.bind(null, 'pan')}
       >
         <Tooltip
           content={(
@@ -118,7 +122,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
             </Tooltip>
           </IconButton>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content sideOffset={20} align="center">
+        <DropdownMenu.Content side="top" sideOffset={20} align="center">
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'scene')}>
             Scene
           </DropdownMenu.Item>
@@ -134,7 +138,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         className="!m-0 !ml-auto"
         size="2"
         variant={tool === 'collisions' ? 'solid' : 'ghost'}
-        onClick={onSelectTool?.bind(null, 'collisions')}
+        onClick={onSelectTool_?.bind(null, 'collisions')}
       >
         <Tooltip
           content={(
