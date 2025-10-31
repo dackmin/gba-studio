@@ -152,6 +152,7 @@ export interface GameProject {
   scenes: ProjectSceneData[];
   settings?: ProjectSettings;
   configurations?: ProjectConfiguration[];
+  startingScene?: string;
 }
 
 export interface GameSprite {
@@ -168,7 +169,7 @@ export interface GameBackground {
   _file?: string;
 }
 
-export interface AppPayload {
+export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
   variables: GameVariables[];

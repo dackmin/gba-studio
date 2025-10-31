@@ -40,7 +40,9 @@ const Provider = ({
   });
 
   const selectedScene = useMemo(() => (
-    appPayload.scenes.find(s => s._file === state.selectedScene)
+    appPayload.scenes.find(s => (
+      s._file === state.selectedScene || s.id === state.selectedScene
+    ))
   ), [appPayload.scenes, state.selectedScene]);
 
   const selectScene = useCallback((scene?: GameScene) => {
@@ -50,7 +52,7 @@ const Provider = ({
       return;
     }
 
-    dispatch({ selectedScene: scene?._file, selectedItem: undefined });
+    dispatch({ selectedScene: scene?.id, selectedItem: undefined });
   }, [selectedScene]);
 
   const selectScript = useCallback((script: GameScript) => {

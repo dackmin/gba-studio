@@ -391,7 +391,20 @@ namespace neo
     else if (e->type == "stop-music")
     {
       BN_LOG("Stopping music");
-      bn::music::stop();
+      const auto& current_music = bn::music::playing_item();
+
+      if (current_music.has_value())
+      {
+        for (int i = (int)(bn::music::volume() * 100); i >= 0; i -= 1)
+        {
+          BN_LOG("Fading out music to: ", i);
+          bn::music::set_volume(i / 100.0);
+          neo::utils::wait(10);
+          bn::core::update();
+        }
+
+        bn::music::stop();
+      }
     }
 
     /**

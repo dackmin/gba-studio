@@ -104,7 +104,9 @@ export const sanitizeProject = (project: GameProject, opts?: {
 
   // Remove deleted scenes
   project.scenes = project.scenes.filter(sceneData => (
-    opts?.scenes?.some(s => s._file === sceneData._file)
+    opts?.scenes?.some(s => (
+      s._file === sceneData._file || s.id === sceneData.id
+    ))
   ));
 
   return project;

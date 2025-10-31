@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { type MouseEvent, useCallback, useEffect, useRef } from 'react';
 import {
   type InfiniteCanvasRef,
   type InfiniteCanvasCursorMode,
@@ -12,15 +12,23 @@ import { v4 as uuid } from 'uuid';
 
 import type { GameScene } from '../../../types';
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
-import { DEFAULT_SCENE } from '../../services/defaults';
+import {
+  DEFAULT_ACTOR,
+  DEFAULT_SCENE,
+  DEFAULT_SENSOR,
+} from '../../services/defaults';
+import { pixelToTile } from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
 import Arrows from './Arrows';
+import Actor from './Actor';
+import Sensor from './Sensor';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const { bottomBarOpened, bottomBarHeight } = useEditor();
+  const { project } = useApp();
   const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
   const {
     selectedScene,
@@ -144,7 +152,7 @@ const Canvas = () => {
   }, [onCanvasChange, appPayload.scenes]);
 
   const onCanvasClick = useCallback(() => {
-    if (tool === 'add') {
+    if (tool === 'add' && subTool === 'scene') {
       const scene: GameScene = {
         ...DEFAULT_SCENE,
         id: uuid(),
@@ -168,10 +176,105 @@ const Canvas = () => {
       setTool?.('default');
       selectScene?.(scene);
     }
-  }, [tool, appPayload]);
+
+    if (tool === 'add' && subTool === 'actor' && selectedScene) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const sceneConfig = project?.scenes.find(s => (
+        s.id === selectedScene.id || s._file === selectedScene._file
+      ));
+
+      const actor = {
+        ...DEFAULT_ACTOR,
+        id: uuid(),
+        name: `Actor ${((selectedScene.actors?.length || 0) + 1)}`,
+        x: pixelToTile(
+          position.x - (sceneConfig?.x || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+        y: pixelToTile(
+          position.y - (sceneConfig?.y || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+      };
+
+      set(selectedScene, 'actors', [
+        ...(selectedScene.actors || []),
+        actor,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene.id ||
+          s._file === selectedScene._file
+            ? selectedScene! : s
+        )),
+      });
+
+      setTool?.('default');
+      selectItem?.(selectedScene, actor);
+    }
+
+    if (tool === 'add' && subTool === 'sensor' && selectedScene) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const sceneConfig = project?.scenes.find(s => (
+        s.id === selectedScene.id || s._file === selectedScene._file
+      ));
+
+      const sensor = {
+        ...DEFAULT_SENSOR,
+        id: uuid(),
+        name: `Sensor ${((selectedScene.map?.sensors?.length || 0) + 1)}`,
+        x: pixelToTile(
+          position.x - (sceneConfig?.x || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+        y: pixelToTile(
+          position.y - (sceneConfig?.y || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+      };
+
+      set(selectedScene, 'map.sensors', [
+        ...(selectedScene.map?.sensors || []),
+        sensor,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene.id ||
+          s._file === selectedScene._file
+            ? selectedScene! : s
+        )),
+      });
+
+      setTool?.('default');
+      selectItem?.(selectedScene, sensor);
+    }
+  }, [
+    tool, appPayload, subTool, selectedScene, project,
+    onCanvasChange, selectScene, onMoveScene, setTool, selectItem,
+  ]);
+
+  const onClickOutside = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    if (e.target !== infiniteCanvasRef.current?.innerRef.current) {
+      return;
+    }
+
+    if (tool === 'add' && subTool !== 'scene') {
+      return;
+    }
+
+    selectScene?.();
+  }, [selectScene, tool, subTool]);
 
   return (
-    <FullscreenView onMouseDown={() => selectScene?.()}>
+    <FullscreenView onMouseDown={onClickOutside}>
       <InfiniteCanvas
         ref={infiniteCanvasRef}
         cursorMode={
@@ -203,10 +306,28 @@ const Canvas = () => {
           { tool === 'add' && subTool === 'scene' && (
             <Scene
               scene={DEFAULT_SCENE}
-              className="!fixed pointer-events-none opacity-50"
+              className="!fixed pointer-events-none opacity-50 !z-1000"
               preview={true}
             />
-          )}
+          ) }
+
+          { tool === 'add' && subTool === 'actor' && (
+            <Actor
+              actor={DEFAULT_ACTOR}
+              className="!fixed pointer-events-none opacity-50 !z-1000"
+              preview={true}
+              gridSize={selectedScene?.map?.gridSize}
+            />
+          ) }
+
+          { tool === 'add' && subTool === 'sensor' && (
+            <Sensor
+              sensor={DEFAULT_SENSOR}
+              className="!fixed pointer-events-none opacity-50 !z-1000"
+              preview={true}
+              gridSize={selectedScene?.map?.gridSize}
+            />
+          ) }
 
           <Arrows />
         </div>
