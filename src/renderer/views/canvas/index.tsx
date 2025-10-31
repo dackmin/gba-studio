@@ -25,6 +25,7 @@ const Canvas = () => {
     selectedScene,
     selectedItem,
     tool,
+    subTool,
     setTool,
     resetTool,
     selectItem,
@@ -190,6 +191,20 @@ const Canvas = () => {
               onChange={onSceneChange}
             />
           )) }
+
+          { tool === 'add' && subTool === 'scene' && (
+            <Scene
+              scene={{
+                id: 'preview',
+                name: 'New Scene',
+                background: 'bg_default',
+                type: 'scene',
+                sceneType: 'logos',
+              }}
+              className="fixed pointer-events-none opacity-50"
+              preview={true}
+            />
+          )}
 
           <Arrows />
         </div>

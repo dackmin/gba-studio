@@ -22,7 +22,7 @@
     "@thenick775/mgba-wasm": "2.3.4"
   },
   "dependencies": {
-    "@junipero/react": "3.12.10",
+    "@junipero/react": "3.12.11",
     "@junipero/theme": "3.12.3",
     "@radix-ui/react-icons": "1.3.2",
     "@radix-ui/themes": "3.2.1",

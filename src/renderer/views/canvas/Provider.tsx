@@ -23,8 +23,8 @@ export interface CanvasState {
   selectedScene?: string;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
   tool: ToolType;
-  subTool?: SubToolType;
   previousTool: ToolType;
+  subTool?: SubToolType;
 }
 
 const Provider = ({
@@ -126,6 +126,7 @@ const Provider = ({
     selectedScene,
     selectedItem: state.selectedItem,
     tool: state.tool,
+    subTool: state.subTool,
     setTool,
     resetTool,
     selectItem,
@@ -138,7 +139,7 @@ const Provider = ({
     onSceneChange,
   }), [
     selectedScene,
-    state.selectedItem, state.tool,
+    state.selectedItem, state.tool, state.subTool,
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
   ]);

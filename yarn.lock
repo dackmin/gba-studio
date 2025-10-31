@@ -1347,9 +1347,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@junipero/react@npm:3.12.10":
-  version: 3.12.10
-  resolution: "@junipero/react@npm:3.12.10"
+"@junipero/react@npm:3.12.11":
+  version: 3.12.11
+  resolution: "@junipero/react@npm:3.12.11"
   dependencies:
     "@floating-ui/react": "npm:0.27.16"
     "@junipero/core": "npm:^3.12.3"
@@ -1357,7 +1357,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/3bd45dc777d515997f5e1494c3d1ea57b6415c2df9b13e68a4d67a40a94850cdbd19631b504aaba90a7332c9e94742b5db062c5039498d43a7a5b9283c2b05ac
+  checksum: 10c0/6a482af2583305408a5c961abab063567ad34c3f2e684afa04376d3aa81e9f69fd995b680f86c368c91a9d3912ffe089599a09a27b0cb93f6df55e014c8ab97c
   languageName: node
   linkType: hard
 
@@ -5935,7 +5935,7 @@ __metadata:
     "@electron-forge/plugin-fuses": "npm:7.10.2"
     "@electron-forge/plugin-vite": "npm:7.10.2"
     "@electron/fuses": "npm:2.0.0"
-    "@junipero/react": "npm:3.12.10"
+    "@junipero/react": "npm:3.12.11"
     "@junipero/tailwind-plugin": "npm:3.12.3"
     "@junipero/theme": "npm:3.12.3"
     "@poool/eslint-config": "npm:5.0.7"

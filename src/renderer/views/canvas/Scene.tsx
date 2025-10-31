@@ -22,6 +22,7 @@ import Sprite from '../../components/Sprite';
 export interface SceneProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect' | 'onChange'> {
   scene: GameScene;
+  preview?: boolean;
   onChange?: (scene: GameScene) => void;
   onSelect?: (scene: GameScene) => void;
   onSelectItem?: (
@@ -34,12 +35,13 @@ export interface SceneProps
 const Scene = ({
   scene,
   className,
+  preview = false,
   onChange,
   onSelect,
   onSelectItem,
   onMove,
 }: SceneProps) => {
-  const { zoom } = useInfiniteCanvas();
+  const { zoom, mouseX, mouseY } = useInfiniteCanvas();
   const { projectBase, project, sprites } = useApp();
   const { selectedScene, selectedItem, tool } = useCanvas();
   const [size, setSize] = useState([240, 160]);
@@ -148,11 +150,21 @@ const Scene = ({
     <Moveable
       onMouseDown={onSelect_}
       onMove={onMove?.bind(null, scene)}
-      transformScale={zoom}
+      transformScale={preview ? 1 : zoom}
       strategy="position"
       x={sceneConfig?.x || 0}
       y={sceneConfig?.y || 0}
-      disabled={tool !== 'default' || selectedScene !== scene || !!selectedItem}
+      disabled={
+        tool !== 'default' || selectedScene !== scene ||
+        !!selectedItem
+      }
+      style={preview ? {
+        position: 'fixed',
+        left: mouseX,
+        top: mouseY,
+        transform: `scale(${zoom})`,
+        transformOrigin: '0 0',
+      } : undefined}
     >
       <div
         className={classNames(
@@ -160,6 +172,9 @@ const Scene = ({
           { 'z-100' : selectedScene === scene },
         )}
       >
+        <span className="absolute block w-full left-0 bottom-full text-center">
+          { scene.name } { tool }
+        </span>
         <Card
           className={classNames(
             '!relative bg-cover bg-center transition-[outline-width]',
@@ -312,9 +327,6 @@ const Scene = ({
             </Moveable>
           ) }
         </Card>
-        <span className="absolute block w-full left-0 bottom-full text-center">
-          { scene.name }
-        </span>
       </div>
     </Moveable>
   );

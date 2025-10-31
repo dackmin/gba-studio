@@ -11,6 +11,7 @@ import type {
   GameScript,
   GameSensor,
   GameVariables,
+  SubToolType,
   ToolType,
 } from '../../types';
 
@@ -84,7 +85,8 @@ export interface CanvasContextType {
   selectedScene?: GameScene;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
   tool: ToolType;
-  setTool?(tool: ToolType): void;
+  subTool?: SubToolType;
+  setTool?(tool: ToolType, subTool?: SubToolType): void;
   resetTool?(): void;
   selectItem?(
     scene?: GameScene,
