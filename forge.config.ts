@@ -16,7 +16,8 @@ const config: ForgeConfig = {
     asar: true,
     icon: './images/AppIcon',
     appBundleId: 'dev.gbastudio.app',
-    executableName: process.platform === 'linux' ? 'gba-studio' : 'GBA Studio',
+    name: 'GBAStudio',
+    executableName: process.platform === 'linux' ? 'gba-studio' : 'GBAStudio',
     extraResource: [
       './public',
     ],
@@ -25,7 +26,7 @@ const config: ForgeConfig = {
         type: 'distribution',
         identity: process.env.SIGN_IDENTITY,
         optionsForFile: (f: string) => {
-          if (f.includes('GBA Studio.app')) {
+          if (f.includes('GBAStudio.app')) {
             return {
               entitlements: './src/entitlements.plist',
               'hardened-runtime': true,
