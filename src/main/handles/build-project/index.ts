@@ -9,6 +9,7 @@ import fse from 'fs-extra';
 import type { AppPayload, Build } from '../../../types';
 import { getResourcesDir } from '../../utils';
 import {
+  getBuildDir,
   runCommand,
   sendAbort,
   sendError,
@@ -16,7 +17,7 @@ import {
   sendStep,
   sendSuccessLog,
 } from './utils';
-import { buildTemplates } from './templates';
+import { buildTemplates, compileTemplate } from './templates';
 import Storage from '../../storage';
 
 const builds = new Map<string, Build>();
@@ -46,89 +47,6 @@ const getPythonPath = (
   return projectSettings?.pythonPath ||
     (process.platform === 'darwin' ? 'python3' : 'python');
 };
-
-async function checkGit (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller.signal.aborted) {
-    return;
-  }
-
-  const projectSettings = getBuildConfiguration(storage, build);
-
-  sendStep(event, build.id, 'Checking project configuration...');
-  sendLog(event, build.id, 'Verifying Git repository...');
-
-  try {
-    await runCommand(projectSettings?.gitPath || 'git', ['status'], {
-      cwd: path.dirname(build.projectPath),
-      event,
-      build,
-      log: false,
-      logErrors: false,
-    });
-
-    sendSuccessLog(event, build.id,
-      'Git repository found, skipping initialization');
-  } catch (e) {
-    if ((e as Error).message.includes('not a git repository')) {
-      sendStep(event, build.id, 'Initializing project...');
-      sendLog(event, build.id, 'Initializing Git repository...');
-
-      await runCommand(projectSettings?.gitPath || 'git', ['init'], {
-        cwd: path.dirname(build.projectPath),
-        event,
-        build,
-      });
-    } else {
-      throw e;
-    }
-  }
-}
-
-async function checkButano (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller.signal.aborted) {
-    return;
-  }
-
-  const projectSettings = getBuildConfiguration(storage, build);
-
-  sendLog(event, build.id, 'Verifying Butano submodule status...');
-
-  // Check if Butano submodule is initialized
-  const submodules = await runCommand(
-    projectSettings?.gitPath || 'git',
-    ['submodule', 'status'],
-    {
-      cwd: path.dirname(build.projectPath),
-      event,
-      build,
-    }
-  );
-
-  if (submodules.includes('butano')) {
-    sendSuccessLog(event, build.id, 'Butano submodule is up-to-date, skipping');
-
-    return;
-  }
-
-  // Initialize Butano submodule
-  await runCommand(projectSettings?.gitPath || 'git', [
-    'submodule', 'add', 'https://github.com/GValiente/butano.git',
-  ], {
-    cwd: path.dirname(build.projectPath),
-    event,
-    build,
-  });
-
-  sendSuccessLog(event, build.id, 'Butano submodule initialized');
-}
 
 async function checkPython (
   storage: Storage,
@@ -163,49 +81,79 @@ async function checkDependencies (
 
   sendStep(event, build.id, 'Checking project dependencies...');
 
-  await checkButano(storage, event, build);
   await checkPython(storage, event, build);
 }
 
-async function checkTemplates (event: IpcMainInvokeEvent, build: Build) {
-  if (build.controller.signal.aborted) {
-    return;
-  }
-
-  sendStep(event, build.id, 'Updating project\'s core files...');
-  sendLog(event, build.id, 'Updating core files from common template...');
-
-  // Copy includes
-  await fse.copy(
-    path.join(getResourcesDir(), './public/templates/commons/include'),
-    path.join(path.dirname(build.projectPath), 'include'),
-    { overwrite: true, errorOnExist: false }
+async function buildMakefile (
+  storage: Storage,
+  build: Build,
+) {
+  const pythonPath = getPythonPath(storage, build);
+  const target = path
+    .basename(build.projectPath, path.extname(build.projectPath));
+  const makefileContent = await compileTemplate(
+    await fse.readFile(path.join(
+      getResourcesDir(),
+      './public/templates/commons/templates',
+      'Makefile.tpl'
+    ), 'utf-8'),
+    {
+      target,
+      pythonPath: pythonPath,
+      butanoPath: path.join(
+        getResourcesDir(),
+        './public/vendors/butano/butano'
+      ),
+      sources: [
+        path.relative(
+          getBuildDir(build),
+          path.join(path.dirname(build.projectPath), 'src'),
+        ),
+        path.relative(
+          getBuildDir(build),
+          path.join(getResourcesDir(), './public/templates/commons/src'),
+        ),
+      ],
+      includes: [
+        path.relative(
+          getBuildDir(build),
+          path.join(path.dirname(build.projectPath), 'include'),
+        ),
+        path.relative(
+          getBuildDir(build),
+          path.join(getResourcesDir(), './public/templates/commons/include'),
+        ),
+      ],
+      graphics: [
+        path.relative(
+          getBuildDir(build),
+          path.join(path.dirname(build.projectPath), 'graphics'),
+        ),
+        path.relative(
+          getBuildDir(build),
+          path.join(getResourcesDir(), './public/templates/commons/graphics'),
+        ),
+      ],
+      audio: [
+        path.relative(
+          getBuildDir(build),
+          path.join(path.dirname(build.projectPath), 'audio'),
+        ),
+        path.relative(
+          getBuildDir(build),
+          path.join(getResourcesDir(), './public/templates/commons/audio'),
+        ),
+      ],
+      romTitle: build.data?.project?.romName || 'My Game',
+      romCode: build.data?.project?.romCode || 'ABCD',
+    }
   );
-  sendSuccessLog(event, build.id, 'include/ folder updated');
 
-  // Copy src
-  await fse.copy(
-    path.join(getResourcesDir(), './public/templates/commons/src'),
-    path.join(path.dirname(build.projectPath), 'src'),
-    { overwrite: true, errorOnExist: false }
+  await fse.outputFile(
+    path.join(getBuildDir(build), 'Makefile'),
+    makefileContent,
+    'utf-8'
   );
-  sendSuccessLog(event, build.id, 'src/ folder updated');
-
-  // Copy templates
-  await fse.copy(
-    path.join(getResourcesDir(), './public/templates/commons/templates'),
-    path.join(path.dirname(build.projectPath), 'templates'),
-    { overwrite: true, errorOnExist: false }
-  );
-  sendSuccessLog(event, build.id, 'templates/ folder updated');
-
-  // Copy graphics
-  await fse.copy(
-    path.join(getResourcesDir(), './public/templates/commons/graphics'),
-    path.join(path.dirname(build.projectPath), 'graphics'),
-    { overwrite: true, errorOnExist: false }
-  );
-  sendSuccessLog(event, build.id, 'graphics/ folder updated');
 }
 
 async function buildProject (
@@ -221,35 +169,40 @@ async function buildProject (
   await buildTemplates(event, build);
 
   sendStep(event, build.id, 'Building project...');
-  sendLog(event, build.id, 'Building project...');
+  sendLog(event, build.id, `Building project in ${getBuildDir(build)}...`);
 
-  const pythonPath = getPythonPath(storage, build);
+  const target = path
+    .basename(build.projectPath, path.extname(build.projectPath));
 
+  await buildMakefile(storage, build);
+
+  // Run make
   await runCommand('make', [], {
-    cwd: path.dirname(build.projectPath),
+    cwd: getBuildDir(build),
     event,
     build,
-  }, {
-    env: {
-      ...process.env,
-      PYTHON: pythonPath,
-      ROMTITLE: build.data?.project?.romName || 'My Game',
-      ROMCODE: build.data?.project?.romCode || 'ABCD',
-    },
   });
+
+  const finalGamePath = path.join(
+    path.dirname(build.projectPath),
+    'out',
+    target + '.gba'
+  );
+
+  // Copy built .gba to project directory
+  await fse.ensureDir(path.dirname(finalGamePath));
+  await fse.copyFile(
+    path.join(getBuildDir(build), target + '.gba'),
+    finalGamePath,
+  );
 
   sendSuccessLog(event, build.id, 'Project built successfully 🎉');
 
   // Check for built .gba file
-  const builtGbaPath = path.join(
-    path.dirname(build.projectPath),
-    path.basename(path.dirname(build.projectPath)) + '.gba'
-  );
-
   try {
-    await fs.access(builtGbaPath);
+    await fs.access(finalGamePath);
   } catch (e) {
-    sendError(event, build.id, `Built .gba file not found: ${builtGbaPath}`);
+    sendError(event, build.id, `Built .gba file not found: ${finalGamePath}`);
     sendError(event, build.id, (e as Error).message);
     build.controller.abort();
     sendAbort(event, build.id);
@@ -266,7 +219,7 @@ async function buildProject (
 
   const runner = spawn(command, [
     ...args,
-    builtGbaPath,
+    finalGamePath,
   ], { stdio: 'inherit', shell: true });
 
   runner.unref();
@@ -278,9 +231,7 @@ async function startBuild (
   build: Build,
 ) {
   try {
-    await checkGit(storage, event, build);
     await checkDependencies(storage, event, build);
-    await checkTemplates(event, build);
 
     if (build.controller.signal.aborted) {
       return;

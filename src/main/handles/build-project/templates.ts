@@ -5,18 +5,10 @@ import Handlebars from 'handlebars';
 import fse from 'fs-extra';
 
 import type { Build } from '../../../types';
-import { sendLog, sendSuccessLog, toSlug } from './utils';
+import { getBuildDir, sendLog, sendSuccessLog, toSlug } from './utils';
+import { getResourcesDir } from '../../utils';
 
-export const buildSingleTemplate = async (
-  templateName: string,
-  build: Build,
-): Promise<void> => {
-  const projectDir = path.dirname(build.projectPath);
-  const template = await fse.readFile(
-    path.join(projectDir, './templates', templateName),
-    'utf-8'
-  );
-
+export const setupHandlebars = async () => {
   // Add helpers
   Handlebars.registerHelper('ensureArray', value => [].concat(value || []));
   Handlebars.registerHelper('hasItems', (arr: any[]) =>
@@ -34,6 +26,7 @@ export const buildSingleTemplate = async (
   Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
   Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase());
+  Handlebars.registerHelper('posix', (p: string) => p.replace(/\s/g, '\\ '));
   Handlebars.registerHelper('isRawValue', (obj: any) =>
     ['string', 'number', 'boolean'].includes(typeof obj));
   Handlebars.registerHelper('preserveLineBreaks', (str: string) =>
@@ -46,34 +39,56 @@ export const buildSingleTemplate = async (
   Handlebars.registerPartial(
     'eventsPartial',
     (await fse.readFile(path.join(
-      projectDir, './templates/partials/events.tpl.h'), 'utf-8')
+      getResourcesDir(),
+      './public/templates/commons/templates/partials/events.tpl.h'), 'utf-8')
     ).trim(),
   );
 
   Handlebars.registerPartial(
     'ifConditionsPartial',
     (await fse.readFile(path.join(
-      projectDir, './templates/partials/if-conditions.tpl.h'), 'utf-8')
-    ).trim()
+      getResourcesDir(),
+      './public/templates/commons/templates/partials/if-conditions.tpl.h'
+    ), 'utf-8')).trim()
   );
 
   Handlebars.registerPartial(
     'ifExpressionsPartial',
     (await fse.readFile(path.join(
-      projectDir, './templates/partials/if-expressions.tpl.h'), 'utf-8')
-    ).trim()
+      getResourcesDir(),
+      './public/templates/commons/templates/partials/if-expressions.tpl.h'
+    ), 'utf-8')).trim()
   );
+};
 
-  const compiled = Handlebars.compile(template, {
+export const compileTemplate = async (
+  content: string,
+  data: any,
+): Promise<string> => {
+  await setupHandlebars();
+  const compiled = Handlebars.compile(content, {
     noEscape: true,
   });
 
-  const result = compiled(build.data);
+  return compiled(data);
+};
 
-  await fse.writeFile(
-    path.join(projectDir, './build', templateName.replace('.tpl', '')),
+export const buildSingleTemplate = async (
+  templateName: string,
+  build: Build,
+): Promise<void> => {
+  const template = await fse.readFile(path.join(
+    getResourcesDir(),
+    './public/templates/commons/templates',
+    templateName
+  ), 'utf-8');
+
+  const result = await compileTemplate(template, build.data);
+
+  await fse.outputFile(
+    path.join(getBuildDir(build), './build', templateName.replace('.tpl', '')),
     result,
-    'utf-8'
+    'utf-8',
   );
 };
 

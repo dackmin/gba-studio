@@ -7,7 +7,7 @@ export const getDataFiles = async (
 ) => {
   try {
     return (await fs
-      .readdir(path.join(base, 'data')))
+      .readdir(path.join(base, 'content')))
       .filter(file => cond(file));
   } catch {
     return [];

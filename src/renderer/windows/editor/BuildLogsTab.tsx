@@ -11,7 +11,7 @@ const BuildLogsTab = () => {
   const { manualScroll, scrollToBottom } = useBottomBar();
 
   useBridgeListener('build-log', (message: BuildMessage) => {
-    setLogs(prevLogs => [...prevLogs, message].slice(-100));
+    setLogs(prevLogs => [...prevLogs, message].slice(-10000));
   }, []);
 
   useLayoutEffect(() => {

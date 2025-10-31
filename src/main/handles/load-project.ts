@@ -74,7 +74,8 @@ export default async (
 
   for (const file of variableFiles) {
     const registry = JSON
-      .parse(await fs.readFile(path.join(projectDir, 'data', file), 'utf-8'));
+      .parse(await fs
+        .readFile(path.join(projectDir, 'content', file), 'utf-8'));
     registry._file = file;
     variables.push(registry);
   }
@@ -87,7 +88,7 @@ export default async (
 
   for (const file of sceneFiles) {
     const scene: GameScene = JSON.parse(await fs
-      .readFile(path.join(projectDir, 'data', file), 'utf-8'));
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
 
     scene._file = file;
 
@@ -138,7 +139,7 @@ export default async (
 
   for (const file of scriptFiles) {
     const script: GameScript = JSON.parse(await fs
-      .readFile(path.join(projectDir, 'data', file), 'utf-8'));
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
 
     script._file = file;
     current++;
