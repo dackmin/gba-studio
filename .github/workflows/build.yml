@@ -13,9 +13,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: mac
+          - name: darwin-arm64
             label: macOS ARM
             os: macos-15
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -30,3 +31,12 @@ jobs:
         run: yarn install
       - name: Run build
         run: yarn package
+      - name: Get package version
+        id: get_version
+        run: |
+          echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.name }}
+          path: out/GBAStudio-${{ matrix.name }}/GBAStudio.app
