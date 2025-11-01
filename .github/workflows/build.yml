@@ -13,9 +13,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: darwin-arm64
-            label: macOS ARM
+          - name: macOS ARM
+            label: darwin-arm64
             os: macos-26
+    name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -27,6 +28,7 @@ jobs:
         with:
           node-version: 22
           cache: yarn
+          check-latest: true
       - name: Install dependencies
         run: yarn install
       - name: Run build
@@ -38,5 +40,5 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.name }}
-          path: out/GBAStudio-${{ matrix.name }}/GBAStudio.app
+          name: gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}
+          path: out/GBAStudio-${{ matrix.label }}/GBAStudio.app
