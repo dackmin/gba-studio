@@ -15,7 +15,7 @@ jobs:
         include:
           - name: darwin-arm64
             label: macOS ARM
-            os: macos-15
+            os: macos-26
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
