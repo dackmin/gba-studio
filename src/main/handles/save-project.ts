@@ -19,7 +19,7 @@ export default async (
       const fileName = variableSet._file;
       delete variableSet._file;
 
-      await fs.writeFile(path.join(projectDir, 'data', fileName),
+      await fs.writeFile(path.join(projectDir, 'content', fileName),
         JSON.stringify(variableSet, null, 2) + '\n', 'utf-8');
     }
   }
@@ -34,7 +34,7 @@ export default async (
 
   for (const file of existingSceneFiles) {
     if (!newSceneFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'data', file));
+      await fs.unlink(path.join(projectDir, 'content', file));
     }
   }
 
@@ -44,7 +44,7 @@ export default async (
       const fileName = scene._file;
       delete scene._file;
 
-      await fs.writeFile(path.join(projectDir, 'data', fileName),
+      await fs.writeFile(path.join(projectDir, 'content', fileName),
         JSON.stringify(scene, null, 2) + '\n', 'utf-8');
     }
   }
@@ -55,7 +55,7 @@ export default async (
 
   for (const file of existingScriptFiles) {
     if (!newScriptFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'data', file));
+      await fs.unlink(path.join(projectDir, 'content', file));
     }
   }
 
@@ -65,7 +65,7 @@ export default async (
       const fileName = script._file;
       delete script._file;
 
-      await fs.writeFile(path.join(projectDir, 'data', fileName),
+      await fs.writeFile(path.join(projectDir, 'content', fileName),
         JSON.stringify(script, null, 2) + '\n', 'utf-8');
     }
   }
