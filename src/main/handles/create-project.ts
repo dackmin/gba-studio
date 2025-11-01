@@ -22,12 +22,6 @@ export default async (storage: Storage, event: IpcMainInvokeEvent, opts: {
 
   await fs.mkdir(projectDir, { recursive: true });
 
-  // Copy commons
-  await fse.copy(
-    path.join(getResourcesDir(), './public/templates/commons'),
-    projectDir
-  );
-
   // Copy template
   await fse.copy(
     path.join(getResourcesDir(), `./public/templates/${opts.type}`),
@@ -38,6 +32,8 @@ export default async (storage: Storage, event: IpcMainInvokeEvent, opts: {
   const project: GameProject = {
     name: opts.name || 'My Awesome Game',
     scenes: [],
+    romName: 'MY AWESOME GAME',
+    romCode: 'MAG',
   };
 
   const projectPath = path.join(projectDir, `${slugify(opts.name)}.gbasproj`);
