@@ -26,6 +26,7 @@ import {
   clearRecentProjects,
   getEditorConfig,
   setEditorConfig,
+  getResourcesPath,
 } from './handles';
 import Storage from './storage';
 
@@ -75,3 +76,4 @@ ipcMain.handle('clear-recent-projects',
   clearRecentProjects.bind(null, storage));
 ipcMain.handle('get-editor-config', getEditorConfig.bind(null, storage));
 ipcMain.handle('set-editor-config', setEditorConfig.bind(null, storage));
+ipcMain.handle('get-resources-path', getResourcesPath);

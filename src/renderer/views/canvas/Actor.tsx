@@ -74,7 +74,7 @@ const Actor = ({
             onClick={onSelect}
           />
           <Sprite
-            className="absolute z-1 top-0 left-0"
+            className="absolute z-1 top-0 left-0 pixelated"
             sprite={getSprite(actor.sprite)}
             width={actor.width}
             height={actor.height}

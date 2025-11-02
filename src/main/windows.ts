@@ -3,6 +3,8 @@ import url from 'node:url';
 
 import { net, session, BrowserWindow, nativeTheme, app } from 'electron';
 
+import { getResourcesDir } from './utils';
+
 export const createSelectionWindow = async () => {
   // const {
   //   WindowCorner,
@@ -138,6 +140,7 @@ export const createProjectWindow = async (projectPath: string) => {
 
     url.searchParams.set('projectPath', projectPath);
     url.searchParams.set('projectBase', path.dirname(projectPath));
+    url.searchParams.set('resourcesPath', getResourcesDir());
     url.searchParams.set('theme',
       nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
 
@@ -153,6 +156,7 @@ export const createProjectWindow = async (projectPath: string) => {
         projectPath,
         projectBase: path.dirname(projectPath),
         theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+        resourcesPath: getResourcesDir(),
       } },
     );
   }

@@ -3,6 +3,7 @@ import { ComponentPropsWithoutRef, useMemo } from 'react';
 import type { Direction, GameSprite } from '../../../types';
 import { getGraphicName, tileToPixel } from '../../../helpers';
 import { HORIZONTAL_FRAMES } from '../../services/sprites';
+import { useApp } from '../../services/hooks';
 
 export interface SpriteProps extends ComponentPropsWithoutRef<'div'> {
   sprite?: GameSprite;
@@ -24,6 +25,7 @@ const Sprite = ({
   scale = 1,
   ...rest
 }: SpriteProps) => {
+  const { resourcesPath } = useApp();
   const frames = useMemo(() => (
     HORIZONTAL_FRAMES.idle[direction]
   ), [direction]);
@@ -48,17 +50,15 @@ const Sprite = ({
     return `-${frames * width}px 0`;
   }, [frames, width]);
 
-  if (!sprite?._file) {
-    return null;
-  }
-
   return (
     <div
       { ...rest }
       style={{
         ...style,
-        backgroundImage:
-          `url(project://graphics/${getGraphicName(sprite._file)}.bmp)`,
+        backgroundImage: !sprite?._file
+          ? `url(file://${resourcesPath}/public/templates` +
+            `/commons/graphics/sprite_default.bmp)`
+          : `url(project://graphics/${getGraphicName(sprite._file)}.bmp)`,
         backgroundSize: 'cover',
         backgroundPosition: position,
         backgroundRepeat: 'no-repeat',

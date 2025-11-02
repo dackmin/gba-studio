@@ -59,6 +59,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('get-editor-config'),
   setEditorConfig: (config: AppStorage): Promise<void> =>
     ipcRenderer.invoke('set-editor-config', config),
+  getResourcesPath: (): Promise<string> =>
+    ipcRenderer.invoke('get-resources-path'),
 
   // Info
   platform: process.platform,

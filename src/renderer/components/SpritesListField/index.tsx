@@ -14,8 +14,8 @@ const SpritesListField = ({
   defaultValue,
   onValueChange,
 }: SpritesListFieldProps) => {
-  const { sprites } = useApp();
-  const val = value ?? defaultValue ?? '';
+  const { sprites, resourcesPath } = useApp();
+  const val = value ?? defaultValue;
 
   return (
     <DropdownMenu.Root>
@@ -23,14 +23,30 @@ const SpritesListField = ({
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
             <Avatar
-              src={`project://graphics/${val}.bmp`}
+              src={!val
+                ? `file://${resourcesPath}public/templates` +
+                  `/commons/graphics/sprite_default.bmp`
+                : `project://graphics/${val}.bmp`}
               fallback=""
+              className="[&>img]:pixelated"
             />
-            <Text>{ val }</Text>
+            <Text>{ val ?? 'sprite_default' }</Text>
           </div>
         </Card>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
+        <DropdownMenu.Item
+          onClick={() => onValueChange?.('')}
+        >
+          <Avatar
+            src={`file://${resourcesPath}public/templates` +
+              `/commons/graphics/sprite_default.bmp`}
+            fallback=""
+            size="1"
+            className="[&>img]:pixelated"
+          />
+          <Text>sprite_default</Text>
+        </DropdownMenu.Item>
         { sprites.map(sprite => (
           <DropdownMenu.Item
             key={sprite._file}
@@ -41,6 +57,7 @@ const SpritesListField = ({
                 src={`project://graphics/${getGraphicName(sprite._file)}.bmp`}
                 fallback=""
                 size="1"
+                className="[&>img]:pixelated"
               />
               <Text>{ getGraphicName(sprite._file) }</Text>
             </div>

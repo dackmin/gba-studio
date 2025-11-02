@@ -19,6 +19,7 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   project?: GameProject;
   projectPath: string;
   projectBase: string;
+  resourcesPath: string;
   dirty: boolean;
   building: boolean;
   editorConfig?: AppStorage;
@@ -40,6 +41,7 @@ export const AppContext = createContext<AppContextType>({
   scripts: [],
   projectPath: '',
   projectBase: '',
+  resourcesPath: '',
   dirty: false,
   building: false,
   save: async () => {},

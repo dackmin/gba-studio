@@ -36,6 +36,7 @@ interface AppBridge extends EventTarget {
   getRomPath(projectPath: string): Promise<string>;
   getEditorConfig(): Promise<AppStorage>;
   setEditorConfig(config: AppStorage): Promise<void>;
+  getResourcesPath(): Promise<string>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

@@ -28,7 +28,7 @@ export interface AppState extends Omit<AppPayload, 'project'> {
 }
 
 const App = () => {
-  const { projectPath, projectBase, theme } = useQuery();
+  const { projectPath, resourcesPath, projectBase, theme } = useQuery();
   const [state, dispatch] = useReducer(mockState<AppState>, {
     theme,
     projectBase,
@@ -243,6 +243,7 @@ const App = () => {
     projectPath: projectPath || '',
     projectBase: state.projectBase,
     editorConfig: state.editorConfig,
+    resourcesPath,
     save,
     setBuilding,
     setEditorConfig,
@@ -250,7 +251,7 @@ const App = () => {
     onCanvasChange,
     onProjectChange,
   }), [
-    projectPath,
+    projectPath, resourcesPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building, state.editorConfig,

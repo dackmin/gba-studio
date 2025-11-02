@@ -137,7 +137,7 @@ const SceneForm = ({
               <div className="flex flex-col gap-2">
                 <Text className="block text-slate" size="1">Player sprite</Text>
                 <SpritesListField
-                  value={scene.player?.sprite ?? 'sprite_default'}
+                  value={scene.player?.sprite}
                   onValueChange={onValueChange.bind(null, 'player.sprite')}
                 />
               </div>
