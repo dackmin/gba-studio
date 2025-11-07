@@ -25,6 +25,7 @@ export interface AppState extends Omit<AppPayload, 'project'> {
   building: boolean;
   project?: GameProject;
   editorConfig?: AppStorage;
+  clipboard?: any;
 }
 
 const App = () => {
@@ -46,6 +47,7 @@ const App = () => {
     history: [],
     historyIndex: 0,
     building: false,
+    clipboard: undefined,
   });
 
   useBridgeListener('build-completed', () => {
@@ -69,6 +71,7 @@ const App = () => {
     if (projectPath) {
       const data = await window.electron.loadProject(projectPath);
       const editorConfig = await window.electron.getEditorConfig();
+      const clipboard = await window.electron.getClipboard();
 
       dispatch({
         ...data,
@@ -77,6 +80,7 @@ const App = () => {
         loading: false,
         editorConfig,
         ready: true,
+        clipboard,
       });
     }
   }, [projectPath]);
@@ -229,6 +233,11 @@ const App = () => {
     window.electron.setEditorConfig(config);
   }, []);
 
+  const setClipboard = useCallback((data: any) => {
+    dispatch({ clipboard: data });
+    window.electron.registerClipboard(data);
+  }, []);
+
   const getContext = useCallback((): AppContextType => ({
     project: state.project,
     scenes: state.scenes,
@@ -243,10 +252,12 @@ const App = () => {
     projectPath: projectPath || '',
     projectBase: state.projectBase,
     editorConfig: state.editorConfig,
+    clipboard: state.clipboard,
     resourcesPath,
     save,
     setBuilding,
     setEditorConfig,
+    setClipboard,
     onMoveScene,
     onCanvasChange,
     onProjectChange,
@@ -255,8 +266,9 @@ const App = () => {
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building, state.editorConfig,
+    state.clipboard,
     save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
-    setEditorConfig,
+    setEditorConfig, setClipboard,
   ]);
 
   return (

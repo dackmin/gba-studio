@@ -37,6 +37,8 @@ interface AppBridge extends EventTarget {
   getEditorConfig(): Promise<AppStorage>;
   setEditorConfig(config: AppStorage): Promise<void>;
   getResourcesPath(): Promise<string>;
+  registerClipboard(data: any): Promise<void>;
+  getClipboard(): Promise<any>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

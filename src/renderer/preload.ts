@@ -61,6 +61,10 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('set-editor-config', config),
   getResourcesPath: (): Promise<string> =>
     ipcRenderer.invoke('get-resources-path'),
+  registerClipboard: (data: any): Promise<void> =>
+    ipcRenderer.invoke('register-clipboard', data),
+  getClipboard: (): Promise<any> =>
+    ipcRenderer.invoke('get-clipboard'),
 
   // Info
   platform: process.platform,

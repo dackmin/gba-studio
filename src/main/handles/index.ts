@@ -11,5 +11,7 @@ export { default as clearRecentProjects } from './clear-recent-projects';
 export { default as getEditorConfig } from './get-editor-config';
 export { default as setEditorConfig } from './set-editor-config';
 export { default as getResourcesPath } from './get-resources-path';
+export { default as registerClipboard } from './register-clipboard';
+export { default as getClipboard } from './get-clipboard';
 
 export * from './build-project';

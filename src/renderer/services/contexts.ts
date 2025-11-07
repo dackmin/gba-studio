@@ -23,9 +23,11 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   dirty: boolean;
   building: boolean;
   editorConfig?: AppStorage;
+  clipboard?: any;
   save(): Promise<void>;
   setBuilding(building: boolean): void;
   setEditorConfig(config: AppStorage): void;
+  setClipboard(data: any): void;
   onMoveScene?(scene: GameScene, e: Partial<MoveableState>): void;
   onCanvasChange?(payload: Partial<AppPayload>): void;
   onProjectChange?(project: GameProject): void;
@@ -47,6 +49,7 @@ export const AppContext = createContext<AppContextType>({
   save: async () => {},
   setBuilding: () => {},
   setEditorConfig: () => {},
+  setClipboard: () => {},
 });
 
 export interface EditorContextType {

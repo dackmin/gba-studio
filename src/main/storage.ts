@@ -54,4 +54,13 @@ export default class Storage {
 
     return this.save();
   }
+
+  addToClipboard (data: any) {
+    this.config = {
+      ...this.config,
+      clipboard: data,
+    };
+
+    return this.save();
+  }
 }

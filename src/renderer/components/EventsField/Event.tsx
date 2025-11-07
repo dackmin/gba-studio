@@ -5,7 +5,7 @@ import {
   DotsVerticalIcon,
 } from '@radix-ui/react-icons';
 import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
-import { classNames } from '@junipero/react';
+import { classNames, exists } from '@junipero/react';
 
 import type {
   DisableActorEvent,
@@ -23,6 +23,7 @@ import type {
   WaitForButtonEvent,
 } from '../../../types';
 import { getEventDefinition } from '../../services/events';
+import { useApp } from '../../services/hooks';
 import Switch from '../Switch';
 import EventDuration from './EventDuration';
 import EventGoToScene from './EventGoToScene';
@@ -50,6 +51,7 @@ const Event = ({
   onPrepend,
   onAppend,
 }: EventProps) => {
+  const { clipboard, setClipboard } = useApp();
   const nameRef = useRef<HTMLDivElement>(null);
   const [opened, setOpened] = useState(event._collapsed ?? true);
   const [renaming, setRenaming] = useState(false);
@@ -89,6 +91,19 @@ const Event = ({
     onAppend?.(event);
   }, [onAppend, event]);
 
+  const onCopyClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+    setClipboard(event);
+  }, [event, setClipboard]);
+
+  const onPasteBeforeClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  const onPasteAfterClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <div className="bg-(--gray-2)">
       <a
@@ -123,6 +138,20 @@ const Event = ({
             </IconButton>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onClick={onCopyClick}>
+              Copy event
+            </DropdownMenu.Item>
+            { exists(clipboard) && (
+              <>
+                <DropdownMenu.Item onClick={onPasteBeforeClick}>
+                  Paste event before
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onClick={onPasteAfterClick}>
+                  Paste event after
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+              </>
+            ) }
             {/* <DropdownMenu.Item onClick={onRenameClick}>
               Rename event
             </DropdownMenu.Item>

@@ -27,6 +27,8 @@ import {
   getEditorConfig,
   setEditorConfig,
   getResourcesPath,
+  registerClipboard,
+  getClipboard,
 } from './handles';
 import Storage from './storage';
 
@@ -77,3 +79,5 @@ ipcMain.handle('clear-recent-projects',
 ipcMain.handle('get-editor-config', getEditorConfig.bind(null, storage));
 ipcMain.handle('set-editor-config', setEditorConfig.bind(null, storage));
 ipcMain.handle('get-resources-path', getResourcesPath);
+ipcMain.handle('register-clipboard', registerClipboard.bind(null, storage));
+ipcMain.handle('get-clipboard', getClipboard.bind(null, storage));

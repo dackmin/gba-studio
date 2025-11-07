@@ -22,6 +22,7 @@ export interface RecentProject {
 export interface AppStorage {
   recentProjects?: RecentProject[];
   buildConfiguration?: string;
+  clipboard?: any;
 }
 
 export type VariableValue = string | number | boolean;
