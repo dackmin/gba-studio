@@ -50,7 +50,7 @@
     "@junipero/tailwind-plugin": "3.12.3",
     "@poool/eslint-config": "5.0.7",
     "@poool/eslint-config-react": "5.0.9",
-    "@tailwindcss/vite": "4.1.16",
+    "@tailwindcss/vite": "4.1.17",
     "@types/debug": "4.1.12",
     "@types/electron-squirrel-startup": "1.0.2",
     "@types/fs-extra": "11.0.4",
@@ -59,14 +59,14 @@
     "@vitejs/plugin-react": "5.1.0",
     "debug": "4.4.3",
     "dotenv": "17.2.3",
-    "electron": "39.1.0",
+    "electron": "39.1.1",
     "eslint": "9.39.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
-    "tailwindcss": "4.1.16",
+    "tailwindcss": "4.1.17",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.3",
-    "vite": "7.2.0"
+    "vite": "7.2.2"
   },
   "build": {
     "electronLanguages": [
