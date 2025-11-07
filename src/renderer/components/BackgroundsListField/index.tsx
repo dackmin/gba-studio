@@ -14,7 +14,7 @@ const BackgroundsListField = ({
   defaultValue,
   onValueChange,
 }: BackgroundsListFieldProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds, resourcesPath } = useApp();
   const val = value ?? defaultValue ?? '';
 
   return (
@@ -23,7 +23,10 @@ const BackgroundsListField = ({
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
             <Avatar
-              src={`project://graphics/${val}.bmp`}
+              src={!val || val === 'bg_default'
+                ? `file://${resourcesPath}/public/templates` +
+                  `/commons/graphics/bg_default.bmp`
+                : `project://graphics/${val}.bmp`}
               fallback=""
             />
             <Text>{ val }</Text>
@@ -31,6 +34,19 @@ const BackgroundsListField = ({
         </Card>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
+        <DropdownMenu.Item
+          onClick={() => onValueChange?.('')}
+        >
+          <div className="flex items-center gap-2">
+            <Avatar
+              src={`file://${resourcesPath}/public/templates` +
+                `/commons/graphics/bg_default.bmp`}
+              fallback=""
+              size="1"
+            />
+            <Text>bg_default</Text>
+          </div>
+        </DropdownMenu.Item>
         { backgrounds.map(bg => (
           <DropdownMenu.Item
             key={bg._file}

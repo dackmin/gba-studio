@@ -69,7 +69,7 @@ const Scene = ({
   ), [backgrounds, scene.background]);
 
   const backgroundPath = useMemo(() => (
-    !background?._file
+    !background?._file || !scene.background || scene.background === 'bg_default'
       ? `file://${resourcesPath}/public/templates/` +
         `commons/graphics/bg_default.bmp`
       : `project://graphics/${scene.background}.bmp`
