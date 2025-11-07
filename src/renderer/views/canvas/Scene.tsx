@@ -250,7 +250,7 @@ const Scene = ({
       y >= 0 && y < c.length &&
       x >= 0 && x < c[y].length
     ) {
-      c[y][x] = applyCollision(c[y][x], e.buttons);
+      c[y][x] = applyCollision(c[y][x], e.button);
       scene.map.collisions = c.map(line => line.join(','));
     }
 
