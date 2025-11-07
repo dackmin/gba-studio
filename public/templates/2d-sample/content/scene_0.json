@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neoframe/gba-studio/main/public/templates/commons/.schemas/scene.json",
+  "type": "scene",
+  "name": "Scene 0",
+  "background": "bg_default",
+  "events": [{
+    "type": "show-dialog",
+    "text": "Welcome to the game!"
+  }, {
+    "type": "wait-for-button",
+    "buttons": ["Start"]
+  }]
+}

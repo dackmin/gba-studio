@@ -1,5 +1,12 @@
 import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { Dialog, Inset, ScrollArea, Spinner, Text, TextField } from '@radix-ui/themes';
+import {
+  Dialog,
+  Inset,
+  ScrollArea,
+  Spinner,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import { AVAILABLE_EVENTS } from '../../services/events';
