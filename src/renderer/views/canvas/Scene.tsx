@@ -3,14 +3,16 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useState,
+  useReducer,
 } from 'react';
 import {
   type MoveableState,
   type MoveableProps,
   Moveable,
   classNames,
+  mockState,
   useInfiniteCanvas,
+  useEventListener,
 } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 
@@ -39,6 +41,11 @@ export interface SceneProps
   onMove?: (scene: GameScene, e: MoveableState) => void;
 }
 
+export interface SceneState {
+  size: [number, number];
+  isMouseDown: boolean;
+}
+
 const Scene = ({
   scene,
   className,
@@ -53,7 +60,10 @@ const Scene = ({
   const { project, resourcesPath, backgrounds } = useApp();
   const { selectedScene, selectedItem, tool } = useCanvas();
   const { setTilePosition } = useEditor();
-  const [size, setSize] = useState([240, 160]);
+  const [state, dispatch] = useReducer(mockState<SceneState>, {
+    size: [240, 160],
+    isMouseDown: false,
+  });
 
   const sceneConfig = useMemo(() => (
     preview
@@ -78,19 +88,15 @@ const Scene = ({
   const updateSize = useCallback(async () => {
     try {
       const [width, height] = await getImageSize(backgroundPath);
-      setSize([Math.max(240, width), Math.max(160, height)]);
+      dispatch({ size: [Math.max(240, width), Math.max(160, height)] });
     } catch {
-      setSize([240, 160]);
+      dispatch({ size: [240, 160] });
     }
   }, [backgroundPath]);
 
   useEffect(() => {
     updateSize();
   }, [updateSize]);
-
-  const collisions = useMemo(() => (
-    scene.map?.collisions?.map(line => line.split(','))
-  ), [scene.map?.collisions]);
 
   const sensors = useMemo(() => (
     scene.map?.sensors || []
@@ -103,6 +109,14 @@ const Scene = ({
   const gridSize = useMemo(() => (
     scene.map?.gridSize || 16
   ), [scene]);
+
+  const tileWidth = useMemo(() => (
+    Math.ceil(state.size[0] / gridSize)
+  ), [state.size, gridSize]);
+
+  const tileHeight = useMemo(() => (
+    Math.ceil(state.size[1] / gridSize)
+  ), [state.size, gridSize]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -153,22 +167,130 @@ const Scene = ({
     onChange?.(scene);
   }, [onChange, scene, gridSize]);
 
+  const checkCollisionsArray = useCallback(() => {
+    if (!scene.map) {
+      scene.map = {
+        type: 'map',
+        width: tileWidth,
+        height: tileHeight,
+        gridSize,
+      };
+    }
+
+    if (!scene.map.collisions) {
+      scene.map.collisions = [];
+    }
+
+    const c = scene.map.collisions;
+
+    // Ensure correct height
+    while (c.length < tileHeight) {
+      c.push(new Array(tileWidth).fill('0'));
+    }
+
+    while (c.length > tileHeight) {
+      c.pop();
+    }
+
+    // Ensure correct width
+    for (let y = 0; y < c.length; y++) {
+      while (c[y].length < tileWidth) {
+        c[y].push('0');
+      }
+
+      while (c[y].length > tileWidth) {
+        c[y].pop();
+      }
+    }
+
+    return c;
+  }, [tileWidth, tileHeight, gridSize, scene]);
+
   const onMouseMove = useCallback((e: MouseEvent<HTMLDivElement>) => {
     const realMouseX = (e.clientX - offsetX) / zoom;
     const realMouseY = (e.clientY - offsetY) / zoom;
+    const x = pixelToTile((realMouseX - (sceneConfig?.x ?? 0)), gridSize);
+    const y = pixelToTile((realMouseY - (sceneConfig?.y ?? 0)), gridSize);
 
-    setTilePosition(
-      pixelToTile((realMouseX - (sceneConfig?.x ?? 0)), gridSize),
-      pixelToTile((realMouseY - (sceneConfig?.y ?? 0)), gridSize),
-    );
+    setTilePosition(x, y);
+
+    if (state.isMouseDown && scene.map && tool === 'collisions') {
+      const c = checkCollisionsArray();
+
+      if (
+        y < 0 ||
+        y >= tileHeight ||
+        x < 0 ||
+        x >= tileWidth
+      ) {
+        return;
+      }
+
+      // mousemove uses .buttons because it does not have a source button
+      // and uses active buttons during the event
+      c[y][x] = e.buttons === 1 // Left button
+        ? '1'
+        : e.buttons === 2 // Right button
+          ? '0'
+          : c[y][x];
+
+      onChange?.(scene);
+    }
   }, [
-    offsetX, offsetY, zoom, gridSize, sceneConfig,
-    setTilePosition,
+    offsetX, offsetY, zoom, gridSize, sceneConfig, tool, tileWidth, tileHeight,
+    setTilePosition, onChange, checkCollisionsArray,
+    state.isMouseDown,
+    scene,
   ]);
 
   const onMouseOut = useCallback(() => {
     setTilePosition();
   }, [setTilePosition]);
+
+  const onMouseDown = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    if (tool !== 'collisions') {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch({ isMouseDown: true });
+
+    const realMouseX = (e.clientX - offsetX) / zoom;
+    const realMouseY = (e.clientY - offsetY) / zoom;
+
+    const x = pixelToTile((realMouseX - (sceneConfig?.x ?? 0)), gridSize);
+    const y = pixelToTile((realMouseY - (sceneConfig?.y ?? 0)), gridSize);
+    const c = checkCollisionsArray();
+
+    if (
+      y < 0 ||
+      y >= tileHeight ||
+      x < 0 ||
+      x >= tileWidth
+    ) {
+      return;
+    }
+
+    c[y][x] = e.button === 0 // Left button
+      ? '1'
+      : e.button === 2 // Right button
+        ? '0'
+        : c[y][x];
+    onChange?.(scene);
+  }, [
+    gridSize, offsetX, offsetY, sceneConfig, tool, zoom, tileHeight, tileWidth,
+    onChange, checkCollisionsArray,
+    scene,
+  ]);
+
+  useEventListener('mouseup', () => {
+    if (!state.isMouseDown) {
+      return;
+    }
+
+    dispatch({ isMouseDown: false });
+  }, [state.isMouseDown]);
 
   return (
     <Moveable
@@ -204,13 +326,14 @@ const Scene = ({
             backgroundImage: `url(${backgroundPath})`,
             contain: 'none',
             imageRendering: 'pixelated',
-            width: size[0],
-            height: size[1],
+            width: state.size[0],
+            height: state.size[1],
           }}
           onMouseMove={onMouseMove}
           onMouseOut={onMouseOut}
+          onMouseDown={onMouseDown}
         >
-          { collisions?.map((line, y) => (
+          { scene.map?.collisions?.map((line, y) => (
             line.map((cell, x) => (
               cell === '1' && (
                 <div
