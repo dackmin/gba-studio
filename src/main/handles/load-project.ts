@@ -20,6 +20,7 @@ import {
   getSoundFiles,
   getVariableFiles,
 } from '../files';
+import { unserializeScene } from '../serialize';
 import Storage from '../storage';
 
 export default async (
@@ -94,7 +95,7 @@ export default async (
 
     current++;
     win?.setProgressBar(current / total);
-    scenes.push(sanitizeScene(scene));
+    scenes.push(unserializeScene(sanitizeScene(scene)));
   }
 
   // Load graphics

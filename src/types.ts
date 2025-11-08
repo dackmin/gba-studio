@@ -56,9 +56,9 @@ export interface GameMap {
   width: number;
   height: number;
   gridSize: number;
-  scene: string;
-  collisions: string[];
-  sensors: GameSensor[];
+  scene?: string;
+  collisions?: string[][];
+  sensors?: GameSensor[];
 }
 
 export interface GamePlayer {

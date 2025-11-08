@@ -5,6 +5,7 @@ import type { IpcMainInvokeEvent } from 'electron';
 
 import type { AppPayload } from '../../types';
 import { getSceneFiles, getScriptsFiles } from '../files';
+import { serializeScene } from '../serialize';
 
 export default async (
   _: IpcMainInvokeEvent,
@@ -45,7 +46,7 @@ export default async (
       delete scene._file;
 
       await fs.writeFile(path.join(projectDir, 'content', fileName),
-        JSON.stringify(scene, null, 2) + '\n', 'utf-8');
+        JSON.stringify(serializeScene(scene), null, 2) + '\n', 'utf-8');
     }
   }
 
