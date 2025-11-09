@@ -1,14 +1,15 @@
 import { useCallback, useLayoutEffect, useState } from 'react';
-import { IconButton, Tooltip } from '@radix-ui/themes';
+import { IconButton, Kbd, Text, Tooltip } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
-import { TrashIcon } from '@radix-ui/react-icons';
+import { ArrowDownIcon, TrashIcon } from '@radix-ui/react-icons';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import type { BuildMessage } from '../../../types';
 import { useBottomBar, useBridgeListener } from '../../services/hooks';
 
 const BuildLogsTab = () => {
   const [logs, setLogs] = useState<BuildMessage[]>([]);
-  const { manualScroll, scrollToBottom } = useBottomBar();
+  const { manualScroll, scrolledToBottom, scrollToBottom } = useBottomBar();
 
   useBridgeListener('build-log', (message: BuildMessage) => {
     setLogs(prevLogs => [...prevLogs, message].slice(-10000));
@@ -24,6 +25,14 @@ const BuildLogsTab = () => {
     setLogs([]);
   }, []);
 
+  useHotkeys('ctrl+k', () => {
+    scrollToBottom();
+  }, [scrollToBottom], { useKey: true });
+
+  useHotkeys('ctrl+l', () => {
+    clearLogs();
+  }, [clearLogs], { useKey: true });
+
   return (
     <div>
       <div
@@ -32,7 +41,32 @@ const BuildLogsTab = () => {
           'justify-end'
         )}
       >
-        <Tooltip content="Clear console">
+        <Tooltip
+          content={(
+            <span className="flex items-center gap-2">
+              <Text>Follow logs</Text>
+              <Kbd>Ctrl + K</Kbd>
+            </span>
+          )}
+        >
+          <IconButton
+            size="1"
+            variant="ghost"
+            disabled={scrolledToBottom}
+            onClick={scrollToBottom}
+            className="cursor-pointer"
+          >
+            <ArrowDownIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          content={(
+            <span className="flex items-center gap-2">
+              <Text>Clear console</Text>
+              <Kbd>Ctrl + L</Kbd>
+            </span>
+          )}
+        >
           <IconButton
             size="1"
             variant="ghost"

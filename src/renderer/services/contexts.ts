@@ -124,12 +124,14 @@ export const SceneFormContext = createContext<SceneFormContextType>({
 
 export interface BottomBarContextType {
   manualScroll: boolean;
+  scrolledToBottom: boolean;
   scrollToBottom(): void;
   isScrolledToBottom(): boolean;
 }
 
 export const BottomBarContext = createContext<BottomBarContextType>({
   manualScroll: false,
+  scrolledToBottom: true,
   scrollToBottom: () => {},
-  isScrolledToBottom: () => false,
+  isScrolledToBottom: () => true,
 });

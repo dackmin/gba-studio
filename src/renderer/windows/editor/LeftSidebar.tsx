@@ -13,6 +13,7 @@ import {
   Card,
   IconButton,
   Inset,
+  Kbd,
   ScrollArea,
   Select,
   Tabs,
@@ -20,6 +21,7 @@ import {
   Tooltip,
 } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
 import views from '../../views';
@@ -91,6 +93,8 @@ const LeftSidebar = ({
     setBuilding,
   ]);
 
+  useHotkeys('mod+enter', onToggleBuild, [onToggleBuild]);
+
   const onTabChange = useCallback((newView: string) => {
     setView(newView);
   }, [setView]);
@@ -156,21 +160,34 @@ const LeftSidebar = ({
               </Select.Content>
             </Select.Root>
           ) }
-          <IconButton variant="ghost" radius="full" onClick={onToggleBuild}>
-            { building ? (
-              <StopIcon
-                width={20}
-                height={20}
-                className="dark:[&_path]:fill-seashell"
-              />
-            ) : (
-              <PlayIcon
-                width={20}
-                height={20}
-                className="dark:[&_path]:fill-seashell"
-              />
-            ) }
-          </IconButton>
+          <Tooltip
+            side="bottom"
+            content={(
+              <span className="flex items-center gap-2">
+                <Text>Build project</Text>
+                <Kbd>
+                  { window.electron.isDarwin ? '⌘' : 'Ctrl' }
+                  + Enter
+                </Kbd>
+              </span>
+            )}
+          >
+            <IconButton variant="ghost" radius="full" onClick={onToggleBuild}>
+              { building ? (
+                <StopIcon
+                  width={20}
+                  height={20}
+                  className="dark:[&_path]:fill-seashell"
+                />
+              ) : (
+                <PlayIcon
+                  width={20}
+                  height={20}
+                  className="dark:[&_path]:fill-seashell"
+                />
+              ) }
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
       <Resizable

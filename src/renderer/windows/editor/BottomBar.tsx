@@ -15,6 +15,7 @@ export interface BottomBarProps extends ResizableProps {}
 export interface BottomBarState {
   tab: string;
   manualScroll: boolean;
+  scrolledToBottom: boolean;
 }
 
 const BottomBar = ({
@@ -26,6 +27,7 @@ const BottomBar = ({
   const [state, dispatch] = useReducer(mockState<BottomBarState>, {
     tab: 'build',
     manualScroll: false,
+    scrolledToBottom: true,
   });
 
   const {
@@ -47,11 +49,6 @@ const BottomBar = ({
     dispatch({ tab });
   }, []);
 
-  const scrollToBottom = useCallback(() => {
-    scrollAreaRef.current
-      ?.scrollTo({ top: scrollAreaRef.current.scrollHeight });
-  }, []);
-
   const isScrolledToBottom = useCallback(() => {
     if (!scrollAreaRef.current) {
       return false;
@@ -59,24 +56,35 @@ const BottomBar = ({
 
     const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
 
+    if (scrollHeight <= clientHeight) {
+      return true;
+    }
+
     return scrollTop + clientHeight >= scrollHeight - 10;
   }, []);
 
+  const scrollToBottom = useCallback(() => {
+    scrollAreaRef.current
+      ?.scrollTo({ top: scrollAreaRef.current.scrollHeight });
+
+    dispatch({ manualScroll: false, scrolledToBottom: isScrolledToBottom() });
+  }, [isScrolledToBottom]);
+
   const onManualScroll = useCallback(() => {
-    if (isScrolledToBottom()) {
-      // scrolled to bottom
-      dispatch({ manualScroll: false });
-    } else {
-      dispatch({ manualScroll: true });
-    }
+    const scrolledToBottom = isScrolledToBottom();
+    dispatch({
+      manualScroll: !scrolledToBottom,
+      scrolledToBottom,
+    });
   }, [isScrolledToBottom]);
 
   const getContext = useCallback((): BottomBarContextType => ({
     manualScroll: state.manualScroll,
+    scrolledToBottom: state.scrolledToBottom,
     scrollToBottom,
     isScrolledToBottom,
   }), [
-    state.manualScroll,
+    state.manualScroll, state.scrolledToBottom,
     scrollToBottom, isScrolledToBottom,
   ]);
 
