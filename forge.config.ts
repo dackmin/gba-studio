@@ -14,7 +14,9 @@ import removeLocalesPlugin from './.plugins/remove-locales';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    icon: './images/AppIcon',
+    icon: process.platform === 'darwin'
+      ? ['./images/AppIcon.icns', './images/AppIcon.icon']
+      : './images/AppIcon',
     appBundleId: 'dev.gbastudio.app',
     name: 'GBAStudio',
     executableName: process.platform === 'linux' ? 'gba-studio' : 'GBAStudio',

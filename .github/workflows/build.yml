@@ -16,6 +16,9 @@ jobs:
           - name: macOS ARM
             label: darwin-arm64
             os: macos-26
+          - name: macOS Intel
+            label: darwin-x64
+            os: macos-15-large
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,13 +37,13 @@ jobs:
 
       # OSX Sign
       - name: Set up keychain and import signing certificate
-        if: matrix.label == 'darwin-arm64'
+        if: matrix.label == 'darwin-arm64' || matrix.label == 'darwin-x64'
         uses: apple-actions/import-codesign-certs@v3
         with:
           p12-file-base64: ${{ secrets.OSX_CERT_P12 }}
           p12-password: ${{ secrets.OSX_CERT_PASSWORD }}
       - name: Set signin environment
-        if: matrix.label == 'darwin-arm64'
+        if: matrix.label == 'darwin-arm64' || matrix.label == 'darwin-x64'
         run: |
           echo "OSX_SIGN_ENABLED=true" >> $GITHUB_ENV
           echo "OSX_SIGN_IDENTITY=${{ secrets.OSX_SIGN_IDENTITY }}" >> $GITHUB_ENV
@@ -49,17 +52,24 @@ jobs:
           echo "APPLE_ID_PASSWORD=${{ secrets.APPLE_ID_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
 
-      - name: Run build
-        run: yarn package
+      - name: Run build (macOS ARM)
+        if: matrix.label == 'darwin-arm64'
+        run: |
+          yarn make:macos
+          mv out/make/zip/darwin/arm64/** out/keep/
+
+      - name: Run build (macOS Intel)
+        if: matrix.label == 'darwin-x64'
+        run: |
+          yarn make:macos-intel
+          mv out/make/zip/darwin/x64/** out/keep/
+
       - name: Get package version
         id: get_version
         run: |
           echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-      - name: Zip app
-        run: |
-          zip -r out/GBAStudio-${{ matrix.label }}/GBAStudio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.zip out/GBAStudio-${{ matrix.label }}/GBAStudio.app
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}
-          path: out/GBAStudio-${{ matrix.label }}/GBAStudio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.zip
+          path: out/keep/**

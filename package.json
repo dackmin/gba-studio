@@ -13,6 +13,12 @@
   "scripts": {
     "dev": "electron-forge start",
     "package": "electron-forge package",
+    "make:macos": "electron-forge make --platform=darwin --arch=arm64",
+    "make:macos-intel": "electron-forge make --platform=darwin --arch=x64",
+    "make:win": "electron-forge make --platform=win32 --arch=x64",
+    "make:win-32bit": "electron-forge make --platform=win32 --arch=ia32",
+    "make:linux": "electron-forge make --platform=linux --arch=x64",
+    "make:linux-arm64": "electron-forge make --platform=linux --arch=arm64",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --max-warnings=0 --cache ."
