@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>GBA Studio</string>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+        <string>gbasproj</string>
+      </array>
+      <key>CFBundleTypeName</key>
+      <string>GBA Studio Project</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+    </dict>
+  </array>
+</dict>
+</plist>

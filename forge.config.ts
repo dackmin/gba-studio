@@ -21,7 +21,8 @@ const config: ForgeConfig = {
       : './images/AppIcon',
     appBundleId: 'dev.gbastudio.app',
     name: 'GBAStudio',
-    executableName: process.platform === 'linux' ? 'gba-studio' : 'GBAStudio',
+    executableName: 'gba-studio',
+    extendInfo: './src/Info.plist',
     extraResource: [
       './public',
     ],
@@ -29,16 +30,10 @@ const config: ForgeConfig = {
       osxSign: {
         type: 'distribution',
         identity: process.env.OSX_SIGN_IDENTITY,
-        optionsForFile: (f: string) => {
-          if (f.includes('GBAStudio.app')) {
-            return {
-              entitlements: './src/entitlements.plist',
-              'hardened-runtime': true,
-            };
-          }
-
-          return { 'hardened-runtime': true };
-        },
+        optionsForFile: () => ({
+          entitlements: './src/entitlements.plist',
+          'hardened-runtime': true,
+        }),
       },
     },
     ...process.env.OSX_NOTARIZE_ENABLED === 'true' && {
