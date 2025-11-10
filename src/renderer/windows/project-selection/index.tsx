@@ -137,8 +137,11 @@ const ProjectSelection = () => {
                   key={project.path}
                   className={classNames(
                     'block p-3 hover:bg-(--accent-9) rounded-xl select-none',
-                    'cursor-pointer',
-                    { 'bg-(--accent-9)': state.selectedProject === project },
+                    'cursor-pointer hover:text-seashell',
+                    {
+                      'bg-(--accent-9) text-seashell':
+                        state.selectedProject === project,
+                    },
                   )}
                   onClick={onSelectProject.bind(null, project)}
                 >

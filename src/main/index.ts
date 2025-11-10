@@ -4,7 +4,9 @@
 import {
   BrowserWindow,
   app,
+  globalShortcut,
   ipcMain,
+  nativeTheme,
   protocol,
 } from 'electron';
 import started from 'electron-squirrel-startup';
@@ -48,6 +50,13 @@ createMenus();
 const storage = new Storage();
 
 app.whenReady().then(() => {
+  // Disable DevTools in production
+  if (!MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    globalShortcut.register('Control+Shift+I', () => {
+      return false;
+    });
+  }
+
   createSelectionWindow();
 });
 
@@ -61,6 +70,14 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createSelectionWindow();
   }
+});
+
+// Send dark mode info to renderer
+nativeTheme.on('updated', () => {
+  BrowserWindow.getAllWindows().forEach(win => {
+    win.webContents.send('theme-updated',
+      nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+  });
 });
 
 ipcMain.handle('get-recent-projects', getRecentProjects.bind(null, storage));

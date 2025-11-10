@@ -29,16 +29,16 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
 
   useHotkeys('v', () => {
     onSelectTool?.('default');
-  }, [onSelectTool], { useKey: true });
+  }, [onSelectTool]);
 
   useHotkeys('a', () => {
     onSelectTool?.('add');
     setOpened(o => !o);
-  }, [], { useKey: true });
+  }, []);
 
   useHotkeys('c', () => {
     onSelectTool?.('collisions');
-  }, [], { useKey: true });
+  }, []);
 
   const onAddClick = useCallback((subTool: AddSubToolType) => {
     onSelectTool?.('add', subTool);
@@ -74,7 +74,10 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <CursorArrowIcon
             width={20}
             height={20}
-            className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+            className={classNames(
+              '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+              { '[&_path]:!fill-seashell': tool === 'default' },
+            )}
           />
         </Tooltip>
       </IconButton>
@@ -95,7 +98,10 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <HandIcon
             width={20}
             height={20}
-            className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+            className={classNames(
+              '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+              { '[&_path]:!fill-seashell': tool === 'pan' },
+            )}
           />
         </Tooltip>
       </IconButton>
@@ -117,7 +123,10 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
               <PlusIcon
                 width={20}
                 height={20}
-                className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+                className={classNames(
+                  '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+                  { '[&_path]:!fill-seashell': tool === 'add' },
+                )}
               />
             </Tooltip>
           </IconButton>
@@ -151,7 +160,10 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <ComponentBooleanIcon
             width={20}
             height={20}
-            className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+            className={classNames(
+              '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+              { '[&_path]:!fill-seashell': tool === 'collisions' },
+            )}
           />
         </Tooltip>
       </IconButton>

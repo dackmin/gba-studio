@@ -50,6 +50,11 @@ const App = () => {
     clipboard: undefined,
   });
 
+  useBridgeListener('theme-updated', (newTheme: string) => {
+    document.querySelector('html')?.classList.remove('light', 'dark');
+    document.querySelector('html')?.classList.add(newTheme);
+  }, []);
+
   useBridgeListener('build-completed', () => {
     dispatch({ building: false });
   }, []);

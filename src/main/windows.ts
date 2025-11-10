@@ -5,6 +5,8 @@ import { net, session, BrowserWindow, nativeTheme, app } from 'electron';
 
 import { getResourcesDir } from './utils';
 
+const opened: Map<string, BrowserWindow> = new Map();
+
 export const createSelectionWindow = async () => {
   // const {
   //   WindowCorner,
@@ -34,6 +36,11 @@ export const createSelectionWindow = async () => {
     webPreferences: {
       preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
       contextIsolation: true,
+      devTools: false,
+      ...MAIN_WINDOW_VITE_DEV_SERVER_URL && {
+        webSecurity: false,
+        devTools: true,
+      },
     },
   });
 
@@ -79,6 +86,19 @@ export const createProjectWindow = async (projectPath: string) => {
   const projectName = path.basename(projectPath, '.gbasproj');
   const ses = session.fromPartition(projectName);
 
+  // Try to find an active window for the project
+  const existingWindow = opened.get(projectPath);
+
+  if (existingWindow) {
+    if (existingWindow.isMinimized()) {
+      existingWindow.restore();
+    }
+
+    existingWindow.focus();
+
+    return existingWindow;
+  }
+
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -103,8 +123,18 @@ export const createProjectWindow = async (projectPath: string) => {
       preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
       contextIsolation: true,
       partition: projectName,
-      ...MAIN_WINDOW_VITE_DEV_SERVER_URL && { webSecurity: false },
+      devTools: false,
+      ...MAIN_WINDOW_VITE_DEV_SERVER_URL && {
+        webSecurity: false,
+        devTools: true,
+      },
     },
+  });
+
+  opened.set(projectPath, win);
+
+  win.on('closed', () => {
+    opened.delete(projectPath);
   });
 
   // Enable crossOriginIsolated for mgba/wasm

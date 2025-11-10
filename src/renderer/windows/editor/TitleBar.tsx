@@ -95,7 +95,10 @@ const TitleBar = ({
                 <BottomBarIcon
                   width={12}
                   height={12}
-                  className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+                  className={classNames(
+                    '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+                    { '[&_path]:!fill-seashell': bottomBarOpened },
+                  )}
                 />
               </Tooltip>
             </IconButton>
@@ -109,7 +112,10 @@ const TitleBar = ({
                 <RightSidebarIcon
                   width={12}
                   height={12}
-                  className="[&_path]:fill-onyx dark:[&_path]:fill-seashell"
+                  className={classNames(
+                    '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+                    { '[&_path]:!fill-seashell': rightSidebarOpened },
+                  )}
                 />
               </IconButton>
             ) }

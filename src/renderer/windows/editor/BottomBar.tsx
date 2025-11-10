@@ -133,7 +133,7 @@ const BottomBar = ({
             >
               <Tabs.Content
                 value="build"
-                className="bg-onyx"
+                className="bg-seashell dark:bg-onyx min-h-full"
                 style={{
                   ...leftSidebarOpened && { paddingLeft: leftSidebarWidth },
                 }}

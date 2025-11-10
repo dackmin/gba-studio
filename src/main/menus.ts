@@ -6,29 +6,38 @@ import {
   Menu,
 } from 'electron';
 
+import { createSelectionWindow } from './windows';
+
 export const createMenus = () => {
   const isMac = process.platform === 'darwin';
+  const isDev = !!MAIN_WINDOW_VITE_DEV_SERVER_URL;
 
   const template: MenuItemConstructorOptions[] = [
-    ...(isMac
-      ? [{
-        label: app.name,
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideOthers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' },
-        ],
-      } as MenuItemConstructorOptions]
-      : []),
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
+    }] as MenuItemConstructorOptions[] : []),
     {
       label: 'File',
       submenu: [
+        {
+          label: 'Open Project...',
+          accelerator: 'CmdOrCtrl+Shift+O',
+          click: async () => {
+            createSelectionWindow();
+          },
+        },
+        { type: 'separator' },
         isMac ? { role: 'close' } : { role: 'quit' },
       ],
     },
@@ -68,14 +77,16 @@ export const createMenus = () => {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
+        ...isDev ? [
+          { role: 'reload' },
+          { role: 'forceReload' },
+          { role: 'toggleDevTools' },
+          { type: 'separator' },
+        ] as MenuItemConstructorOptions[] : [],
+        // { role: 'resetZoom' },
+        // { role: 'zoomIn' },
+        // { role: 'zoomOut' },
+        // { type: 'separator' },
         { role: 'togglefullscreen' },
       ],
     },
@@ -83,7 +94,7 @@ export const createMenus = () => {
       role: 'window',
       submenu: [
         { role: 'minimize' },
-        { role: 'zoom' },
+        // { role: 'zoom' },
         ...(isMac
           ? [
             { type: 'separator' },
@@ -100,7 +111,7 @@ export const createMenus = () => {
         {
           label: 'Learn More',
           click: async () => {
-            await shell.openExternal('https://github.com/neoframe');
+            await shell.openExternal('https://github.com/neoframe/gba-studio');
           },
         },
       ],

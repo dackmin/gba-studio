@@ -240,7 +240,8 @@ const LeftSidebar = ({
               </Tabs.Root>
               <div
                 className={classNames(
-                  'bg-gondola flex-none h-8 flex items-center justify-center',
+                  'bg-mischka dark:bg-gondola flex-none h-8 flex items-center',
+                  'justify-center',
                 )}
               >
                 <Text size="1" className="text-slate">
