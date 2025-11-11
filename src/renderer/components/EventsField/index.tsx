@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { cloneDeep, omit } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type { SceneEvent } from '../../../types';
@@ -34,16 +35,6 @@ const EventsField = ({
       .map((e, i) => e.id === index || index === i ? event : e));
   }, [onValueChange, value]);
 
-  const onPrependClick = useCallback((event: SceneEvent) => {
-    setSelected([event, 'prepend']);
-    addEventButtonRef.current?.click();
-  }, []);
-
-  const onAppendClick = useCallback((event: SceneEvent) => {
-    setSelected([event, 'append']);
-    addEventButtonRef.current?.click();
-  }, []);
-
   const onAddEvent = useCallback((eventType: string) => {
     const [sourceEvent, position] = selected || [];
     const index = sourceEvent ? value.indexOf(sourceEvent) : -1;
@@ -71,6 +62,57 @@ const EventsField = ({
     setSelected(undefined);
   }, [onValueChange, value, selected]);
 
+  const onCloneEvent = useCallback((
+    event: SceneEvent,
+    clipboard: SceneEvent,
+    position: 'append' | 'prepend' = 'append',
+  ) => {
+    const index = value.indexOf(event);
+
+    if (index === -1) {
+      return onValueChange?.([
+        ...value,
+        {
+          ...cloneDeep(omit(clipboard, ['id'])),
+          id: uuid(),
+        },
+      ]);
+    }
+
+    onValueChange?.([
+      ...value.slice(0, position === 'prepend' ? index : index + 1),
+      {
+        ...cloneDeep(omit(clipboard, ['id'])),
+        id: uuid(),
+      },
+      ...value.slice(position === 'prepend' ? index : index + 1),
+    ]);
+  }, [onValueChange, value]);
+
+  const onPrependClick = useCallback((
+    event: SceneEvent,
+    clipboard?: SceneEvent,
+  ) => {
+    if (clipboard) {
+      return onCloneEvent(event, clipboard, 'prepend');
+    }
+
+    setSelected([event, 'prepend']);
+    addEventButtonRef.current?.click();
+  }, [onCloneEvent]);
+
+  const onAppendClick = useCallback((
+    event: SceneEvent,
+    clipboard?: SceneEvent,
+  ) => {
+    if (clipboard) {
+      return onCloneEvent(event, clipboard, 'append');
+    }
+
+    setSelected([event, 'append']);
+    addEventButtonRef.current?.click();
+  }, [onCloneEvent]);
+
   return (
     <div className="flex flex-col gap-[1px]">
       { value.length === 0 ? (
@@ -82,9 +124,9 @@ const EventsField = ({
           key={event.id || index}
           event={event}
           onValueChange={onChangeEvent.bind(null, event.id || index)}
-          onDelete={onDeleteEvent.bind(null, event)}
-          onPrepend={onPrependClick.bind(null, event)}
-          onAppend={onAppendClick.bind(null, event)}
+          onDelete={onDeleteEvent}
+          onPrepend={onPrependClick}
+          onAppend={onAppendClick}
         />
       )) }
 

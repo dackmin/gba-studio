@@ -66,13 +66,13 @@
     "@vitejs/plugin-react": "5.1.0",
     "debug": "4.4.3",
     "dotenv": "17.2.3",
-    "electron": "39.1.1",
+    "electron": "39.1.2",
     "eslint": "9.39.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
     "tailwindcss": "4.1.17",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.3",
+    "typescript-eslint": "8.46.4",
     "vite": "7.2.2"
   },
   "build": {

@@ -42,7 +42,7 @@ const Arrows = ({
     <>
       { sceneArrows.map(([scene, events]) => events.map(e => (
         <Arrow
-          key={scene.id || scene._file}
+          key={(scene.id || scene._file) + '-' + e.id}
           source={scene}
           event={e}
           gridSize={scene.map?.gridSize || gridSize}
@@ -50,7 +50,7 @@ const Arrows = ({
       ))) }
       { sensorArrows.map(([sensor, events]) => events.map(e => (
         <Arrow
-          key={sensor.id}
+          key={sensor.id + '-' + e.id}
           source={sensor}
           event={e}
           gridSize={selectedScene?.map?.gridSize || gridSize}

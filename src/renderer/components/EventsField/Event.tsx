@@ -40,8 +40,8 @@ export interface EventProps {
   event: SceneEvent;
   onValueChange?: (event: SceneEvent) => void;
   onDelete?: (event: SceneEvent) => void;
-  onPrepend?: (event: SceneEvent) => void;
-  onAppend?: (event: SceneEvent) => void;
+  onPrepend?: (event: SceneEvent, source?: SceneEvent) => void;
+  onAppend?: (event: SceneEvent, source?: SceneEvent) => void;
 }
 
 const Event = ({
@@ -98,11 +98,13 @@ const Event = ({
 
   const onPasteBeforeClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
-  }, []);
+    onPrepend?.(event, clipboard as SceneEvent);
+  }, [onPrepend, event, clipboard]);
 
   const onPasteAfterClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
-  }, []);
+    onAppend?.(event, clipboard as SceneEvent);
+  }, [onAppend, event, clipboard]);
 
   return (
     <div className="bg-(--gray-2)">

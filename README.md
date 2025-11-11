@@ -5,7 +5,7 @@ GB Studio, but worse & for the GBA
 ## Roadmap
 
 - [x] File changes detection outside of GBA Studio
-- [ ] Copy/paste events
+- [x] Copy/paste events
 - [ ] Rename events
 - [ ] Windows signed installer
 - [ ] WASM mGBA integration
