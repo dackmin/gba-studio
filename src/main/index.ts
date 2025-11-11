@@ -1,18 +1,15 @@
 // import path from 'node:path';
 // import { createRequire } from 'node:module';
 
-import {
-  BrowserWindow,
-  app,
-  globalShortcut,
-  ipcMain,
-  nativeTheme,
-  protocol,
-} from 'electron';
+import { app, ipcMain, protocol } from 'electron';
 import started from 'electron-squirrel-startup';
 
 import { createMenus } from './menus';
 import { createSelectionWindow } from './windows';
+import {
+  createBeforeReadyEventListeners,
+  createEventListeners,
+} from './events';
 import {
   browseProjects,
   getRecentProjects,
@@ -41,43 +38,20 @@ if (started) {
   app.quit();
 }
 
+// Allow project files to bypass CSP rules
 protocol.registerSchemesAsPrivileged([
   { scheme: 'project', privileges: { bypassCSP: true } },
 ]);
 
-createMenus();
-
 const storage = new Storage();
 
+// Needs to be called before app is ready
+createBeforeReadyEventListeners();
+createMenus();
+
 app.whenReady().then(() => {
-  // Disable DevTools in production
-  if (!MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    globalShortcut.register('Control+Shift+I', () => {
-      return false;
-    });
-  }
-
+  createEventListeners();
   createSelectionWindow();
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createSelectionWindow();
-  }
-});
-
-// Send dark mode info to renderer
-nativeTheme.on('updated', () => {
-  BrowserWindow.getAllWindows().forEach(win => {
-    win.webContents.send('theme-updated',
-      nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
-  });
 });
 
 ipcMain.handle('get-recent-projects', getRecentProjects.bind(null, storage));

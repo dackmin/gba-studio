@@ -10,7 +10,11 @@ import type {
   GameScene,
 } from '../types';
 import { type AppContextType, AppContext } from './services/contexts';
-import { useBridgeListener, useDelayedCallback, useQuery } from './services/hooks';
+import {
+  useBridgeListener,
+  useDelayedCallback,
+  useQuery,
+} from './services/hooks';
 import ProjectSelection from './windows/project-selection';
 import Editor from './windows/editor';
 
@@ -53,6 +57,14 @@ const App = () => {
   useBridgeListener('theme-updated', (newTheme: string) => {
     document.querySelector('html')?.classList.remove('light', 'dark');
     document.querySelector('html')?.classList.add(newTheme);
+  }, []);
+
+  useBridgeListener('graphics-updated', ({ sprites, backgrounds }) => {
+    dispatch({ sprites, backgrounds });
+  }, []);
+
+  useBridgeListener('audio-updated', ({ music, sounds }) => {
+    dispatch({ music, sounds });
   }, []);
 
   useBridgeListener('build-completed', () => {

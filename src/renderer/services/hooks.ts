@@ -50,9 +50,9 @@ export const useCanvas = () => useContext(CanvasContext);
 export const useSceneForm = () => useContext(SceneFormContext);
 export const useBottomBar = () => useContext(BottomBarContext);
 
-export const useBridgeListener = (
+export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,
-  func: (...args: any[]) => void,
+  func: (...args: T) => void,
   deps: any[] = [],
 ) => {
   useEffect(() => {
@@ -60,7 +60,7 @@ export const useBridgeListener = (
       _: IpcRendererEvent,
       ...args: any[]
     ) => {
-      func(...args);
+      func(...args as T);
     });
   }, [
     func,

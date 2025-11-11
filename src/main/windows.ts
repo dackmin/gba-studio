@@ -4,6 +4,7 @@ import url from 'node:url';
 import { net, session, BrowserWindow, nativeTheme, app } from 'electron';
 
 import { getResourcesDir } from './utils';
+import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
 
 const opened: Map<string, BrowserWindow> = new Map();
 
@@ -158,9 +159,15 @@ export const createProjectWindow = async (projectPath: string) => {
       .join(path.dirname(projectPath), filePath)).toString());
   });
 
+  const abortController = new AbortController();
+
   win.on('close', () => {
     ses.protocol.unhandle('project');
+    abortController.abort();
   });
+
+  createGraphicsFileWatcher(projectPath, win, abortController.signal);
+  createAudioFileWatcher(projectPath, win, abortController.signal);
 
   win.maximize();
 
