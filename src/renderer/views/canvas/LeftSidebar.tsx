@@ -11,7 +11,7 @@ import {
   PlusCircledIcon,
   StackIcon,
 } from '@radix-ui/react-icons';
-import { IconButton, InsetProps, Text } from '@radix-ui/themes';
+import { IconButton, InsetProps, Text, ContextMenu } from '@radix-ui/themes';
 import { v4 as uuid } from 'uuid';
 
 import type { GameScript, GameVariables } from '../../../types';
@@ -139,6 +139,12 @@ const LeftSidebar = ({
     onScriptsChange?.([...scripts, script]);
   }, [scripts, onScriptsChange]);
 
+  const onRemoveScript = useCallback((script: GameScript) => {
+    onScriptsChange?.(
+      scripts.filter(s => s !== script)
+    );
+  }, [scripts, onScriptsChange]);
+
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root className="!w-full">
@@ -200,23 +206,34 @@ const LeftSidebar = ({
               No scripts
             </Text>
           ) : scripts.map(script => (
-            <a
-              key={script._file}
-              href="#"
-              className={classNames(
-                'flex items-center gap-2 px-3 py-1',
-                { 'bg-(--accent-9)': selectedItem === script },
-              )}
-              onClick={selectScript?.bind(null, script)}
-            >
-              <CodeIcon
-                className={classNames(
-                  '[&_path]:fill-(--accent-9)',
-                  { '[&_path]:fill-seashell': selectedItem === script },
-                )}
-              />
-              <Text>{ script.name }</Text>
-            </a>
+            <ContextMenu.Root key={script._file}>
+              <ContextMenu.Trigger>
+                <a
+                  href="#"
+                  className={classNames(
+                    'flex items-center gap-2 px-3 py-1',
+                    { 'bg-(--accent-9)': selectedItem === script },
+                  )}
+                  onClick={selectScript?.bind(null, script)}
+                >
+                  <CodeIcon
+                    className={classNames(
+                      '[&_path]:fill-(--accent-9)',
+                      { '[&_path]:fill-seashell': selectedItem === script },
+                    )}
+                  />
+                  <Text>{ script.name }</Text>
+                </a>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  onClick={onRemoveScript.bind(null, script)}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
           )) }
         </Collapsible.Content>
       </Collapsible.Root>
