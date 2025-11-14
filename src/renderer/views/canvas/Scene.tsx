@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
 } from 'react';
 import {
   type MoveableState,
@@ -23,7 +24,7 @@ import type {
   GameSensor,
 } from '../../../types';
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
-import { getImageSize, pixelToTile } from '../../../helpers';
+import { getImageSize, loadImage, pixelToTile } from '../../../helpers';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import PlayerStart from './PlayerStart';
@@ -56,6 +57,7 @@ const Scene = ({
   onMove,
   ...rest
 }: SceneProps) => {
+  const backgroundRef = useRef<HTMLCanvasElement>(null);
   const { zoom, mouseX, offsetX, mouseY, offsetY } = useInfiniteCanvas();
   const { project, resourcesPath, backgrounds } = useApp();
   const { selectedScene, selectedItem, tool } = useCanvas();
@@ -117,6 +119,32 @@ const Scene = ({
   const tileHeight = useMemo(() => (
     Math.ceil(state.size[1] / gridSize)
   ), [state.size, gridSize]);
+
+  const drawBackground = useCallback(async () => {
+    const canvas = backgroundRef.current;
+
+    if (!canvas) {
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      return;
+    }
+
+    const img = await loadImage(backgroundPath);
+    canvas.width = state.size[0];
+    canvas.height = state.size[1];
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  }, [backgroundPath, state.size]);
+
+  useEffect(() => {
+    drawBackground();
+  }, [drawBackground, state.size, zoom]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -344,9 +372,6 @@ const Scene = ({
             className
           )}
           style={{
-            backgroundImage: `url(${backgroundPath})`,
-            contain: 'none',
-            imageRendering: 'pixelated',
             width: state.size[0],
             height: state.size[1],
           }}
@@ -354,6 +379,15 @@ const Scene = ({
           onMouseOut={onMouseOut}
           onMouseDown={onMouseDown}
         >
+          <canvas
+            ref={backgroundRef}
+            width={state.size[0]}
+            height={state.size[1]}
+            className={classNames(
+              'absolute left-0 top-0 pointer-events-none w-full h-full z-0',
+              'pixelated',
+            )}
+          />
           { scene.sceneType === '2d-top-down' && scene.map?.collisions
             ?.map((line, y) => (
               line.map((cell, x) => (

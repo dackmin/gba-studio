@@ -72,7 +72,7 @@ const PlayerStart = ({
             )}
           />
           <Sprite
-            className="absolute z-1 top-0 left-0"
+            className="absolute z-1 top-0 left-0 pixelated"
             sprite={getSprite(scene.player.sprite || 'sprite_default')}
             width={scene.player.width}
             height={scene.player.height}

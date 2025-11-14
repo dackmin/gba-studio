@@ -28,16 +28,22 @@ export const getSoundName = (filePath?: string) => {
   return filePath.replace('.wav', '').replace('.mod', '');
 };
 
-export const getImageSize = async (src: string): Promise<[number, number]> => {
+export const loadImage = async (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
 
     img.onload = () => {
-      resolve([img.width, img.height]);
+      resolve(img);
     };
 
     img.onerror = reject;
 
     img.src = src;
   });
+};
+
+export const getImageSize = async (src: string): Promise<[number, number]> => {
+  const img = await loadImage(src);
+
+  return [img.width, img.height];
 };

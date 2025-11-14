@@ -34,6 +34,10 @@ import Storage from './storage';
 // electron-window-corner-addon polyfill
 // global.require = createRequire(import.meta.url);
 
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
+app.commandLine.appendSwitch('force_high_performance_gpu');
+app.commandLine.appendSwitch('force-gpu-mem-available-mb', '2048');
+
 if (started) {
   app.quit();
 }
