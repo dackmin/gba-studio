@@ -118,11 +118,11 @@ export const sanitizeScene = async (
       );
 
       if (!scene.map.width) {
-        scene.map.width = size.width;
+        scene.map.width = Math.round(size.width / scene.map.gridSize!);
       }
 
       if (!scene.map.height) {
-        scene.map.height = size.height;
+        scene.map.height = Math.round(size.height / scene.map.gridSize!);
       }
     } catch {}
   }
