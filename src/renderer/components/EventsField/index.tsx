@@ -1,8 +1,27 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { cloneDeep, omit } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
+import {
+  type DragEndEvent,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from '@dnd-kit/modifiers';
 
 import type { SceneEvent } from '../../../types';
 import { getEventDefinition } from '../../services/events';
@@ -22,6 +41,20 @@ const EventsField = ({
   const [selected, setSelected] = useState<
     [SceneEvent, 'append' | 'prepend']
   >();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const eventIds = useMemo(() => (
+    value.map(e => e.id || '')
+  ), [value]);
 
   const onDeleteEvent = useCallback((event: SceneEvent) => {
     onValueChange?.(value.filter(e => e !== event));
@@ -113,43 +146,63 @@ const EventsField = ({
     addEventButtonRef.current?.click();
   }, [onCloneEvent]);
 
-  return (
-    <div className="flex flex-col gap-[1px]">
-      { value.length === 0 ? (
-        <Text size="2" className="block p-3 text-center text-slate">
-          No events
-        </Text>
-      ) : value.map((event, index) => (
-        <Event
-          key={event.id || index}
-          event={event}
-          onValueChange={onChangeEvent.bind(null, event.id || index)}
-          onDelete={onDeleteEvent}
-          onPrepend={onPrependClick}
-          onAppend={onAppendClick}
-        />
-      )) }
+  const onDragEnd = useCallback((event: DragEndEvent) => {
+    const oldIndex = value.findIndex(e => e.id === event.active.id);
+    const newIndex = value.findIndex(e => e.id === event.over?.id);
+    onValueChange?.(arrayMove(value, oldIndex, newIndex));
+  }, [onValueChange, value]);
 
-      <div className="px-3 my-3">
-        <Dialog.Root>
-          <Dialog.Trigger>
-            <Button ref={addEventButtonRef} className="block !w-full">
-              <PlusIcon />
-              <Text>Add Event</Text>
-            </Button>
-          </Dialog.Trigger>
-          <Dialog.Content>
-            <VisuallyHidden>
-              <Dialog.Title>Event Palette</Dialog.Title>
-              <Dialog.Description>
-                Select an event to add to the list
-              </Dialog.Description>
-            </VisuallyHidden>
-            <Catalogue onSelect={onAddEvent} />
-          </Dialog.Content>
-        </Dialog.Root>
-      </div>
-    </div>
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+    >
+      <SortableContext
+        items={eventIds}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="flex flex-col gap-[1px]">
+          <div className="flex flex-col gap-[1px]">
+            { value.length === 0 ? (
+              <Text size="2" className="block p-3 text-center text-slate">
+                No events
+              </Text>
+            ) : value.map((event, index) => (
+              <Event
+                key={event.id || index}
+                event={event}
+                onValueChange={onChangeEvent.bind(null, event.id || index)}
+                onDelete={onDeleteEvent}
+                onPrepend={onPrependClick}
+                onAppend={onAppendClick}
+              />
+            )) }
+          </div>
+
+          <div className="px-3 my-3">
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <Button ref={addEventButtonRef} className="block !w-full">
+                  <PlusIcon />
+                  <Text>Add Event</Text>
+                </Button>
+              </Dialog.Trigger>
+              <Dialog.Content>
+                <VisuallyHidden>
+                  <Dialog.Title>Event Palette</Dialog.Title>
+                  <Dialog.Description>
+                    Select an event to add to the list
+                  </Dialog.Description>
+                </VisuallyHidden>
+                <Catalogue onSelect={onAddEvent} />
+              </Dialog.Content>
+            </Dialog.Root>
+          </div>
+        </div>
+      </SortableContext>
+    </DndContext>
   );
 };
 

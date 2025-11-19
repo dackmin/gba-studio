@@ -6,6 +6,7 @@ import {
 } from '@radix-ui/react-icons';
 import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { classNames, exists } from '@junipero/react';
+import { useSortable } from '@dnd-kit/sortable';
 
 import type {
   DisableActorEvent,
@@ -57,12 +58,22 @@ const Event = ({
   const nameRef = useRef<HTMLDivElement>(null);
   const [opened, setOpened] = useState(event._collapsed ?? true);
   const [renaming, setRenaming] = useState(false);
+  const {
+    attributes,
+    listeners,
+    transform,
+    transition,
+    setNodeRef,
+  } = useSortable({ id: event.id });
 
   const definition = useMemo(() => (
     getEventDefinition(event.type)
   ), [event.type]);
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (renaming) {
       return;
     }
@@ -109,7 +120,17 @@ const Event = ({
   }, [onAppend, event, clipboard]);
 
   return (
-    <div className="bg-(--gray-2)">
+    <div
+      className="bg-(--gray-2)"
+      ref={setNodeRef}
+      style={{
+        transform: `translate3d(${transform?.x || 0}px, ` +
+          `${transform?.y || 0}px, 0)`,
+        transition,
+      }}
+      { ...attributes }
+      { ...listeners }
+    >
       <a
         href="#"
         className="px-3 py-2 flex items-center justify-between"
