@@ -98,6 +98,16 @@ const Provider = ({
     dispatch({ selectedItem: undefined, selectedScene: undefined });
   }, []);
 
+  const onScenesChange = useCallback((scenes: GameScene[]) => {
+    onCanvasChange?.({
+      ...appPayload,
+      scenes,
+    });
+    dispatch({
+      selectedScene: scenes.find(s => s._file === state.selectedScene)?.id,
+    });
+  }, [onCanvasChange, appPayload, state.selectedScene]);
+
   const onSceneChange = useCallback((scene?: GameScene) => {
     onCanvasChange?.({
       ...appPayload,
@@ -138,12 +148,14 @@ const Provider = ({
     onVariablesChange,
     onScriptsChange,
     onScriptChange,
+    onScenesChange,
     onSceneChange,
   }), [
     selectedScene,
     state.selectedItem, state.tool, state.subTool,
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
+    onScenesChange,
   ]);
 
   return (

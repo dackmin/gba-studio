@@ -14,7 +14,7 @@ import {
 import { IconButton, InsetProps, Text, ContextMenu } from '@radix-ui/themes';
 import { v4 as uuid } from 'uuid';
 
-import type { GameScript, GameVariables } from '../../../types';
+import type { GameScene, GameScript, GameVariables } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
@@ -35,6 +35,7 @@ const LeftSidebar = ({
     selectScript,
     onVariablesChange,
     onScriptsChange,
+    onScenesChange,
   } = useCanvas();
 
   const allVariables = useMemo(() => (
@@ -145,6 +146,12 @@ const LeftSidebar = ({
     );
   }, [scripts, onScriptsChange]);
 
+  const onRemoveScene = useCallback((scene: GameScene) => {
+    onScenesChange?.(
+      scenes.filter(s => s !== scene)
+    );
+  }, [scenes, onScenesChange]);
+
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root className="!w-full">
@@ -160,23 +167,38 @@ const LeftSidebar = ({
               No scenes
             </Text>
           ) : scenes.map(scene => (
-            <a
+            <ContextMenu.Root
               key={scene._file}
-              href="#"
-              className={classNames(
-                'flex items-center gap-2 px-3 py-1',
-                { 'bg-(--accent-9)': selectedScene === scene },
-              )}
-              onClick={selectScene?.bind(null, scene)}
+              onOpenChange={selectScene?.bind(null, scene)}
             >
-              <StackIcon
-                className={classNames(
-                  '[&_path]:fill-(--accent-9)',
-                  { '[&_path]:fill-seashell': selectedScene === scene },
-                )}
-              />
-              <Text>{ scene.name }</Text>
-            </a>
+              <ContextMenu.Trigger>
+                <a
+                  key={scene._file}
+                  href="#"
+                  className={classNames(
+                    'flex items-center gap-2 px-3 py-1',
+                    { 'bg-(--accent-9)': selectedScene === scene },
+                  )}
+                  onClick={selectScene?.bind(null, scene)}
+                >
+                  <StackIcon
+                    className={classNames(
+                      '[&_path]:fill-(--accent-9)',
+                      { '[&_path]:fill-seashell': selectedScene === scene },
+                    )}
+                  />
+                  <Text>{ scene.name }</Text>
+                </a>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  onClick={onRemoveScene.bind(null, scene)}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
           )) }
         </Collapsible.Content>
       </Collapsible.Root>
@@ -206,7 +228,10 @@ const LeftSidebar = ({
               No scripts
             </Text>
           ) : scripts.map(script => (
-            <ContextMenu.Root key={script._file}>
+            <ContextMenu.Root
+              key={script._file}
+              onOpenChange={selectScript?.bind(null, script)}
+            >
               <ContextMenu.Trigger>
                 <a
                   href="#"

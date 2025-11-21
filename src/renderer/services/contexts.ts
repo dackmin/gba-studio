@@ -109,6 +109,7 @@ export interface CanvasContextType {
   onVariablesChange?(registry: GameVariables): void;
   onScriptsChange?(scripts: GameScript[]): void;
   onScriptChange?(script?: GameScript): void;
+  onScenesChange?(scenes: GameScene[]): void;
   onSceneChange?(scene?: GameScene): void;
 };
 
