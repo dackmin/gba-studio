@@ -22,12 +22,14 @@ import type {
   GamePlayer,
   GameScene,
   GameSensor,
+  GameSprite,
 } from '../../../types';
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
 import { getImageSize, loadImage, pixelToTile, tileToPixel } from '../../../helpers';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import PlayerStart from './PlayerStart';
+import Sprite from './Sprite';
 
 export interface SceneProps
   extends Omit<MoveableProps, 'onSelect' | 'onChange'> {
@@ -37,7 +39,7 @@ export interface SceneProps
   onSelect?: (scene: GameScene) => void;
   onSelectItem?: (
     scene?: GameScene,
-    item?: GameActor | GameSensor | GamePlayer
+    item?: GameActor | GameSensor | GamePlayer | GameSprite
   ) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
 }
@@ -140,6 +142,10 @@ const Scene = ({
     scene.actors || []
   ), [scene.actors]);
 
+  const sprites = useMemo(() => (
+    scene.sprites || []
+  ), [scene.sprites]);
+
   const gridSize = useMemo(() => (
     scene.map?.gridSize || 16
   ), [scene]);
@@ -181,7 +187,7 @@ const Scene = ({
       (scene.map?.collisions?.length || 0) > 0 &&
       scene.sceneType === '2d-top-down'
     ) {
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
 
       scene.map?.collisions?.forEach((line, y) => {
         line.forEach((cell, x) => {
@@ -199,18 +205,9 @@ const Scene = ({
 
     // Draw mouse helper
     if (state.isMouseOver) {
-      ctx.fillStyle = 'rgba(160, 160, 160, 0.5)';
-      ctx.strokeStyle = 'rgba(160, 160, 160, 1)';
-      ctx.lineWidth = 2;
+      ctx.fillStyle = 'rgba(187, 187, 187, 0.5)';
 
       ctx.fillRect(
-        tileToPixel(tileX || 0, gridSize),
-        tileToPixel(tileY || 0, gridSize),
-        gridSize,
-        gridSize,
-      );
-
-      ctx.strokeRect(
         tileToPixel(tileX || 0, gridSize),
         tileToPixel(tileY || 0, gridSize),
         gridSize,
@@ -275,6 +272,21 @@ const Scene = ({
     scene.player.y = pixelToTile(e.deltaY, gridSize);
     onChange?.(scene);
   }, [onChange, scene, gridSize]);
+
+  const onMovedSprite = useCallback((sprite: GameSprite, e: MoveableState) => {
+    sprite.x = pixelToTile(e.deltaX, gridSize);
+    sprite.y = pixelToTile(e.deltaY, gridSize);
+    onChange?.(scene);
+  }, [onChange, scene, gridSize]);
+
+  const onSelectSprite_ = useCallback((
+    sprite: GameSprite,
+    e: MouseEvent<HTMLDivElement>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectItem?.(scene, sprite);
+  }, [onSelectItem, scene]);
 
   const checkCollisionsArray = useCallback(() => {
     if (!scene.map) {
@@ -510,6 +522,16 @@ const Scene = ({
               onMoveEnd={onMovedActor.bind(null, actor)}
               onSelect={onSelectActor_.bind(null, actor)}
               gridSize={gridSize}
+            />
+          )) }
+
+          { sprites.map((sprite, i) => (
+            <Sprite
+              key={i}
+              sprite={sprite}
+              gridSize={gridSize}
+              onMoveEnd={onMovedSprite.bind(null, sprite)}
+              onSelect={onSelectSprite_.bind(null, sprite)}
             />
           )) }
 

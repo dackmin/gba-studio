@@ -10,6 +10,7 @@ import type {
   GameScene,
   GameScript,
   GameSensor,
+  GameSprite,
   IfEvent,
   OnButtonPressEvent,
   SceneEvent,
@@ -84,6 +85,19 @@ export const sanitizeSensor = async (
   return sensor;
 };
 
+export const sanitizeSprite = async (
+  sprite: GameSprite
+): Promise<GameSprite> => {
+  if (!sprite.id) {
+    sprite.id = randomUUID();
+  }
+
+  sprite.width = Number(sprite.width ?? 1);
+  sprite.height = Number(sprite.height ?? 1);
+
+  return sprite;
+};
+
 export const sanitizeScene = async (
   scene: GameScene,
   opts?: SanitizeOptions
@@ -98,6 +112,10 @@ export const sanitizeScene = async (
 
   for (const actor of scene.actors ?? []) {
     await sanitizeActor(actor);
+  }
+
+  for (const sprite of scene.sprites ?? []) {
+    await sanitizeSprite(sprite);
   }
 
   if (!scene.map) {

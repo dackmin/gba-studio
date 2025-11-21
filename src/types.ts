@@ -28,7 +28,7 @@ export interface AppStorage {
 export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
-export type AddSubToolType = 'scene' | 'sensor' | 'actor';
+export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite';
 export type SubToolType = AddSubToolType;
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
@@ -66,6 +66,7 @@ export interface GamePlayer {
   type: 'player';
   x: number;
   y: number;
+  z?: number;
   width?: number;
   height?: number;
   direction?: Direction;
@@ -81,6 +82,7 @@ export interface GameScene {
   map?: GameMap;
   events?: SceneEvent[];
   actors?: GameActor[];
+  sprites?: GameSprite[];
   // Internals
   id: string;
   _file?: string;
@@ -100,6 +102,7 @@ export interface GameActor {
   name: string;
   x: number;
   y: number;
+  z?: number;
   direction?: Direction;
   width?: number;
   height?: number;
@@ -109,6 +112,19 @@ export interface GameActor {
     interact?: SceneEvent[];
     update?: SceneEvent[];
   };
+  // Internals
+  id: string;
+}
+
+export interface GameSprite {
+  type: 'sprite';
+  name: string;
+  width?: number;
+  height?: number;
+  x: number;
+  y: number;
+  z?: number;
+  sprite: string;
   // Internals
   id: string;
 }
@@ -156,7 +172,7 @@ export interface GameProject {
   startingScene?: string;
 }
 
-export interface GameSprite {
+export interface GameSpriteFile {
   type: string;
   width?: number;
   height?: number;
@@ -164,7 +180,7 @@ export interface GameSprite {
   _file?: string;
 }
 
-export interface GameBackground {
+export interface GameBackgroundFile {
   type: string;
   // Internals
   _file?: string;
@@ -174,8 +190,8 @@ export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
   variables: GameVariables[];
-  sprites: GameSprite[];
-  backgrounds: GameBackground[];
+  sprites: GameSpriteFile[];
+  backgrounds: GameBackgroundFile[];
   music: string[];
   sounds: string[];
   scripts: GameScript[];

@@ -190,6 +190,18 @@ const SceneForm = ({
                   </div>
                 </div>
               </div>
+              <div className="flex flex-col gap-2">
+                <Text className="block text-slate" size="1">
+                  Drawing priority
+                </Text>
+                <EventValueField
+                  type="number"
+                  min={-32767}
+                  max={32767}
+                  value={scene.player?.z ?? 2}
+                  onValueChange={onValueChange.bind(null, 'player.z')}
+                />
+              </div>
             </div>
           </>
         ) }

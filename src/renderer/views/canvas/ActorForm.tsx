@@ -146,6 +146,16 @@ const ActorForm = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
+          <Text className="block text-slate" size="1">Drawing priority</Text>
+          <TextField.Root
+            type="number"
+            min={-32767}
+            max={32767}
+            value={actor.z ?? 2}
+            onChange={onTextChange.bind(null, 'z')}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <Text className="block text-slate" size="1">Direction</Text>
           <DirectionField
             value={actor.direction || 'down'}

@@ -10,6 +10,7 @@ import type {
   GameScene,
   GameScript,
   GameSensor,
+  GameSprite,
   GameVariables,
   SubToolType,
   ToolType,
@@ -94,14 +95,14 @@ export const EditorContext = createContext<EditorContextType>({
 
 export interface CanvasContextType {
   selectedScene?: GameScene;
-  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
+  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer | GameSprite;
   tool: ToolType;
   subTool?: SubToolType;
   setTool?(tool: ToolType, subTool?: SubToolType): void;
   resetTool?(): void;
   selectItem?(
     scene?: GameScene,
-    item?: GameActor | GameSensor | GamePlayer
+    item?: GameActor | GameSensor | GamePlayer | GameScript | GameSprite
   ): void;
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;

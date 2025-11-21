@@ -394,6 +394,7 @@ namespace neo::types
     bn::string_view name;
     int x;
     int y;
+    int z;
     neo::types::direction direction;
     bn::sprite_item sprite;
     int init_events_count;
@@ -402,6 +403,16 @@ namespace neo::types
     event** interact_events;
     int update_events_count;
     event** update_events;
+  };
+
+  struct sprite
+  {
+    bn::string_view _id;
+    bn::string_view name;
+    int x;
+    int y;
+    int z;
+    bn::sprite_item sprite;
   };
 
   struct script
@@ -424,6 +435,7 @@ namespace neo::types
     bool has_player;
     int start_x;
     int start_y;
+    int start_z;
     neo::types::direction start_direction;
     bn::sprite_item player_sprite;
     // Map data
@@ -431,6 +443,9 @@ namespace neo::types
     // Actors
     int actors_count;
     actor** actors;
+    // Sprites
+    int sprites_count;
+    sprite** sprites;
 
     inline bool is (bn::string_view name_)
     {

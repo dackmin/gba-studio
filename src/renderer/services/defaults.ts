@@ -1,4 +1,4 @@
-import type { GameActor, GameScene, GameSensor } from '../../types';
+import type { GameActor, GameScene, GameSensor, GameSprite } from '../../types';
 
 export const DEFAULT_SCENE: GameScene = {
   id: 'preview',
@@ -14,6 +14,7 @@ export const DEFAULT_ACTOR: GameActor = {
   name: 'New Actor',
   x: 0,
   y: 0,
+  z: 2,
   sprite: 'sprite_default',
   width: 1,
   height: 1,
@@ -34,4 +35,16 @@ export const DEFAULT_SENSOR: GameSensor = {
   width: 1,
   height: 1,
   events: [],
+};
+
+export const DEFAULT_SPRITE: GameSprite = {
+  id: 'preview',
+  type: 'sprite',
+  name: 'New Sprite',
+  x: 0,
+  y: 0,
+  z: 2,
+  sprite: 'sprite_default',
+  width: 1,
+  height: 1,
 };

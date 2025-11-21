@@ -19,6 +19,9 @@
 {{#each this.actors}}
 #include <bn_sprite_items_{{valuedef this.sprite "sprite_default"}}.h>
 {{/each}}
+{{#each this.sprites}}
+#include <bn_sprite_items_{{valuedef this.sprite "sprite_default"}}.h>
+{{/each}}
 {{/each}}
 
 namespace neo::scenes
@@ -158,6 +161,7 @@ namespace neo::scenes
     "{{this.name}}",
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
+    {{valuedef this.z 2}},
     neo::types::direction::{{uppercase (valuedef this.direction "down")}},
     bn::sprite_items::{{valuedef this.sprite "sprite_default"}},
     {{#if (hasItems this.events.init)}}
@@ -190,6 +194,25 @@ namespace neo::scenes
   };
   {{/if}}
 
+  {{#if (hasItems this.sprites)}}
+  // Sprites
+  {{#each this.sprites}}
+  neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
+    "{{this.id}}",
+    "{{this.name}}",
+    {{valuedef this.x 0}},
+    {{valuedef this.y 0}},
+    {{valuedef this.z 2}},
+    bn::sprite_items::{{valuedef this.sprite "sprite_default"}}
+  };
+  {{/each}}
+  neo::types::sprite* {{slug this.name}}_sprites[] = {
+    {{#each this.sprites}}
+    &{{slug ../this.name}}_sprite_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
+
   // Scene
   neo::types::scene scene_{{slug this.name}} = {
     "{{this.id}}",
@@ -199,7 +222,7 @@ namespace neo::scenes
     {{else}}
     bn::regular_bg_items::bg_default,
     {{/if}}
-    {{#if (hasItems this.events) }}
+    {{#if (hasItems this.events)}}
     {{this.events.length}},
     {{slug this.name}}_events,
     {{else}}
@@ -208,14 +231,16 @@ namespace neo::scenes
     {{/if}}
     {{#if this.player}}
     true,
-    {{this.player.x}},
-    {{this.player.y}},
+    {{valuedef this.player.x 0}},
+    {{valuedef this.player.y 0}},
+    {{valuedef this.player.z 1}},
     neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
     bn::sprite_items::{{valuedef this.player.sprite "sprite_default"}},
     {{else}}
     false,
     0,
     0,
+    1,
     neo::types::direction::DOWN,
     bn::sprite_items::sprite_default,
     {{/if}}
@@ -226,7 +251,14 @@ namespace neo::scenes
     {{/if}}
     {{#if (hasItems this.actors)}}
     {{this.actors.length}},
-    {{slug this.name}}_actors
+    {{slug this.name}}_actors,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.sprites)}}
+    {{this.sprites.length}},
+    {{slug this.name}}_sprites
     {{else}}
     0,
     nullptr
@@ -245,8 +277,11 @@ namespace neo::scenes
     false,
     0,
     0,
+    1,
     neo::types::direction::DOWN,
     bn::sprite_items::sprite_default,
+    nullptr,
+    0,
     nullptr,
     0,
     nullptr

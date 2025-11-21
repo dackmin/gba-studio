@@ -141,6 +141,9 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'actor')}>
             Actor
           </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={onAddClick.bind(null, 'sprite')}>
+            Sprite
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <IconButton

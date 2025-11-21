@@ -16,6 +16,7 @@ import {
   DEFAULT_ACTOR,
   DEFAULT_SCENE,
   DEFAULT_SENSOR,
+  DEFAULT_SPRITE,
 } from '../../services/defaults';
 import { pixelToTile } from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
@@ -24,6 +25,7 @@ import Toolbar from './Toolbar';
 import Arrows from './Arrows';
 import Actor from './Actor';
 import Sensor from './Sensor';
+import Sprite from './Sprite';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -217,6 +219,46 @@ const Canvas = () => {
       selectItem?.(selectedScene, actor);
     }
 
+    if (tool === 'add' && subTool === 'sprite' && selectedScene) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const sceneConfig = project?.scenes.find(s => (
+        s.id === selectedScene.id || s._file === selectedScene._file
+      ));
+
+      const sprite = {
+        ...DEFAULT_SPRITE,
+        id: uuid(),
+        name: `Sprite ${((selectedScene.actors?.length || 0) + 1)}`,
+        x: pixelToTile(
+          position.x - (sceneConfig?.x || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+        y: pixelToTile(
+          position.y - (sceneConfig?.y || 0),
+          selectedScene.map?.gridSize || 16
+        ),
+      };
+
+      set(selectedScene, 'sprites', [
+        ...(selectedScene.sprites || []),
+        sprite,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene.id ||
+          s._file === selectedScene._file
+            ? selectedScene! : s
+        )),
+      });
+
+      setTool?.('default');
+      selectItem?.(selectedScene, sprite);
+    }
+
     if (tool === 'add' && subTool === 'sensor' && selectedScene) {
       const position = infiniteCanvasRef.current
         ?.getCursorPosition() || { x: 0, y: 0 };
@@ -323,6 +365,15 @@ const Canvas = () => {
           { tool === 'add' && subTool === 'sensor' && (
             <Sensor
               sensor={DEFAULT_SENSOR}
+              className="!fixed pointer-events-none opacity-50 !z-1000"
+              preview={true}
+              gridSize={selectedScene?.map?.gridSize}
+            />
+          ) }
+
+          { tool === 'add' && subTool === 'sprite' && (
+            <Sprite
+              sprite={DEFAULT_SPRITE}
               className="!fixed pointer-events-none opacity-50 !z-1000"
               preview={true}
               gridSize={selectedScene?.map?.gridSize}

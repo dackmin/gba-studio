@@ -23,6 +23,7 @@
 #include "fade.h"
 #include "buttons.h"
 #include "actor.h"
+#include "sprite.h"
 #include "dialog.h"
 #include "camera.h"
 
@@ -71,6 +72,14 @@ namespace neo
     actors.clear();
     actors_count = 0;
 
+    // Clean up old sprites just in case
+    for (int i = 0; i < sprites_count; ++i)
+    {
+      delete sprites[i];
+    }
+    sprites.clear();
+    sprites_count = 0;
+
     bn::regular_bg_ptr bg = active_scene->background.create_bg(0, 0);
     scene_bg = &bg;
     scene_bg->set_camera(camera);
@@ -86,6 +95,7 @@ namespace neo
 
       int x = active_scene->start_x;
       int y = active_scene->start_y;
+      int z = active_scene->start_z;
       neo::types::direction dir = active_scene->start_direction;
 
       if (
@@ -108,6 +118,7 @@ namespace neo
         *active_scene->map_data,
         x,
         y,
+        z,
         dir,
         active_scene->player_sprite.create_sprite(0, 0),
         active_scene->player_sprite.tiles_item()
@@ -132,6 +143,22 @@ namespace neo
       }
     }
 
+    // Sprites
+    sprites.clear();
+    sprites_count = active_scene->sprites_count;
+    BN_LOG("Sprites count: ", sprites_count);
+
+    if (active_scene->sprites != nullptr)
+    {
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        BN_LOG("Creating sprite: ", active_scene->sprites[i]->name);
+        neo::sprite* s = new neo::sprite(this, active_scene->sprites[i]);
+        sprites.push_back(s);
+      }
+    }
+
+    // Scripts
     scripted_events_count = 0;
     scripted_events.clear();
 
@@ -536,15 +563,27 @@ namespace neo
     {
       actors[i]->sprite.set_blending_enabled(true);
     }
+
+    for (int i = 0; i < sprites_count; ++i)
+    {
+      sprites[i]->inner_sprite.set_blending_enabled(true);
+    }
   }
 
   void game::disable_blending ()
   {
     player.sprite.set_blending_enabled(false);
 
+    // Actors
     for (int i = 0; i < actors_count; ++i)
     {
       actors[i]->sprite.set_blending_enabled(false);
+    }
+
+    // Sprites
+    for (int i = 0; i < sprites_count; ++i)
+    {
+      sprites[i]->inner_sprite.set_blending_enabled(false);
     }
   }
 

@@ -55,9 +55,8 @@ const Sensor = ({
     >
       <div
         className={classNames(
-          'absolute bg-orange-500/50 border-2',
-          'border-orange-500',
-          { 'bg-yellow-500': selectedItem === sensor}
+          'absolute bg-orange-500/50 hover:border-1 border-(--accent-9)',
+          { 'border-1': selectedItem === sensor}
         )}
         onClick={onSelect}
       />

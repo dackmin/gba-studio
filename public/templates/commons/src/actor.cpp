@@ -19,6 +19,7 @@ namespace neo
     sprite.set_camera(game->camera);
     sprite.set_visible(true);
     sprite.set_bg_priority(1);
+    sprite.set_z_order(actor_definition_->z);
 
     set_direction(definition->direction);
     set_position(definition->x, definition->y);

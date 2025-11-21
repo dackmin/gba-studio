@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 import { app, BrowserWindow, globalShortcut } from 'electron';
 
-import type { GameBackground, GameSprite } from '../types';
+import type { GameBackgroundFile, GameSpriteFile } from '../types';
 import { createProjectWindow, createSelectionWindow } from './windows';
 import { getGraphicsFiles, getSoundFiles } from './files';
 
@@ -57,12 +57,12 @@ export const createGraphicsFileWatcher = async (
         file => file.endsWith('.json')
       );
 
-      const sprites: GameSprite[] = [];
-      const backgrounds: GameBackground[] = [];
+      const sprites: GameSpriteFile[] = [];
+      const backgrounds: GameBackgroundFile[] = [];
 
       for (const file of files) {
         try {
-          const graphic: GameSprite | GameBackground = JSON.parse(
+          const graphic: GameSpriteFile | GameBackgroundFile = JSON.parse(
             await fs.promises
               .readFile(path.join(projectBase, 'graphics', file), 'utf-8')
           );

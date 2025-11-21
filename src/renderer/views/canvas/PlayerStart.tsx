@@ -66,9 +66,9 @@ const PlayerStart = ({
         <div className="relative w-full h-full">
           <div
             className={classNames(
-              'absolute bg-blue-500/50 border-2 border-blue-500',
+              'absolute hover:border-1 border-(--accent-9)',
               'z-2 w-full h-full top-0 left-0',
-              { 'bg-blue-500/70': selectedItem === scene.player }
+              { 'border-1': selectedItem === scene.player }
             )}
           />
           <Sprite

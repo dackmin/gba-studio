@@ -27,11 +27,11 @@ namespace neo
     sprite.set_z_order(1);
   }
 
-  void player::play(neo::types::map& map_, int start_tile_x, int start_tile_y, neo::types::direction start_direction, bn::sprite_ptr sprite_, bn::sprite_tiles_item tiles_)
+  void player::play(neo::types::map& map_, int start_tile_x, int start_tile_y, int start_z, neo::types::direction start_direction, bn::sprite_ptr sprite_, bn::sprite_tiles_item tiles_)
   {
     sprite = sprite_;
     sprite.set_bg_priority(1);
-    sprite.set_z_order(1);
+    sprite.set_z_order(start_z);
     sprite.set_camera(game->camera);
 
     tiles = tiles_;

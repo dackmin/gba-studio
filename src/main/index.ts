@@ -46,6 +46,7 @@ if (started) {
 // Allow project files to bypass CSP rules
 protocol.registerSchemesAsPrivileged([
   { scheme: 'project', privileges: { bypassCSP: true } },
+  { scheme: 'resources', privileges: { bypassCSP: true } },
 ]);
 
 const storage = new Storage();

@@ -23,7 +23,7 @@ const SpritesListField = ({
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
             <Avatar
-              src={!val
+              src={!val || val === 'sprite_default'
                 ? `resources://public/templates` +
                   `/commons/graphics/sprite_default.bmp`
                 : `project://graphics/${val}.bmp`}

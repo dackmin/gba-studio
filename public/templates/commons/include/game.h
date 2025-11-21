@@ -11,6 +11,7 @@
 #include "player.h"
 #include "commons.h"
 #include "actor.h"
+#include "sprite.h"
 
 namespace neo
 {
@@ -36,6 +37,9 @@ namespace neo
 
       int actors_count;
       bn::vector<neo::actor*, 20> actors;
+
+      int sprites_count;
+      bn::vector<neo::sprite*, 50> sprites;
 
       void set_scene(bn::string_view scene_name);
       void exec_event(const neo::types::event* e, bool is_loop);

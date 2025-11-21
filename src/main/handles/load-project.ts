@@ -7,10 +7,10 @@ import type {
   AppPayload,
   GameProject,
   GameScene,
-  GameSprite,
   GameVariables,
   GameScript,
-  GameBackground,
+  GameBackgroundFile,
+  GameSpriteFile,
 } from '../../types';
 import { sanitize } from '../sanitize';
 import {
@@ -99,11 +99,11 @@ export default async (
   }
 
   // Load graphics
-  const sprites: GameSprite[] = [];
-  const backgrounds: GameBackground[] = [];
+  const sprites: GameSpriteFile[] = [];
+  const backgrounds: GameBackgroundFile[] = [];
 
   for (const file of graphicsFiles) {
-    const graphic: GameSprite | GameBackground = JSON.parse(await fs
+    const graphic: GameSpriteFile | GameBackgroundFile = JSON.parse(await fs
       .readFile(path.join(projectDir, 'graphics', file), 'utf-8'));
 
     if (['sprite'].includes(graphic.type)) {

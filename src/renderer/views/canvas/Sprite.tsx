@@ -6,29 +6,29 @@ import {
   useInfiniteCanvas,
 } from '@junipero/react';
 
-import type { GameActor } from '../../../types';
+import type { GameSprite } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { tileToPixel } from '../../../helpers';
-import Sprite from '../../components/Sprite';
+import InnerSprite from '../../components/Sprite';
 
-export interface ActorProps extends MoveableProps {
-  actor: GameActor;
+export interface SpriteProps extends MoveableProps {
+  sprite: GameSprite;
   gridSize?: number;
   preview?: boolean;
   onSelect?: (e: MouseEvent<HTMLDivElement>) => void;
 }
 
-const Actor = ({
-  actor,
+const Sprite = ({
+  sprite,
   gridSize = 16,
   preview = false,
   onSelect,
   onMoveEnd,
   ...rest
-}: ActorProps) => {
+}: SpriteProps) => {
   const { zoom, mouseX, mouseY, offsetX, offsetY } = useInfiniteCanvas();
-  const { sprites } = useApp();
   const { tool, selectedItem } = useCanvas();
+  const { sprites } = useApp();
 
   const getSprite = useCallback((name: string) => (
     sprites?.find(s => s._file === `${name}.json`)
@@ -45,22 +45,22 @@ const Actor = ({
       transformScale={zoom}
       disabled={
         (tool === 'add' && !preview) || tool !== 'default' ||
-        selectedItem !== actor
+        selectedItem !== sprite
       }
-      x={preview ? previewPosition?.x : tileToPixel(actor.x || 0, gridSize)}
-      y={preview ? previewPosition?.y : tileToPixel(actor.y || 0, gridSize)}
+      x={preview ? previewPosition?.x : tileToPixel(sprite.x || 0, gridSize)}
+      y={preview ? previewPosition?.y : tileToPixel(sprite.y || 0, gridSize)}
       onMouseDown={e => e.stopPropagation()}
       onMoveEnd={onMoveEnd}
       step={preview ? undefined : gridSize}
       style={{
         left: 0,
         top: 0,
-        width: actor.width
-          ? tileToPixel(actor.width, gridSize)
-          : getSprite(actor.sprite)?.width ?? gridSize,
-        height: actor.height
-          ? tileToPixel(actor.height, gridSize)
-          : getSprite(actor.sprite)?.height ?? gridSize,
+        width: sprite.width
+          ? tileToPixel(sprite.width, gridSize)
+          : getSprite(sprite.sprite)?.width ?? gridSize,
+        height: sprite.height
+          ? tileToPixel(sprite.height, gridSize)
+          : getSprite(sprite.sprite)?.height ?? gridSize,
       }}
     >
       <div className="absolute w-full h-full">
@@ -69,16 +69,16 @@ const Actor = ({
             className={classNames(
               'absolute hover:border-1 border-(--accent-9)',
               'z-2 w-full h-full top-0 left-0',
-              { 'border-1': selectedItem === actor }
+              { 'border-1': selectedItem === sprite }
             )}
             onClick={onSelect}
           />
-          <Sprite
+          <InnerSprite
             className="absolute z-1 top-0 left-0 pixelated"
-            sprite={getSprite(actor.sprite)}
-            width={actor.width}
-            height={actor.height}
-            direction={actor.direction}
+            sprite={getSprite(sprite.sprite)}
+            width={sprite.width}
+            height={sprite.height}
+            direction="down"
             gridSize={gridSize}
           />
         </div>
@@ -87,4 +87,4 @@ const Actor = ({
   );
 };
 
-export default Actor;
+export default Sprite;
