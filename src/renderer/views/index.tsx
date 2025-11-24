@@ -7,7 +7,9 @@ import Canvas, {
   RightSidebar as CanvasRightSidebar,
   Provider as CanvasProvider,
 } from './canvas';
-import Preview from './preview';
+import Preview, {
+  LeftSidebar as PreviewLeftSidebar,
+} from './preview';
 import Settings from './settings';
 
 export const defaultView: ViewDefinition = {
@@ -31,6 +33,7 @@ const views: ViewDefinition[] = [{
   title: 'Preview',
   icon: CardStackIcon,
   view: Preview,
+  leftSidebar: PreviewLeftSidebar,
 }, {
   name: 'settings',
   title: 'Settings',
