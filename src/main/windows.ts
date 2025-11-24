@@ -114,7 +114,7 @@ export const createProjectWindow = async (projectPath: string) => {
       vibrancy: 'under-window',
     },
     ...process.platform === 'win32' && {
-      autoHideMenuBar: true,
+      autoHideMenuBar: false,
       backgroundColor: nativeTheme.shouldUseDarkColors
         ? '#1A1A1A'
         : '#FAFAFA',
