@@ -496,7 +496,7 @@ namespace neo
         static_cast<const neo::types::move_camera_to_event*>(e);
 
       neo::camera::move_to(
-        camera,
+        this,
         *active_scene,
         move_camera_evt->x->as_int(variables),
         move_camera_evt->y->as_int(variables),

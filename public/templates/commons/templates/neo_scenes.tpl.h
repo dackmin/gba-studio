@@ -106,11 +106,12 @@ namespace neo::scenes
   {{/if}}
 
   // Map
+  {{>valuePartial prefix=(concat (slug this.name) "_map_grid_size") value=(valuedef this.map.gridSize 16)}}
   neo::types::map {{slug this.name}}_map_data = {
     {{#if this.map}}
     {{valuedef this.map.width 0}},
     {{valuedef this.map.height 0}},
-    {{valuedef this.map.gridSize 16}},
+    &{{slug this.name}}_map_grid_size_value,
     {{#if (hasItems this.map.collisions)}}
     {{slug this.name}}_map_collisions,
     {{else}}

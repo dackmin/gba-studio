@@ -6,10 +6,12 @@
 
 #include <neo_types.h>
 
+#include "game.h"
+
 namespace neo::camera
 {
   void move_to(
-    bn::camera_ptr& camera,
+    neo::game* game,
     neo::types::scene& active_scene,
     int x,
     int y,
@@ -18,23 +20,23 @@ namespace neo::camera
     bn::string_view direction_priority
   )
   {
-    int min_x = -(active_scene.map_data->pixel_width() / 2 - neo::types::SCREEN_WIDTH / 2);
-    int max_x = active_scene.map_data->pixel_width() / 2 - neo::types::SCREEN_WIDTH / 2;
-    int min_y = -(active_scene.map_data->pixel_height() / 2 - neo::types::SCREEN_HEIGHT / 2);
-    int max_y = active_scene.map_data->pixel_height() / 2 - neo::types::SCREEN_HEIGHT / 2;
+    int min_x = -(active_scene.map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2);
+    int max_x = active_scene.map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2;
+    int min_y = -(active_scene.map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2);
+    int max_y = active_scene.map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2;
 
     // 0,0 is camera center
-    int start_x = (int)camera.x();
-    int start_y = (int)camera.y();
-    int target_x = min_x + active_scene.map_data->to_pixel_x(x);
-    int target_y = min_y + active_scene.map_data->to_pixel_y(y);
+    int start_x = (int)game->camera.x();
+    int start_y = (int)game->camera.y();
+    int target_x = min_x + active_scene.map_data->to_pixel_x(game->variables, x);
+    int target_y = min_y + active_scene.map_data->to_pixel_y(game->variables, y);
 
     int end_x = bn::min(bn::max(target_x, min_x), max_x);
     int end_y = bn::min(bn::max(target_y, min_y), max_y);
 
     if (duration <= 0)
     {
-      camera.set_position(end_x, end_y);
+      game->camera.set_position(end_x, end_y);
       return;
     }
 
@@ -52,7 +54,7 @@ namespace neo::camera
         int new_x = start_x + static_cast<int>(delta_x * t);
         int new_y = start_y + static_cast<int>(delta_y * t);
 
-        camera.set_position(new_x, new_y);
+        game->camera.set_position(new_x, new_y);
 
         bn::core::update();
       }
@@ -69,7 +71,7 @@ namespace neo::camera
         {
           float t = static_cast<float>(frame) / horizontal_frames;
           int new_x = start_x + static_cast<int>(delta_x * t);
-          camera.set_position(new_x, start_y);
+          game->camera.set_position(new_x, start_y);
           bn::core::update();
         }
         // Then move vertically
@@ -77,7 +79,7 @@ namespace neo::camera
         {
           float t = static_cast<float>(frame) / vertical_frames;
           int new_y = start_y + static_cast<int>(delta_y * t);
-          camera.set_position(end_x, new_y);
+          game->camera.set_position(end_x, new_y);
           bn::core::update();
         }
       } else if (direction_priority == "vertical") {
@@ -86,7 +88,7 @@ namespace neo::camera
         {
           float t = static_cast<float>(frame) / vertical_frames;
           int new_y = start_y + static_cast<int>(delta_y * t);
-          camera.set_position(start_x, new_y);
+          game->camera.set_position(start_x, new_y);
           bn::core::update();
         }
         // Then move horizontally
@@ -94,12 +96,12 @@ namespace neo::camera
         {
           float t = static_cast<float>(frame) / horizontal_frames;
           int new_x = start_x + static_cast<int>(delta_x * t);
-          camera.set_position(new_x, end_y);
+          game->camera.set_position(new_x, end_y);
           bn::core::update();
         }
       }
     }
 
-    camera.set_position(end_x, end_y);
+    game->camera.set_position(end_x, end_y);
   }
 }

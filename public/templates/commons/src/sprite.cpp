@@ -32,11 +32,11 @@ namespace neo
   {
     position = bn::fixed_point(tile_x, tile_y);
 
-    int x = game->active_scene->map_data->to_pixel_x(tile_x)
-        - game->active_scene->map_data->pixel_width() / 2
+    int x = game->active_scene->map_data->to_pixel_x(game->variables, tile_x)
+        - game->active_scene->map_data->pixel_width(game->variables) / 2
         + inner_sprite.dimensions().width() / 2;
-    int y = game->active_scene->map_data->to_pixel_y(tile_y)
-        - game->active_scene->map_data->pixel_height() / 2
+    int y = game->active_scene->map_data->to_pixel_y(game->variables, tile_y)
+        - game->active_scene->map_data->pixel_height(game->variables) / 2
         + inner_sprite.dimensions().height() / 2;
 
     inner_sprite.set_x(x);

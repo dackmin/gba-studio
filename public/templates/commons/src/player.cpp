@@ -37,7 +37,7 @@ namespace neo
     tiles = tiles_;
 
     set_map(map_);
-    set_position(bn::fixed_point(map->to_pixel_x(start_tile_x), map->to_pixel_y(start_tile_y)));
+    set_position(bn::fixed_point(map->to_pixel_x(game->variables, start_tile_x), map->to_pixel_y(game->variables, start_tile_y)));
 
     direction = start_direction;
 
@@ -68,8 +68,8 @@ namespace neo
     if (bn::keypad::a_pressed())
     {
       neo::actor* actor = game->get_actor_at(
-        map->to_tile_x((int)position.x()),
-        map->to_tile_y((int)position.y()),
+        map->to_tile_x(game->variables, (int)position.x()),
+        map->to_tile_y(game->variables, (int)position.y()),
         direction
       );
 
@@ -195,25 +195,25 @@ namespace neo
     switch (direction)
     {
       case neo::types::direction::LEFT:
-        next_x -= map->grid_size;
+        next_x -= map->grid_size->as_int(game->variables);
         break;
       case neo::types::direction::RIGHT:
-        next_x += map->grid_size;
+        next_x += map->grid_size->as_int(game->variables);
         break;
       case neo::types::direction::UP:
-        next_y -= map->grid_size;
+        next_y -= map->grid_size->as_int(game->variables);
         break;
       default:
-        next_y += map->grid_size;
+        next_y += map->grid_size->as_int(game->variables);
         break;
     }
 
-    int tile_x = map->to_tile_x(next_x);
-    int tile_y = map->to_tile_y(next_y);
+    int tile_x = map->to_tile_x(game->variables, next_x);
+    int tile_y = map->to_tile_y(game->variables, next_y);
 
     if (map->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
     {
-      action.update();
+      // action.update();
       bn::core::update();
 
       return;
@@ -221,7 +221,7 @@ namespace neo
 
     int delta = 0;
 
-    while (delta < map->grid_size)
+    while (delta < map->grid_size->as_int(game->variables))
     {
       switch (direction)
       {
@@ -263,18 +263,18 @@ namespace neo
   void player::set_position(bn::fixed_point position_)
   {
     position = position_;
-    int x = (int)position.x() - map->pixel_width() / 2;
-    int y = (int)position.y() - map->pixel_height() / 2;
+    int x = (int)position.x() - map->pixel_width(game->variables) / 2;
+    int y = (int)position.y() - map->pixel_height(game->variables) / 2;
     sprite.set_x(x + width() / 2);
     sprite.set_y(y + height() / 2);
 
     game->camera.set_x(bn::min(
-      bn::max(x, -(map->pixel_width() / 2 - neo::types::SCREEN_WIDTH / 2)),
-      map->pixel_width() / 2 - neo::types::SCREEN_WIDTH / 2
+      bn::max(x, -(map->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2)),
+      map->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2
     ));
     game->camera.set_y(bn::min(
-      bn::max(y, -(map->pixel_height() / 2 - neo::types::SCREEN_HEIGHT / 2)),
-      map->pixel_height() / 2 - neo::types::SCREEN_HEIGHT / 2
+      bn::max(y, -(map->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2)),
+      map->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2
     ));
   }
 

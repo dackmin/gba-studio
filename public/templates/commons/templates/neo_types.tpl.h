@@ -319,39 +319,39 @@ namespace neo::types
   {
     int width;
     int height;
-    int grid_size;
+    event_value* grid_size;
     int* collisions;
     int sensors_count;
     sensor** sensors;
 
-    inline int to_pixel_x (int tile_x)
+    inline int to_pixel_x (neo::variables::registry& variables, int tile_x)
     {
-      return tile_x * grid_size;
+      return tile_x * grid_size->as_int(variables);
     }
 
-    inline int to_tile_x (int pixel_x)
+    inline int to_tile_x (neo::variables::registry& variables, int pixel_x)
     {
-      return pixel_x / grid_size;
+      return pixel_x / grid_size->as_int(variables);
     }
 
-    inline int to_pixel_y (int tile_y)
+    inline int to_pixel_y (neo::variables::registry& variables, int tile_y)
     {
-      return tile_y * grid_size;
+      return tile_y * grid_size->as_int(variables);
     }
 
-    inline int to_tile_y (int pixel_y)
+    inline int to_tile_y (neo::variables::registry& variables, int pixel_y)
     {
-      return pixel_y / grid_size;
+      return pixel_y / grid_size->as_int(variables);
     }
 
-    inline int pixel_width () const
+    inline int pixel_width (neo::variables::registry& variables) const
     {
-      return width * grid_size;
+      return width * grid_size->as_int(variables);
     }
 
-    inline int pixel_height () const
+    inline int pixel_height (neo::variables::registry& variables) const
     {
-      return height * grid_size;
+      return height * grid_size->as_int(variables);
     }
 
     inline int tile_index (int tile_x, int tile_y)

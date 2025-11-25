@@ -5,10 +5,12 @@
 
 #include <neo_types.h>
 
+#include "game.h"
+
 namespace neo::camera
 {
   void move_to(
-    bn::camera_ptr& camera,
+    neo::game* game,
     neo::types::scene& active_scene,
     int x,
     int y,
