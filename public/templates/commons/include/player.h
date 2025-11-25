@@ -19,8 +19,8 @@ namespace neo
     public:
       player();
 
-      inline static int ANIMATION_FPS = 7; // slow: 12, faster: 7
-      inline static int PLAYER_SPEED = 2; // slow: 1, faster: 2
+      inline constexpr static int ANIMATION_FPS = 7; // slow: 12, faster: 7
+      inline constexpr static int PLAYER_SPEED = 2; // slow: 1, faster: 2
 
       void set_game(neo::game& game);
       void set_map(neo::types::map& map);
