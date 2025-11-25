@@ -12,6 +12,7 @@ import type {
   GameScene,
   GameScript,
   GameSensor,
+  GameVariable,
   GameVariables,
   SubToolType,
   ToolType,
@@ -21,7 +22,8 @@ import { useApp } from '../../services/hooks';
 
 export interface CanvasState {
   selectedScene?: string;
-  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer;
+  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer |
+    GameVariable;
   tool: ToolType;
   previousTool: ToolType;
   subTool?: SubToolType;
@@ -61,6 +63,14 @@ const Provider = ({
     }
 
     dispatch({ selectedItem: script, selectedScene: undefined });
+  }, [state.selectedItem]);
+
+  const selectVariable = useCallback((variable: GameVariable) => {
+    if (state.selectedItem === variable) {
+      return;
+    }
+
+    dispatch({ selectedItem: variable, selectedScene: undefined });
   }, [state.selectedItem]);
 
   const onVariablesChange = useCallback((registry: GameVariables) => {
@@ -134,6 +144,24 @@ const Provider = ({
     dispatch({ selectedItem: script });
   }, [onCanvasChange, appPayload]);
 
+  const onVariableChange = useCallback((variable: GameVariable) => {
+    onCanvasChange?.({
+      ...appPayload,
+      variables: appPayload.variables
+        .map(v => {
+          if (v.values?.some(val => val === variable)) {
+            return {
+              ...v,
+              values: v.values.map(val => val === variable ? variable : val),
+            };
+          }
+
+          return v;
+        }),
+    });
+    dispatch({ selectedItem: variable });
+  }, [onCanvasChange, appPayload]);
+
   const getContext = useCallback((): CanvasContextType => ({
     selectedScene,
     selectedItem: state.selectedItem,
@@ -142,6 +170,7 @@ const Provider = ({
     setTool,
     resetTool,
     selectItem,
+    selectVariable,
     resetSelection,
     selectScene,
     selectScript,
@@ -150,12 +179,13 @@ const Provider = ({
     onScriptChange,
     onScenesChange,
     onSceneChange,
+    onVariableChange,
   }), [
     selectedScene,
     state.selectedItem, state.tool, state.subTool,
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
-    onScenesChange,
+    onScenesChange, selectVariable, onVariableChange,
   ]);
 
   return (

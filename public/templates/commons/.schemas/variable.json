@@ -12,7 +12,32 @@
           "type": "string"
         },
         "values": {
-          "type": "object"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "defaultValue": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "defaultValue"
+            ]
+          }
         }
       },
       "required": [

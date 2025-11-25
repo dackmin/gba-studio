@@ -43,15 +43,15 @@ namespace neo::variables
     registry(): all()
     {
       {{#each variables}}
-      {{#each (entries this.values) }}
-      neo::variables::value value_{{@../index}}_{{@index}}(
-        {{int this.[1]}},
-        {{bool this.[1]}},
-        "{{this.[1]}}"
+      {{#each this.values}}
+      neo::variables::value value_{{@../index}}_{{slug this.name}}_{{@index}}(
+        {{int this.defaultValue}},
+        {{bool this.defaultValue}},
+        "{{this.defaultValue}}"
       );
       all.insert_or_assign(
-        "{{this.[0]}}",
-        &value_{{@../index}}_{{@index}}
+        "{{valuedef this.id this.name}}",
+        &value_{{@../index}}_{{slug this.name}}_{{@index}}
       );
       {{/each}}
       {{/each}}

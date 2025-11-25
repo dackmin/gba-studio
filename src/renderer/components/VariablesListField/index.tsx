@@ -11,7 +11,7 @@ const VariablesListField = ({
   const { variables: registries } = useApp();
 
   const variables = useMemo(() => (
-    registries.flatMap(r => Object.keys(r.values))
+    registries.flatMap(r => r.values || [])
   ), [registries]);
 
   return (
@@ -21,8 +21,8 @@ const VariablesListField = ({
       <Select.Trigger placeholder="Select" />
       <Select.Content>
         { variables.map(variable => (
-          <Select.Item key={variable} value={variable}>
-            { variable }
+          <Select.Item key={variable.id} value={variable.id}>
+            { variable.name }
           </Select.Item>
         )) }
       </Select.Content>

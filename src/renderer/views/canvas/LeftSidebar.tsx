@@ -1,6 +1,4 @@
 import {
-  type ChangeEvent,
-  type KeyboardEvent,
   type MouseEvent,
   useCallback,
   useMemo,
@@ -14,7 +12,7 @@ import {
 import { IconButton, InsetProps, Text, ContextMenu } from '@radix-ui/themes';
 import { v4 as uuid } from 'uuid';
 
-import type { GameScene, GameScript, GameVariables } from '../../../types';
+import type { GameScene, GameScript, GameVariable } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
@@ -33,6 +31,7 @@ const LeftSidebar = ({
     selectedItem,
     selectScene,
     selectScript,
+    selectVariable,
     onVariablesChange,
     onScriptsChange,
     onScenesChange,
@@ -42,47 +41,6 @@ const LeftSidebar = ({
     variables.flatMap(v => Object.keys(v.values || {}))
   ), [variables]);
 
-  const onVariableNameKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.currentTarget.blur();
-    }
-  };
-
-  const onVariableNameChange = useCallback((
-    registry: GameVariables,
-    oldName: string,
-    e: ChangeEvent<HTMLDivElement>
-  ) => {
-    const name = e.currentTarget.textContent
-      .trim().slice(0, 32);
-
-    if (name === oldName) {
-      return;
-    }
-
-    if (!name) {
-      // Remove variable
-      const { [oldName]: _, ...rest } = registry.values;
-      onVariablesChange?.({
-        ...registry,
-        values: rest,
-      });
-
-      return;
-    }
-
-    onVariablesChange?.({
-      ...registry,
-      values: Object
-        .fromEntries(Object.entries(registry.values).map(([k, v]) => (
-          k === oldName ? [name, v] : [k, v]
-        ))),
-    });
-  }, [onVariablesChange]);
-
   const onAddVariable = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -91,7 +49,7 @@ const LeftSidebar = ({
         _file: 'variables.json',
         type: 'variables',
         id: uuid(),
-        values: {},
+        values: [],
       });
     }
 
@@ -100,10 +58,15 @@ const LeftSidebar = ({
       Object.keys(latestRegistry?.values || {}).length;
     onVariablesChange?.({
       ...latestRegistry,
-      values: {
-        ...latestRegistry?.values,
-        [name]: 0,
-      },
+      values: [
+        ...latestRegistry?.values || [],
+        {
+          id: uuid(),
+          type: 'variable',
+          name,
+          defaultValue: 0,
+        },
+      ],
     });
 
     // Focus the new variable
@@ -145,6 +108,21 @@ const LeftSidebar = ({
       scripts.filter(s => s !== script)
     );
   }, [scripts, onScriptsChange]);
+
+  const onRemoveVariable = useCallback((variable: GameVariable) => {
+    const registry = variables.find(r =>
+      r.values?.some(v => v === variable)
+    );
+
+    if (!registry) {
+      return;
+    }
+
+    onVariablesChange?.({
+      ...registry,
+      values: registry.values.filter(v => v !== variable),
+    });
+  }, [variables, onVariablesChange]);
 
   const onRemoveScene = useCallback((scene: GameScene) => {
     onScenesChange?.(
@@ -288,29 +266,38 @@ const LeftSidebar = ({
               No variables
             </Text>
           ) : variables.map(registry => (
-            Object.keys(registry?.values || {}).map(v => (
-              <div
-                key={v}
-                className="px-3 flex items-center w-full gap-2 py-1 flex-nowrap"
-                data-variable={v}
+            registry.values?.map(variable => (
+              <ContextMenu.Root
+                key={variable.id}
+                onOpenChange={selectVariable?.bind(null, variable)}
               >
-                <Text className="text-(--accent-9) cursor-default">
-                  $
-                </Text>
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  className={classNames(
-                    'whitespace-nowrap flex-auto w-full overflow-x-scroll',
-                    'editable',
-                    'outline-(--accent-9) rounded-xs focus:outline-2',
-                  )}
-                  onKeyDown={onVariableNameKeyDown}
-                  onBlur={onVariableNameChange.bind(null, registry, v)}
-                >
-                  { v }
-                </div>
-              </div>
+                <ContextMenu.Trigger>
+                  <a
+                    href="#"
+                    className={classNames(
+                      'flex items-center gap-2 px-3 py-1',
+                      { 'bg-(--accent-9)': selectedItem === variable },
+                    )}
+                    onClick={selectVariable?.bind(null, variable)}
+                  >
+                    <CodeIcon
+                      className={classNames(
+                        '[&_path]:fill-(--accent-9)',
+                        { '[&_path]:fill-seashell': selectedItem === variable },
+                      )}
+                    />
+                    <Text>{ variable.name }</Text>
+                  </a>
+                </ContextMenu.Trigger>
+                <ContextMenu.Content>
+                  <ContextMenu.Item
+                    shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                    onClick={onRemoveVariable.bind(null, variable)}
+                  >
+                    Delete
+                  </ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Root>
             ))
           )) }
         </Collapsible.Content>

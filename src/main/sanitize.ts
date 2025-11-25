@@ -11,6 +11,8 @@ import type {
   GameScript,
   GameSensor,
   GameSprite,
+  GameVariable,
+  GameVariables,
   IfEvent,
   OnButtonPressEvent,
   SceneEvent,
@@ -181,6 +183,37 @@ export const sanitizeScript = async (
   return script;
 };
 
+export const sanitizeVariable = async (
+  variable: GameVariable
+): Promise<GameVariable> => {
+  if (!variable.id) {
+    variable.id = randomUUID();
+  }
+
+  if (!variable.type) {
+    variable.type = 'variable';
+  }
+
+  return variable;
+};
+
+export const sanitizeVariablesRegistry = async (
+  variables: GameVariables
+): Promise<GameVariables> => {
+  if (!variables.id) {
+    variables.id = randomUUID();
+  }
+
+  if (!variables.values) {
+    variables.values = [];
+  }
+
+  variables.values = await Promise
+    .all(variables.values.map(variable => sanitizeVariable(variable)));
+
+  return variables;
+};
+
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
 }): Promise<GameProject> => {
@@ -228,6 +261,13 @@ export const sanitize = async (
 
   data.scripts = await Promise
     .all(data.scripts?.map(script => sanitizeScript(script)));
+
+  if (!data.variables) {
+    data.variables = [];
+  }
+
+  data.variables = await Promise
+    .all(data.variables?.map(registry => sanitizeVariablesRegistry(registry)));
 
   if (data.project) {
     data.project = await sanitizeProject(data.project, {

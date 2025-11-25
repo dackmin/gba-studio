@@ -44,9 +44,17 @@ export interface ListCategory<T extends ListItem = ListItem> {
   items: T[];
 }
 
+export interface GameVariable {
+  type: 'variable';
+  name: string;
+  defaultValue: EventValue;
+  // Internals
+  id: string;
+}
+
 export interface GameVariables {
   type: 'variables';
-  values: Record<string, VariableValue>;
+  values: GameVariable[];
   // Internals
   id: string;
   _file?: string;

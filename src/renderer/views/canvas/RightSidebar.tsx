@@ -1,4 +1,4 @@
-import type { GameActor, GameScript, GameSensor, GameSprite } from '../../../types';
+import type { GameActor, GameScript, GameSensor, GameSprite, GameVariable } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import Switch from '../../components/Switch';
 import SceneForm from './SceneForm';
@@ -6,6 +6,7 @@ import ScriptForm from './ScriptForm';
 import SensorForm from './SensorForm';
 import ActorForm from './ActorForm';
 import SpriteForm from './SpriteForm';
+import VariableForm from './VariableForm';
 
 const RightSidebar = () => {
   const {
@@ -13,6 +14,7 @@ const RightSidebar = () => {
     selectedItem,
     onSceneChange,
     onScriptChange,
+    onVariableChange,
   } = useCanvas();
 
   return (
@@ -39,6 +41,12 @@ const RightSidebar = () => {
         <SpriteForm
           sprite={selectedItem as GameSprite}
           onChange={onSceneChange}
+        />
+      </Switch.Case>
+      <Switch.Case value="variable">
+        <VariableForm
+          variable={selectedItem as GameVariable}
+          onChange={onVariableChange}
         />
       </Switch.Case>
       <Switch.Case default>
