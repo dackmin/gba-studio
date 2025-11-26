@@ -18,14 +18,15 @@ namespace neo
     static constexpr int MAX_LINES = 5;
 
     public:
-      dialog(neo::game* game, bn::string_view text);
+      dialog(neo::game* game, int lines_count, bn::string_view* lines);
 
-      void show(bn::string_view text);
+      void show();
       void hide();
-      bn::regular_bg_item get_background(int lines_count);
+      bn::regular_bg_item get_background();
 
       neo::game* game;
-      bn::string_view text;
+      int lines_count;
+      bn::string_view* lines;
       neo::types::direction direction;
 
       bn::regular_bg_item bg_2_lines;

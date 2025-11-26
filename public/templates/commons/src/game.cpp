@@ -185,7 +185,7 @@ namespace neo
     {
       BN_LOG("Getting scene event ", i);
       neo::types::event* e = active_scene->events[i];
-      BN_LOG("Executing scene event: ", e->type);
+      BN_LOG("Executing scene event: ");
       exec_event(e, false);
     }
 
@@ -319,10 +319,9 @@ namespace neo
     {
       const neo::types::dialog_event* dialog_evt =
         static_cast<const neo::types::dialog_event*>(e);
-      BN_LOG("Show dialog: ", dialog_evt->text);
-
-      neo::dialog* d = new neo::dialog(this, dialog_evt->text);
-      d->show(dialog_evt->text);
+      neo::dialog* d = new neo::dialog(this, dialog_evt->lines_count, dialog_evt->lines);
+      d->show();
+      delete d;
     }
 
     /**

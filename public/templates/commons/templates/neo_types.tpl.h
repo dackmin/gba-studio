@@ -143,9 +143,10 @@ namespace neo::types
 
   struct dialog_event: event
   {
-    bn::string_view text;
-    dialog_event(bn::string_view type_, bn::string_view text_):
-      event(type_), text(text_) {}
+    int lines_count;
+    bn::string_view* lines;
+    dialog_event(bn::string_view type_, int lines_count_, bn::string_view* lines_):
+      event(type_), lines_count(lines_count_), lines(lines_) {}
   };
 
   struct set_variable_event: event

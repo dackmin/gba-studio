@@ -41,6 +41,8 @@ export const setupHandlebars = async () => {
     v % 2 === 0 ? v : v + 1);
   Handlebars.registerHelper('valuesCount', (arr: any[]) =>
     arr.reduce((c, i) => c + i.values.length, 0));
+  Handlebars.registerHelper('size', (obj: any) =>
+    Array.isArray(obj) ? obj.length : Object.keys(obj).length);
   Handlebars.registerHelper('getVariable', (variables: any[], id: string) => {
     return variables.flatMap(v => v.values)
       .find(v => v.id === id || v.name === id);
@@ -51,6 +53,14 @@ export const setupHandlebars = async () => {
     ['string', 'number', 'boolean'].includes(typeof obj));
   Handlebars.registerHelper('preserveLineBreaks', (str: string) =>
     str.replace(/\n/g, '\\n'));
+  // Handlebars.registerHelper('truncate', (str: string, len: number) =>
+  //   Array.from({ length: Math.ceil(str.length / len) }).map((_, i) =>
+  //     str.slice(i * len, (i + 1) * len)));
+  Handlebars.registerHelper('truncate', (str: string, len: number) =>
+    str
+      .split(/\r?\n/)
+      .flatMap(line => line.match(new RegExp(`.{1,${len}}`, 'g')) || [''])
+  );
   Handlebars.registerHelper('valuedef', (trueValue, falseValue) =>
     typeof trueValue !== 'undefined' && trueValue !== null && trueValue !== ''
       ? trueValue : falseValue);
@@ -61,7 +71,7 @@ export const setupHandlebars = async () => {
     (await fse.readFile(path.join(
       getResourcesDir(),
       './public/templates/commons/templates/partials/events.tpl.h'), 'utf-8')
-    ).trim(),
+    ),
   );
 
   Handlebars.registerPartial(
@@ -69,7 +79,7 @@ export const setupHandlebars = async () => {
     (await fse.readFile(path.join(
       getResourcesDir(),
       './public/templates/commons/templates/partials/if-conditions.tpl.h'
-    ), 'utf-8')).trim()
+    ), 'utf-8'))
   );
 
   Handlebars.registerPartial(
@@ -77,7 +87,7 @@ export const setupHandlebars = async () => {
     (await fse.readFile(path.join(
       getResourcesDir(),
       './public/templates/commons/templates/partials/if-expressions.tpl.h'
-    ), 'utf-8')).trim()
+    ), 'utf-8'))
   );
 
   Handlebars.registerPartial(
@@ -85,7 +95,7 @@ export const setupHandlebars = async () => {
     (await fse.readFile(path.join(
       getResourcesDir(),
       './public/templates/commons/templates/partials/value.tpl.h'
-    ), 'utf-8')).trim()
+    ), 'utf-8'))
   );
 };
 
