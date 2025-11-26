@@ -53,13 +53,18 @@ neo::types::dialog_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "set-variable")}}
 neo::variables::value {{../prefix}}_{{@index}}_value(
+  {{#with (getVariable @root/variables this.name) as | variable |}}
+  "{{variable.name}}",
+  {{/with}}
   {{int this.value}},
   {{bool this.value}},
   "{{this.value}}"
 );
 neo::types::set_variable_event {{../prefix}}_{{@index}}(
   "set-variable",
-  "{{this.name}}",
+  {{#with (getVariable @root/variables this.name) as | variable |}}
+  "{{variable.name}}",
+  {{/with}}
   &{{../prefix}}_{{@index}}_value
 );
 {{else if (eq this.type "if")}}

@@ -1,8 +1,9 @@
 neo::variables::value {{prefix}}_raw_value(
+  "",
   {{int (valuedef value.value value)}},
   {{bool (valuedef value.value value)}},
   {{#if (eq value.type "variable")}}
-  "{{value.name}}"
+  {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{/with}}
   {{else}}
   "{{valuedef value.value value}}"
   {{/if}}

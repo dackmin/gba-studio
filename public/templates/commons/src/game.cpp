@@ -43,7 +43,8 @@ namespace neo
     scene_changed = false;
 
     scripted_events_count = 0;
-    scripted_events.clear();
+    actors_count = 0;
+    sprites_count = 0;
   }
 
   void game::set_scene(bn::string_view scene_name)
@@ -56,6 +57,8 @@ namespace neo
     auto scene = neo::scenes::get_scene(current_scene);
     active_scene = &scene;
 
+    BN_LOG("Loading scene: ", active_scene->name);
+
     if (active_scene == nullptr)
     {
       bn::core::update();
@@ -65,20 +68,30 @@ namespace neo
 
 
     // Clean up old actors just in case
-    for (int i = 0; i < actors_count; ++i)
+    BN_LOG("Cleaning up old actors, count:", actors_count);
+    if (actors_count > 0)
     {
-      delete actors[i];
+      for (int i = 0; i < actors_count; ++i)
+      {
+        delete actors[i];
+      }
+
+      actors.clear();
+      actors_count = 0;
     }
-    actors.clear();
-    actors_count = 0;
 
     // Clean up old sprites just in case
-    for (int i = 0; i < sprites_count; ++i)
+    BN_LOG("Cleaning up old sprites, count:", sprites_count);
+    if (sprites_count > 0)
     {
-      delete sprites[i];
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        delete sprites[i];
+      }
+
+      sprites.clear();
+      sprites_count = 0;
     }
-    sprites.clear();
-    sprites_count = 0;
 
     bn::regular_bg_ptr bg = active_scene->background.create_bg(0, 0);
     scene_bg = &bg;
@@ -112,7 +125,7 @@ namespace neo
         last_goto_event = nullptr;
       }
 
-      BN_LOG("Player start position: ", x, ", ", y);
+      BN_LOG("Player start position: x=", x, ", y=", y, ", z=", z);
 
       player.play(
         *active_scene->map_data,
@@ -159,13 +172,20 @@ namespace neo
     }
 
     // Scripts
-    scripted_events_count = 0;
-    scripted_events.clear();
+    if (scripted_events_count > 0)
+    {
+      scripted_events.clear();
+      scripted_events_count = 0;
+    }
+
+    BN_LOG("Scene events count:", active_scene->event_count);
 
     // Exec normal scene events
     for (int i = 0; i < active_scene->event_count; ++i)
     {
+      BN_LOG("Getting scene event ", i);
       neo::types::event* e = active_scene->events[i];
+      BN_LOG("Executing scene event: ", e->type);
       exec_event(e, false);
     }
 
@@ -175,6 +195,7 @@ namespace neo
       for (int i = 0; i < scripted_events_count; ++i)
       {
         neo::types::event* e = scripted_events[i];
+        BN_LOG("Executing in-loop scripted event: ", e->type);
         exec_event(e, true);
       }
 
@@ -519,7 +540,12 @@ namespace neo
   {
     if (condition->op == "==")
     {
-      return get_expression_value(condition->left) == get_expression_value(condition->right);
+      bn::string_view left = get_expression_value(condition->left);
+      bn::string_view right = get_expression_value(condition->right);
+
+      BN_LOG("Evaluating condition: ", left, " == ", right);
+
+      return left == right;
     }
     else if (condition->op == "!=")
     {
@@ -544,11 +570,15 @@ namespace neo
       // if comparison does not care about the type, always compares strings
       // TODO: allow gt/lt/... comparisons
       auto var_value = variables.get(var_expr->name);
+
+      BN_LOG("[IF] Getting variable value: ", var_expr->name, "with value:", var_value.as_string());
+
       return var_value.as_string();
     }
     else if (expression->type == "value")
     {
       auto* val_expr = static_cast<neo::types::if_expression_value*>(expression);
+      BN_LOG("[IF] Getting raw value: ", val_expr->value);
       return val_expr->value;
     }
 

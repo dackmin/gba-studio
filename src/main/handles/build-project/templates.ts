@@ -31,8 +31,20 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
   Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase());
+  Handlebars.registerHelper('log', (msg: any) => {
+    // eslint-disable-next-line no-console
+    console.log('[templates]', msg);
+
+    return '';
+  });
+  Handlebars.registerHelper('powerOfTwo', (v: number) =>
+    v % 2 === 0 ? v : v + 1);
   Handlebars.registerHelper('valuesCount', (arr: any[]) =>
-    arr.reduce((c, i) => c + Object.keys(i.values).length, 0));
+    arr.reduce((c, i) => c + i.values.length, 0));
+  Handlebars.registerHelper('getVariable', (variables: any[], id: string) => {
+    return variables.flatMap(v => v.values)
+      .find(v => v.id === id || v.name === id);
+  });
   Handlebars.registerHelper('posix', (p: string) =>
     p.replace(/\s/g, '\\ ').replace(/\\/g, '/'));
   Handlebars.registerHelper('isRawValue', (obj: any) =>

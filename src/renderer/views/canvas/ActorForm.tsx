@@ -16,6 +16,7 @@ import { useCanvas, useDelayedCallback } from '../../services/hooks';
 import EventsField from '../../components/EventsField';
 import SpritesListField from '../../components/SpritesListField';
 import DirectionField from '../../components/DirectionField';
+import EventValueField from '../../components/EventValueField';
 
 export interface ActorFormProps {
   actor: GameActor;
@@ -147,7 +148,7 @@ const ActorForm = ({
         </div>
         <div className="flex flex-col gap-2">
           <Text className="block text-slate" size="1">Drawing priority</Text>
-          <TextField.Root
+          <EventValueField
             type="number"
             min={-32767}
             max={32767}
