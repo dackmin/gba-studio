@@ -4,6 +4,7 @@
 #include <bn_core.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_vector.h>
+#include <bn_unique_ptr.h>
 
 #include "neo_types.h"
 
@@ -41,6 +42,19 @@ namespace neo::scenes
   {
     bn::vector<bn::string_view, 10> vec;
     ((vec.push_back(buttons)), ...);
+    return vec;
+  }
+
+  bn::vector<bn::string_view, 5> make_dialog_vector()
+  {
+    return bn::vector<bn::string_view, 5>();
+  }
+
+  template<typename... Args>
+  bn::vector<bn::string_view, 5> make_dialog_vector(Args... lines)
+  {
+    bn::vector<bn::string_view, 5> vec;
+    ((vec.push_back(lines)), ...);
     return vec;
   }
 

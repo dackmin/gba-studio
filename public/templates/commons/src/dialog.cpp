@@ -20,9 +20,9 @@
 
 namespace neo
 {
-  dialog::dialog (neo::game* game_, int lines_count_, bn::string_view* lines_):
+  dialog::dialog (neo::game* game_, const bn::vector<bn::string_view, MAX_LINES>& lines_):
     game(game_),
-    lines_count(lines_count_),
+    lines_count(lines_.size()),
     lines(lines_),
     direction(neo::types::direction::DOWN),
     bg_2_lines(bn::regular_bg_items::textbox_2l),
@@ -62,7 +62,7 @@ namespace neo
     // Render each line
     for (int i = 0; i < lines_count; ++i)
     {
-      bn::string_view line = lines[i];
+      bn::string_view line = lines.at(i);
 
       // Calculate text position
       bn::fixed text_x = bg.top_left_position().x() + neo::dialog::PADDING * 2 - (bn::display::width() / 2) + 2;

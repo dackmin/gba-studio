@@ -53,9 +53,6 @@ export const setupHandlebars = async () => {
     ['string', 'number', 'boolean'].includes(typeof obj));
   Handlebars.registerHelper('preserveLineBreaks', (str: string) =>
     str.replace(/\n/g, '\\n'));
-  // Handlebars.registerHelper('truncate', (str: string, len: number) =>
-  //   Array.from({ length: Math.ceil(str.length / len) }).map((_, i) =>
-  //     str.slice(i * len, (i + 1) * len)));
   Handlebars.registerHelper('truncate', (str: string, len: number) =>
     str
       .split(/\r?\n/)

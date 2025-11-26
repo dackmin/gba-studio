@@ -18,7 +18,7 @@ namespace neo
     static constexpr int MAX_LINES = 5;
 
     public:
-      dialog(neo::game* game, int lines_count, bn::string_view* lines);
+      dialog(neo::game* game, const bn::vector<bn::string_view, MAX_LINES>& lines);
 
       void show();
       void hide();
@@ -26,7 +26,7 @@ namespace neo
 
       neo::game* game;
       int lines_count;
-      bn::string_view* lines;
+      bn::vector<bn::string_view, MAX_LINES> lines;
       neo::types::direction direction;
 
       bn::regular_bg_item bg_2_lines;

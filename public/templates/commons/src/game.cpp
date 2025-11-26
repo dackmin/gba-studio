@@ -319,7 +319,7 @@ namespace neo
     {
       const neo::types::dialog_event* dialog_evt =
         static_cast<const neo::types::dialog_event*>(e);
-      neo::dialog* d = new neo::dialog(this, dialog_evt->lines_count, dialog_evt->lines);
+      neo::dialog* d = new neo::dialog(this, dialog_evt->lines);
       d->show();
       delete d;
     }

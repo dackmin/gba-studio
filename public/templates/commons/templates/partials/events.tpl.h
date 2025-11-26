@@ -47,18 +47,13 @@ neo::types::scene_event {{../prefix}}_{{@index}}(
   neo::types::direction::{{uppercase (valuedef this.start.direction 'down')}}
 );
 {{else if (eq this.type "show-dialog")}}
-{{#each (truncate this.text 27)}}
-bn::string_view {{../../prefix}}_{{@index}}_text_line_{{@index}} = "{{this}}";
-{{/each}}
-bn::string_view {{../prefix}}_{{@index}}_text_lines[] = {
-  {{#each (truncate this.text 27)}}
-  {{../../prefix}}_{{@index}}_text_line_{{@index}}{{#unless @last}},{{/unless}}
-  {{/each}}
-};
 neo::types::dialog_event {{../prefix}}_{{@index}}(
   "show-dialog",
-  {{size (truncate this.text 27)}},
-  {{../prefix}}_{{@index}}_text_lines
+  make_dialog_vector(
+    {{#each (truncate this.text 27)}}
+    "{{this}}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  )
 );
 {{else if (eq this.type "set-variable")}}
 neo::variables::value {{../prefix}}_{{@index}}_value(
