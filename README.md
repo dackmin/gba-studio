@@ -9,12 +9,12 @@ GB Studio, but worse & for the GBA
 - [x] Use variables for any value
 - [x] Rename events
 - [x] Foreground sprites
+- [x] WASM mGBA integration
+- [x] ~~Windows signed installer~~ (I'm too poor for this, enjoy the unsigned version)
 - [ ] Move target point from the target scene
-- [ ] Windows signed installer
 - [ ] Side scroller scene type
 - [ ] Parallax backgrounds
 - [ ] images auto convert on build
-- [ ] WASM mGBA integration
 - [ ] Portable python & devkitARM
 - [ ] Auto updater
 - [ ] Sprite animations editor
