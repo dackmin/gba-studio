@@ -4,7 +4,7 @@
   "executableName": "GBAStudio",
   "type": "module",
   "version": "0.1.0",
-  "description": "GB Studio, but worse & for the GBA",
+  "description": "GB Studio, but worse and for the GBA",
   "main": ".vite/build/main.js",
   "author": {
     "name": "Ugo Stephant",
