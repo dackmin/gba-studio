@@ -61,6 +61,7 @@
     "@junipero/tailwind-plugin": "3.12.3",
     "@poool/eslint-config": "5.0.7",
     "@poool/eslint-config-react": "5.0.9",
+    "@reforged/maker-appimage": "5.1.1",
     "@tailwindcss/vite": "4.1.17",
     "@types/debug": "4.1.12",
     "@types/electron-squirrel-startup": "1.0.2",

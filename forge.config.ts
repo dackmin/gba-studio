@@ -3,6 +3,7 @@ import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
+import { MakerAppImage } from '@reforged/maker-appimage';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
@@ -68,10 +69,23 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
-    new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerSquirrel({
+      name: 'GBAStudio',
+      exe: 'gba-studio.exe',
+      setupIcon: './images/icon.ico',
+    }),
+    new MakerZIP({}, ['darwin', 'win32', 'linux']),
+    new MakerRpm({
+      options: {
+        icon: './images/icon.png',
+      },
+    }),
+    new MakerDeb({
+      options: {
+        icon: './images/icon.png',
+      },
+    }),
+    new MakerAppImage({}),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
