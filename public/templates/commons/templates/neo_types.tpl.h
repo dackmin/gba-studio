@@ -31,7 +31,7 @@ namespace neo::types
     event_value(bn::string_view type_, neo::variables::value* value_):
       type(type_), value(value_) {}
 
-    inline int as_int(neo::variables::registry& variables)
+    inline int as_int(neo::variables::registry& variables) const
     {
       if (type == "variable")
       {
@@ -41,7 +41,7 @@ namespace neo::types
           return 0;
         }
 
-        auto var_value = variables.get(value->as_string());
+        neo::variables::value& var_value = variables.get(value->as_string());
         return var_value.as_int();
       }
       else
@@ -50,7 +50,7 @@ namespace neo::types
       }
     }
 
-    inline bool as_bool(neo::variables::registry& variables)
+    inline bool as_bool(neo::variables::registry& variables) const
     {
       if (type == "variable")
       {
@@ -60,7 +60,7 @@ namespace neo::types
           return false;
         }
 
-        auto var_value = variables.get(value->as_string());
+        neo::variables::value& var_value = variables.get(value->as_string());
         return var_value.as_bool();
       }
       else
@@ -69,7 +69,7 @@ namespace neo::types
       }
     }
 
-    inline bn::string_view as_string(neo::variables::registry& variables)
+    inline bn::string_view as_string(neo::variables::registry& variables) const
     {
       if (type == "variable")
       {
@@ -79,7 +79,7 @@ namespace neo::types
           return "";
         }
 
-        auto var_value = variables.get(value->as_string());
+        neo::variables::value& var_value = variables.get(value->as_string());
         return var_value.as_string();
       }
       else

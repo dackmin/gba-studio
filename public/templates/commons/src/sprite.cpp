@@ -1,5 +1,8 @@
+#define BN_CFG_LOG_ENABLED true
+
 #include <bn_core.h>
 #include <bn_sprite_ptr.h>
+#include <bn_log.h>
 
 #include <neo_types.h>
 
@@ -18,9 +21,13 @@ namespace neo
     inner_sprite.set_camera(game->camera);
     inner_sprite.set_visible(true);
     inner_sprite.set_bg_priority(1);
-    inner_sprite.set_z_order(definition->z->as_int(game->variables));
 
-    set_position(definition->x->as_int(game->variables), definition->y->as_int(game->variables));
+    int x = definition->x->as_int(game->variables);
+    int y = definition->y->as_int(game->variables);
+    int z = definition->z->as_int(game->variables);
+
+    inner_sprite.set_z_order(z);
+    set_position(x, y);
   }
 
   sprite::~sprite()

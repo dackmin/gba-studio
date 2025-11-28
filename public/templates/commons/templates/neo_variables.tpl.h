@@ -23,17 +23,17 @@ namespace neo::variables
       bool_value(bool_val_),
       str_value(str_val_) {}
 
-    inline int as_int ()
+    inline int as_int () const
     {
       return int_value;
     }
 
-    inline bool as_bool ()
+    inline bool as_bool () const
     {
       return bool_value;
     }
 
-    inline bn::string_view as_string ()
+    inline bn::string_view as_string () const
     {
       return str_value;
     }
@@ -47,7 +47,7 @@ namespace neo::variables
     {
       {{#each variables}}
       {{#each this.values}}
-      neo::variables::value value_{{@../index}}_{{slug this.name}}_{{@index}}(
+      neo::variables::value* value_{{@../index}}_{{slug this.name}}_{{@index}} = new neo::variables::value(
         "{{this.name}}",
         {{int this.defaultValue}},
         {{bool this.defaultValue}},
@@ -55,7 +55,7 @@ namespace neo::variables
       );
       all.insert_or_assign(
         "{{this.name}}",
-        &value_{{@../index}}_{{slug this.name}}_{{@index}}
+        value_{{@../index}}_{{slug this.name}}_{{@index}}
       );
       {{/each}}
       {{/each}}

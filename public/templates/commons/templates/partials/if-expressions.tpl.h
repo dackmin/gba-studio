@@ -8,7 +8,7 @@ neo::types::if_expression_value {{../prefix}}(
 {{else if (eq this.type "variable")}}
 neo::types::if_expression_variable {{../prefix}}(
   "variable",
-  "{{this.name}}"
+  {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}}
 );
 {{else}}
 neo::types::if_expression {{../prefix}}("{{this.type}}");
