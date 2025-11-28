@@ -19,7 +19,7 @@ const config: ForgeConfig = {
     icon: process.platform === 'darwin'
       ? [
         './images/AppIcon.icns',
-        ...process.arch === 'arm64'
+        ...process.env.ARCH === 'arm64'
           ? ['./images/AppIcon.icon']
           : [],
       ]
