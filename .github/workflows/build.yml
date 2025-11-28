@@ -34,6 +34,8 @@ jobs:
           check-latest: true
       - name: Install dependencies
         run: yarn install
+      - name: Create output directory
+        run: mkdir -p out/keep
 
       # OSX Sign
       - name: Set up keychain and import signing certificate
