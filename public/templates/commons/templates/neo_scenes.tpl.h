@@ -27,10 +27,7 @@
 
 namespace neo::scenes
 {
-  bn::string_view get_starting_scene ()
-  {
-    return "{{valuedef project.startingScene scenes.[0].id}}";
-  }
+  constexpr bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
 
   bn::vector<bn::string_view, 10> make_button_vector()
   {
@@ -76,7 +73,7 @@ namespace neo::scenes
   // Map collisions
   {{#if this.map}}
   {{#if (hasItems this.map.collisions)}}
-  int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
+  constexpr int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
     {{#each this.map.collisions}}
     {{this}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -97,8 +94,9 @@ namespace neo::scenes
   };
 
   // -- Sensor
+  bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
   neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
-    "{{this.id}}",
+    {{slug ../this.name}}_sensor_{{@index}}_id,
     {{this.x}},
     {{this.y}},
     {{valuedef this.width 1}},
@@ -174,9 +172,11 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
+  bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
+  bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{this.name}}";
   neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
-    "{{this.id}}",
-    "{{this.name}}",
+    {{slug ../this.name}}_actor_{{@index}}_id,
+    {{slug ../this.name}}_actor_{{@index}}_name,
     &{{slug ../this.name}}_actor_{{@index}}_x_value,
     &{{slug ../this.name}}_actor_{{@index}}_y_value,
     &{{slug ../this.name}}_actor_{{@index}}_z_value,
@@ -218,9 +218,11 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
+  bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
+  bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{this.name}}";
   neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
-    "{{this.id}}",
-    "{{this.name}}",
+    {{slug ../this.name}}_sprite_{{@index}}_id,
+    {{slug ../this.name}}_sprite_{{@index}}_name,
     &{{slug ../this.name}}_sprite_{{@index}}_x_value,
     &{{slug ../this.name}}_sprite_{{@index}}_y_value,
     &{{slug ../this.name}}_sprite_{{@index}}_z_value,
@@ -238,9 +240,11 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug this.name) "_player_x") value=(valuedef this.player.x 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_y") value=(valuedef this.player.y 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_z") value=(valuedef this.player.z 1)}}
+  bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
+  bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
   neo::types::scene scene_{{slug this.name}} = {
-    "{{this.id}}",
-    "{{this.name}}",
+    {{slug this.name}}_scene_id,
+    {{slug this.name}}_scene_name,
     {{#if this.background}}
     bn::regular_bg_items::{{this.background}},
     {{else}}
@@ -295,9 +299,11 @@ namespace neo::scenes
   {{>valuePartial prefix="default_player_x" value="0"}}
   {{>valuePartial prefix="default_player_y" value="0"}}
   {{>valuePartial prefix="default_player_z" value="1"}}
+  bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+  bn::string_view default_scene_name = "default";
   neo::types::scene scene_default = {
-    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    "default",
+    default_scene_id,
+    default_scene_name,
     bn::regular_bg_items::bg_default,
     0,
     nullptr,
@@ -333,9 +339,11 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
+  bn::string_view {{slug this.name}}_script_name = "{{this.name}}";
   neo::types::script script_{{slug this.name}} = {
-    "{{this.id}}",
-    "{{this.name}}",
+    {{slug this.name}}_script_id,
+    {{slug this.name}}_script_name,
     {{#if (hasItems this.events)}}
     {{this.events.length}},
     {{slug this.name}}_script_events
@@ -347,9 +355,11 @@ namespace neo::scenes
   {{/each}}
 
   // Default script
+  bn::string_view script_default_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+  bn::string_view script_default_name = "default";
   neo::types::script script_default = {
-    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    "default",
+    script_default_id,
+    script_default_name,
     0,
     nullptr
   };

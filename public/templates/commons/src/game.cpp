@@ -39,7 +39,7 @@ namespace neo
     active_scene(nullptr),
     scene_bg(nullptr)
   {
-    current_scene = neo::scenes::get_starting_scene();
+    current_scene = neo::scenes::STARTING_SCENE;
     scene_changed = false;
 
     scripted_events_count = 0;
@@ -139,9 +139,13 @@ namespace neo
     }
 
     // Actors
-    actors.clear();
+    BN_LOG("Actors count: ", active_scene->actors_count);
+    if (actors_count > 0)
+    {
+      actors.clear();
+    }
+
     actors_count = active_scene->actors_count;
-    BN_LOG("Actors count: ", actors_count);
 
     if (active_scene->actors != nullptr)
     {
@@ -157,9 +161,13 @@ namespace neo
     }
 
     // Sprites
-    sprites.clear();
+    BN_LOG("Sprites count: ", active_scene->sprites_count);
+    if (sprites_count > 0)
+    {
+      sprites.clear();
+    }
+
     sprites_count = active_scene->sprites_count;
-    BN_LOG("Sprites count: ", sprites_count);
 
     if (active_scene->sprites != nullptr)
     {
@@ -172,11 +180,13 @@ namespace neo
     }
 
     // Scripts
+    BN_LOG("Previous scripted events count: ", scripted_events_count);
     if (scripted_events_count > 0)
     {
       scripted_events.clear();
-      scripted_events_count = 0;
     }
+
+    scripted_events_count = 0;
 
     BN_LOG("Scene events count:", active_scene->event_count);
 
@@ -185,7 +195,7 @@ namespace neo
     {
       BN_LOG("Getting scene event ", i);
       neo::types::event* e = active_scene->events[i];
-      BN_LOG("Executing scene event: ");
+      BN_LOG("Executing scene event: ", e->type);
       exec_event(e, false);
     }
 
@@ -237,8 +247,11 @@ namespace neo
       const neo::types::fade_event* fade_evt =
         static_cast<const neo::types::fade_event*>(e);
 
+      int duration = fade_evt->duration->as_int(variables);
+      BN_LOG("Fade-in duration: ", duration);
+
       enable_blending();
-      neo::fade::enter(*scene_bg, fade_evt->duration->as_int(variables));
+      neo::fade::enter(*scene_bg, duration);
       disable_blending();
     }
 

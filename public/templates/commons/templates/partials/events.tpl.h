@@ -2,13 +2,16 @@
 {{#if (neq this.enabled false)}}
 {{#if (eq this.type "wait")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-neo::types::wait_event {{../prefix}}_{{@index}}("wait", &{{../prefix}}_{{@index}}_duration_value);
+bn::string_view {{../prefix}}_{{@index}}_type = "wait";
+neo::types::wait_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-in")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-neo::types::fade_event {{../prefix}}_{{@index}}("fade-in", &{{../prefix}}_{{@index}}_duration_value);
+bn::string_view {{../prefix}}_{{@index}}_type = "fade-in";
+neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-out")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-neo::types::fade_event {{../prefix}}_{{@index}}("fade-out", &{{../prefix}}_{{@index}}_duration_value);
+bn::string_view {{../prefix}}_{{@index}}_type = "fade-out";
+neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (or (eq this.type "wait-for-button") (eq this.type "on-button-press"))}}
 {{#if (eq this.type "on-button-press")}}
 {{#if this.events}}
@@ -20,8 +23,9 @@ neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
+bn::string_view {{../prefix}}_{{@index}}_type = "{{this.type}}";
 neo::types::button_event {{../prefix}}_{{@index}}(
-  "{{this.type}}",
+  {{../prefix}}_{{@index}}_type,
   {{valuedef this.every false}},
   make_button_vector(
     {{#each this.buttons}}
@@ -39,36 +43,41 @@ neo::types::button_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
+bn::string_view {{../prefix}}_{{@index}}_type = "go-to-scene";
+bn::string_view {{../prefix}}_{{@index}}_target = "{{this.target}}";
 neo::types::scene_event {{../prefix}}_{{@index}}(
-  "go-to-scene",
-  "{{this.target}}",
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_target,
   &{{../prefix}}_{{@index}}_start_x_value,
   &{{../prefix}}_{{@index}}_start_y_value,
   neo::types::direction::{{uppercase (valuedef this.start.direction 'down')}}
 );
 {{else if (eq this.type "show-dialog")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
+{{#each (truncate this.text 27)}}
+bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{this}}";
+{{/each}}
 neo::types::dialog_event {{../prefix}}_{{@index}}(
-  "show-dialog",
+  {{../prefix}}_{{@index}}_type,
   make_dialog_vector(
     {{#each (truncate this.text 27)}}
-    "{{this}}"{{#unless @last}},{{/unless}}
+    {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
   )
 );
 {{else if (eq this.type "set-variable")}}
+bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
+bn::string_view {{../prefix}}_{{@index}}_string_value = "{{this.value}}";
 neo::variables::value {{../prefix}}_{{@index}}_value(
-  {{#with (getVariable @root/variables this.name) as | variable |}}
-  "{{variable.name}}",
-  {{/with}}
+  {{../prefix}}_{{@index}}_variable_name,
   {{int this.value}},
   {{bool this.value}},
-  "{{this.value}}"
+  {{../prefix}}_{{@index}}_string_value
 );
+bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
 neo::types::set_variable_event {{../prefix}}_{{@index}}(
-  "set-variable",
-  {{#with (getVariable @root/variables this.name) as | variable |}}
-  "{{variable.name}}",
-  {{/with}}
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_variable_name,
   &{{../prefix}}_{{@index}}_value
 );
 {{else if (eq this.type "if")}}
@@ -96,8 +105,9 @@ neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] = {
   {{/each}}
 };
 {{/if}}
+bn::string_view {{../prefix}}_{{@index}}_type = "if";
 neo::types::if_event {{../prefix}}_{{@index}}(
-  "if",
+  {{../prefix}}_{{@index}}_type,
   {{#if this.conditions.length}}
   {{this.conditions.length}},
   {{../prefix}}_{{@index}}_conditions,
@@ -121,33 +131,71 @@ neo::types::if_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "disable-actor")}}
-neo::types::disable_actor_event {{../prefix}}_{{@index}}("disable-actor", "{{this.actor}}");
+bn::string_view {{../prefix}}_{{@index}}_type = "disable-actor";
+bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+neo::types::disable_actor_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_actor
+);
 {{else if (eq this.type "enable-actor")}}
-neo::types::enable_actor_event {{../prefix}}_{{@index}}("enable-actor", "{{this.actor}}");
+bn::string_view {{../prefix}}_{{@index}}_type = "enable-actor";
+bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+neo::types::enable_actor_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_actor
+);
 {{else if (eq this.type "play-music")}}
-neo::types::play_music_event {{../prefix}}_{{@index}}("play-music", "{{this.name}}", {{this.volume}}, {{this.loop}});
+bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
+bn::string_view {{../prefix}}_{{@index}}_music_name = "{{this.name}}";
+neo::types::play_music_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_music_name,
+  {{this.volume}},
+  {{this.loop}}
+);
 {{else if (eq this.type "stop-music")}}
-neo::types::stop_music_event {{../prefix}}_{{@index}}("stop-music");
+bn::string_view {{../prefix}}_{{@index}}_type = "stop-music";
+neo::types::stop_music_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "play-sound")}}
-neo::types::play_sound_event {{../prefix}}_{{@index}}("play-sound", "{{this.name}}", {{this.volume}}, {{this.speed}}, {{this.panning}}, {{this.priority}});
+bn::string_view {{../prefix}}_{{@index}}_type = "play-sound";
+bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{this.name}}";
+neo::types::play_sound_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sound_name,
+  {{this.volume}},
+  {{this.speed}},
+  {{this.panning}},
+  {{this.priority}}
+);
 {{else if (eq this.type "execute-script")}}
-neo::types::execute_script_event {{../prefix}}_{{@index}}("execute-script", "{{this.script}}");
+bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
+bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
+neo::types::execute_script_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_script_name
+);
 {{else if (eq this.type "move-camera-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
+bn::string_view {{../prefix}}_{{@index}}_type = "move-camera-to";
+bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
-  "move-camera-to",
+  {{../prefix}}_{{@index}}_type,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_duration_value,
   {{valuedef this.allowDiagonal true}},
-  "{{valuedef this.directionPriority "horizontal"}}"
+  {{../prefix}}_{{@index}}_direction_priority
 );
 {{else}}
-neo::types::event {{../prefix}}_{{@index}}("{{this.type}}");
+bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
+neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
 {{/if}}
 {{else}}
-neo::types::event {{../prefix}}_{{@index}}("{{this.type}}:disabled");
+bn::string_view {{../prefix}}_{{@index}}_type = "disabled:{{this.type}}";
+neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
 {{/if}}
 {{/each}}

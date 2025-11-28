@@ -320,7 +320,7 @@ namespace neo::types
     int width;
     int height;
     event_value* grid_size;
-    int* collisions;
+    const int* collisions;
     int sensors_count;
     sensor** sensors;
 
