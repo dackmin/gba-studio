@@ -62,5 +62,9 @@ This software is licensed under [MIT](https://github.com/p3ol/oak/blob/master/LI
 
 ### Credits
 
-Example assets displayed in the screenshot:
-- [Retro RPG Characters](https://the-pixel-nook.itch.io/retro-rpg-character-pack) from [The Pixel Nook](https://the-pixel-nook.itch.io/)
+* GBA Studio is heavily inspired by (if not a pale copy of) [GB Studio](https://gbstudio.dev) by [Chris Maltby](https://github.com/chrismaltby).
+* C++ Code is built using the extraordinary [Butano](https://github.com/GValiente/butano) engine.
+* Example assets displayed in the screenshot:
+  - [Retro RPG Characters](https://the-pixel-nook.itch.io/retro-rpg-character-pack) from [The Pixel Nook](https://the-pixel-nook.itch.io/)
+  - [Pocket Valley Essentials](https://widseylabs.itch.io/pocket-valley-essentials) from [Widsey Labs](https://widseylabs.itch.io/)
+  - [Pocket Valley Interiors](https://widseylabs.itch.io/pocket-valley-interiors) from [Widsey Labs](https://widseylabs.itch.io/)
