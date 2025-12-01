@@ -4,9 +4,18 @@
 
 Just like [GB Studio](https://gbstudio.dev), but worse and for the GBA.
 
-<img width="1728" height="1019" alt="Capture d’écran 2025-12-01 à 08 39 10" src="https://github.com/user-attachments/assets/fed8afe8-ce6a-4f28-b909-a8923677bfea" style="border-radius:10px;" />
+<img width="1728" height="1019" alt="Capture d’écran 2025-12-01 à 08 39 10" src="https://github.com/user-attachments/assets/fed8afe8-ce6a-4f28-b909-a8923677bfea" style="border-radius:16px;" />
 
 GBA Studio is an Electron game creator built on top of the [Butano](https://github.com/GValiente/butano) GBA C++ game engine.
+
+## Installation
+
+GBA Studio still requires you to have [Python 3+](https://www.python.org/downloads/) and [devkitARM](https://devkitpro.org/wiki/Getting_Started/devkitARM) installed on your system.
+
+Download the latest build for your platform from the [build action pipeline](https://github.com/dackmin/gba-studio/actions/workflows/build.yml).
+
+> Note: macOS builds are signed & notarized. Windows builds are unsigned.
+
 
 ## Road to v1.0
 
