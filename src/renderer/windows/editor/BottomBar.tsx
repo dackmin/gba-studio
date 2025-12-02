@@ -34,6 +34,7 @@ const BottomBar = ({
     leftSidebarOpened,
     leftSidebarWidth,
     bottomBarOpened,
+    bottomBarHeight,
     setBottomBarHeight,
   } = useEditor();
 
@@ -91,7 +92,7 @@ const BottomBar = ({
   return (
     <BottomBarContext.Provider value={getContext()}>
       <Resizable
-        defaultSize={{ height: 300 }}
+        defaultSize={{ height: bottomBarHeight ?? 300 }}
         onResize={onResize}
         onResizeStart={onResize}
         onResizeStop={onResize}
