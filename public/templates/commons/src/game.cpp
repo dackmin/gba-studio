@@ -23,6 +23,7 @@
 #include "fade.h"
 #include "buttons.h"
 #include "actor.h"
+#include "menu.h"
 #include "sprite.h"
 #include "dialog.h"
 #include "camera.h"
@@ -205,7 +206,6 @@ namespace neo
       for (int i = 0; i < scripted_events_count; ++i)
       {
         neo::types::event* e = scripted_events[i];
-        BN_LOG("Executing in-loop scripted event: ", e->type);
         exec_event(e, true);
       }
 
@@ -319,6 +319,7 @@ namespace neo
           }
         }
       } else {
+        BN_LOG("Registering on-button-press scripted event");
         scripted_events_count++;
         scripted_events.push_back(const_cast<neo::types::event*>(e));
       }
@@ -335,6 +336,19 @@ namespace neo
       neo::dialog* d = new neo::dialog(this, dialog_evt->lines);
       d->show();
       delete d;
+    }
+
+    /**
+     * @name show-menu
+     * @param choices array of menu choices — Menu choices
+     */
+    else if (e->type == "show-menu")
+    {
+      const neo::types::menu_event* menu_evt =
+        static_cast<const neo::types::menu_event*>(e);
+      neo::menu* m = new neo::menu(this, menu_evt->choices);
+      m->show();
+      delete m;
     }
 
     /**
@@ -509,15 +523,17 @@ namespace neo
     {
       const neo::types::execute_script_event* script_evt =
         static_cast<const neo::types::execute_script_event*>(e);
-      auto script = neo::scenes::get_script(script_evt->name);
+      neo::types::script script = neo::scenes::get_script(script_evt->name);
 
       if (script.events_count > 0 && script.events != nullptr)
       {
-        BN_LOG("Executing script: ", script.name);
+        BN_LOG("Executing script: ", script.name, ", in loop:", is_loop);
 
         for (int i = 0; i < script.events_count; ++i)
         {
           neo::types::event* ev = script.events[i];
+
+          BN_LOG("Executing script event: ", ev->type);
           exec_event(ev, is_loop);
         }
       }

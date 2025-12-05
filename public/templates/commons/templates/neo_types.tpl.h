@@ -20,7 +20,11 @@ namespace neo::types
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    UP_LEFT,
+    UP_RIGHT,
+    DOWN_LEFT,
+    DOWN_RIGHT
   };
 
   struct event_value
@@ -146,6 +150,23 @@ namespace neo::types
     bn::vector<bn::string_view, 5> lines;
     dialog_event(bn::string_view type_, const bn::vector<bn::string_view, 5>& lines_):
       event(type_), lines(lines_) {}
+  };
+
+  struct menu_choice
+  {
+    bn::string_view text;
+    int events_count;
+    event** events;
+
+    menu_choice(bn::string_view text_, int events_count_, event** events_):
+      text(text_), events_count(events_count_), events(events_) {}
+  };
+
+  struct menu_event: event
+  {
+    bn::vector<menu_choice, 5> choices;
+    menu_event(bn::string_view type_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), choices(choices_) {}
   };
 
   struct set_variable_event: event

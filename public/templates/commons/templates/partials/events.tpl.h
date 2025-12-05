@@ -65,6 +65,36 @@ neo::types::dialog_event {{../prefix}}_{{@index}}(
     {{/each}}
   )
 );
+{{else if (eq this.type "show-menu")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
+{{#each this.choices}}
+{{#if this.events.length}}
+{{>eventsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_event") events=this.events}}
+neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 25}}";
+neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
+  {{this.events.length}},
+  {{#if this.events.length}}
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_events
+  {{else}}
+  nullptr
+  {{/if}}
+);
+{{/each}}
+neo::types::menu_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  make_menu_vector(
+    {{#each this.choices}}
+    {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}
+    {{/each}}
+  )
+);
 {{else if (eq this.type "set-variable")}}
 bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
 bn::string_view {{../prefix}}_{{@index}}_string_value = "{{this.value}}";

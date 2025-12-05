@@ -7,6 +7,7 @@ import {
   GroupIcon,
   LapTimerIcon,
   LayersIcon,
+  ListBulletIcon,
   MixIcon,
   MoveIcon,
   Pencil1Icon,
@@ -25,6 +26,7 @@ import type {
   ListItem,
   OnButtonPressEvent,
   SceneEvent,
+  ShowMenuEvent,
 } from '../../types';
 
 export interface EventDefinition extends ListItem {
@@ -95,6 +97,15 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'show-dialog',
       text: '',
+    }),
+  }, {
+    icon: ListBulletIcon,
+    name: 'Show Menu',
+    value: 'show-menu',
+    keywords: ['menu', 'choices', 'options'],
+    construct: () => ({
+      type: 'show-menu',
+      choices: [],
     }),
   }],
 }, {
@@ -229,6 +240,14 @@ export const getEventsOfType = <T extends SceneEvent>(
 
       if (script) {
         acc.push(...getEventsOfType<T>(type, script.events || [], opts));
+      }
+    }
+
+    if (event.type === 'show-menu') {
+      const evt = event as ShowMenuEvent;
+
+      for (const choice of evt.choices) {
+        acc.push(...getEventsOfType<T>(type, choice.events || [], opts));
       }
     }
 

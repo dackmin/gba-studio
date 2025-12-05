@@ -29,6 +29,7 @@ import type {
   SceneEvent,
   SetVariableEvent,
   ShowDialogEvent,
+  ShowMenuEvent,
   WaitEvent,
   WaitForButtonEvent,
 } from '../../../types';
@@ -46,6 +47,7 @@ import EventIf from './EventIf';
 import EventScript from './EventScript';
 import EventPlaySound from './EventPlaySound';
 import EventMoveCameraTo from './EventMoveCameraTo';
+import EventShowMenu from './EventShowMenu';
 
 export interface EventProps {
   event: SceneEvent;
@@ -345,6 +347,12 @@ const Event = ({
             <Switch.Case value="move-camera-to">
               <EventMoveCameraTo
                 event={event as MoveCameraToEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="show-menu">
+              <EventShowMenu
+                event={event as ShowMenuEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

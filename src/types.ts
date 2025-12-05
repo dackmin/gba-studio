@@ -315,6 +315,18 @@ export interface MoveCameraToEvent extends SceneEvent {
   directionPriority?: 'horizontal' | 'vertical';
 }
 
+export interface GameMenuChoice {
+  text: string;
+  events: SceneEvent[];
+  // Internals
+  id: string;
+}
+
+export interface ShowMenuEvent extends SceneEvent {
+  type: 'show-menu';
+  choices: GameMenuChoice[];
+}
+
 export interface IfEventCondition {
   type: 'condition';
   left: EventValue | IfEventCondition;

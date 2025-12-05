@@ -55,6 +55,19 @@ namespace neo::scenes
     return vec;
   }
 
+  bn::vector<neo::types::menu_choice, 5> make_menu_vector()
+  {
+    return bn::vector<neo::types::menu_choice, 5>();
+  }
+
+  template<typename... Args>
+  bn::vector<neo::types::menu_choice, 5> make_menu_vector(Args... choices)
+  {
+    bn::vector<neo::types::menu_choice, 5> vec;
+    ((vec.push_back(choices)), ...);
+    return vec;
+  }
+
   {{#each scenes}}
   //////////////////////////
   // Scene: {{this.name}} //
