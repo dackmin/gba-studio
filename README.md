@@ -4,7 +4,7 @@
 
 Just like [GB Studio](https://gbstudio.dev), but worse and for the GBA.
 
-<img width="1728" height="1019" alt="Capture d’écran 2025-12-01 à 08 39 10" src="https://github.com/user-attachments/assets/fed8afe8-ce6a-4f28-b909-a8923677bfea" style="border-radius:16px;" />
+<img width="1728" height="1019" alt="GBA Studio" src="https://github.com/user-attachments/assets/fed8afe8-ce6a-4f28-b909-a8923677bfea" style="border-radius:16px;" />
 
 GBA Studio is an Electron game creator built on top of the [Butano](https://github.com/GValiente/butano) GBA C++ game engine.
 
