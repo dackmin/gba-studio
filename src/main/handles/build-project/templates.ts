@@ -4,7 +4,7 @@ import type { IpcMainInvokeEvent } from 'electron';
 import Handlebars from 'handlebars';
 import fse from 'fs-extra';
 
-import type { Build } from '../../../types';
+import type { Build, GameMenuChoice } from '../../../types';
 import { getBuildDir, sendLog, sendSuccessLog, toSlug } from './utils';
 import { getResourcesDir } from '../../utils';
 
@@ -28,6 +28,7 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('isset', v => !!v);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
   Handlebars.registerHelper('or', (a, b) => a || b);
+  Handlebars.registerHelper('len', (a: string | any[]) => a.length);
   Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
   Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase());
@@ -53,8 +54,8 @@ export const setupHandlebars = async () => {
     ['string', 'number', 'boolean'].includes(typeof obj));
   Handlebars.registerHelper('preserveLineBreaks', (str: string) =>
     str.replace(/\n/g, '\\n'));
-  Handlebars.registerHelper('maxLen', (str: string, len: number) =>
-    str.slice(0, len));
+  Handlebars.registerHelper('maxLen', (str: string | string[], len: number) =>
+    Array.isArray(str) ? str.map(s => s.slice(0, len)) : str.slice(0, len));
   Handlebars.registerHelper('truncate', (str: string, len: number) =>
     str
       .split(/\r?\n/)
@@ -63,6 +64,8 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('valuedef', (trueValue, falseValue) =>
     typeof trueValue !== 'undefined' && trueValue !== null && trueValue !== ''
       ? trueValue : falseValue);
+  Handlebars.registerHelper('longestMenuChoice', (arr: GameMenuChoice[]) =>
+    arr.sort((a, b) => b.text.length - a.text.length)[0]?.text || '');
 
   // Add partials
   Handlebars.registerPartial(
