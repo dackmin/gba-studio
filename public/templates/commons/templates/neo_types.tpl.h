@@ -164,9 +164,11 @@ namespace neo::types
 
   struct menu_event: event
   {
+    int longest_text_length;
+    int choices_count;
     bn::vector<menu_choice, 5> choices;
-    menu_event(bn::string_view type_, const bn::vector<menu_choice, 5>& choices_):
-      event(type_), choices(choices_) {}
+    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), choices(choices_) {}
   };
 
   struct set_variable_event: event

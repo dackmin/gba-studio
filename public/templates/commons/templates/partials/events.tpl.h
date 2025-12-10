@@ -89,6 +89,8 @@ neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
 {{/each}}
 neo::types::menu_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
+  {{valuedef (len (longestMenuChoice this.choices)) 0}},
+  {{valuedef this.choices.length 0}},
   make_menu_vector(
     {{#each this.choices}}
     {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}
