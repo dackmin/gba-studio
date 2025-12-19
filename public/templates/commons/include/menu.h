@@ -27,6 +27,16 @@ namespace neo
       neo::game* game;
       bn::vector<neo::types::menu_choice, MAX_ITEMS> choices;
       neo::types::direction direction;
+
+      bn::sprite_ptr bg_top_left;
+      bn::sprite_ptr bg_down_left;
+      bn::sprite_ptr bg_top_right;
+      bn::sprite_ptr bg_down_right;
+      bn::sprite_ptr bg_top;
+      bn::sprite_ptr bg_down;
+      bn::sprite_ptr bg_left;
+      bn::sprite_ptr bg_right;
+      bn::sprite_ptr bg_center;
   };
 }
 
