@@ -91,6 +91,8 @@ neo::types::menu_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef (len (longestMenuChoice this.choices)) 0}},
   {{valuedef this.choices.length 0}},
+  neo::types::direction::{{uppercase (valuedef this.direction 'up_right')}},
+  {{valuedef this.z 1}},
   make_menu_vector(
     {{#each this.choices}}
     {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}

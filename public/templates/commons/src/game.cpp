@@ -347,6 +347,8 @@ namespace neo
       const neo::types::menu_event* menu_evt =
         static_cast<const neo::types::menu_event*>(e);
       neo::menu* m = new neo::menu(this, menu_evt->choices);
+      m->set_direction(menu_evt->direction);
+      m->set_z_order(menu_evt->z);
       m->show();
       delete m;
     }

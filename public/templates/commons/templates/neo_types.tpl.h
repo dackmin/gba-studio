@@ -166,9 +166,11 @@ namespace neo::types
   {
     int longest_text_length;
     int choices_count;
+    neo::types::direction direction;
+    int z;
     bn::vector<menu_choice, 5> choices;
-    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, const bn::vector<menu_choice, 5>& choices_):
-      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), choices(choices_) {}
+    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), choices(choices_) {}
   };
 
   struct set_variable_event: event
