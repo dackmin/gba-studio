@@ -18,6 +18,7 @@
 #include "game.h"
 #include "buttons.h"
 #include "utils.h"
+#include "dialog_bg.h"
 
 namespace neo
 {
@@ -25,103 +26,12 @@ namespace neo
     game(game_),
     choices(choices_),
     direction(neo::types::direction::DOWN_RIGHT),
-    bg_z_order(1),
-    text_z_order(0)
+    bg_z_order(0),
+    text_z_order(1)
   {}
-
-  bn::sprite_ptr menu::_create_slice (bn::sprite_tiles_ptr tiles, int x, int y)
-  {
-    bn::sprite_ptr slice = bn::sprite_items::textbox.create_sprite(0, 0);
-    slice.set_tiles(tiles);
-    slice.set_visible(true);
-    slice.set_bg_priority(BG_PRIORITY);
-    slice.set_z_order(bg_z_order);
-    slice.set_top_left_position(x, y);
-
-    return slice;
-  }
-
-  bn::vector<bn::sprite_ptr, 4> menu::_create_corners (bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height)
-  {
-    bn::vector<bn::sprite_ptr, 4> corners;
-
-    bn::sprite_ptr bg_top_left = _create_slice(
-      tiles_item->create_tiles(0),
-      x,
-      y
-    );
-    corners.push_back(bg_top_left);
-
-    bn::sprite_ptr bg_down_left = _create_slice(
-      tiles_item->create_tiles(1),
-      x,
-      y + height - CORNER_SIZE
-    );
-    corners.push_back(bg_down_left);
-
-    bn::sprite_ptr bg_top_right = _create_slice(
-      tiles_item->create_tiles(2),
-      x + width - CORNER_SIZE,
-      y
-    );
-    corners.push_back(bg_top_right);
-
-    bn::sprite_ptr bg_down_right = _create_slice(
-      tiles_item->create_tiles(3),
-      x + width - CORNER_SIZE,
-      y + height - CORNER_SIZE
-    );
-    corners.push_back(bg_down_right);
-
-    return corners;
-  }
-
-  bn::vector<bn::sprite_ptr, menu::MAX_SIDE_SLICES> menu::_create_side (bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal)
-  {
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> slices;
-
-    for (int i = 0; i < length && i < MAX_SIDE_SLICES; i++)
-    {
-      bn::sprite_ptr slice = _create_slice(
-        tiles,
-        horizontal ? x + (i * CORNER_SIZE) : x,
-        horizontal ? y : y + (i * CORNER_SIZE)
-      );
-
-      slices.push_back(slice);
-    }
-
-    return slices;
-  }
-
-  bn::vector<bn::sprite_ptr, menu::MAX_CENTER_SLICES> menu::_create_center (bn::sprite_tiles_ptr tiles, int x, int y, int width, int height)
-  {
-    bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> slices;
-
-    bn::fixed horizontal_count = bn::fixed(width) / bn::fixed(CORNER_SIZE);
-    bn::fixed vertical_count = bn::fixed(height) / bn::fixed(CORNER_SIZE);
-
-    for (int j = 0; j < vertical_count.ceil_integer() && j < MAX_SIDE_SLICES; j++)
-    {
-      for (int i = 0; i < horizontal_count.ceil_integer() && i < MAX_SIDE_SLICES; i++)
-      {
-        bn::sprite_ptr slice = _create_slice(
-          tiles,
-          x + (i * CORNER_SIZE),
-          y + (j * CORNER_SIZE)
-        );
-
-        slices.push_back(slice);
-      }
-    }
-
-    return slices;
-  }
 
   int menu::show ()
   {
-    bn::sprite_tiles_item tiles = bn::sprite_items::textbox.tiles_item();
-
     int longest = 0;
     for (int i = 0; i < choices.size(); ++i)
     {
@@ -164,57 +74,15 @@ namespace neo
     }
 
     // Draw bg
-    bn::vector<bn::sprite_ptr, 4> corners = _create_corners(
-      &tiles,
+    neo::dialog_bg bg = dialog_bg(
+      game,
+      &bn::sprite_items::textbox,
       x,
       y,
       total_width,
       total_height
     );
-
-    bn::fixed top_count = bn::fixed(total_width - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_top = _create_side(
-      tiles.create_tiles(4),
-      x + CORNER_SIZE,
-      y,
-      top_count.ceil_integer(),
-      true
-    );
-
-    bn::fixed bottom_count = bn::fixed(total_width - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_bottom = _create_side(
-      tiles.create_tiles(5),
-      x + CORNER_SIZE,
-      y + total_height - CORNER_SIZE,
-      bottom_count.ceil_integer(),
-      true
-    );
-
-    bn::fixed left_count = bn::fixed(total_height - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_left = _create_side(
-      tiles.create_tiles(7),
-      x,
-      y + CORNER_SIZE,
-      left_count.ceil_integer(),
-      false
-    );
-
-    bn::fixed right_count = bn::fixed(total_height - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_right = _create_side(
-      tiles.create_tiles(6),
-      x + total_width - CORNER_SIZE,
-      y + CORNER_SIZE,
-      right_count.ceil_integer(),
-      false
-    );
-
-    bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> bg_center = _create_center(
-      tiles.create_tiles(8),
-      x + CORNER_SIZE,
-      y + CORNER_SIZE,
-      total_width - CORNER_SIZE * 2,
-      total_height - CORNER_SIZE * 2
-    );
+    bg.set_z_order(bg_z_order);
 
     // Create font
     bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH> text_sprites;
@@ -285,26 +153,7 @@ namespace neo
 
     text_sprites.clear();
 
-    for (bn::sprite_ptr& corner : corners)
-    {
-      corner.set_visible(false);
-    }
-
-    for (bn::sprite_ptr& slice : bg_top)
-    {
-      slice.set_visible(false);
-    }
-
-    for (bn::sprite_ptr& slice : bg_bottom)
-    {
-      slice.set_visible(false);
-    }
-
-    for (bn::sprite_ptr& slice : bg_left)
-    {
-      slice.set_visible(false);
-    }
-
+    bg.set_visible(false);
     arrow.set_visible(false);
 
     return selected_index;

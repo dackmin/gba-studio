@@ -7,13 +7,13 @@
 #include <bn_sprite_item.h>
 #include <bn_sprite_text_generator.h>
 
-#include <bn_regular_bg_items_textbox_2l.h>
-#include <bn_regular_bg_items_textbox_3l.h>
+#include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
 
 #include <neo_types.h>
 
 #include "dialog.h"
+#include "dialog_bg.h"
 #include "game.h"
 #include "buttons.h"
 #include "utils.h"
@@ -22,54 +22,61 @@ namespace neo
 {
   dialog::dialog (neo::game* game_, const bn::vector<bn::string_view, MAX_LINES>& lines_):
     game(game_),
-    lines_count(lines_.size()),
     lines(lines_),
     direction(neo::types::direction::DOWN),
-    bg_2_lines(bn::regular_bg_items::textbox_2l),
-    bg_3_lines(bn::regular_bg_items::textbox_3l)
+    lines_count(lines_.size()),
+    bg_z_order(0),
+    text_z_order(1)
   {}
-
-  bn::regular_bg_item dialog::get_background ()
-  {
-    if (lines_count >= 3) return bg_3_lines;
-
-    return bg_2_lines;
-  }
 
   void dialog::show ()
   {
-    BN_LOG("Lines count: ", lines_count);
-    bn::regular_bg_ptr bg = get_background().create_bg(0, 0);
+    int total_width = bn::display::width() - MARGIN * 2;
+    int total_height = LINE_HEIGHT * lines_count + PADDING_TOP + PADDING_BOTTOM;
+    int x = 0;
+    int y = 0;
 
-    // Show the textbox background
-    bg.set_visible(true);
-    bg.set_priority(0);
-    bg.set_top_left_position(
-      (neo::types::SCREEN_WIDTH - bg.dimensions().width()) / 2,
-      bn::display::height() - neo::dialog::PADDING * 2 - neo::dialog::LINE_HEIGHT * (lines_count + 1)
+    switch (direction)
+    {
+      case neo::types::direction::UP:
+        x = MARGIN;
+        y = MARGIN;
+        break;
+
+      case neo::types::direction::DOWN:
+        x = MARGIN;
+        y = bn::display::height() - total_height - MARGIN;
+        break;
+
+      default:
+        break;
+    }
+
+    neo::dialog_bg bg = dialog_bg(
+      game,
+      &bn::sprite_items::textbox,
+      x,
+      y,
+      total_width,
+      total_height
     );
 
-    bn::vector<bn::sprite_ptr, neo::dialog::MAX_LINES * neo::dialog::MAX_LENGTH> text_sprites;
-
     // Create font
+    bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH> text_sprites;
     bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
-
-    // Create text generator and render the text
     bn::sprite_text_generator text_generator(font);
     text_generator.set_left_alignment();
     text_generator.set_bg_priority(0);
+    text_generator.set_z_order(text_z_order);
 
     // Render each line
     for (int i = 0; i < lines_count; ++i)
     {
       bn::string_view line = lines.at(i);
+      bn::fixed text_x = x + PADDING_LEFT;
+      bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
 
-      // Calculate text position
-      bn::fixed text_x = bg.top_left_position().x() + neo::dialog::PADDING * 2 - (bn::display::width() / 2) + 2;
-      bn::fixed text_y = bg.top_left_position().y() + neo::dialog::PADDING * 2 - (bn::display::height() / 2) - 2 + (i * neo::dialog::LINE_HEIGHT);
-
-      // Generate the text sprites for each line
-      text_generator.generate(
+      text_generator.generate_top_left(
         text_x,
         text_y,
         line,
@@ -100,5 +107,16 @@ namespace neo
     // Hide dialog
     text_sprites.clear();
     bg.set_visible(false);
+  }
+
+  void dialog::set_direction (neo::types::direction direction_)
+  {
+    direction = direction_;
+  }
+
+  void dialog::set_z_order (int z_order_)
+  {
+    bg_z_order = z_order_;
+    text_z_order = z_order_ - 1;
   }
 }

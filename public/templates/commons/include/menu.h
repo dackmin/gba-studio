@@ -2,7 +2,6 @@
 #define NEO_MENU_H
 
 #include <bn_core.h>
-#include <bn_sprite_ptr.h>
 #include <bn_vector.h>
 
 #include <neo_types.h>
@@ -41,12 +40,6 @@ namespace neo
       neo::types::direction direction;
       int bg_z_order;
       int text_z_order;
-
-    private:
-      bn::sprite_ptr _create_slice(bn::sprite_tiles_ptr tiles, int x, int y);
-      bn::vector<bn::sprite_ptr, 4> _create_corners(bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height);
-      bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> _create_side(bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal);
-      bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> _create_center(bn::sprite_tiles_ptr tiles, int x, int y, int width, int height);
   };
 }
 

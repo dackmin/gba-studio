@@ -334,6 +334,8 @@ namespace neo
       const neo::types::dialog_event* dialog_evt =
         static_cast<const neo::types::dialog_event*>(e);
       neo::dialog* d = new neo::dialog(this, dialog_evt->lines);
+      d->set_direction(dialog_evt->direction);
+      d->set_z_order(dialog_evt->z);
       d->show();
       delete d;
     }

@@ -147,9 +147,11 @@ namespace neo::types
 
   struct dialog_event: event
   {
+    neo::types::direction direction;
+    int z;
     bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, const bn::vector<bn::string_view, 5>& lines_):
-      event(type_), lines(lines_) {}
+    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, const bn::vector<bn::string_view, 5>& lines_):
+      event(type_), direction(direction_), z(z_), lines(lines_) {}
   };
 
   struct menu_choice
