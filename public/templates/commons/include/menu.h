@@ -15,7 +15,11 @@ namespace neo
   class menu
   {
     static constexpr int LINE_HEIGHT = 8;
-    static constexpr int PADDING = 8;
+    static constexpr int PADDING_LEFT = 12;
+    static constexpr int PADDING_RIGHT = 8;
+    static constexpr int PADDING_TOP = 8;
+    static constexpr int PADDING_BOTTOM = 8;
+    static constexpr int ARROW_PADDING = 8;
     static constexpr int MARGIN = 4;
     static constexpr int CHAR_WIDTH = 8;
     static constexpr int MAX_LENGTH = 25;
@@ -27,7 +31,7 @@ namespace neo
     public:
       menu(neo::game* game, const bn::vector<neo::types::menu_choice, MAX_ITEMS>& choices);
 
-      void show();
+      int show();
       void set_direction(neo::types::direction direction_);
       void set_z_order(int z_order_);
 

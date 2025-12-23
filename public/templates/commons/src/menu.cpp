@@ -10,6 +10,7 @@
 
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
+#include <bn_sprite_items_menu_arrow.h>
 
 #include <neo_types.h>
 
@@ -37,7 +38,7 @@ namespace neo
     bg_center(bn::sprite_items::textbox.create_sprite(16, 16))
   {}
 
-  void menu::show ()
+  int menu::show ()
   {
     bn::sprite_tiles_item tiles = bn::sprite_items::textbox.tiles_item();
 
@@ -96,8 +97,8 @@ namespace neo
     }
 
     BN_LOG("Menu longest choice length: ", longest);
-    int total_width = (CHAR_WIDTH * longest) + (PADDING * 2);
-    int total_height = (LINE_HEIGHT * choices.size()) + (PADDING * 2);
+    int total_width = CHAR_WIDTH * longest + PADDING_LEFT + PADDING_RIGHT;
+    int total_height = LINE_HEIGHT * choices.size() + PADDING_TOP + PADDING_BOTTOM;
     BN_LOG("Menu total size: ", total_width, "x", total_height);
 
     int x = 0;
@@ -129,9 +130,9 @@ namespace neo
         break;
     }
 
-    bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH> text_sprites;
 
     // Create font
+    bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH> text_sprites;
     bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
     bn::sprite_text_generator text_generator(font);
     text_generator.set_left_alignment();
@@ -142,8 +143,8 @@ namespace neo
     for (int i = 0; i < choices.size(); ++i)
     {
       bn::string_view choice = choices.at(i).text;
-      bn::fixed text_x = x + PADDING;
-      bn::fixed text_y = y + PADDING + (i * LINE_HEIGHT);
+      bn::fixed text_x = x + PADDING_LEFT;
+      bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
 
       text_generator.generate_top_left(
         text_x,
@@ -181,12 +182,47 @@ namespace neo
       vertical_scale
     );
 
+    int choice_index = 0;
+    int selected_index = -1;
+
+    // Draw arrow
+    int arrow_x = x + ARROW_PADDING / 2;
+    int arrow_y = y + PADDING_TOP + choice_index * LINE_HEIGHT;
+    bn::sprite_ptr arrow = bn::sprite_items::menu_arrow.create_sprite(0, 0);
+    arrow.set_top_left_position(arrow_x, arrow_y);
+    arrow.set_visible(true);
+    arrow.set_bg_priority(0);
+    arrow.set_z_order(text_z_order);
+
     // This prevents menu from being instantly closed after being opened with
     // the same shortcut because of polling
     neo::utils::wait(100);
 
-    while (!neo::buttons::is_pressed("Start"))
+    while (!neo::buttons::is_pressed("Start") && !neo::buttons::is_pressed("B") && selected_index == -1)
     {
+      if (neo::buttons::is_pressed("Up"))
+      {
+        if (choice_index > 0)
+        {
+          choice_index--;
+          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          bn::core::update();
+        }
+      }
+      else if (neo::buttons::is_pressed("Down"))
+      {
+        if (choice_index < choices.size() - 1)
+        {
+          choice_index++;
+          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          bn::core::update();
+        }
+      }
+      else if (neo::buttons::is_pressed("A"))
+      {
+        selected_index = choice_index;
+      }
+
       bn::core::update();
     }
 
@@ -200,6 +236,9 @@ namespace neo
     bg_right.set_visible(false);
     bg_left.set_visible(false);
     bg_center.set_visible(false);
+    arrow.set_visible(false);
+
+    return selected_index;
   }
 
   void menu::set_direction (neo::types::direction direction_)

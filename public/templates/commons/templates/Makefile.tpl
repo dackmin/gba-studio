@@ -14,6 +14,11 @@ DMGAUDIOBACKEND :=  {{valuedef dmgAudioBackend 'default'}}
 ROMTITLE     :=  {{uppercase romTitle}}
 ROMCODE      :=  {{uppercase romCode}}
 
+ifneq (,$(wildcard ./.env))
+  include ./.env
+  export
+endif
+
 ifndef LIBBUTANOABS
   export LIBBUTANOABS := $(realpath $(LIBBUTANO))
 endif

@@ -349,8 +349,20 @@ namespace neo
       neo::menu* m = new neo::menu(this, menu_evt->choices);
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
-      m->show();
+      int selected = m->show();
       delete m;
+
+      // Execute selected choice events
+      if (selected >= 0 && selected < menu_evt->choices_count)
+      {
+        neo::types::menu_choice choice = menu_evt->choices[selected];
+        BN_LOG("Executing menu choice events for choice: ", choice.text);
+        for (int i = 0; i < choice.events_count; ++i)
+        {
+          neo::types::event* ev = choice.events[i];
+          exec_event(ev, is_loop);
+        }
+      }
     }
 
     /**
