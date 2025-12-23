@@ -31,7 +31,8 @@ export type ToolType = InfiniteCanvasCursorMode | 'collisions';
 export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite';
 export type SubToolType = AddSubToolType;
 
-export type Direction = 'up' | 'down' | 'left' | 'right';
+export type Direction = 'up' | 'down' | 'left' | 'right' |
+  'up_left' | 'up_right' | 'down_left' | 'down_right';
 
 export interface ListItem {
   name: string;
@@ -294,6 +295,8 @@ export interface SetVariableEvent extends SceneEvent {
 export interface ShowDialogEvent extends SceneEvent {
   type: 'show-dialog';
   text: string;
+  direction?: Direction;
+  z?: number;
 }
 
 export interface DisableActorEvent extends SceneEvent {
@@ -325,6 +328,8 @@ export interface GameMenuChoice {
 export interface ShowMenuEvent extends SceneEvent {
   type: 'show-menu';
   choices: GameMenuChoice[];
+  direction?: Direction;
+  z?: number;
 }
 
 export interface IfEventCondition {

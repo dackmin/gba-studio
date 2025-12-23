@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Button, Card, Inset, Text } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
+import { set } from '@junipero/react';
 import {
   type DragEndEvent,
   DndContext,
@@ -22,6 +23,7 @@ import {
 
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
 import Choice from './Choice';
+import DirectionField from '../../DirectionField';
 
 export interface EventShowMenuProps {
   event: ShowMenuEvent;
@@ -71,6 +73,14 @@ const EventShowMenu = ({
     onValueChange?.(event);
   }, [onValueChange, event]);
 
+  const onValueChange_ = useCallback((
+    name: string,
+    value: any
+  ) => {
+    set(event, name, value);
+    onValueChange?.(event);
+  }, [onValueChange, event]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -83,6 +93,14 @@ const EventShowMenu = ({
         strategy={verticalListSortingStrategy}
       >
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">Disposition</Text>
+            <DirectionField
+              value={event.direction || 'bottom_right'}
+              exclude={['left', 'right', 'up', 'down']}
+              onValueChange={onValueChange_.bind(null, 'direction')}
+            />
+          </div>
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">Choices</Text>
             <Card>

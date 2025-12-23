@@ -6,6 +6,7 @@ import { Tooltip } from 'radix-ui';
 import type { ShowDialogEvent } from '../../../types';
 import { useDelayedCallback } from '../../services/hooks';
 import DialogPreview from '../DialogPreview';
+import DirectionField from '../DirectionField';
 
 export interface EventShowDialogProps {
   event: ShowDialogEvent;
@@ -32,8 +33,26 @@ const EventShowDialog = ({
     onDelayedValueChange?.(event);
   }, [event, onDelayedValueChange]);
 
+  const onValueChange_ = useCallback((
+    name: string,
+    value: any
+  ) => {
+    set(event, name, value);
+    setEvent(event);
+    onValueChange?.(event);
+  }, [onValueChange, event]);
+
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Disposition</Text>
+        <DirectionField
+          value={event.direction || 'down'}
+          exclude={['left', 'right', 'up_left', 'up_right',
+            'down_left', 'down_right']}
+          onValueChange={onValueChange_.bind(null, 'direction')}
+        />
+      </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Text</Text>
         <div className="relative">
