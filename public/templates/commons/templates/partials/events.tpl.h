@@ -76,7 +76,7 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 25}}";
+bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 26}}";
 neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
   {{this.events.length}},

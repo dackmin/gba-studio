@@ -2,7 +2,6 @@
 #define NEO_MENU_H
 
 #include <bn_core.h>
-#include <bn_regular_bg_ptr.h>
 #include <bn_sprite_ptr.h>
 #include <bn_vector.h>
 
@@ -27,6 +26,8 @@ namespace neo
     static constexpr int CORNER_SIZE = 16;
     static constexpr int BG_PRIORITY = 1;
     static constexpr int TEXT_PRIORITY = 0;
+    static constexpr int MAX_SIDE_SLICES = 15;
+    static constexpr int MAX_CENTER_SLICES = 150;
 
     public:
       menu(neo::game* game, const bn::vector<neo::types::menu_choice, MAX_ITEMS>& choices);
@@ -41,15 +42,11 @@ namespace neo
       int bg_z_order;
       int text_z_order;
 
-      bn::sprite_ptr bg_top_left;
-      bn::sprite_ptr bg_down_left;
-      bn::sprite_ptr bg_top_right;
-      bn::sprite_ptr bg_down_right;
-      bn::sprite_ptr bg_top;
-      bn::sprite_ptr bg_down;
-      bn::sprite_ptr bg_left;
-      bn::sprite_ptr bg_right;
-      bn::sprite_ptr bg_center;
+    private:
+      bn::sprite_ptr _create_slice(bn::sprite_tiles_ptr tiles, int x, int y);
+      bn::vector<bn::sprite_ptr, 4> _create_corners(bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height);
+      bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> _create_side(bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal);
+      bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> _create_center(bn::sprite_tiles_ptr tiles, int x, int y, int width, int height);
   };
 }
 

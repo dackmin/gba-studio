@@ -26,66 +26,101 @@ namespace neo
     choices(choices_),
     direction(neo::types::direction::DOWN_RIGHT),
     bg_z_order(1),
-    text_z_order(0),
-    bg_top_left(bn::sprite_items::textbox.create_sprite(0, 0)),
-    bg_down_left(bn::sprite_items::textbox.create_sprite(0, 32)),
-    bg_top_right(bn::sprite_items::textbox.create_sprite(32, 0)),
-    bg_down_right(bn::sprite_items::textbox.create_sprite(32, 32)),
-    bg_top(bn::sprite_items::textbox.create_sprite(16, 0)),
-    bg_down(bn::sprite_items::textbox.create_sprite(16, 32)),
-    bg_left(bn::sprite_items::textbox.create_sprite(0, 16)),
-    bg_right(bn::sprite_items::textbox.create_sprite(32, 16)),
-    bg_center(bn::sprite_items::textbox.create_sprite(16, 16))
+    text_z_order(0)
   {}
+
+  bn::sprite_ptr menu::_create_slice (bn::sprite_tiles_ptr tiles, int x, int y)
+  {
+    bn::sprite_ptr slice = bn::sprite_items::textbox.create_sprite(0, 0);
+    slice.set_tiles(tiles);
+    slice.set_visible(true);
+    slice.set_bg_priority(BG_PRIORITY);
+    slice.set_z_order(bg_z_order);
+    slice.set_top_left_position(x, y);
+
+    return slice;
+  }
+
+  bn::vector<bn::sprite_ptr, 4> menu::_create_corners (bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height)
+  {
+    bn::vector<bn::sprite_ptr, 4> corners;
+
+    bn::sprite_ptr bg_top_left = _create_slice(
+      tiles_item->create_tiles(0),
+      x,
+      y
+    );
+    corners.push_back(bg_top_left);
+
+    bn::sprite_ptr bg_down_left = _create_slice(
+      tiles_item->create_tiles(1),
+      x,
+      y + height - CORNER_SIZE
+    );
+    corners.push_back(bg_down_left);
+
+    bn::sprite_ptr bg_top_right = _create_slice(
+      tiles_item->create_tiles(2),
+      x + width - CORNER_SIZE,
+      y
+    );
+    corners.push_back(bg_top_right);
+
+    bn::sprite_ptr bg_down_right = _create_slice(
+      tiles_item->create_tiles(3),
+      x + width - CORNER_SIZE,
+      y + height - CORNER_SIZE
+    );
+    corners.push_back(bg_down_right);
+
+    return corners;
+  }
+
+  bn::vector<bn::sprite_ptr, menu::MAX_SIDE_SLICES> menu::_create_side (bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal)
+  {
+    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> slices;
+
+    for (int i = 0; i < length && i < MAX_SIDE_SLICES; i++)
+    {
+      bn::sprite_ptr slice = _create_slice(
+        tiles,
+        horizontal ? x + (i * CORNER_SIZE) : x,
+        horizontal ? y : y + (i * CORNER_SIZE)
+      );
+
+      slices.push_back(slice);
+    }
+
+    return slices;
+  }
+
+  bn::vector<bn::sprite_ptr, menu::MAX_CENTER_SLICES> menu::_create_center (bn::sprite_tiles_ptr tiles, int x, int y, int width, int height)
+  {
+    bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> slices;
+
+    bn::fixed horizontal_count = bn::fixed(width) / bn::fixed(CORNER_SIZE);
+    bn::fixed vertical_count = bn::fixed(height) / bn::fixed(CORNER_SIZE);
+
+    for (int j = 0; j < vertical_count.ceil_integer() && j < MAX_SIDE_SLICES; j++)
+    {
+      for (int i = 0; i < horizontal_count.ceil_integer() && i < MAX_SIDE_SLICES; i++)
+      {
+        bn::sprite_ptr slice = _create_slice(
+          tiles,
+          x + (i * CORNER_SIZE),
+          y + (j * CORNER_SIZE)
+        );
+
+        slices.push_back(slice);
+      }
+    }
+
+    return slices;
+  }
 
   int menu::show ()
   {
     bn::sprite_tiles_item tiles = bn::sprite_items::textbox.tiles_item();
-
-    bg_top_left.set_tiles(tiles.create_tiles(0));
-    bg_top_left.set_visible(true);
-    bg_top_left.set_bg_priority(BG_PRIORITY);
-    bg_top_left.set_z_order(bg_z_order);
-
-    bg_down_left.set_tiles(tiles.create_tiles(1));
-    bg_down_left.set_visible(true);
-    bg_down_left.set_bg_priority(BG_PRIORITY);
-    bg_down_left.set_z_order(bg_z_order);
-
-    bg_top_right.set_tiles(tiles.create_tiles(2));
-    bg_top_right.set_visible(true);
-    bg_top_right.set_bg_priority(BG_PRIORITY);
-    bg_top_right.set_z_order(bg_z_order);
-
-    bg_down_right.set_tiles(tiles.create_tiles(3));
-    bg_down_right.set_visible(true);
-    bg_down_right.set_bg_priority(BG_PRIORITY);
-    bg_down_right.set_z_order(bg_z_order);
-
-    bg_top.set_tiles(tiles.create_tiles(4));
-    bg_top.set_visible(true);
-    bg_top.set_bg_priority(BG_PRIORITY);
-    bg_top.set_z_order(bg_z_order);
-
-    bg_down.set_tiles(tiles.create_tiles(5));
-    bg_down.set_visible(true);
-    bg_down.set_bg_priority(BG_PRIORITY);
-    bg_down.set_z_order(bg_z_order);
-
-    bg_right.set_tiles(tiles.create_tiles(6));
-    bg_right.set_visible(true);
-    bg_right.set_bg_priority(BG_PRIORITY);
-    bg_right.set_z_order(bg_z_order);
-
-    bg_left.set_tiles(tiles.create_tiles(7));
-    bg_left.set_visible(true);
-    bg_left.set_bg_priority(BG_PRIORITY);
-    bg_left.set_z_order(bg_z_order);
-
-    bg_center.set_tiles(tiles.create_tiles(8));
-    bg_center.set_visible(true);
-    bg_center.set_bg_priority(BG_PRIORITY);
-    bg_center.set_z_order(bg_z_order);
 
     int longest = 0;
     for (int i = 0; i < choices.size(); ++i)
@@ -96,10 +131,8 @@ namespace neo
       }
     }
 
-    BN_LOG("Menu longest choice length: ", longest);
     int total_width = CHAR_WIDTH * longest + PADDING_LEFT + PADDING_RIGHT;
     int total_height = LINE_HEIGHT * choices.size() + PADDING_TOP + PADDING_BOTTOM;
-    BN_LOG("Menu total size: ", total_width, "x", total_height);
 
     int x = 0;
     int y = 0;
@@ -130,6 +163,58 @@ namespace neo
         break;
     }
 
+    // Draw bg
+    bn::vector<bn::sprite_ptr, 4> corners = _create_corners(
+      &tiles,
+      x,
+      y,
+      total_width,
+      total_height
+    );
+
+    bn::fixed top_count = bn::fixed(total_width - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
+    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_top = _create_side(
+      tiles.create_tiles(4),
+      x + CORNER_SIZE,
+      y,
+      top_count.ceil_integer(),
+      true
+    );
+
+    bn::fixed bottom_count = bn::fixed(total_width - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
+    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_bottom = _create_side(
+      tiles.create_tiles(5),
+      x + CORNER_SIZE,
+      y + total_height - CORNER_SIZE,
+      bottom_count.ceil_integer(),
+      true
+    );
+
+    bn::fixed left_count = bn::fixed(total_height - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
+    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_left = _create_side(
+      tiles.create_tiles(7),
+      x,
+      y + CORNER_SIZE,
+      left_count.ceil_integer(),
+      false
+    );
+
+    bn::fixed right_count = bn::fixed(total_height - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
+    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> bg_right = _create_side(
+      tiles.create_tiles(6),
+      x + total_width - CORNER_SIZE,
+      y + CORNER_SIZE,
+      right_count.ceil_integer(),
+      false
+    );
+
+    bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> bg_center = _create_center(
+      tiles.create_tiles(8),
+      x + CORNER_SIZE,
+      y + CORNER_SIZE,
+      total_width - CORNER_SIZE * 2,
+      total_height - CORNER_SIZE * 2
+    );
 
     // Create font
     bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH> text_sprites;
@@ -153,34 +238,6 @@ namespace neo
         text_sprites
       );
     }
-  
-    bn::fixed vertical_scale = bn::fixed(total_height - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::fixed horizontal_scale = bn::fixed(total_width - CORNER_SIZE * 2) / bn::fixed(CORNER_SIZE);
-    bn::fixed horizontal_shift = (CORNER_SIZE * horizontal_scale - CORNER_SIZE) / 2;
-    bn::fixed vertical_shift = (CORNER_SIZE * vertical_scale - CORNER_SIZE) / 2;
-
-    // Positions
-    bg_top_left.set_top_left_position(x, y);
-    bg_down_left.set_top_left_position(x, y + total_height - CORNER_SIZE);
-    bg_top_right.set_top_left_position(x + total_width - CORNER_SIZE, y);
-    bg_down_right.set_top_left_position(x + total_width - CORNER_SIZE, y + total_height - CORNER_SIZE);
-
-    bg_top.set_top_left_position(x + CORNER_SIZE + horizontal_shift, y);
-    bg_down.set_top_left_position(x + CORNER_SIZE + horizontal_shift, y + total_height - CORNER_SIZE);
-    bg_left.set_top_left_position(x, y + CORNER_SIZE + vertical_shift);
-    bg_right.set_top_left_position(x + total_width - CORNER_SIZE, y + CORNER_SIZE + vertical_shift);
-
-    bg_center.set_top_left_position(x + CORNER_SIZE + horizontal_shift, y + CORNER_SIZE + vertical_shift);
-
-    // Sizes
-    bg_left.set_vertical_scale(vertical_scale);
-    bg_right.set_vertical_scale(vertical_scale);
-    bg_top.set_horizontal_scale(horizontal_scale);
-    bg_down.set_horizontal_scale(horizontal_scale);
-    bg_center.set_scale(
-      horizontal_scale,
-      vertical_scale
-    );
 
     int choice_index = 0;
     int selected_index = -1;
@@ -191,7 +248,7 @@ namespace neo
     bn::sprite_ptr arrow = bn::sprite_items::menu_arrow.create_sprite(0, 0);
     arrow.set_top_left_position(arrow_x, arrow_y);
     arrow.set_visible(true);
-    arrow.set_bg_priority(0);
+    arrow.set_bg_priority(TEXT_PRIORITY);
     arrow.set_z_order(text_z_order);
 
     // This prevents menu from being instantly closed after being opened with
@@ -227,15 +284,27 @@ namespace neo
     }
 
     text_sprites.clear();
-    bg_top_left.set_visible(false);
-    bg_down_left.set_visible(false);
-    bg_top_right.set_visible(false);
-    bg_down_right.set_visible(false);
-    bg_top.set_visible(false);
-    bg_down.set_visible(false);
-    bg_right.set_visible(false);
-    bg_left.set_visible(false);
-    bg_center.set_visible(false);
+
+    for (bn::sprite_ptr& corner : corners)
+    {
+      corner.set_visible(false);
+    }
+
+    for (bn::sprite_ptr& slice : bg_top)
+    {
+      slice.set_visible(false);
+    }
+
+    for (bn::sprite_ptr& slice : bg_bottom)
+    {
+      slice.set_visible(false);
+    }
+
+    for (bn::sprite_ptr& slice : bg_left)
+    {
+      slice.set_visible(false);
+    }
+
     arrow.set_visible(false);
 
     return selected_index;
