@@ -22,8 +22,8 @@ import {
 } from '@dnd-kit/modifiers';
 
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
-import Choice from './Choice';
 import DirectionField from '../../DirectionField';
+import Choice from './Choice';
 
 export interface EventShowMenuProps {
   event: ShowMenuEvent;
@@ -96,7 +96,7 @@ const EventShowMenu = ({
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">Disposition</Text>
             <DirectionField
-              value={event.direction || 'bottom_right'}
+              value={event.direction || 'down_right'}
               exclude={['left', 'right', 'up', 'down']}
               onValueChange={onValueChange_.bind(null, 'direction')}
             />
