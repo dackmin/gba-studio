@@ -40,6 +40,7 @@
     "fs-extra": "11.3.3",
     "handlebars": "4.7.8",
     "image-size": "2.0.2",
+    "jimp": "1.6.0",
     "radix-ui": "1.4.3",
     "re-resizable": "6.11.2",
     "react": "19.2.3",
