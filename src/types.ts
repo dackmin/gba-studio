@@ -31,6 +31,8 @@ export type ToolType = InfiniteCanvasCursorMode | 'collisions';
 export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite';
 export type SubToolType = AddSubToolType;
 
+export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
+
 export type Direction = 'up' | 'down' | 'left' | 'right' |
   'up_left' | 'up_right' | 'down_left' | 'down_right';
 
@@ -78,7 +80,7 @@ export interface GamePlayer {
   z?: number;
   width?: number;
   height?: number;
-  direction?: Direction;
+  direction?: CharacterDirection;
   sprite?: string;
 }
 
@@ -112,7 +114,7 @@ export interface GameActor {
   x: number;
   y: number;
   z?: number;
-  direction?: Direction;
+  direction?: CharacterDirection;
   width?: number;
   height?: number;
   sprite: string;
@@ -355,7 +357,7 @@ export type AnimationType = 'idle' | 'walk';
 
 export type FramesDefinition = {
   [key in AnimationType]: {
-    [key in Direction]: number | number[];
+    [key in CharacterDirection]: number | number[];
   };
 };
 
