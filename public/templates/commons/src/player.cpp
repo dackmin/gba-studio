@@ -63,7 +63,7 @@ namespace neo
     sprite.set_visible(true);
   }
 
-  void player::update()
+  void player::check_input()
   {
     if (bn::keypad::a_pressed())
     {
@@ -184,6 +184,14 @@ namespace neo
         action.reset();
         sprite.set_tiles(tiles.create_tiles(neo::tileindex::DOWN));
       }
+    }
+  }
+
+  void player::update()
+  {
+    if (game->is_input_enabled)
+    {
+      check_input();
     }
   }
 

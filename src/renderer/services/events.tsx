@@ -2,6 +2,8 @@ import {
   AllSidesIcon,
   ChatBubbleIcon,
   CodeIcon,
+  ComponentInstanceIcon,
+  ComponentNoneIcon,
   EyeClosedIcon,
   EyeOpenIcon,
   GroupIcon,
@@ -48,6 +50,18 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     value: 'on-button-press',
     keywords: ['button', 'input', 'press'],
     construct: () => ({ type: 'on-button-press', buttons: [], events: [] }),
+  }, {
+    icon: ComponentNoneIcon,
+    name: 'Disable input',
+    value: 'disable-input',
+    keywords: ['input', 'disable'],
+    construct: () => ({ type: 'disable-input' }),
+  }, {
+    icon: ComponentInstanceIcon,
+    name: 'Enable input',
+    value: 'enable-input',
+    keywords: ['input', 'enable'],
+    construct: () => ({ type: 'enable-input' }),
   }],
 }, {
   name: 'Camera',

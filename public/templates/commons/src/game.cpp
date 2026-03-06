@@ -46,6 +46,7 @@ namespace neo
     scripted_events_count = 0;
     actors_count = 0;
     sprites_count = 0;
+    is_input_enabled = true;
   }
 
   void game::set_scene(bn::string_view scene_name)
@@ -272,7 +273,7 @@ namespace neo
      * @name wait-for-button
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "wait-for-button")
+    else if (e->type == "wait-for-button" && is_input_enabled)
     {
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);
@@ -280,6 +281,24 @@ namespace neo
       {
         bn::core::update();
       }
+    }
+
+    /**
+     * @name disable-input
+     * Disables player input until enabled again with enable-input event.
+     */
+    else if (e->type == "disable-input")
+    {
+      is_input_enabled = false;
+    }
+
+    /**
+     * @name enable-input
+     * Enables player input if it was disabled with disable-input event.
+     */
+    else if (e->type == "enable-input")
+    {
+      is_input_enabled = true;
     }
 
     /**
@@ -303,7 +322,7 @@ namespace neo
      * @name on-button-press
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "on-button-press")
+    else if (e->type == "on-button-press" && is_input_enabled)
     {
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);

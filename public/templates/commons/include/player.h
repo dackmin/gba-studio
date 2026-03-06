@@ -26,6 +26,7 @@ namespace neo
       void set_map(neo::types::map& map);
       void set_position(bn::fixed_point position);
       void play(neo::types::map& map, int start_x, int start_y, int start_z, neo::types::direction start_direction, bn::sprite_ptr sprite_, bn::sprite_tiles_item tiles_);
+      void check_input();
       void update();
       void move(bn::sprite_animate_action<4>& action);
       int width();

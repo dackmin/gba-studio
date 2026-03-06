@@ -145,6 +145,12 @@ namespace neo::types
     }
   };
 
+  struct input_event: event
+  {
+    input_event(bn::string_view type_):
+      event(type_) {}
+  };
+
   struct dialog_event: event
   {
     neo::types::direction direction;

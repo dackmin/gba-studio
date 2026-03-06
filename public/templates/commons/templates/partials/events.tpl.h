@@ -40,6 +40,16 @@ neo::types::button_event {{../prefix}}_{{@index}}(
   nullptr
   {{/if}}
 );
+{{else if (eq this.type "disable-input")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "disable-input";
+neo::types::input_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
+{{else if (eq this.type "enable-input")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "enable-input";
+neo::types::input_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
