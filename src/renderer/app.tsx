@@ -42,6 +42,7 @@ const App = () => {
     loading: true,
     ready: false,
     scenes: [],
+    animations: [],
     variables: [],
     sprites: [],
     backgrounds: [],
@@ -118,13 +119,15 @@ const App = () => {
         project: state.project,
         scenes: state.scenes,
         variables: state.variables,
+        animations: state.animations,
         scripts: state.scripts,
       });
       dispatch({ dirty: false });
     }
   }, [
     projectPath,
-    state.project, state.scenes, state.variables, state.scripts,
+    state.project, state.scenes, state.variables,
+    state.animations, state.scripts,
   ]);
 
   useHotkeys('mod+s', e => {
@@ -181,6 +184,7 @@ const App = () => {
       project: cloneDeep(currentState.project!),
       scenes: cloneDeep(currentState.scenes),
       variables: cloneDeep(currentState.variables),
+      animations: cloneDeep(currentState.animations),
       scripts: cloneDeep(currentState.scripts),
     };
 
@@ -263,6 +267,7 @@ const App = () => {
     scenes: state.scenes,
     dirty: state.dirty,
     building: state.building,
+    animations: state.animations,
     variables: state.variables,
     sprites: state.sprites,
     backgrounds: state.backgrounds,
@@ -286,7 +291,7 @@ const App = () => {
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building, state.editorConfig,
-    state.clipboard,
+    state.clipboard, state.animations,
     save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
     setEditorConfig, setClipboard,
   ]);

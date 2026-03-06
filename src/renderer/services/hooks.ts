@@ -15,6 +15,7 @@ import {
   EditorContext,
   LogsContext,
   SceneFormContext,
+  SpriteContext,
 } from './contexts';
 
 const queryParams = () => {
@@ -57,6 +58,7 @@ export const useCanvas = () => useContext(CanvasContext);
 export const useSceneForm = () => useContext(SceneFormContext);
 export const useBottomBar = () => useContext(BottomBarContext);
 export const useLogs = () => useContext(LogsContext);
+export const useSprite = () => useContext(SpriteContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,

@@ -44,6 +44,37 @@ export interface ListCategory<T extends ListItem = ListItem> {
   items: T[];
 }
 
+export type SpriteAnimationType = 'fixed';
+
+export interface SpriteFrame {
+  x: number;
+  y: number;
+}
+
+export interface SpriteAnimation {
+  type: 'animation';
+  frames: SpriteFrame[];
+  // Internals
+  id: string;
+}
+
+export interface SpriteAnimationState {
+  name: string;
+  animationType: SpriteAnimationType;
+  animations: SpriteAnimation[];
+  // Internals
+  id: string;
+}
+
+export interface SpriteAnimations {
+  type: 'animations';
+  states: SpriteAnimationState[];
+  // Internals
+  id: string;
+  _sprite_file?: string;
+  _file?: string;
+}
+
 export interface GameVariable {
   type: 'variable';
   name: string;
@@ -196,6 +227,7 @@ export interface GameBackgroundFile {
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
+  animations: SpriteAnimations[];
   variables: GameVariables[];
   sprites: GameSpriteFile[];
   backgrounds: GameBackgroundFile[];

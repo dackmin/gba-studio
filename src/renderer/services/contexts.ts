@@ -12,8 +12,11 @@ import type {
   GameScript,
   GameSensor,
   GameSprite,
+  GameSpriteFile,
   GameVariable,
   GameVariables,
+  SpriteAnimation,
+  SpriteAnimations,
   SubToolType,
   ToolType,
 } from '../../types';
@@ -40,6 +43,7 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
 
 export const AppContext = createContext<AppContextType>({
   scenes: [],
+  animations: [],
   variables: [],
   sprites: [],
   backgrounds: [],
@@ -155,4 +159,20 @@ export const LogsContext = createContext<LogsContextType>({
   buildLogs: [],
   emulatorLogs: [],
   clearBuildLogs: () => {},
+});
+
+export interface SpriteContextType {
+  selectedSprite?: GameSpriteFile;
+  selectedAnimation?: SpriteAnimation;
+  selectSprite?(spriteFile?: GameSpriteFile): void;
+  selectAnimation?(animation?: SpriteAnimation): void;
+  onAnimationsChange?(animation: SpriteAnimations): void;
+}
+
+export const SpriteContext = createContext<SpriteContextType>({
+  selectedSprite: undefined,
+  selectedAnimation: undefined,
+  selectSprite: () => {},
+  selectAnimation: () => {},
+  onAnimationsChange: () => {},
 });

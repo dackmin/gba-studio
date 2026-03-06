@@ -48,3 +48,13 @@ export const DEFAULT_SPRITE: GameSprite = {
   width: 1,
   height: 1,
 };
+
+export const DEFAULT_FIXED_ANMATIONS = {
+  type: 'fixed' as const,
+  frameDuration: 500,
+  frames: [
+    {
+      sprite: 'sprite_default',
+    },
+  ],
+};
