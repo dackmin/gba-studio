@@ -5827,16 +5827,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:40.6.1":
-  version: 40.6.1
-  resolution: "electron@npm:40.6.1"
+"electron@npm:40.8.0":
+  version: 40.8.0
+  resolution: "electron@npm:40.8.0"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^24.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/e8f1cc92d3bd93d8bb2b83cc238dd6957f69f12ddb62d1a50459eb24650be765d840abc2bb29e766ba564fb3f0fee057b757e4656d668b2aba128bece8179a29
+  checksum: 10c0/95da8f43c8ca049ca631cea81e62166104bf6f49015d646922131dc4c2dcbfc762da8fc51e8bb5cf4289284a6ca1406c4e5fbae3d2b4a64e2d6dbade517cd8d1
   languageName: node
   linkType: hard
 
@@ -6742,14 +6742,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.3, fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
-  version: 11.3.3
-  resolution: "fs-extra@npm:11.3.3"
+"fs-extra@npm:11.3.4":
+  version: 11.3.4
+  resolution: "fs-extra@npm:11.3.4"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10c0/984924ff4104e3e9f351b658a864bf3b354b2c90429f57aec0acd12d92c4e6b762cbacacdffb4e745b280adce882e1f980c485d9f02c453f769ab4e7fc646ce3
+  checksum: 10c0/e08276f767a62496ae97d711aaa692c6a478177f24a85979b6a2881c9db9c68b8c2ad5da0bcf92c0b2a474cea6e935ec245656441527958fd8372cb647087df0
   languageName: node
   linkType: hard
 
@@ -6761,6 +6761,17 @@ __metadata:
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
   checksum: 10c0/5f579466e7109719d162a9249abbeffe7f426eb133ea486e020b89bc6d67a741134076bf439983f2eb79276ceaf6bd7b7c1e43c3fd67fe889863e69072fb0a5e
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
+  version: 11.3.3
+  resolution: "fs-extra@npm:11.3.3"
+  dependencies:
+    graceful-fs: "npm:^4.2.0"
+    jsonfile: "npm:^6.0.1"
+    universalify: "npm:^2.0.0"
+  checksum: 10c0/984924ff4104e3e9f351b658a864bf3b354b2c90429f57aec0acd12d92c4e6b762cbacacdffb4e745b280adce882e1f980c485d9f02c453f769ab4e7fc646ce3
   languageName: node
   linkType: hard
 
@@ -6922,12 +6933,12 @@ __metadata:
     "@vitejs/plugin-react": "npm:5.1.4"
     debug: "npm:4.4.3"
     dotenv: "npm:17.3.1"
-    electron: "npm:40.6.1"
+    electron: "npm:40.8.0"
     electron-squirrel-startup: "npm:1.0.1"
     eslint: "npm:10.0.2"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.0.1"
-    fs-extra: "npm:11.3.3"
+    fs-extra: "npm:11.3.4"
     handlebars: "npm:4.7.8"
     image-size: "npm:2.0.2"
     jimp: "npm:1.6.0"
