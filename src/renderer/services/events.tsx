@@ -2,11 +2,14 @@ import {
   AllSidesIcon,
   ChatBubbleIcon,
   CodeIcon,
+  ComponentInstanceIcon,
+  ComponentNoneIcon,
   EyeClosedIcon,
   EyeOpenIcon,
   GroupIcon,
   LapTimerIcon,
   LayersIcon,
+  ListBulletIcon,
   MixIcon,
   MoveIcon,
   Pencil1Icon,
@@ -25,6 +28,7 @@ import type {
   ListItem,
   OnButtonPressEvent,
   SceneEvent,
+  ShowMenuEvent,
 } from '../../types';
 
 export interface EventDefinition extends ListItem {
@@ -46,6 +50,18 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     value: 'on-button-press',
     keywords: ['button', 'input', 'press'],
     construct: () => ({ type: 'on-button-press', buttons: [], events: [] }),
+  }, {
+    icon: ComponentNoneIcon,
+    name: 'Disable input',
+    value: 'disable-input',
+    keywords: ['input', 'disable'],
+    construct: () => ({ type: 'disable-input' }),
+  }, {
+    icon: ComponentInstanceIcon,
+    name: 'Enable input',
+    value: 'enable-input',
+    keywords: ['input', 'enable'],
+    construct: () => ({ type: 'enable-input' }),
   }],
 }, {
   name: 'Camera',
@@ -95,6 +111,15 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'show-dialog',
       text: '',
+    }),
+  }, {
+    icon: ListBulletIcon,
+    name: 'Show Menu',
+    value: 'show-menu',
+    keywords: ['menu', 'choices', 'options'],
+    construct: () => ({
+      type: 'show-menu',
+      choices: [],
     }),
   }],
 }, {
@@ -229,6 +254,14 @@ export const getEventsOfType = <T extends SceneEvent>(
 
       if (script) {
         acc.push(...getEventsOfType<T>(type, script.events || [], opts));
+      }
+    }
+
+    if (event.type === 'show-menu') {
+      const evt = event as ShowMenuEvent;
+
+      for (const choice of evt.choices) {
+        acc.push(...getEventsOfType<T>(type, choice.events || [], opts));
       }
     }
 

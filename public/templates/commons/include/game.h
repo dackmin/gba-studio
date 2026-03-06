@@ -41,6 +41,8 @@ namespace neo
       int sprites_count;
       bn::vector<neo::sprite*, 50> sprites;
 
+      bool is_input_enabled;
+
       void set_scene(bn::string_view scene_name);
       void exec_event(const neo::types::event* e, bool is_loop);
       void run();

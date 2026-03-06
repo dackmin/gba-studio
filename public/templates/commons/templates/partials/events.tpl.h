@@ -40,6 +40,16 @@ neo::types::button_event {{../prefix}}_{{@index}}(
   nullptr
   {{/if}}
 );
+{{else if (eq this.type "disable-input")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "disable-input";
+neo::types::input_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
+{{else if (eq this.type "enable-input")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "enable-input";
+neo::types::input_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
@@ -59,9 +69,45 @@ bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{this}}";
 {{/each}}
 neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
+  neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
+  {{valuedef this.z 1}},
   make_dialog_vector(
     {{#each (truncate this.text 27)}}
     {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  )
+);
+{{else if (eq this.type "show-menu")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
+{{#each this.choices}}
+{{#if this.events.length}}
+{{>eventsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_event") events=this.events}}
+neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 26}}";
+neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
+  {{this.events.length}},
+  {{#if this.events.length}}
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_events
+  {{else}}
+  nullptr
+  {{/if}}
+);
+{{/each}}
+neo::types::menu_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{valuedef (len (longestMenuChoice this.choices)) 0}},
+  {{valuedef this.choices.length 0}},
+  neo::types::direction::{{uppercase (valuedef this.direction 'down_right')}},
+  {{valuedef this.z 1}},
+  make_menu_vector(
+    {{#each this.choices}}
+    {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}
     {{/each}}
   )
 );

@@ -20,7 +20,11 @@ namespace neo::types
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    UP_LEFT,
+    UP_RIGHT,
+    DOWN_LEFT,
+    DOWN_RIGHT
   };
 
   struct event_value
@@ -141,11 +145,40 @@ namespace neo::types
     }
   };
 
+  struct input_event: event
+  {
+    input_event(bn::string_view type_):
+      event(type_) {}
+  };
+
   struct dialog_event: event
   {
+    neo::types::direction direction;
+    int z;
     bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, const bn::vector<bn::string_view, 5>& lines_):
-      event(type_), lines(lines_) {}
+    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, const bn::vector<bn::string_view, 5>& lines_):
+      event(type_), direction(direction_), z(z_), lines(lines_) {}
+  };
+
+  struct menu_choice
+  {
+    bn::string_view text;
+    int events_count;
+    event** events;
+
+    menu_choice(bn::string_view text_, int events_count_, event** events_):
+      text(text_), events_count(events_count_), events(events_) {}
+  };
+
+  struct menu_event: event
+  {
+    int longest_text_length;
+    int choices_count;
+    neo::types::direction direction;
+    int z;
+    bn::vector<menu_choice, 5> choices;
+    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), choices(choices_) {}
   };
 
   struct set_variable_event: event

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import os from 'node:os';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
@@ -167,6 +168,8 @@ async function buildProject (
     return;
   }
 
+  const start = globalThis.performance.now();
+
   if (build.opts?.clean === true) {
     sendStep(event, build.id, 'Cleaning build folder...');
     await fse.remove(getBuildDir(build));
@@ -184,8 +187,17 @@ async function buildProject (
 
   await buildMakefile(storage, build);
 
+  const cores = os.cpus()?.length || 1;
+
+  if (cores > 1) {
+    sendLog(event, build.id,
+      `🚀 ${cores} CPU cores detected, enabling multi-core build`);
+  }
+
   // Run make
-  await runCommand('make', [], {
+  await runCommand('make', [
+    ...cores > 1 ? [`-j${cores.toString()}`] : [],
+  ], {
     cwd: getBuildDir(build),
     event,
     build,
@@ -204,7 +216,10 @@ async function buildProject (
     finalGamePath,
   );
 
-  sendSuccessLog(event, build.id, 'Project built successfully 🎉');
+  sendSuccessLog(event, build.id,
+    `Project built successfully in ` +
+    `${(globalThis.performance.now() - start).toFixed(2)} ms 🎉`
+  );
 
   // Check for built .gba file
   try {

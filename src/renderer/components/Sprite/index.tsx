@@ -6,7 +6,7 @@ import {
   useRef,
 } from 'react';
 
-import type { Direction, GameSpriteFile } from '../../../types';
+import type { CharacterDirection, GameSpriteFile } from '../../../types';
 import { getGraphicName, loadImage, tileToPixel } from '../../../helpers';
 import { HORIZONTAL_FRAMES } from '../../services/sprites';
 
@@ -15,7 +15,7 @@ export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
   gridSize?: number;
   width?: number;
   height?: number;
-  direction?: Direction;
+  direction?: CharacterDirection;
   transparencyColor?: string;
   frame?: number;
   scale?: number;

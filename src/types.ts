@@ -31,7 +31,10 @@ export type ToolType = InfiniteCanvasCursorMode | 'collisions';
 export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite';
 export type SubToolType = AddSubToolType;
 
-export type Direction = 'up' | 'down' | 'left' | 'right';
+export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
+
+export type Direction = 'up' | 'down' | 'left' | 'right' |
+  'up_left' | 'up_right' | 'down_left' | 'down_right';
 
 export interface ListItem {
   name: string;
@@ -108,7 +111,7 @@ export interface GamePlayer {
   z?: number;
   width?: number;
   height?: number;
-  direction?: Direction;
+  direction?: CharacterDirection;
   sprite?: string;
 }
 
@@ -142,7 +145,7 @@ export interface GameActor {
   x: number;
   y: number;
   z?: number;
-  direction?: Direction;
+  direction?: CharacterDirection;
   width?: number;
   height?: number;
   sprite: string;
@@ -326,6 +329,8 @@ export interface SetVariableEvent extends SceneEvent {
 export interface ShowDialogEvent extends SceneEvent {
   type: 'show-dialog';
   text: string;
+  direction?: Direction;
+  z?: number;
 }
 
 export interface DisableActorEvent extends SceneEvent {
@@ -345,6 +350,20 @@ export interface MoveCameraToEvent extends SceneEvent {
   duration?: EventValue;
   allowDiagonal?: boolean;
   directionPriority?: 'horizontal' | 'vertical';
+}
+
+export interface GameMenuChoice {
+  text: string;
+  events: SceneEvent[];
+  // Internals
+  id: string;
+}
+
+export interface ShowMenuEvent extends SceneEvent {
+  type: 'show-menu';
+  choices: GameMenuChoice[];
+  direction?: Direction;
+  z?: number;
 }
 
 export interface IfEventCondition {
@@ -370,7 +389,7 @@ export type AnimationType = 'idle' | 'walk';
 
 export type FramesDefinition = {
   [key in AnimationType]: {
-    [key in Direction]: number | number[];
+    [key in CharacterDirection]: number | number[];
   };
 };
 

@@ -6,7 +6,6 @@ import { v4 as uuid } from 'uuid';
 import {
   type DragEndEvent,
   DndContext,
-  KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -15,7 +14,6 @@ import {
 import {
   SortableContext,
   arrayMove,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
@@ -47,9 +45,6 @@ const EventsField = ({
         distance: 5,
       },
     }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
   );
 
   const eventIds = useMemo(() => (

@@ -29,6 +29,7 @@ import type {
   SceneEvent,
   SetVariableEvent,
   ShowDialogEvent,
+  ShowMenuEvent,
   WaitEvent,
   WaitForButtonEvent,
 } from '../../../types';
@@ -46,6 +47,7 @@ import EventIf from './EventIf';
 import EventScript from './EventScript';
 import EventPlaySound from './EventPlaySound';
 import EventMoveCameraTo from './EventMoveCameraTo';
+import EventShowMenu from './EventShowMenu';
 
 export interface EventProps {
   event: SceneEvent;
@@ -301,11 +303,6 @@ const Event = ({
                 onValueChange={onValueChange}
               />
             </Switch.Case>
-            <Switch.Case value="stop-music">
-              <Text className="text-xs text-slate text-center">
-                This event has no properties
-              </Text>
-            </Switch.Case>
             <Switch.Case value="set-variable">
               <EventSetVariable
                 event={event as SetVariableEvent}
@@ -347,6 +344,19 @@ const Event = ({
                 event={event as MoveCameraToEvent}
                 onValueChange={onValueChange}
               />
+            </Switch.Case>
+            <Switch.Case value="show-menu">
+              <EventShowMenu
+                event={event as ShowMenuEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case
+              value={['stop-music', 'disable-input', 'enable-input']}
+            >
+              <Text className="text-xs text-slate text-center">
+                This event has no properties
+              </Text>
             </Switch.Case>
             <Switch.Case default>
               <pre>{ JSON.stringify(event, null, 2) }</pre>

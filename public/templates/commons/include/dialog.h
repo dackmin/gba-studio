@@ -13,24 +13,28 @@ namespace neo
   class dialog
   {
     static constexpr int LINE_HEIGHT = 8;
-    static constexpr int PADDING = 8;
     static constexpr int MAX_LENGTH = 27;
     static constexpr int MAX_LINES = 5;
+    static constexpr int CHAR_WIDTH = 8;
+    static constexpr int PADDING_LEFT = 8;
+    static constexpr int PADDING_RIGHT = 8;
+    static constexpr int PADDING_TOP = 8;
+    static constexpr int PADDING_BOTTOM = 8;
+    static constexpr int MARGIN = 4;
 
     public:
       dialog(neo::game* game, const bn::vector<bn::string_view, MAX_LINES>& lines);
 
       void show();
-      void hide();
-      bn::regular_bg_item get_background();
+      void set_direction(neo::types::direction direction_);
+      void set_z_order(int z_order_);
 
       neo::game* game;
-      int lines_count;
       bn::vector<bn::string_view, MAX_LINES> lines;
       neo::types::direction direction;
-
-      bn::regular_bg_item bg_2_lines;
-      bn::regular_bg_item bg_3_lines;
+      int lines_count;
+      int bg_z_order;
+      int text_z_order;
   };
 }
 
