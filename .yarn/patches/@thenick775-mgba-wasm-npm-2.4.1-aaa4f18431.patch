@@ -1,5 +1,5 @@
 diff --git a/dist/mgba.js b/dist/mgba.js
-index ceede94cdd1365f3c472fd75aa6f48ec0bb661ea..24647298b270164fefa6a6f0988e3a280ffe3fe7 100644
+index ceede94cdd1365f3c472fd75aa6f48ec0bb661ea..73e9b3f251b2422aa458ecf463d36b51de77e832 100644
 --- a/dist/mgba.js
 +++ b/dist/mgba.js
 @@ -1601,7 +1601,7 @@ var ASM_CONSTS = {
