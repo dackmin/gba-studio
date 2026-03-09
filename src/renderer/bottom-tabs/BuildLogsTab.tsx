@@ -1,14 +1,19 @@
+import { IconButton, Kbd, Tabs, Text, Tooltip } from '@radix-ui/themes';
 import { useCallback, useLayoutEffect } from 'react';
-import { IconButton, Kbd, Text, Tooltip } from '@radix-ui/themes';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { classNames } from '@junipero/react';
 import { ArrowDownIcon, TrashIcon } from '@radix-ui/react-icons';
-import { useHotkeys } from 'react-hotkeys-hook';
 
-import { useBottomBar, useLogs } from '../../services/hooks';
+import type { BottomBarTab } from '../components/BottomBarTabs';
+import { useBottomBarTabs, useLogs } from '../services/hooks';
 
-const BuildLogsTab = () => {
+const BuildLogsTabTitle = () => (
+  <Tabs.Trigger value="build">Build logs</Tabs.Trigger>
+);
+
+const BuildLogsTabContent = () => {
   const { buildLogs, clearBuildLogs } = useLogs();
-  const { manualScroll, scrolledToBottom, scrollToBottom } = useBottomBar();
+  const { manualScroll, scrolledToBottom, scrollToBottom } = useBottomBarTabs();
 
   useLayoutEffect(() => {
     if (!manualScroll) {
@@ -29,7 +34,10 @@ const BuildLogsTab = () => {
   }, [clearLogs], { useKey: true });
 
   return (
-    <div>
+    <Tabs.Content
+      value="build"
+      className="bg-seashell dark:bg-onyx min-h-full"
+    >
       <div
         className={classNames(
           'bg-mischka dark:bg-gondola sticky p-2 top-0 flex items-center gap-2',
@@ -87,8 +95,11 @@ const BuildLogsTab = () => {
           </div>
         )) }
       </pre>
-    </div>
+    </Tabs.Content>
   );
 };
 
-export default BuildLogsTab;
+export default {
+  title: BuildLogsTabTitle,
+  content: BuildLogsTabContent,
+} satisfies BottomBarTab;

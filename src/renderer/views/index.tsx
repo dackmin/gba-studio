@@ -5,6 +5,7 @@ import type { ViewDefinition } from '../../types';
 import Canvas, {
   LeftSidebar as CanvasLeftSidebar,
   RightSidebar as CanvasRightSidebar,
+  BottomSidebar as CanvasBottomBar,
   Provider as CanvasProvider,
 } from './canvas';
 import Preview, {
@@ -33,6 +34,7 @@ const views: ViewDefinition[] = [{
   view: Canvas,
   leftSidebar: CanvasLeftSidebar,
   rightSidebar: CanvasRightSidebar,
+  bottomBar: CanvasBottomBar,
   provider: CanvasProvider,
 }, {
   name: 'preview',

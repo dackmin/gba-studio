@@ -50,7 +50,7 @@ const Editor = () => {
     provider: Provider = defaultView.provider || Fragment,
     leftSidebar: LeftSidebarContent = defaultView.leftSidebar || Fragment,
     rightSidebar: RightSidebarContent,
-    bottomBar: BottomBarContent = defaultView.bottomBar || Fragment,
+    bottomBar: BottomBarContent,
   } = useMemo(() => (
     views.find(v => v.name === state.view) || defaultView
   ), [state.view]);
@@ -153,9 +153,11 @@ const Editor = () => {
                 <RightSidebarContent />
               </RightSidebar>
             ) }
-            <BottomBar>
-              <BottomBarContent />
-            </BottomBar>
+            { BottomBarContent && (
+              <BottomBar>
+                <BottomBarContent />
+              </BottomBar>
+            ) }
           </div>
           <View />
         </Provider>

@@ -402,4 +402,5 @@ export default Canvas;
 
 export { default as LeftSidebar } from './LeftSidebar';
 export { default as RightSidebar } from './RightSidebar';
+export { default as BottomSidebar } from './BottomSidebar';
 export { default as Provider } from './Provider';

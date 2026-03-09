@@ -10,7 +10,7 @@ import { useTimeout } from '@junipero/react';
 
 import {
   AppContext,
-  BottomBarContext,
+  BottomBarTabsContext,
   CanvasContext,
   EditorContext,
   LogsContext,
@@ -56,7 +56,7 @@ export const useApp = () => useContext(AppContext);
 export const useEditor = () => useContext(EditorContext);
 export const useCanvas = () => useContext(CanvasContext);
 export const useSceneForm = () => useContext(SceneFormContext);
-export const useBottomBar = () => useContext(BottomBarContext);
+export const useBottomBarTabs = () => useContext(BottomBarTabsContext);
 export const useLogs = () => useContext(LogsContext);
 export const useSprite = () => useContext(SpriteContext);
 
