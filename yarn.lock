@@ -3862,17 +3862,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thenick775/mgba-wasm@npm:2.3.4":
-  version: 2.3.4
-  resolution: "@thenick775/mgba-wasm@npm:2.3.4"
-  checksum: 10c0/2abe9b21a2e0f0ac048998c31713a57efac08bc20226f31aafa3dd6a9af99b270df28106ef43054f05c5bce3619b735a0d7a47d07b74f04e2af5bcb922bb823a
+"@thenick775/mgba-wasm@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@thenick775/mgba-wasm@npm:2.4.1"
+  checksum: 10c0/86b89bc99f454f90f4e534f4390e431ea029d8d423a4fd56c5c0b0c15b2fbc1e7058f71303142e2c8ff11d043e7626c58a1afe70de19903d5617c44c242e654a
   languageName: node
   linkType: hard
 
-"@thenick775/mgba-wasm@patch:@thenick775/mgba-wasm@npm%3A2.3.4#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.3.4-5c7024b17d.patch":
-  version: 2.3.4
-  resolution: "@thenick775/mgba-wasm@patch:@thenick775/mgba-wasm@npm%3A2.3.4#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.3.4-5c7024b17d.patch::version=2.3.4&hash=de6816"
-  checksum: 10c0/5c2e8ebd133c6d8d33dcdb09b3b8ef28ef431db7bc0b4bd1cd71cd89260a364111078c1298d02a53a55d886195b6b30c40ddb52e5b060a6cfc991cfe96147280
+"@thenick775/mgba-wasm@patch:@thenick775/mgba-wasm@npm%3A2.4.1#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.4.1-aaa4f18431.patch":
+  version: 2.4.1
+  resolution: "@thenick775/mgba-wasm@patch:@thenick775/mgba-wasm@npm%3A2.4.1#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.4.1-aaa4f18431.patch::version=2.4.1&hash=de18dc"
+  checksum: 10c0/097db959380d54f5b8b139ffd776bf2718f5cb9c059c71eccd8db9264f6797165194e1af9f0752502a6d0e1d296eb5bb614569686f293ccd6c2cedea9824dbb3
   languageName: node
   linkType: hard
 
@@ -6924,7 +6924,7 @@ __metadata:
     "@radix-ui/themes": "npm:3.3.0"
     "@reforged/maker-appimage": "npm:5.2.0"
     "@tailwindcss/vite": "npm:4.2.1"
-    "@thenick775/mgba-wasm": "patch:@thenick775/mgba-wasm@npm%3A2.3.4#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.3.4-5c7024b17d.patch"
+    "@thenick775/mgba-wasm": "patch:@thenick775/mgba-wasm@npm%3A2.4.1#~/.yarn/patches/@thenick775-mgba-wasm-npm-2.4.1-aaa4f18431.patch"
     "@types/debug": "npm:4.1.12"
     "@types/electron-squirrel-startup": "npm:1.0.2"
     "@types/fs-extra": "npm:11.0.4"
