@@ -62,6 +62,7 @@ const Sprite = ({
       : `project://graphics/${getGraphicName(sprite._file)}.bmp`);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(
       image,
       (Array.isArray(frames) ? frames[0] : frames) * (width / scale),
@@ -70,13 +71,14 @@ const Sprite = ({
       height / scale,
       0,
       0,
-      width,
-      height
+      width * scale,
+      height * scale
     );
 
     // Apply transparency color
     if (transparencyColor) {
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const imageData = ctx
+        .getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
       const r = parseInt(transparencyColor.slice(1, 3), 16);
       const g = parseInt(transparencyColor.slice(3, 5), 16);
@@ -105,8 +107,8 @@ const Sprite = ({
         imageRendering: 'pixelated',
         transform: direction === 'left' ? 'scaleX(-1)' : undefined,
       }}
-      width={width}
-      height={height}
+      width={width * scale}
+      height={height * scale}
     />
   );
 };

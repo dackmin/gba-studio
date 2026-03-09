@@ -75,7 +75,6 @@ const SceneForm = ({
   }, [scene, onValueChange]);
 
   const onTypeChange = useCallback((name: string, value: string) => {
-
     if (value !== scene.sceneType) {
       set(scene, name, value);
       onBackgroundChange(scene.background || '');

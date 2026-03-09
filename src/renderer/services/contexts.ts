@@ -17,6 +17,7 @@ import type {
   GameVariables,
   SpriteAnimation,
   SpriteAnimations,
+  SpriteAnimationState,
   SubToolType,
   ToolType,
 } from '../../types';
@@ -164,8 +165,11 @@ export const LogsContext = createContext<LogsContextType>({
 export interface SpriteContextType {
   selectedSprite?: GameSpriteFile;
   selectedAnimation?: SpriteAnimation;
+  selectedState?: SpriteAnimationState;
+  animationsRegistry?: SpriteAnimations;
   selectSprite?(spriteFile?: GameSpriteFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
+  selectState?(state?: SpriteAnimationState): void;
   onAnimationsChange?(animation: SpriteAnimations): void;
 }
 

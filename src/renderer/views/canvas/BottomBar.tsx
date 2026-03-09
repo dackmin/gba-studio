@@ -1,7 +1,7 @@
 import BuildLogsTab from '../../bottom-tabs/BuildLogsTab';
 import BottomBarTabs from '../../components/BottomBarTabs';
 
-const BottomSidebar = () => {
+const BottomBar = () => {
   return (
     <BottomBarTabs
       tabs={[BuildLogsTab]}
@@ -9,4 +9,4 @@ const BottomSidebar = () => {
   );
 };
 
-export default BottomSidebar;
+export default BottomBar;

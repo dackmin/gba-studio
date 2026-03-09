@@ -1,15 +1,14 @@
-import { type ChangeEvent, use, useCallback, useEffect, useReducer } from 'react';
-import { Avatar, Button, Card, Heading, IconButton, Tabs, Text, TextField } from '@radix-ui/themes';
-import { classNames, cloneDeep, mockState, set } from '@junipero/react';
-import { PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
-import { v4 as uuid } from 'uuid';
+import { useRef } from 'react';
+import {
+  type InfiniteCanvasRef,
+  InfiniteCanvas,
+  classNames,
+} from '@junipero/react';
 
-import type {
-  GameProject,
-} from '../../../types';
-import ConstrainedView from '../../windows/editor/ConstrainedView';
+import type { GameProject } from '../../../types';
 import { useEditor, useSprite } from '../../services/hooks';
-import TimeLineBar from './TimeLineBar';
+import FullscreenView from '../../windows/editor/FullscreenView';
+import Sprite from '../../components/Sprite';
 
 export interface SettingsState {
   project: GameProject;
@@ -17,41 +16,34 @@ export interface SettingsState {
 }
 
 const Sprites = () => {
+  const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
+  const { bottomBarHeight } = useEditor();
   const { selectedSprite } = useSprite();
-  const {
-    bottomBarOpened,
-    toggleBottomBar,
-    bottomBarHeight,
-    leftSidebarOpened,
-    leftSidebarWidth,
-    rightSidebarOpened,
-    rightSidebarWidth,
-  } = useEditor();
-
-  const spriteFile = selectedSprite?._file?.replace('.json', '');
-
-  useEffect(() => {
-    if (bottomBarOpened) {
-      toggleBottomBar();
-    }
-
-    // return () => {
-    //   if (!bottomBarOpened) {
-    //     toggleBottomBar();
-    //   }
-    // };
-  }, [bottomBarOpened, toggleBottomBar]);
 
   return (
-    <ConstrainedView
-      className="bg-mint-2 dark:bg-onyx-2"
-    >
-      <div className="container px-2 py-6 flex flex-col gap-6">
-        <Heading size="3">Sprite: { spriteFile || 'None selected' }</Heading>
-      </div>
-
-      <TimeLineBar />
-    </ConstrainedView>
+    <FullscreenView>
+      <InfiniteCanvas
+        ref={infiniteCanvasRef}
+        className={classNames(
+          'flex-auto overflow-hidden !bg-transparent',
+        )}
+      >
+        <div
+          className="w-full h-screen flex items-center justify-center"
+          style={{
+            ...bottomBarHeight && {
+              height: `calc(100vh - ${bottomBarHeight}px)`,
+            },
+          }}
+        >
+          <Sprite
+            scale={4}
+            sprite={selectedSprite}
+            className="border-1 border-green-500"
+          />
+        </div>
+      </InfiniteCanvas>
+    </FullscreenView>
   );
 };
 
@@ -59,5 +51,6 @@ export default Sprites;
 
 export { default as LeftSidebar } from './LeftSidebar';
 export { default as RightSidebar } from './RightSidebar';
+export { default as BottomBar } from './BottomBar';
 export { default as Provider } from './Provider';
 

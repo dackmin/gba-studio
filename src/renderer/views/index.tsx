@@ -5,7 +5,7 @@ import type { ViewDefinition } from '../../types';
 import Canvas, {
   LeftSidebar as CanvasLeftSidebar,
   RightSidebar as CanvasRightSidebar,
-  BottomSidebar as CanvasBottomBar,
+  BottomBar as CanvasBottomBar,
   Provider as CanvasProvider,
 } from './canvas';
 import Preview, {
@@ -50,6 +50,7 @@ const views: ViewDefinition[] = [{
   provider: SpritesProvider,
   leftSidebar: SpritesLeftSidebar,
   rightSidebar: SpritesRightSidebar,
+  bottomBar: SpritesBottomBar,
 }, {
   name: 'settings',
   title: 'Settings',
