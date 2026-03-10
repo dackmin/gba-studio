@@ -47,17 +47,20 @@ export interface ListCategory<T extends ListItem = ListItem> {
   items: T[];
 }
 
-export type SpriteAnimationType = 'fixed' | 'movement';
+export type SpriteAnimationType = 'fixed' | 'directions' | 'movements';
 
-export interface SpriteFrame {
+export interface SpriteAnimationFrame {
+  type: 'frame';
   index: number;
   reverse?: boolean;
   duration?: number;
+  // Internals
+  id: string;
 }
 
 export interface SpriteAnimationState {
   type: 'state';
-  frames: SpriteFrame[];
+  frames: SpriteAnimationFrame[];
   // Internals
   id: string;
 }
@@ -67,10 +70,11 @@ export interface SpriteAnimation {
   name: string;
   animationType: SpriteAnimationType;
   states: {
-    fixed?: {
+    fixed?: SpriteAnimationState;
+    idle?: {
       [key in CharacterDirection]?: SpriteAnimationState;
     };
-    movement?: {
+    moving?: {
       [key in CharacterDirection]?: SpriteAnimationState;
     };
   };
@@ -81,6 +85,7 @@ export interface SpriteAnimation {
 
 export interface SpriteAnimations {
   type: 'animations';
+  gridSize?: number;
   animations: SpriteAnimation[];
   // Internals
   id: string;

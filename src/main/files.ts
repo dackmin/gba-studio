@@ -64,6 +64,16 @@ export const getScriptsFiles = async (
   );
 };
 
+export const getAnimationsFiles = async (
+  base: string,
+) => {
+  return getDataFiles(
+    base,
+    file =>
+      file.endsWith('.animations.json')
+  );
+};
+
 export const getVariableFiles = async (
   base: string,
 ) => {

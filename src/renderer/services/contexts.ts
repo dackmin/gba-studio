@@ -16,6 +16,7 @@ import type {
   GameVariable,
   GameVariables,
   SpriteAnimation,
+  SpriteAnimationFrame,
   SpriteAnimations,
   SpriteAnimationState,
   SubToolType,
@@ -166,10 +167,12 @@ export interface SpriteContextType {
   selectedSprite?: GameSpriteFile;
   selectedAnimation?: SpriteAnimation;
   selectedState?: SpriteAnimationState;
+  selectedFrame?: SpriteAnimationFrame;
   animationsRegistry?: SpriteAnimations;
   selectSprite?(spriteFile?: GameSpriteFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
   selectState?(state?: SpriteAnimationState): void;
+  selectFrame?(frame?: SpriteAnimationFrame): void;
   onAnimationsChange?(animation: SpriteAnimations): void;
 }
 

@@ -73,6 +73,18 @@ export default async (
     }
   }
 
+  // Save animations
+  for (const animation of data.animations || []) {
+    if (animation._file) {
+      const fileName = animation._file;
+      delete animation._file;
+      delete animation._sprite_file;
+
+      await fs.writeFile(path.join(projectDir, 'content', fileName),
+        JSON.stringify(animation, null, 2) + '\n', 'utf-8');
+    }
+  }
+
   // Save project config
   await fs.writeFile(projectPath,
     JSON.stringify(data.project || {}, null, 2) + '\n', 'utf-8');

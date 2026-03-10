@@ -38,7 +38,7 @@ const AnimationsListItem = ({
     }
 
     const newName = nameRef.current?.innerText.trim();
-    
+
     if (newName && newName !== animation.name) {
       animation.name = newName;
       onValueChange?.(animation);
@@ -85,7 +85,7 @@ const AnimationsListItem = ({
     animation._collapsed = !opened;
     onValueChange?.(animation);
   }, [opened, animation, onValueChange]);
-  
+
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(animation, name, value);
     onValueChange?.(animation);
@@ -173,7 +173,10 @@ const AnimationsListItem = ({
               <Select.Trigger placeholder="Select" />
               <Select.Content>
                 <Select.Item value="fixed">Fixed</Select.Item>
-                <Select.Item value="movement">Fixed + Movement</Select.Item>
+                <Select.Item value="directions">4 directions</Select.Item>
+                <Select.Item value="movements">
+                  4 directions + Movement
+                </Select.Item>
               </Select.Content>
             </Select.Root>
           </div>

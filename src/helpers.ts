@@ -1,3 +1,5 @@
+import { exists } from '@junipero/react';
+
 export const tileToPixel = (tile: number, gridSize: number) =>
   tile * gridSize;
 
@@ -46,4 +48,19 @@ export const getImageSize = async (src: string): Promise<[number, number]> => {
   const img = await loadImage(src);
 
   return [img.width, img.height];
+};
+
+export const getTilesCount = (
+  width?: number,
+  height?: number,
+  gridSize?: number
+): number => {
+  width = width || 0;
+  height = height || 0;
+
+  if (!exists(gridSize)) {
+    gridSize = width > height ? width : height;
+  }
+
+  return Math.max(Math.ceil(width / gridSize!), Math.ceil(height / gridSize!));
 };

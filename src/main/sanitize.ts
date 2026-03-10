@@ -16,6 +16,8 @@ import type {
   IfEvent,
   OnButtonPressEvent,
   SceneEvent,
+  SpriteAnimation,
+  SpriteAnimations,
 } from '../types';
 import { getResourcesDir } from './utils';
 
@@ -214,6 +216,33 @@ export const sanitizeVariablesRegistry = async (
   return variables;
 };
 
+export const sanitizeAnimation = async (
+  animation: SpriteAnimation
+): Promise<SpriteAnimation> => {
+  if (!animation.id) {
+    animation.id = randomUUID();
+  }
+
+  return animation;
+};
+
+export const sanitizeAnimationsRegistry = async (
+  animations: SpriteAnimations
+): Promise<SpriteAnimations> => {
+  if (!animations.id) {
+    animations.id = randomUUID();
+  }
+
+  if (!animations.animations) {
+    animations.animations = [];
+  }
+
+  animations.animations = await Promise
+    .all(animations.animations.map(animation => sanitizeAnimation(animation)));
+
+  return animations;
+};
+
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
 }): Promise<GameProject> => {
@@ -268,6 +297,13 @@ export const sanitize = async (
 
   data.variables = await Promise
     .all(data.variables?.map(registry => sanitizeVariablesRegistry(registry)));
+
+  if (!data.animations) {
+    data.animations = [];
+  }
+
+  data.animations = await Promise.all(data.animations
+    ?.map(animation => sanitizeAnimationsRegistry(animation)));
 
   if (data.project) {
     data.project = await sanitizeProject(data.project, {

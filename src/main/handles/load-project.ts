@@ -11,9 +11,11 @@ import type {
   GameScript,
   GameBackgroundFile,
   GameSpriteFile,
+  SpriteAnimations,
 } from '../../types';
 import { sanitize } from '../sanitize';
 import {
+  getAnimationsFiles,
   getGraphicsFiles,
   getSceneFiles,
   getScriptsFiles,
@@ -69,6 +71,10 @@ export default async (
   // Prepare scripts
   const scriptFiles = await getScriptsFiles(projectDir);
   total += scriptFiles.length;
+
+  // Prepare animations
+  const animationsFiles = await getAnimationsFiles(projectDir);
+  total += animationsFiles.length;
 
   // Load variables
   const variables: GameVariables[] = [];
@@ -148,6 +154,20 @@ export default async (
     scripts.push(script);
   }
 
+  // Load animations
+  const animations: SpriteAnimations[] = [];
+
+  for (const file of animationsFiles) {
+    const animation: SpriteAnimations = JSON.parse(await fs
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
+
+    animation._file = file;
+    animation._sprite_file = file.replace('.animations.json', '.json');
+    current++;
+    win?.setProgressBar(current / total);
+    animations.push(animation);
+  }
+
   // Load project config
   const project: GameProject = JSON.parse(
     await fs.readFile(projectPath, 'utf-8')
@@ -170,6 +190,7 @@ export default async (
     music,
     sounds,
     scripts,
+    animations,
   };
 
   return await sanitize(await unserialize(payload), { projectPath });

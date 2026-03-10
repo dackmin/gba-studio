@@ -9,6 +9,7 @@ import { mockState } from '@junipero/react';
 import type {
   GameSpriteFile,
   SpriteAnimation,
+  SpriteAnimationFrame,
   SpriteAnimations,
   SpriteAnimationState,
 } from '../../../types';
@@ -18,11 +19,11 @@ import {
 } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
 
-
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
   selectedAnimation?: SpriteAnimation;
   selectedState?: SpriteAnimationState;
+  selectedFrame?: SpriteAnimationFrame;
 }
 
 const Provider = ({
@@ -31,9 +32,12 @@ const Provider = ({
   const { sprites, animations } = useApp();
   const { onCanvasChange, ...appPayload } = useApp();
   const [state, dispatch] = useReducer(mockState<SpriteState>, {
-    selectedSprite: sprites[0],
-    selectedAnimation: undefined,
+    selectedSprite: sprites?.[0],
+    selectedAnimation: animations
+      ?.find(a => a._sprite_file === sprites?.[0]?._file)
+      ?.animations?.[0],
     selectedState: undefined,
+    selectedFrame: undefined,
   });
 
   const animationsRegistry = useMemo(() => (
@@ -42,11 +46,20 @@ const Provider = ({
 
   const selectSprite = useCallback((spriteFile: GameSpriteFile) => {
     if (state.selectedSprite === spriteFile) {
+      dispatch({ selectedFrame: undefined });
+
       return;
     }
 
-    dispatch({ selectedSprite: spriteFile });
-  }, [state.selectedSprite]);
+    dispatch({
+      selectedSprite: spriteFile,
+      selectedAnimation: animations
+        ?.find(a => a._sprite_file === spriteFile._file)
+        ?.animations?.[0],
+      selectedState: undefined,
+      selectedFrame: undefined,
+    });
+  }, [state.selectedSprite, animations]);
 
   const selectAnimation = useCallback((animation: SpriteAnimation) => {
     if (state.selectedAnimation === animation) {
@@ -64,6 +77,14 @@ const Provider = ({
     dispatch({ selectedState: s });
   }, [state.selectedState]);
 
+  const selectFrame = useCallback((f: SpriteAnimationFrame) => {
+    if (state.selectedFrame && state.selectedFrame === f) {
+      return;
+    }
+
+    dispatch({ selectedFrame: f });
+  }, [state.selectedFrame]);
+
   const onAnimationsChange = useCallback((
     animationRegistry: SpriteAnimations
   ) => {
@@ -76,25 +97,39 @@ const Provider = ({
           a._file === animationRegistry._file ? animationRegistry : a
         ),
     });
-  }, [appPayload, onCanvasChange]);
+
+    if (state.selectedAnimation) {
+      const newSelectedAnimation = animationRegistry.animations.find(a => (
+        a.id === state.selectedAnimation!.id
+      ));
+
+      if (newSelectedAnimation) {
+        dispatch({ selectedAnimation: newSelectedAnimation });
+      }
+    }
+  }, [appPayload, onCanvasChange, state.selectedAnimation]);
 
   const getContext = useCallback((): SpriteContextType => ({
     selectedSprite: state.selectedSprite,
     selectedAnimation: state.selectedAnimation,
     selectedState: state.selectedState,
+    selectedFrame: state.selectedFrame,
     animationsRegistry,
     selectSprite,
     selectAnimation,
     selectState,
+    selectFrame,
     onAnimationsChange,
   }), [
     state.selectedSprite,
     state.selectedAnimation,
     state.selectedState,
+    state.selectedFrame,
     animationsRegistry,
     selectSprite,
     selectAnimation,
     selectState,
+    selectFrame,
     onAnimationsChange,
   ]);
 
