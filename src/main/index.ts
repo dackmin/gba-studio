@@ -46,10 +46,10 @@ if (started) {
 // Allow project files to bypass CSP rules
 protocol.registerSchemesAsPrivileged([
   { scheme: 'project', privileges: {
-    bypassCSP: true, supportFetchAPI: true,
+    standard: true, bypassCSP: true, supportFetchAPI: true, corsEnabled: true,
   } },
   { scheme: 'resources', privileges: {
-    bypassCSP: true, supportFetchAPI: true,
+    standard: true, bypassCSP: true, supportFetchAPI: true, corsEnabled: true,
   } },
 ]);
 
