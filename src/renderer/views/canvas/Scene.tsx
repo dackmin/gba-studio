@@ -25,7 +25,12 @@ import type {
   GameSprite,
 } from '../../../types';
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
-import { getImageSize, loadImage, pixelToTile, tileToPixel } from '../../../helpers';
+import {
+  getImageSize,
+  loadImage,
+  pixelToTile,
+  tileToPixel,
+} from '../../../helpers';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import PlayerStart from './PlayerStart';
@@ -136,7 +141,7 @@ const Scene = ({
 
   const sensors = useMemo(() => (
     scene.map?.sensors || []
-  ), [scene.map?.sensors]);
+  ), [scene.map]);
 
   const actors = useMemo(() => (
     scene.actors || []
@@ -505,9 +510,9 @@ const Scene = ({
             />
           )}
 
-          { sensors.map((sensor, i) => (
+          { sensors.map(sensor => (
             <Sensor
-              key={i}
+              key={sensor.id}
               sensor={sensor}
               onMoveEnd={onMovedSensor.bind(null, sensor)}
               onSelect={onSelectSensor_.bind(null, sensor)}
@@ -515,9 +520,9 @@ const Scene = ({
             />
           )) }
 
-          { actors.map((actor, i) => (
+          { actors.map(actor => (
             <Actor
-              key={i}
+              key={actor.id}
               actor={actor}
               onMoveEnd={onMovedActor.bind(null, actor)}
               onSelect={onSelectActor_.bind(null, actor)}
@@ -525,9 +530,9 @@ const Scene = ({
             />
           )) }
 
-          { sprites.map((sprite, i) => (
+          { sprites.map(sprite => (
             <Sprite
-              key={i}
+              key={sprite.id}
               sprite={sprite}
               gridSize={gridSize}
               onMoveEnd={onMovedSprite.bind(null, sprite)}

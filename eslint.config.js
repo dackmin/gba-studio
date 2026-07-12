@@ -22,4 +22,11 @@ export default defineConfig(
     },
   },
   pooolint.configs.recommended,
+  {
+    rules: {
+      '@eslint-react/static-components': 'off',
+      '@eslint-react/no-array-index-key': 'off',
+      '@eslint-react/set-state-in-effect': 'off',
+    },
+  },
 );

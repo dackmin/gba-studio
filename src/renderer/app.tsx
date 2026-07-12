@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useReducer, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import { Theme } from '@radix-ui/themes';
 import { type MoveableState, cloneDeep, mockState } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -298,13 +304,13 @@ const App = () => {
 
   return (
     <Theme hasBackground={false}>
-      <AppContext.Provider value={getContext()}>
+      <AppContext value={getContext()}>
         { projectPath ? (
           <Editor />
         ) : (
           <ProjectSelection />
         ) }
-      </AppContext.Provider>
+      </AppContext>
     </Theme>
   );
 };

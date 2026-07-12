@@ -1,7 +1,7 @@
 import {
   createContext,
+  use,
   useCallback,
-  useContext,
   useEffect,
   useState,
 } from 'react';
@@ -36,7 +36,7 @@ const CollapsibleRoot = ({
   }, [onOpenChange]);
 
   return (
-    <CollapsibleContext.Provider value={{ open }}>
+    <CollapsibleContext value={{ open }}>
       <RadixCollapsible.Root
         className={classNames('bg-(--gray-2)', className)}
         onOpenChange={onOpenChange_}
@@ -44,7 +44,7 @@ const CollapsibleRoot = ({
       >
         { children }
       </RadixCollapsible.Root>
-    </CollapsibleContext.Provider>
+    </CollapsibleContext>
   );
 };
 
@@ -53,7 +53,7 @@ const CollapsibleTrigger = ({
   children,
   ...rest
 }: RadixCollapsible.CollapsibleTriggerProps) => {
-  const { open } = useContext(CollapsibleContext);
+  const { open } = use(CollapsibleContext);
 
   return (
     <RadixCollapsible.Trigger asChild { ...rest }>

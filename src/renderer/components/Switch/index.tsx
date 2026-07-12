@@ -9,6 +9,7 @@ interface SwitchProps {
 }
 
 const Switch = ({ value, children }: SwitchProps) => {
+  // eslint-disable-next-line @eslint-react/no-children-to-array
   const childrenArr = Children.toArray(children) as CaseNode[];
 
   return childrenArr

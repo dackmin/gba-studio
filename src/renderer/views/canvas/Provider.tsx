@@ -189,9 +189,9 @@ const Provider = ({
   ]);
 
   return (
-    <CanvasContext.Provider value={getContext()}>
+    <CanvasContext value={getContext()}>
       { children }
-    </CanvasContext.Provider>
+    </CanvasContext>
   );
 };
 

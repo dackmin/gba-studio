@@ -15,9 +15,9 @@ export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const [gamepadConnected, setGamepadConnected] = useState(
-    navigator.getGamepads().some(gp => gp !== null)
-  );
+  const [gamepadConnected, setGamepadConnected] = useState(() => {
+    return navigator.getGamepads().some(gp => gp !== null);
+  });
 
   useEventListener('gamepadconnected', () => {
     setGamepadConnected(true);

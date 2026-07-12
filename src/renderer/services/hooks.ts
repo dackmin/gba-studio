@@ -1,7 +1,7 @@
 import type { IpcRendererEvent } from 'electron';
 import {
   type DependencyList,
-  useContext,
+  use,
   useDeferredValue,
   useEffect,
   useState,
@@ -29,10 +29,10 @@ const queryParams = () => {
 };
 
 export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
-  const [query, setQuery] = useState<T>({
+  const [query, setQuery] = useState<T>(() => ({
     ...init,
     ...queryParams(),
-  });
+  }));
 
   useEffect(() => {
     const onChange = () => {
@@ -52,13 +52,13 @@ export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
   return query;
 };
 
-export const useApp = () => useContext(AppContext);
-export const useEditor = () => useContext(EditorContext);
-export const useCanvas = () => useContext(CanvasContext);
-export const useSceneForm = () => useContext(SceneFormContext);
-export const useBottomBarTabs = () => useContext(BottomBarTabsContext);
-export const useLogs = () => useContext(LogsContext);
-export const useSprite = () => useContext(SpriteContext);
+export const useApp = () => use(AppContext);
+export const useEditor = () => use(EditorContext);
+export const useCanvas = () => use(CanvasContext);
+export const useSceneForm = () => use(SceneFormContext);
+export const useBottomBarTabs = () => use(BottomBarTabsContext);
+export const useLogs = () => use(LogsContext);
+export const useSprite = () => use(SpriteContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,
@@ -66,16 +66,23 @@ export const useBridgeListener = <T extends any[] = any[]>(
   deps: any[] = [],
 ) => {
   useEffect(() => {
-    return window.electron.addEventListener(channel, (
+    const cb = (
       _: IpcRendererEvent,
       ...args: any[]
     ) => {
       func(...args as T);
-    });
+    };
+
+    window.electron.addEventListener(channel, cb);
+
+    return () => {
+      window.electron.removeEventListener(channel, cb);
+    };
   }, [
     func,
     channel,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line @stylistic/max-len
+    // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
     ...deps,
   ]);
 };

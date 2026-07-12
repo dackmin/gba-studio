@@ -19,7 +19,7 @@ export interface CatalogueProps {
 const Catalogue = ({
   onSelect,
 }: CatalogueProps) => {
-  const [rawSearch, setSearch] = useState('');
+  const [rawSearch, setRawSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const search = useDelayedValue(rawSearch, { delay: 200 });
 
@@ -47,7 +47,7 @@ const Catalogue = ({
   ), [events]);
 
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.currentTarget.value);
+    setRawSearch(e.currentTarget.value);
   };
 
   return (

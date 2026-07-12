@@ -41,9 +41,9 @@ const LogsStore = ({
   }), [state.buildLogs, state.emulatorLogs, clearBuildLogs]);
 
   return (
-    <LogsContext.Provider value={getContext()}>
+    <LogsContext value={getContext()}>
       { children }
-    </LogsContext.Provider>
+    </LogsContext>
   );
 };
 

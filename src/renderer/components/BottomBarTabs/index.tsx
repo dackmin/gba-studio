@@ -81,7 +81,7 @@ const BottomBarTabs = ({
   ]);
 
   return (
-    <BottomBarTabsContext.Provider value={getContext()}>
+    <BottomBarTabsContext value={getContext()}>
       <Tabs.Root
         className="h-full !flex flex-col"
         value={state.tab}
@@ -111,7 +111,7 @@ const BottomBarTabs = ({
           )) }
         </ScrollArea>
       </Tabs.Root>
-    </BottomBarTabsContext.Provider>
+    </BottomBarTabsContext>
   );
 };
 

@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron/renderer';
+import { contextBridge, ipcRenderer } from 'electron';
 
 import type {
   AppPayload,

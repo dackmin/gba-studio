@@ -16,7 +16,7 @@ const FrameForm = () => {
   const availableTiles = useMemo(() => (
     Array.from({
       length: getTilesCount(selectedSprite?.width, selectedSprite?.height),
-    })
+    }).map((_, index) => index)
   ), [selectedSprite]);
 
   return (
@@ -49,9 +49,9 @@ const FrameForm = () => {
             >
               <Select.Trigger placeholder="Select" />
               <Select.Content>
-                { availableTiles.map((_, index) => (
-                  <Select.Item key={index} value={'' + index}>
-                    { index }
+                { availableTiles.map(value => (
+                  <Select.Item key={value} value={'' + value}>
+                    { value }
                   </Select.Item>
                 )) }
               </Select.Content>

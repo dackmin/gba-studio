@@ -98,7 +98,7 @@ const SceneForm = ({
   }), [scene]);
 
   return (
-    <SceneFormContext.Provider value={getContext()}>
+    <SceneFormContext value={getContext()}>
       <div className="p-3 w-full h-full overflow-x-hidden overflow-y-scroll">
         <Text size="1" className="text-slate">Scene</Text>
         <Heading
@@ -227,7 +227,7 @@ const SceneForm = ({
           </div>
         </div>
       </div>
-    </SceneFormContext.Provider>
+    </SceneFormContext>
   );
 };
 

@@ -1,7 +1,6 @@
 import {
   type ComponentPropsWithoutRef,
   useCallback,
-  useEffect,
   useMemo,
   useReducer,
 } from 'react';
@@ -95,10 +94,10 @@ const Provider = ({
       ...appPayload,
       animations: appPayload.animations
         .findIndex(a => a._file === animationRegistry._file) === -1
-          ? [...appPayload.animations, animationRegistry]
-          : appPayload.animations.map(a =>
-            a._file === animationRegistry._file ? animationRegistry : a
-          ),
+        ? [...appPayload.animations, animationRegistry]
+        : appPayload.animations.map(a =>
+          a._file === animationRegistry._file ? animationRegistry : a
+        ),
     });
 
     if (state.selectedAnimation) {
@@ -107,7 +106,8 @@ const Provider = ({
       ));
 
       dispatch({
-        selectedAnimation: newSelectedAnimation ?? animationRegistry.animations[0],
+        selectedAnimation: newSelectedAnimation ??
+          animationRegistry.animations[0],
         ...(newSelectedAnimation ? {} : {
           selectedState: undefined,
           selectedFrame: undefined,
@@ -129,7 +129,7 @@ const Provider = ({
       // Internals
       id: uuid(),
     };
-    
+
     if (!animationsRegistry) {
       onAnimationsChange?.({
         type: 'animations',
@@ -194,9 +194,9 @@ const Provider = ({
   ]);
 
   return (
-    <SpriteContext.Provider value={getContext()}>
+    <SpriteContext value={getContext()}>
       { children }
-    </SpriteContext.Provider>
+    </SpriteContext>
   );
 };
 

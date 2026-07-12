@@ -126,7 +126,7 @@ const Editor = () => {
   ]);
 
   return (
-    <EditorContext.Provider value={getContext()}>
+    <EditorContext value={getContext()}>
       <LogsStore>
         <Provider>
           <div
@@ -162,7 +162,7 @@ const Editor = () => {
           <View />
         </Provider>
       </LogsStore>
-    </EditorContext.Provider>
+    </EditorContext>
   );
 };
 
