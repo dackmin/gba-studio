@@ -48,8 +48,10 @@ const SpriteForm = () => {
         _file: `${spriteName}.animations.json`,
       });
     } else {
-      spriteAnimations.animations.push(newAnimation);
-      onAnimationsChange?.(spriteAnimations);
+      onAnimationsChange?.({
+        ...spriteAnimations,
+        animations: [...spriteAnimations.animations, newAnimation],
+      });
     }
 
     selectAnimation?.(newAnimation);
@@ -63,10 +65,12 @@ const SpriteForm = () => {
       return;
     }
 
-    spriteAnimations.animations = spriteAnimations.animations.filter(a => (
-      a.id !== animation.id
-    ));
-    onAnimationsChange?.(spriteAnimations);
+    onAnimationsChange?.({
+      ...spriteAnimations,
+      animations: spriteAnimations.animations.filter(a => (
+        a.id !== animation.id
+      )),
+    });
   }, [spriteAnimations, onAnimationsChange]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {

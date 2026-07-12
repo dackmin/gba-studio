@@ -1,6 +1,7 @@
 import {
   type ComponentPropsWithoutRef,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
 } from 'react';
@@ -92,10 +93,10 @@ const Provider = ({
       ...appPayload,
       animations: appPayload.animations
         .findIndex(a => a._file === animationRegistry._file) === -1
-        ? [...appPayload.animations, animationRegistry]
-        : appPayload.animations.map(a =>
-          a._file === animationRegistry._file ? animationRegistry : a
-        ),
+          ? [...appPayload.animations, animationRegistry]
+          : appPayload.animations.map(a =>
+            a._file === animationRegistry._file ? animationRegistry : a
+          ),
     });
 
     if (state.selectedAnimation) {
@@ -103,9 +104,13 @@ const Provider = ({
         a.id === state.selectedAnimation!.id
       ));
 
-      if (newSelectedAnimation) {
-        dispatch({ selectedAnimation: newSelectedAnimation });
-      }
+      dispatch({
+        selectedAnimation: newSelectedAnimation ?? animationRegistry.animations[0],
+        ...(newSelectedAnimation ? {} : {
+          selectedState: undefined,
+          selectedFrame: undefined,
+        }),
+      });
     }
   }, [appPayload, onCanvasChange, state.selectedAnimation]);
 
