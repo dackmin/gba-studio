@@ -174,6 +174,8 @@ export interface SpriteContextType {
   selectState?(state?: SpriteAnimationState): void;
   selectFrame?(frame?: SpriteAnimationFrame): void;
   onAnimationsChange?(animation: SpriteAnimations): void;
+  onAddAnimation?(): void;
+  onRemoveAnimation?(animation: SpriteAnimation): void;
 }
 
 export const SpriteContext = createContext<SpriteContextType>({
@@ -182,4 +184,6 @@ export const SpriteContext = createContext<SpriteContextType>({
   selectSprite: () => {},
   selectAnimation: () => {},
   onAnimationsChange: () => {},
+  onAddAnimation: () => {},
+  onRemoveAnimation: () => {},
 });

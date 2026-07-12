@@ -9,7 +9,6 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { v4 as uuid } from 'uuid';
 
 import type { SpriteAnimation } from '../../../types';
 import { useApp, useSprite } from '../../services/hooks';
@@ -18,7 +17,12 @@ import AnimationsListItem from './AnimationsListItem';
 
 const SpriteForm = () => {
   const { animations } = useApp();
-  const { selectedSprite, selectAnimation, onAnimationsChange } = useSprite();
+  const {
+    selectedSprite,
+    onAnimationsChange,
+    onAddAnimation,
+    onRemoveAnimation,
+  } = useSprite();
 
   const spriteAnimations = useMemo(() => (
     animations.find(a => a._sprite_file === selectedSprite?._file)
@@ -27,51 +31,6 @@ const SpriteForm = () => {
   const spriteName = useMemo(() => (
     getGraphicName(selectedSprite?._file)
   ), [selectedSprite]);
-
-  const onAddAnimation = useCallback(() => {
-    const newAnimation: SpriteAnimation = {
-      type: 'animation',
-      name: 'New Animation',
-      animationType: 'fixed',
-      states: {},
-      // Internals
-      id: uuid(),
-    };
-
-    if (!spriteAnimations) {
-      onAnimationsChange?.({
-        type: 'animations',
-        animations: [newAnimation],
-        // Internals
-        id: uuid(),
-        _sprite_file: selectedSprite?._file,
-        _file: `${spriteName}.animations.json`,
-      });
-    } else {
-      onAnimationsChange?.({
-        ...spriteAnimations,
-        animations: [...spriteAnimations.animations, newAnimation],
-      });
-    }
-
-    selectAnimation?.(newAnimation);
-  }, [
-    selectedSprite, spriteAnimations, spriteName,
-    onAnimationsChange, selectAnimation,
-  ]);
-
-  const onRemoveAnimation = useCallback((animation: SpriteAnimation) => {
-    if (!spriteAnimations) {
-      return;
-    }
-
-    onAnimationsChange?.({
-      ...spriteAnimations,
-      animations: spriteAnimations.animations.filter(a => (
-        a.id !== animation.id
-      )),
-    });
-  }, [spriteAnimations, onAnimationsChange]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
     onAnimationsChange?.({

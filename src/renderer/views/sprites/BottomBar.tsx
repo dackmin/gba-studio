@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useReducer } from 'react';
 import {
-  Card,
-  IconButton,
+  Button,
   SegmentedControl,
   Select,
   Text,
 } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { classNames, mockState } from '@junipero/react';
+import { v4 as uuid } from 'uuid';
 
 import type {
   CharacterDirection,
@@ -15,7 +15,7 @@ import type {
   SpriteAnimationFrame,
 } from '../../../types';
 import { useEditor, useSprite } from '../../services/hooks';
-import Sprite from '../../components/Sprite';
+import FramesField from './FramesField';
 
 export interface BottomBarState {
   selectedDirection?: CharacterDirection;
@@ -25,12 +25,11 @@ export interface BottomBarState {
 const BottomBar = () => {
   const { leftSidebarOpened, leftSidebarWidth } = useEditor();
   const {
-    selectedSprite,
     selectedAnimation,
-    selectedFrame,
     animationsRegistry,
     selectAnimation,
-    selectFrame,
+    onAnimationsChange,
+    onAddAnimation,
   } = useSprite();
   const animations = useMemo(() => (
     animationsRegistry?.animations
@@ -52,6 +51,19 @@ const BottomBar = () => {
     }
   }, [selectAnimation, animations]);
 
+  const onAnimationChange = useCallback((animation: SpriteAnimation) => {
+    if (!selectedAnimation) {
+      return;
+    }
+
+    onAnimationsChange?.({
+      ...animationsRegistry!,
+      animations: animationsRegistry!.animations.map(a => (
+        a.id === selectedAnimation.id ? animation : a
+      )),
+    });
+  }, [selectedAnimation, onAnimationsChange, animationsRegistry]);
+
   const currentState = useMemo(() => (
     selectedAnimation?.animationType === 'fixed'
       ? selectedAnimation?.states?.fixed
@@ -64,8 +76,36 @@ const BottomBar = () => {
     currentState?.frames || [{
       type: 'frame',
       index: 0,
-    } as SpriteAnimationFrame]
+      id: uuid(),
+      duration: 100,
+    } satisfies SpriteAnimationFrame]
   ), [currentState]);
+
+  const onFramesChange = useCallback((newFrames: SpriteAnimationFrame[]) => {
+    if (!selectedAnimation) {
+      return;
+    }
+
+    onAnimationChange({
+      ...selectedAnimation,
+      states: {
+        ...selectedAnimation.states,
+        [state.selectedState || 'idle']: {
+          ...(selectedAnimation.states as Omit<SpriteAnimation['states'], 'fixed'>)
+            ?.[state.selectedState || 'idle'],
+          [state.selectedDirection || 'up']: {
+            frames: newFrames,
+          },
+        },
+      },
+    });
+
+    selectAnimation?.(selectedAnimation);
+  }, [
+    onAnimationChange,
+    selectedAnimation,
+    state.selectedDirection, state.selectedState,
+  ]);
 
   return (
     <div
@@ -79,19 +119,26 @@ const BottomBar = () => {
         )}
       >
         <Text>Animation</Text>
-        <Select.Root
-          value={selectedAnimation?.id || animations?.[0]?.id || ''}
-          onValueChange={onSelectAnimation}
-        >
-          <Select.Trigger placeholder="Select" />
-          <Select.Content>
-            { animations?.map(anim => (
-              <Select.Item key={anim.id} value={anim.id}>
-                { anim.name }
-              </Select.Item>
-            )) }
-          </Select.Content>
-        </Select.Root>
+        { (animations?.length || 0) > 0 ? (
+          <Select.Root
+            value={selectedAnimation?.id || animations?.[0]?.id || ''}
+            onValueChange={onSelectAnimation}
+          >
+            <Select.Trigger placeholder="Select" />
+            <Select.Content>
+              { animations?.map(anim => (
+                <Select.Item key={anim.id} value={anim.id}>
+                  { anim.name }
+                </Select.Item>
+              )) }
+            </Select.Content>
+          </Select.Root>
+        ) : (
+          <Button onClick={onAddAnimation}>
+            <PlusIcon />
+            <Text>Add</Text>
+          </Button>
+        ) }
       </div>
       { ['directions', 'movements']
         .includes(selectedAnimation?.animationType || 'fixed') && (
@@ -129,39 +176,17 @@ const BottomBar = () => {
           </SegmentedControl.Root>
         </div>
       ) }
-      <div className="py-2 px-3">
-        <Text>Frames</Text>
-      </div>
-      <div className="flex items-center gap-2 overflow-x-auto py-2 px-3">
-        { frames.map((frame, index) => (
-          <Card
-            key={frame.id || index}
-            className={classNames(
-              'w-16 h-16 !p-0 cursor-pointer',
-              {
-                'outline-2 outline-(--accent-9)':
-                  selectedFrame === frame,
-              }
-            )}
-            onClick={selectFrame?.bind(null, frame)}
-          >
-            <Sprite
-              sprite={selectedSprite}
-              frame={frame.index}
-              className="!w-full !h-full"
-            />
-          </Card>
-        )) }
-        <Card className="w-16 h-16 !p-0">
-          <IconButton
-            variant="ghost"
-            className="!w-full !h-full cursor-pointer"
-            onClick={() => {}}
-          >
-            <PlusIcon />
-          </IconButton>
-        </Card>
-      </div>
+      { selectedAnimation && (
+        <>
+          <div className="py-2 px-3">
+            <Text>Frames</Text>
+          </div>
+          <FramesField
+            value={frames}
+            onValueChange={onFramesChange}
+          />
+        </>
+      ) }
     </div>
   );
 };

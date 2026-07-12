@@ -6,6 +6,7 @@ import {
   useReducer,
 } from 'react';
 import { mockState } from '@junipero/react';
+import { v4 as uuid } from 'uuid';
 
 import type {
   GameSpriteFile,
@@ -19,6 +20,7 @@ import {
   SpriteContext,
 } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
+import { getGraphicName } from '../../../helpers';
 
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
@@ -114,6 +116,55 @@ const Provider = ({
     }
   }, [appPayload, onCanvasChange, state.selectedAnimation]);
 
+  const spriteName = useMemo(() => (
+    getGraphicName(state.selectedSprite?._file)
+  ), [state.selectedSprite]);
+
+  const onAddAnimation = useCallback(() => {
+    const newAnimation: SpriteAnimation = {
+      type: 'animation',
+      name: 'New Animation',
+      animationType: 'fixed',
+      states: {},
+      // Internals
+      id: uuid(),
+    };
+    
+    if (!animationsRegistry) {
+      onAnimationsChange?.({
+        type: 'animations',
+        animations: [newAnimation],
+        // Internals
+        id: uuid(),
+        _sprite_file: state.selectedSprite?._file,
+        _file: `${spriteName}.animations.json`,
+      });
+    } else {
+      onAnimationsChange?.({
+        ...animationsRegistry,
+        animations: [...animationsRegistry.animations, newAnimation],
+      });
+    }
+
+    selectAnimation?.(newAnimation);
+  }, [
+    state.selectedSprite, animationsRegistry, spriteName,
+    onAnimationsChange, selectAnimation,
+  ]);
+
+  const onRemoveAnimation = useCallback((animation: SpriteAnimation) => {
+    if (!animationsRegistry) {
+      return;
+    }
+
+    onAnimationsChange?.({
+      ...animationsRegistry,
+      animations: animationsRegistry.animations.filter(a => (
+        a.id !== animation.id
+      )),
+    });
+  }, [animationsRegistry, onAnimationsChange]);
+
   const getContext = useCallback((): SpriteContextType => ({
     selectedSprite: state.selectedSprite,
     selectedAnimation: state.selectedAnimation,
@@ -125,6 +176,8 @@ const Provider = ({
     selectState,
     selectFrame,
     onAnimationsChange,
+    onAddAnimation,
+    onRemoveAnimation,
   }), [
     state.selectedSprite,
     state.selectedAnimation,
@@ -136,6 +189,8 @@ const Provider = ({
     selectState,
     selectFrame,
     onAnimationsChange,
+    onAddAnimation,
+    onRemoveAnimation,
   ]);
 
   return (
