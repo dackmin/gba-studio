@@ -41,7 +41,7 @@
     "handlebars": "4.7.9",
     "image-size": "2.0.2",
     "jimp": "1.6.1",
-    "radix-ui": "1.6.2",
+    "radix-ui": "1.4.3",
     "re-resizable": "6.11.2",
     "react": "19.2.7",
     "react-dom": "19.2.7",
