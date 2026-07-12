@@ -90,19 +90,28 @@ const BottomBar = () => {
       ...selectedAnimation,
       states: {
         ...selectedAnimation.states,
-        [state.selectedState || 'idle']: {
-          ...(selectedAnimation.states as Omit<SpriteAnimation['states'], 'fixed'>)
-            ?.[state.selectedState || 'idle'],
-          [state.selectedDirection || 'up']: {
+        ...selectedAnimation.animationType === 'fixed'
+          ? { fixed: {
+            ...selectedAnimation.states.fixed || {
+              type: 'state',
+              id: uuid(),
+            },
             frames: newFrames,
+          } }
+          : {
+            [state.selectedState || 'idle']: {
+              ...selectedAnimation.states?.[state.selectedState || 'idle'],
+              [state.selectedDirection || 'up']: {
+                frames: newFrames,
+              },
+            },
           },
-        },
       },
     });
 
     selectAnimation?.(selectedAnimation);
   }, [
-    onAnimationChange,
+    onAnimationChange, selectAnimation,
     selectedAnimation,
     state.selectedDirection, state.selectedState,
   ]);

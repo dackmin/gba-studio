@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { Card, IconButton, Text } from '@radix-ui/themes'
+import { Card, IconButton } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
 
-import type { SpriteAnimationFrame } from '../../../types'
+import type { SpriteAnimationFrame } from '../../../types';
 import { useSprite } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
@@ -34,13 +34,16 @@ const FramesField = ({
 
     selectFrame?.(newFrame);
   }, [value, onValueChange, selectFrame]);
- 
+
   return (
-    <div className='flex items-center gap-2 overflow-x-auto py-2 px-3'>
-      { JSON.stringify(value, null, 2) }
-      { value?.map((frame, index) => (
+    <div
+      className={classNames(
+        'flex items-center gap-2 overflow-x-auto py-2 px-3 overflow-x-scroll',
+      )}
+    >
+      { value?.map(frame => (
         <Card
-          key={frame.id || index}
+          key={frame.id}
           className={classNames(
             'w-16 h-16 !p-0 cursor-pointer',
             {
@@ -53,21 +56,21 @@ const FramesField = ({
           <Sprite
             sprite={selectedSprite}
             frame={frame.index}
-            className='!w-full !h-full'
+            className="!w-full !h-full"
           />
         </Card>
       )) }
-      <Card className='w-16 h-16 !p-0'>
+      <Card className="w-16 h-16 aspect-square !p-0">
         <IconButton
-          variant='ghost'
-          className='!w-full !h-full cursor-pointer'
+          variant="ghost"
+          className="!w-full !h-full cursor-pointer"
           onClick={onAddFrame}
         >
           <PlusIcon />
         </IconButton>
       </Card>
     </div>
-  )
+  );
 };
 
 export default FramesField;
