@@ -8,6 +8,7 @@ import { mockState } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type {
+  CharacterDirection,
   GameSpriteFile,
   SpriteAnimation,
   SpriteAnimationFrame,
@@ -24,6 +25,8 @@ import { getGraphicName } from '../../../helpers';
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
   selectedAnimation?: SpriteAnimation;
+  selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
+  selectedDirection?: CharacterDirection;
   selectedState?: SpriteAnimationState;
   selectedFrame?: SpriteAnimationFrame;
 }
@@ -38,6 +41,8 @@ const Provider = ({
     selectedAnimation: animations
       ?.find(a => a._sprite_file === sprites?.[0]?._file)
       ?.animations?.[0],
+    selectedStateName: undefined,
+    selectedDirection: undefined,
     selectedState: undefined,
     selectedFrame: undefined,
   });
@@ -70,6 +75,24 @@ const Provider = ({
 
     dispatch({ selectedAnimation: animation });
   }, [state.selectedAnimation]);
+
+  const selectStateName = useCallback((
+    stateName: Exclude<keyof SpriteAnimation['states'], 'fixed'>
+  ) => {
+    if (state.selectedStateName === stateName) {
+      return;
+    }
+
+    dispatch({ selectedStateName: stateName });
+  }, [state.selectedStateName]);
+
+  const selectDirection = useCallback((direction: CharacterDirection) => {
+    if (state.selectedDirection === direction) {
+      return;
+    }
+
+    dispatch({ selectedDirection: direction });
+  }, [state.selectedDirection]);
 
   const selectState = useCallback((s: SpriteAnimationState) => {
     if (state.selectedState === s) {
@@ -170,11 +193,15 @@ const Provider = ({
     selectedAnimation: state.selectedAnimation,
     selectedState: state.selectedState,
     selectedFrame: state.selectedFrame,
+    selectedStateName: state.selectedStateName,
+    selectedDirection: state.selectedDirection,
     animationsRegistry,
     selectSprite,
     selectAnimation,
     selectState,
     selectFrame,
+    selectStateName,
+    selectDirection,
     onAnimationsChange,
     onAddAnimation,
     onRemoveAnimation,
@@ -183,11 +210,15 @@ const Provider = ({
     state.selectedAnimation,
     state.selectedState,
     state.selectedFrame,
+    state.selectedDirection,
+    state.selectedStateName,
     animationsRegistry,
     selectSprite,
     selectAnimation,
     selectState,
     selectFrame,
+    selectStateName,
+    selectDirection,
     onAnimationsChange,
     onAddAnimation,
     onRemoveAnimation,

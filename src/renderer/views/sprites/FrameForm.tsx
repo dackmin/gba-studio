@@ -1,23 +1,112 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Heading, Inset, Select, Separator, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
+import { v4 as uuid } from 'uuid';
 
-import { useSprite } from '../../services/hooks';
+import type { SpriteAnimation, SpriteAnimationFrame } from '../../../types';
+import { useApp, useSprite } from '../../services/hooks';
 import { getTilesCount } from '../../../helpers';
 
 const FrameForm = () => {
-  // const { animations } = useApp();
-  const { selectedSprite, selectedFrame } = useSprite();
-
-  // const animationsRegistry = useMemo(() => (
-  //   animations.find(a => a._sprite_file === selectedSprite?._file)
-  // ), [animations, selectedSprite]);
+  const { animations } = useApp();
+  const {
+    selectedAnimation,
+    selectedStateName,
+    selectedDirection,
+    selectedSprite,
+    selectedFrame,
+    selectFrame,
+    onAnimationsChange,
+  } = useSprite();
 
   const availableTiles = useMemo(() => (
     Array.from({
-      length: getTilesCount(selectedSprite?.width, selectedSprite?.height),
+      length: getTilesCount(
+        selectedSprite?._realWidth,
+        selectedSprite?._realHeight,
+        selectedSprite?.width,
+        selectedSprite?.height,
+      ),
     }).map((_, index) => index)
   ), [selectedSprite]);
+
+  const animationsRegistry = useMemo(() => (
+    animations.find(a => a._sprite_file === selectedSprite?._file)
+  ), [animations, selectedSprite]);
+
+  const onAnimationChange = useCallback((animation: SpriteAnimation) => {
+    if (!selectedAnimation) {
+      return;
+    }
+
+    onAnimationsChange?.({
+      ...animationsRegistry!,
+      animations: animationsRegistry!.animations.map(a => (
+        a.id === selectedAnimation.id ? animation : a
+      )),
+    });
+  }, [selectedAnimation, onAnimationsChange, animationsRegistry]);
+
+  const onValueChange = useCallback((name: string, value: string | number) => {
+    const animation = selectedAnimation || {
+      type: 'animation',
+      name: 'New Animation',
+      animationType: 'fixed',
+      states: {},
+      // Internals
+      id: uuid(),
+    } as SpriteAnimation;
+
+    selectFrame?.({
+      ...selectedFrame,
+      [name]: value,
+    } as SpriteAnimationFrame);
+
+    const newFrames = animation.animationType === 'fixed'
+      ? animation.states?.fixed?.frames.map((frame, index) => (
+        index === selectedFrame?.index
+          ? { ...frame, [name]: value }
+          : frame
+      ))
+      : animation.states?.[selectedStateName || 'idle']
+        ?.[selectedDirection || 'up']?.frames.map((frame, index) => (
+          index === selectedFrame?.index
+            ? { ...frame, [name]: value }
+            : frame
+        ));
+
+    if (!newFrames) {
+      return;
+    }
+
+    onAnimationChange({
+      ...animation,
+      states: {
+        ...animation.states,
+        ...(animation.animationType === 'fixed'
+          ? { fixed: {
+            ...animation.states?.fixed || {
+              type: 'state',
+              id: uuid(),
+            },
+            frames: newFrames,
+          } }
+          : {
+            [selectedStateName || 'idle']: {
+              ...animation.states?.[selectedStateName || 'idle'],
+              [selectedDirection || 'up']: {
+                type: 'state',
+                id: uuid(),
+                frames: newFrames,
+              },
+            },
+          }),
+      },
+    });
+  }, [
+    onAnimationChange, selectFrame,
+    selectedAnimation, selectedStateName, selectedDirection, selectedFrame,
+  ]);
 
   return (
     <div
@@ -42,16 +131,15 @@ const FrameForm = () => {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Text className="block text-slate" size="1">Tile index</Text>
-            { '' + (selectedFrame?.index || 0) }
             <Select.Root
               value={'' + (selectedFrame?.index || 0)}
-              onValueChange={() => {}}
+              onValueChange={onValueChange.bind(null, 'index')}
             >
               <Select.Trigger placeholder="Select" />
               <Select.Content>
                 { availableTiles.map(value => (
                   <Select.Item key={value} value={'' + value}>
-                    { value }
+                    Tile { value }
                   </Select.Item>
                 )) }
               </Select.Content>

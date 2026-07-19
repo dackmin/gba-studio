@@ -5,6 +5,7 @@ import type {
   AppPayload,
   AppStorage,
   BuildMessage,
+  CharacterDirection,
   GameActor,
   GamePlayer,
   GameProject,
@@ -168,11 +169,17 @@ export interface SpriteContextType {
   selectedAnimation?: SpriteAnimation;
   selectedState?: SpriteAnimationState;
   selectedFrame?: SpriteAnimationFrame;
+  selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
+  selectedDirection?: CharacterDirection;
   animationsRegistry?: SpriteAnimations;
   selectSprite?(spriteFile?: GameSpriteFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
   selectState?(state?: SpriteAnimationState): void;
   selectFrame?(frame?: SpriteAnimationFrame): void;
+  selectStateName?(
+    stateName: Exclude<keyof SpriteAnimation['states'], 'fixed'>
+  ): void;
+  selectDirection?(direction: CharacterDirection): void;
   onAnimationsChange?(animation: SpriteAnimations): void;
   onAddAnimation?(): void;
   onRemoveAnimation?(animation: SpriteAnimation): void;

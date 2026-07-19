@@ -55,14 +55,20 @@ export const getImageSize = async (src: string): Promise<[number, number]> => {
 export const getTilesCount = (
   width?: number,
   height?: number,
-  gridSize?: number
+  gridWidth?: number,
+  gridHeight?: number,
 ): number => {
   width = width || 0;
   height = height || 0;
 
-  if (!exists(gridSize)) {
-    gridSize = width > height ? width : height;
+  if (!exists(gridWidth)) {
+    gridWidth = width > height ? width : height;
   }
 
-  return Math.max(Math.ceil(width / gridSize!), Math.ceil(height / gridSize!));
+  if (!exists(gridHeight)) {
+    gridHeight = width > height ? width : height;
+  }
+
+  return Math.max(Math.ceil(width / gridWidth!),
+    Math.ceil(height / gridHeight!));
 };

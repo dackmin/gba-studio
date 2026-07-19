@@ -233,12 +233,16 @@ export interface GameSpriteFile {
   width?: number;
   height?: number;
   // Internals
+  _realWidth?: number;
+  _realHeight?: number;
   _file?: string;
 }
 
 export interface GameBackgroundFile {
   type: string;
   // Internals
+  _realWidth?: number;
+  _realHeight?: number;
   _file?: string;
 }
 

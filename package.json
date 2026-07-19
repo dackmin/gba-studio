@@ -46,6 +46,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-hotkeys-hook": "5.3.3",
+    "sharp": "0.35.3",
     "slugify": "1.6.9",
     "uuid": "14.0.1"
   },
@@ -60,10 +61,10 @@
     "@electron-forge/plugin-vite": "7.11.2",
     "@electron/fuses": "2.1.3",
     "@junipero/tailwind-plugin": "3.13.0",
-    "@poool/eslint-config": "6.1.0",
-    "@poool/eslint-config-react": "6.1.0",
+    "@poool/eslint-config": "6.2.0",
+    "@poool/eslint-config-react": "6.2.0",
     "@reforged/maker-appimage": "5.2.0",
-    "@tailwindcss/vite": "4.3.2",
+    "@tailwindcss/vite": "4.3.3",
     "@types/debug": "4.1.13",
     "@types/electron-squirrel-startup": "1.0.2",
     "@types/fs-extra": "11.0.4",
@@ -72,12 +73,13 @@
     "@vitejs/plugin-react": "6.0.3",
     "debug": "4.4.3",
     "dotenv": "17.4.2",
-    "electron": "43.1.0",
-    "eslint": "9.39.5",
-    "tailwindcss": "4.3.2",
+    "electron": "43.1.1",
+    "eslint": "10.7.0",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.63.0",
-    "vite": "8.1.4"
+    "typescript-eslint": "8.64.0",
+    "vite": "8.1.5"
   },
   "build": {
     "electronLanguages": [

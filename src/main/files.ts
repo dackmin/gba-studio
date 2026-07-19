@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { Jimp } from 'jimp';
+
 export const getDataFiles = async (
   base: string,
   cond: (file: string) => boolean = () => true
@@ -84,4 +86,28 @@ export const getVariableFiles = async (
       file.endsWith('.json') &&
       file !== 'variables_default.json'
   );
+};
+
+export const getGraphicFileSize = async (
+  base: string,
+  allowedExtensions: string[] = ['bmp'],
+) => {
+  // let file: Buffer<ArrayBuffer> | undefined;
+  const filePath = base.replace('.json', '');
+
+  for (const ext of allowedExtensions) {
+    try {
+      await fs.access(filePath + '.' + ext);
+    } catch {
+      continue;
+    }
+
+    const image = await Jimp.read(filePath + '.' + ext);
+    const width = image.bitmap.width;
+    const height = image.bitmap.height;
+
+    return { width, height };
+  }
+
+  return { width: undefined, height: undefined };
 };

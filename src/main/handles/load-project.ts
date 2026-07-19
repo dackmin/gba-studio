@@ -21,6 +21,7 @@ import {
   getScriptsFiles,
   getSoundFiles,
   getVariableFiles,
+  getGraphicFileSize,
 } from '../files';
 import { unserialize } from '../serialize';
 import Storage from '../storage';
@@ -113,6 +114,12 @@ export default async (
       .readFile(path.join(projectDir, 'graphics', file), 'utf-8'));
 
     if (['sprite'].includes(graphic.type)) {
+      const { width, height } = await getGraphicFileSize(path.
+        join(projectDir, 'graphics', file));
+
+      graphic._realWidth = width;
+      graphic._realHeight = height;
+
       sprites.push(graphic);
     } else if (['regular_bg'].includes(graphic.type)) {
       backgrounds.push(graphic);

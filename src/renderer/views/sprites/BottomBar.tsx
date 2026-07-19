@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   Button,
   SegmentedControl,
@@ -6,7 +6,7 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { classNames, mockState } from '@junipero/react';
+import { classNames } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type {
@@ -26,22 +26,18 @@ const BottomBar = () => {
   const { leftSidebarOpened, leftSidebarWidth } = useEditor();
   const {
     selectedAnimation,
+    selectedDirection,
+    selectedStateName,
     animationsRegistry,
     selectAnimation,
+    selectDirection,
+    selectStateName,
     onAnimationsChange,
     onAddAnimation,
   } = useSprite();
   const animations = useMemo(() => (
     animationsRegistry?.animations
   ), [animationsRegistry]);
-  const [state, dispatch] = useReducer(mockState<BottomBarState>, {
-    selectedDirection: 'up',
-    selectedState: 'idle',
-  });
-
-  const onValueChange = (name: string, value: string) => {
-    dispatch({ [name]: value });
-  };
 
   const onSelectAnimation = useCallback((animationId: string) => {
     const animation = animations?.find(a => a.id === animationId);
@@ -68,17 +64,12 @@ const BottomBar = () => {
     selectedAnimation?.animationType === 'fixed'
       ? selectedAnimation?.states?.fixed
       : (selectedAnimation?.states as Omit<SpriteAnimation['states'], 'fixed'>)
-        ?.[state.selectedState || 'idle']
-        ?.[state.selectedDirection || 'up']
-  ), [selectedAnimation, state.selectedState, state.selectedDirection]);
+        ?.[selectedStateName || 'idle']
+        ?.[selectedDirection || 'up']
+  ), [selectedAnimation, selectedStateName, selectedDirection]);
 
   const frames = useMemo(() => (
-    currentState?.frames || [{
-      type: 'frame',
-      index: 0,
-      id: uuid(),
-      duration: 100,
-    } satisfies SpriteAnimationFrame]
+    currentState?.frames || []
   ), [currentState]);
 
   const onFramesChange = useCallback((newFrames: SpriteAnimationFrame[]) => {
@@ -99,9 +90,9 @@ const BottomBar = () => {
             frames: newFrames,
           } }
           : {
-            [state.selectedState || 'idle']: {
-              ...selectedAnimation.states?.[state.selectedState || 'idle'],
-              [state.selectedDirection || 'up']: {
+            [selectedStateName || 'idle']: {
+              ...selectedAnimation.states?.[selectedStateName || 'idle'],
+              [selectedDirection || 'up']: {
                 frames: newFrames,
               },
             },
@@ -113,7 +104,7 @@ const BottomBar = () => {
   }, [
     onAnimationChange, selectAnimation,
     selectedAnimation,
-    state.selectedDirection, state.selectedState,
+    selectedDirection, selectedStateName,
   ]);
 
   return (
@@ -159,8 +150,8 @@ const BottomBar = () => {
         >
           <Text>Direction</Text>
           <SegmentedControl.Root
-            value={state.selectedDirection || 'up'}
-            onValueChange={onValueChange.bind(null, 'selectedDirection')}
+            value={selectedDirection || 'up'}
+            onValueChange={selectDirection}
           >
             <SegmentedControl.Item value="up">Up</SegmentedControl.Item>
             <SegmentedControl.Item value="down">Down</SegmentedControl.Item>
@@ -177,8 +168,8 @@ const BottomBar = () => {
         >
           <Text>State</Text>
           <SegmentedControl.Root
-            value={state.selectedState || 'idle'}
-            onValueChange={onValueChange.bind(null, 'selectedState')}
+            value={selectedStateName || 'idle'}
+            onValueChange={selectStateName}
           >
             <SegmentedControl.Item value="idle">Idle</SegmentedControl.Item>
             <SegmentedControl.Item value="moving">Moving</SegmentedControl.Item>
@@ -190,6 +181,7 @@ const BottomBar = () => {
           <div className="py-2 px-3">
             <Text>Frames</Text>
           </div>
+          <div>{ JSON.stringify(selectedAnimation) }</div>
           <FramesField
             value={frames}
             onValueChange={onFramesChange}
