@@ -1,11 +1,20 @@
 import { useCallback, useMemo } from 'react';
-import { Heading, Inset, Select, Separator, Text } from '@radix-ui/themes';
+import {
+  Heading,
+  Inset,
+  SegmentedControl,
+  Select,
+  Separator,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
-import type { SpriteAnimation, SpriteAnimationFrame } from '../../../types';
+import type { EventValue, SpriteAnimation, SpriteAnimationFrame } from '../../../types';
 import { useApp, useSprite } from '../../services/hooks';
 import { getTilesCount } from '../../../helpers';
+import EventValueField from '../../components/EventValueField';
 
 const FrameForm = () => {
   const { animations } = useApp();
@@ -47,7 +56,7 @@ const FrameForm = () => {
     });
   }, [selectedAnimation, onAnimationsChange, animationsRegistry]);
 
-  const onValueChange = useCallback((name: string, value: string | number) => {
+  const onValueChange = useCallback((name: string, value: string | number | EventValue) => {
     const animation = selectedAnimation || {
       type: 'animation',
       name: 'New Animation',
@@ -144,6 +153,35 @@ const FrameForm = () => {
                 )) }
               </Select.Content>
             </Select.Root>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Duration</Text>
+            <EventValueField
+              type="number"
+              min={0}
+              value={selectedFrame?.duration}
+              defaultValue={100}
+              onValueChange={onValueChange.bind(null, 'duration')}
+            >
+              <TextField.Slot side="right">
+                ms
+              </TextField.Slot>
+            </EventValueField>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Reverse horizontally</Text>
+            <SegmentedControl.Root
+              size="1"
+              value={'' + (selectedFrame?.reverse ?? false)}
+              onValueChange={onValueChange.bind(null, 'reverse')}
+            >
+              <SegmentedControl.Item value="false">
+                No
+              </SegmentedControl.Item>
+              <SegmentedControl.Item value="true">
+                Yes
+              </SegmentedControl.Item>
+            </SegmentedControl.Root>
           </div>
         </div>
       </div>

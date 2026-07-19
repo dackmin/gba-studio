@@ -100,6 +100,7 @@ const BuildLogsTabContent = () => {
 };
 
 export default {
+  id: 'build',
   title: BuildLogsTabTitle,
   content: BuildLogsTabContent,
 } satisfies BottomBarTab;

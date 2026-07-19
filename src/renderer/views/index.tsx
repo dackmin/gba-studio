@@ -10,6 +10,7 @@ import Canvas, {
 } from './canvas';
 import Preview, {
   LeftSidebar as PreviewLeftSidebar,
+  BottomBar as PreviewBottomBar,
 } from './preview';
 import Settings from './settings';
 import Sprites, {
@@ -42,6 +43,7 @@ const views: ViewDefinition[] = [{
   icon: CardStackIcon,
   view: Preview,
   leftSidebar: PreviewLeftSidebar,
+  bottomBar: PreviewBottomBar,
 }, {
   name: 'sprites',
   title: 'Sprites',

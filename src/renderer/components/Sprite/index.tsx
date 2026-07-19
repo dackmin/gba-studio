@@ -79,9 +79,16 @@ const Sprite = ({
       ? availableFrames[(playbackIndex ?? 0) % availableFrames.length]
       : availableFrames[0];
     const frameIndex = typeof selectedFrame === 'number' ? selectedFrame : selectedFrame.index;
+    const reverse = typeof selectedFrame === 'number' ? false : !!selectedFrame.reverse;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
+
+    if (reverse) {
+      ctx.translate(width * scale, 0);
+      ctx.scale(-1, 1);
+    }
+
     ctx.drawImage(
       image,
       frameIndex * (width / scale),

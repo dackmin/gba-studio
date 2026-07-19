@@ -21,6 +21,7 @@ const EventValueField = ({
   children,
   className,
   onValueChange,
+  min = 0,
   ...rest
 }: EventValueFieldProps) => {
   const { variables } = useApp();
@@ -57,11 +58,11 @@ const EventValueField = ({
         name: e.target.value,
       });
     } else if (type === 'number') {
-      onValueChange?.(Math.max(0, Number(e.target.value) || 0));
+      onValueChange?.(Math.max(Number(min), Number(e.target.value || min)));
     } else {
       onValueChange?.(e.target.value);
     }
-  }, [onValueChange, isDynamicValue, val, type]);
+  }, [onValueChange, isDynamicValue, val, type, min]);
 
   const onValueChange_ = useCallback((name: string) => {
     if (isDynamicValue) {

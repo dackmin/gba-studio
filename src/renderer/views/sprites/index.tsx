@@ -24,6 +24,7 @@ const Sprites = () => {
     selectedAnimation,
     selectedStateName,
     selectedDirection,
+    selectSprite,
   } = useSprite();
 
   const currentState = useMemo(() => (
@@ -45,6 +46,7 @@ const Sprites = () => {
         className={classNames(
           'flex-auto overflow-hidden !bg-transparent relative z-10',
         )}
+        onClick={selectSprite?.bind(null, selectedSprite)}
       >
         <div
           className="w-full h-screen flex items-center justify-center"

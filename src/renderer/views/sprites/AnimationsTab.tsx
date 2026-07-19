@@ -3,6 +3,7 @@ import {
   Button,
   SegmentedControl,
   Select,
+  Tabs,
   Text,
 } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
@@ -10,20 +11,18 @@ import { classNames } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type {
-  CharacterDirection,
   SpriteAnimation,
   SpriteAnimationFrame,
 } from '../../../types';
-import { useEditor, useSprite } from '../../services/hooks';
+import type { BottomBarTab } from '../../components/BottomBarTabs';
+import { useSprite } from '../../services/hooks';
 import FramesField from './FramesField';
 
-export interface BottomBarState {
-  selectedDirection?: CharacterDirection;
-  selectedState?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
-}
+const AnimationsTabTitle = () => (
+  <Tabs.Trigger value="animations">Animations Editor</Tabs.Trigger>
+);
 
-const BottomBar = () => {
-  const { leftSidebarOpened, leftSidebarWidth } = useEditor();
+const AnimationsTabContent = () => {
   const {
     selectedAnimation,
     selectedDirection,
@@ -108,10 +107,8 @@ const BottomBar = () => {
   ]);
 
   return (
-    <div
-      style={{
-        ...leftSidebarOpened && { paddingLeft: leftSidebarWidth },
-      }}
+    <Tabs.Content
+      value="animations"
     >
       <div
         className={classNames(
@@ -187,8 +184,12 @@ const BottomBar = () => {
           />
         </>
       ) }
-    </div>
+    </Tabs.Content>
   );
 };
 
-export default BottomBar;
+export default {
+  id: 'animations',
+  title: AnimationsTabTitle,
+  content: AnimationsTabContent,
+} satisfies BottomBarTab;

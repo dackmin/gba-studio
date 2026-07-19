@@ -9,12 +9,14 @@ import {
 import { useEditor } from '../../services/hooks';
 
 export interface BottomBarTab {
+  id: string;
   title: FC;
   content: FC;
 }
 
 export interface BottomBarTabsProps {
   tabs: BottomBarTab[];
+  defaultTab?: string;
 }
 
 export interface BottomBarTabsState {
@@ -25,6 +27,7 @@ export interface BottomBarTabsState {
 
 const BottomBarTabs = ({
   tabs,
+  defaultTab,
 }: BottomBarTabsProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const {
@@ -32,7 +35,7 @@ const BottomBarTabs = ({
     leftSidebarWidth,
   } = useEditor();
   const [state, dispatch] = useReducer(mockState<BottomBarTabsState>, {
-    tab: 'build',
+    tab: defaultTab ?? tabs?.[0]?.id ?? 'build',
     manualScroll: false,
     scrolledToBottom: true,
   });
