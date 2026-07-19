@@ -428,4 +428,5 @@ export interface BuildMessage {
   id: string;
   type?: 'log' | 'error' | 'success';
   message: string;
+  messageId: string;
 }

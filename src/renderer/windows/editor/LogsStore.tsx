@@ -23,7 +23,9 @@ const LogsStore = ({
   useBridgeListener('build-log', (log: BuildMessage) => {
     dispatch(s => ({
       ...s,
-      buildLogs: [...s.buildLogs, log].slice(-10000),
+      buildLogs: s.buildLogs.find(l => l.messageId === log.messageId)
+        ? s.buildLogs
+        : [...s.buildLogs, log].slice(-10000),
     }));
   }, []);
 

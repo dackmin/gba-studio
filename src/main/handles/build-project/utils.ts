@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import type{ IpcMainInvokeEvent } from 'electron';
 import slugify from 'slugify';
+import { v4 as uuid } from 'uuid';
 
 import type { Build } from '../../../types';
 
@@ -38,10 +39,12 @@ export function sendError (
     id: buildId,
     type: 'error',
     message,
+    messageId: uuid(),
   });
   event.sender.send('build-error', {
     id: buildId,
     message,
+    messageId: uuid(),
   });
 }
 
@@ -54,6 +57,7 @@ export function sendSuccessLog (
     id: buildId,
     type: 'success',
     message,
+    messageId: uuid(),
   });
 }
 
@@ -63,6 +67,7 @@ export function sendAbort (
 ) {
   event.sender.send('build-aborted', {
     id: buildId,
+    messageId: uuid(),
   });
 }
 
