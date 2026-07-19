@@ -63,14 +63,14 @@ const FrameForm = () => {
     } as SpriteAnimationFrame);
 
     const newFrames = animation.animationType === 'fixed'
-      ? animation.states?.fixed?.frames.map((frame, index) => (
-        index === selectedFrame?.index
+      ? animation.states?.fixed?.frames.map(frame => (
+        frame.id === selectedFrame?.id
           ? { ...frame, [name]: value }
           : frame
       ))
       : animation.states?.[selectedStateName || 'idle']
-        ?.[selectedDirection || 'up']?.frames.map((frame, index) => (
-          index === selectedFrame?.index
+        ?.[selectedDirection || 'up']?.frames.map(frame => (
+          frame.id === selectedFrame?.id
             ? { ...frame, [name]: value }
             : frame
         ));

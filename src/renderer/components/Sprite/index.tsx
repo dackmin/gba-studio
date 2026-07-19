@@ -30,6 +30,7 @@ const Sprite = ({
   direction = 'down',
   transparencyColor = '#00ff00',
   scale = 1,
+  frame,
   ...rest
 }: SpriteProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,11 +62,13 @@ const Sprite = ({
       ? `resources://public/templates/commons/graphics/sprite_default.bmp`
       : `project://graphics/${getGraphicName(sprite._file)}.bmp`);
 
+    const sourceFrame = frame ?? (Array.isArray(frames) ? frames[0] : frames);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(
       image,
-      (Array.isArray(frames) ? frames[0] : frames) * (width / scale),
+      sourceFrame * (width / scale),
       0,
       width / scale,
       height / scale,
@@ -92,7 +95,7 @@ const Sprite = ({
 
       ctx.putImageData(imageData, 0, 0);
     }
-  }, [sprite, width, height, frames, scale, transparencyColor]);
+  }, [sprite, width, height, frames, frame, scale, transparencyColor]);
 
   useEffect(() => {
     requestAnimationFrame(redraw);
