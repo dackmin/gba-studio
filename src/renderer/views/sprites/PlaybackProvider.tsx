@@ -8,9 +8,9 @@ import {
 } from 'react';
 import { mockState } from '@junipero/react';
 
-import { PlaybackContext } from '../../services/contexts';
+import type { SpriteAnimation, SpriteAnimationFrame } from '../../../types';
+import { type PlaybackContextType, PlaybackContext } from '../../services/contexts';
 import { useSprite } from '../../services/hooks';
-import { SpriteAnimation, SpriteAnimationFrame } from '../../../types';
 
 export interface PlaybackProviderState {
   playing: boolean;
@@ -89,7 +89,15 @@ const PlaybackProvider = ({ children }: ComponentPropsWithoutRef<'div'>) => {
     dispatch({ index: currentState.frames.length - 1 });
   }, [currentState]);
 
-  const getContext = useCallback(() => ({
+  const jumpTo = useCallback((index: number) => {
+    if (!currentState) {
+      return;
+    }
+
+    dispatch({ index: Math.max(0, Math.min(index, currentState.frames.length - 1)) });
+  }, [currentState]);
+
+  const getContext = useCallback((): PlaybackContextType => ({
     playing: state.playing,
     index: state.index,
     play,
@@ -97,9 +105,10 @@ const PlaybackProvider = ({ children }: ComponentPropsWithoutRef<'div'>) => {
     stop,
     jumpToStart,
     jumpToEnd,
+    jumpTo,
   }), [
     state.playing, state.index,
-    play, pause, stop, jumpToStart, jumpToEnd,
+    play, pause, stop, jumpToStart, jumpToEnd, jumpTo,
   ]);
 
   return (

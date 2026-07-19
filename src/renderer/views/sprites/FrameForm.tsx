@@ -8,11 +8,11 @@ import {
   Text,
   TextField,
 } from '@radix-ui/themes';
-import { classNames } from '@junipero/react';
+import { classNames, set } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
-import type { EventValue, SpriteAnimation, SpriteAnimationFrame } from '../../../types';
-import { useApp, useSprite } from '../../services/hooks';
+import type { EventValue, SpriteAnimation } from '../../../types';
+import { useApp, usePlayback, useSprite } from '../../services/hooks';
 import { getTilesCount } from '../../../helpers';
 import EventValueField from '../../components/EventValueField';
 
@@ -27,6 +27,7 @@ const FrameForm = () => {
     selectFrame,
     onAnimationsChange,
   } = useSprite();
+  const { jumpTo } = usePlayback();
 
   const availableTiles = useMemo(() => (
     Array.from({
@@ -66,10 +67,8 @@ const FrameForm = () => {
       id: uuid(),
     } as SpriteAnimation;
 
-    selectFrame?.({
-      ...selectedFrame,
-      [name]: value,
-    } as SpriteAnimationFrame);
+    set(selectedFrame, name, value);
+    selectFrame?.(selectedFrame);
 
     const newFrames = animation.animationType === 'fixed'
       ? animation.states?.fixed?.frames.map(frame => (
@@ -87,6 +86,8 @@ const FrameForm = () => {
     if (!newFrames) {
       return;
     }
+
+    jumpTo(newFrames.findIndex(frame => frame.id === selectedFrame?.id) || 0);
 
     onAnimationChange({
       ...animation,
@@ -113,7 +114,7 @@ const FrameForm = () => {
       },
     });
   }, [
-    onAnimationChange, selectFrame,
+    onAnimationChange, selectFrame, jumpTo,
     selectedAnimation, selectedStateName, selectedDirection, selectedFrame,
   ]);
 

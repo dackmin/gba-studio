@@ -203,6 +203,7 @@ export interface PlaybackContextType {
   stop(): void;
   jumpToStart(): void;
   jumpToEnd(): void;
+  jumpTo(index: number): void;
 }
 
 export const PlaybackContext = createContext<PlaybackContextType>({
@@ -213,4 +214,5 @@ export const PlaybackContext = createContext<PlaybackContextType>({
   stop: () => {},
   jumpToStart: () => {},
   jumpToEnd: () => {},
+  jumpTo: () => {},
 });

@@ -77,7 +77,7 @@ const Sprite = ({
 
     const selectedFrame = animated && !frame
       ? availableFrames[(playbackIndex ?? 0) % availableFrames.length]
-      : availableFrames[0];
+      : frame ?? availableFrames[0];
     const frameIndex = typeof selectedFrame === 'number' ? selectedFrame : selectedFrame.index;
     const reverse = typeof selectedFrame === 'number' ? false : !!selectedFrame.reverse;
 
@@ -100,6 +100,10 @@ const Sprite = ({
       width * scale,
       height * scale
     );
+
+    if (reverse) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
 
     // Apply transparency color
     if (transparencyColor) {
