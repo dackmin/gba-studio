@@ -21,6 +21,7 @@ import {
 } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
 import { getGraphicName } from '../../../helpers';
+import PlaybackProvider from './PlaybackProvider';
 
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
@@ -226,7 +227,9 @@ const Provider = ({
 
   return (
     <SpriteContext value={getContext()}>
-      { children }
+      <PlaybackProvider>
+        { children }
+      </PlaybackProvider>
     </SpriteContext>
   );
 };

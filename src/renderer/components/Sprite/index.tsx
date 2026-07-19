@@ -6,9 +6,14 @@ import {
   useRef,
 } from 'react';
 
-import type { CharacterDirection, GameSpriteFile } from '../../../types';
+import type {
+  CharacterDirection,
+  GameSpriteFile,
+  SpriteAnimationFrame,
+} from '../../../types';
 import { getGraphicName, loadImage, tileToPixel } from '../../../helpers';
 import { HORIZONTAL_FRAMES } from '../../services/sprites';
+import { usePlayback } from '../../services/hooks';
 
 export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
   sprite?: GameSpriteFile;
@@ -17,7 +22,9 @@ export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
   height?: number;
   direction?: CharacterDirection;
   transparencyColor?: string;
-  frame?: number;
+  frame?: number | SpriteAnimationFrame;
+  frames?: (number | SpriteAnimationFrame)[];
+  animated?: boolean;
   scale?: number;
 }
 
@@ -27,16 +34,16 @@ const Sprite = ({
   gridSize,
   width: widthProp,
   height: heightProp,
+  frame,
+  frames,
   direction = 'down',
   transparencyColor = '#00ff00',
   scale = 1,
-  frame,
+  animated = false,
   ...rest
 }: SpriteProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const frames = useMemo(() => (
-    HORIZONTAL_FRAMES.idle[direction]
-  ), [direction]);
+  const { playing, index: playbackIndex } = usePlayback();
 
   const width = useMemo(() => (
     (widthProp
@@ -62,13 +69,22 @@ const Sprite = ({
       ? `resources://public/templates/commons/graphics/sprite_default.bmp`
       : `project://graphics/${getGraphicName(sprite._file)}.bmp`);
 
-    const sourceFrame = frame ?? (Array.isArray(frames) ? frames[0] : frames);
+    const defaultFrames = ([] as number[])
+      .concat(HORIZONTAL_FRAMES.idle[direction]);
+    const availableFrames = frame
+      ? [frame]
+      : frames?.length ? frames : defaultFrames;
+
+    const selectedFrame = animated && !frame
+      ? availableFrames[(playbackIndex ?? 0) % availableFrames.length]
+      : availableFrames[0];
+    const frameIndex = typeof selectedFrame === 'number' ? selectedFrame : selectedFrame.index;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(
       image,
-      sourceFrame * (width / scale),
+      frameIndex * (width / scale),
       0,
       width / scale,
       height / scale,
@@ -95,11 +111,14 @@ const Sprite = ({
 
       ctx.putImageData(imageData, 0, 0);
     }
-  }, [sprite, width, height, frames, frame, scale, transparencyColor]);
+  }, [
+    width, height, playbackIndex,
+    sprite, frames, frame, scale, transparencyColor, animated, direction,
+  ]);
 
   useEffect(() => {
     requestAnimationFrame(redraw);
-  }, [redraw]);
+  }, [redraw, playbackIndex, playing]);
 
   return (
     <canvas

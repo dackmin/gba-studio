@@ -55,7 +55,8 @@ const FramesField = ({
         >
           <Sprite
             sprite={selectedSprite}
-            frame={frame.index}
+            frame={frame}
+            animated={false}
             className="!w-full !h-full"
           />
         </Card>

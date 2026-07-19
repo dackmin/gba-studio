@@ -66,7 +66,6 @@ const EventButtons = ({
             '[&_button]:text-xs [&_button]:rounded-sm [&_button]:relative',
             '[&_button]:data-[state=on]:bg-(--gray-a3)',
             '[&_button]:relative [&_button]:z-1',
-            // eslint-disable-next-line @stylistic/max-len
             '[&_button]:data-[state=on]:shadow-[inset_0_0_0_1px_var(--gray-a2)]',
             '[&_button]:data-[state=on]:[&_+_.rt-Separator]:opacity-0',
             // Separators

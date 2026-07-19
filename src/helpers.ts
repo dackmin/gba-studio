@@ -72,3 +72,6 @@ export const getTilesCount = (
   return Math.max(Math.ceil(width / gridWidth!),
     Math.ceil(height / gridHeight!));
 };
+
+export const sleep = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));

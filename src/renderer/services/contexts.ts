@@ -194,3 +194,23 @@ export const SpriteContext = createContext<SpriteContextType>({
   onAddAnimation: () => {},
   onRemoveAnimation: () => {},
 });
+
+export interface PlaybackContextType {
+  playing: boolean;
+  index: number;
+  play(): void;
+  pause(): void;
+  stop(): void;
+  jumpToStart(): void;
+  jumpToEnd(): void;
+}
+
+export const PlaybackContext = createContext<PlaybackContextType>({
+  playing: false,
+  index: 0,
+  play: () => {},
+  pause: () => {},
+  stop: () => {},
+  jumpToStart: () => {},
+  jumpToEnd: () => {},
+});

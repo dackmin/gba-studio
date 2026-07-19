@@ -1,13 +1,11 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import pooolint from '@poool/eslint-config-react';
 
 export default defineConfig(
-  {
-    ignores: [
-      'node_modules', 'dist', '.yarn', '.dev', 'build', '.vite', 'out',
-      'public', '**/.vite',
-    ],
-  },
+  globalIgnores([
+    'node_modules', 'dist', '.yarn', '.dev', 'build', '.vite', 'out',
+    'public', '**/.vite',
+  ]),
   {
     languageOptions: {
       parserOptions: {

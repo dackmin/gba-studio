@@ -7,7 +7,6 @@ import pkg from '../package.json' with { type: 'json' };
 
 const log = debug('gba-studio:remove-locales');
 
-// eslint-disable-next-line @stylistic/max-len
 // https://github.com/barinali/electron-packager-languages/blob/main/src/index.js#L8C1-L19C2
 function getLanguageFolderPath (givenPath: string, platform: string) {
   switch (platform) {

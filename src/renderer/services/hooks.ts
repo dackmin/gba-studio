@@ -14,6 +14,7 @@ import {
   CanvasContext,
   EditorContext,
   LogsContext,
+  PlaybackContext,
   SceneFormContext,
   SpriteContext,
 } from './contexts';
@@ -59,6 +60,7 @@ export const useSceneForm = () => use(SceneFormContext);
 export const useBottomBarTabs = () => use(BottomBarTabsContext);
 export const useLogs = () => use(LogsContext);
 export const useSprite = () => use(SpriteContext);
+export const usePlayback = () => use(PlaybackContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,
@@ -81,7 +83,6 @@ export const useBridgeListener = <T extends any[] = any[]>(
   }, [
     func,
     channel,
-    // eslint-disable-next-line @stylistic/max-len
     // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
     ...deps,
   ]);
