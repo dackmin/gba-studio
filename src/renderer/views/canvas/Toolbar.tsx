@@ -52,7 +52,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
     <Card
       size="2"
       className={classNames(
-        'flex items-center !bg-seashell dark:!bg-onyx !p-3',
+        'flex! items-center !bg-seashell dark:!bg-onyx !p-2 gap-1.5',
         className
       )}
       { ...props }
@@ -82,7 +82,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         </Tooltip>
       </IconButton>
       <IconButton
-        className="!m-0 !ml-2"
+        className="!m-0"
         size="2"
         variant={tool === 'pan' ? 'solid' : 'ghost'}
         onClick={onSelectTool_?.bind(null, 'pan')}
@@ -108,7 +108,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
       <DropdownMenu.Root open={opened} onOpenChange={setOpened}>
         <DropdownMenu.Trigger>
           <IconButton
-            className="!m-0 !ml-2"
+            className="!m-0"
             size="2"
             variant={tool === 'add' ? 'solid' : 'ghost'}
           >
@@ -147,7 +147,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <IconButton
-        className="!m-0 !ml-auto"
+        className="!m-0"
         size="2"
         variant={tool === 'collisions' ? 'solid' : 'ghost'}
         onClick={onSelectTool_?.bind(null, 'collisions')}
