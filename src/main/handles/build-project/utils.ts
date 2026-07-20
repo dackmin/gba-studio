@@ -15,6 +15,7 @@ export function sendStep (
   event.sender.send('build-step', {
     id: buildId,
     message,
+    messageId: uuid(),
   });
 }
 
@@ -27,6 +28,7 @@ export function sendLog (
     id: buildId,
     type: 'log',
     message,
+    messageId: uuid(),
   });
 }
 

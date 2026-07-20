@@ -147,3 +147,6 @@ vite.config.ts.timestamp-*
 
 # VSCode
 .vscode/**
+
+# Vendors
+**/devkitPro/win32/**

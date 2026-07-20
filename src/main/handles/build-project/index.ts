@@ -5,6 +5,7 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
+import extractZip from 'extract-zip';
 import fse from 'fs-extra';
 
 import type { AppPayload, Build, BuildOptions } from '../../../types';
@@ -73,6 +74,62 @@ async function checkPython (
   sendSuccessLog(event, build.id, 'Python found: ' + version.trim());
 }
 
+async function unzipFile (zipPath: string, destPath: string) {
+  await extractZip(zipPath, { dir: destPath });
+}
+
+async function checkDevkitPro (
+  _storage: Storage,
+  event: IpcMainInvokeEvent,
+  build: Build,
+) {
+  if (build.controller?.signal.aborted) {
+    return;
+  }
+
+  sendLog(event, build.id, 'Checking devkitPro...');
+
+  const devkitProBasePath = path.join(
+    getResourcesDir(),
+    './public/vendors/devkitPro'
+  );
+
+  const devkitProPath = getDevkitProPath();
+
+  try {
+    await fs.access(devkitProPath);
+    sendSuccessLog(event, build.id, 'devkitPro found');
+  } catch {
+
+    try {
+      await fs.access(path.join(devkitProBasePath, process.platform + '.zip'));
+      sendLog(event, build.id, 'devkitPro not setup, extracting from zip...');
+      await unzipFile(
+        path.join(devkitProBasePath, process.platform + '.zip'),
+        devkitProPath
+      );
+
+      sendSuccessLog(event, build.id, 'devkitPro extracted successfully.');
+    } catch (e) {
+      sendError(event, build.id, 'devkitPro not found');
+      sendError(event, build.id, (e as Error).message);
+      build.controller?.abort();
+      sendAbort(event, build.id);
+    }
+  }
+}
+
+function getDevkitProPath () {
+  if (process.platform === 'win32') {
+    return path.join(
+      getResourcesDir(),
+      './public/vendors/devkitPro/win32'
+    );
+  }
+
+  return '/opt/devkitpro';
+}
+
 async function checkDependencies (
   storage: Storage,
   event: IpcMainInvokeEvent,
@@ -85,13 +142,13 @@ async function checkDependencies (
   sendStep(event, build.id, 'Checking project dependencies...');
 
   await checkPython(storage, event, build);
+  await checkDevkitPro(storage, event, build);
 }
 
 async function buildMakefile (
   storage: Storage,
   build: Build,
 ) {
-  const pythonPath = getPythonPath(storage, build);
   const target = path
     .basename(build.projectPath, path.extname(build.projectPath));
   const makefileContent = await compileTemplate(
@@ -102,11 +159,12 @@ async function buildMakefile (
     ), 'utf-8'),
     {
       target,
-      pythonPath: pythonPath,
+      pythonPath: getPythonPath(storage, build),
       butanoPath: path.join(
         getResourcesDir(),
         './public/vendors/butano/butano'
       ),
+      devkitProPath: getDevkitProPath(),
       sources: [
         path.relative(
           getBuildDir(build),
