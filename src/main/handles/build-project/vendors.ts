@@ -18,7 +18,7 @@ const packagesShasum: Record<string, Record<string, string>> = {
   },
   python: {
     darwin: '28836032813f1a969baf67ef503a8c855083a548474242b9bb85f61d808e1ada',
-    win32: 'e53eaf37a3700eae7f744d525b75ef8492c1ae9af63ff5db66acc214c7853420',
+    win32: '28e9742888a944f362807cd2df3b8edeeef35b9b4dfa7da5e32e6f86e6962c94',
     linux: '26e12b9bf7b312865c801c86b9112dc7cb9634fce2d023d80ba36a0c38e237fc',
   },
 };
@@ -161,7 +161,7 @@ async function checkPython (
   }
 
   const command = getCustomPythonPath(storage, build) ||
-    getVendorPath('python') + '/bin/python3';
+    path.join(getVendorPath('python'), 'bin', 'python3');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
