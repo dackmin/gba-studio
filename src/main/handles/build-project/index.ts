@@ -5,7 +5,6 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
-import extractZip from 'extract-zip';
 import fse from 'fs-extra';
 
 import type { AppPayload, Build, BuildOptions } from '../../../types';
@@ -20,172 +19,13 @@ import {
   sendSuccessLog,
 } from './utils';
 import { buildTemplates, compileTemplate } from './templates';
+import { checkDependencies, getBuildConfiguration, getVendorPath } from './vendors';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
 
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
-
-function getBuildConfiguration (
-  storage: Storage,
-  build: Build,
-) {
-  const confName = storage.config?.buildConfiguration || 'default';
-
-  if (confName === 'default') {
-    return build?.data?.project?.settings;
-  }
-
-  return build?.data?.project?.configurations?.find(conf =>
-    conf.id === confName
-  )?.settings;
-}
-
-function getCustomPythonPath (
-  storage: Storage,
-  build: Build,
-) {
-  const projectSettings = getBuildConfiguration(storage, build);
-
-  return projectSettings?.pythonPath;
-}
-
-function getCustomDevkitProPath (
-  storage: Storage,
-  build: Build,
-) {
-  const projectSettings = getBuildConfiguration(storage, build);
-
-  return projectSettings?.devkitProPath;
-}
-
-async function unzipFile (zipPath: string, destPath: string) {
-  await extractZip(zipPath, { dir: destPath });
-}
-
-async function checkPackagedVendor (
-  vendorName: string,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller?.signal.aborted) {
-    return;
-  }
-
-  sendLog(event, build.id, `Checking ${vendorName}...`);
-
-  const vendorPath = getVendorPath(vendorName);
-
-  try {
-    await fs.access(vendorPath);
-  } catch {
-    try {
-      await fs.access(vendorPath + '.zip');
-      sendLog(event, build.id, `${vendorName} not setup, extracting from zip...`);
-      await unzipFile(
-        vendorPath + '.zip',
-        vendorPath
-      );
-
-      sendSuccessLog(event, build.id, `${vendorName} extracted successfully.`);
-    } catch (e) {
-      sendError(event, build.id, `${vendorName} not found`);
-      sendError(event, build.id, (e as Error).message);
-      build.controller?.abort();
-      sendAbort(event, build.id);
-    }
-  }
-}
-
-function getVendorPath (vendorName: string) {
-  switch (process.platform) {
-    case 'win32':
-    case 'darwin':
-      return path.join(
-        getResourcesDir(),
-        `./public/vendors/${vendorName}/${process.platform}`
-      );
-    default:
-      return '/opt/devkitpro';
-  }
-}
-
-async function checkPython (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller?.signal.aborted) {
-    return;
-  }
-
-  const command = getCustomPythonPath(storage, build) ||
-    getVendorPath('python') + '/bin/python3';
-
-  const version = await runCommand(command, ['--version'], {
-    cwd: path.dirname(build.projectPath),
-    event,
-    build,
-    log: false,
-  });
-
-  sendSuccessLog(event, build.id, version.trim() + ' found');
-}
-
-async function checkDevkitPro (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller?.signal.aborted) {
-    return;
-  }
-
-  const command = getCustomDevkitProPath(storage, build) ||
-    getVendorPath('devkitPro') + '/devkitARM/bin/arm-none-eabi-g++';
-
-  const version = await runCommand(command, ['--version'], {
-    cwd: path.dirname(build.projectPath),
-    event,
-    build,
-    log: false,
-  });
-
-  sendSuccessLog(event, build.id, version.trim().split('\n')[0] + ' found');
-}
-
-async function checkDependencies (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  if (build.controller?.signal.aborted) {
-    return;
-  }
-
-  sendStep(event, build.id, 'Checking project dependencies...');
-
-  const customPythonPath = getCustomPythonPath(storage, build);
-
-  if (!customPythonPath) {
-    await checkPackagedVendor('python', event, build);
-  } else {
-    sendLog(event, build.id, 'Checking Python...');
-  }
-
-  await checkPython(storage, event, build);
-
-  const customDevkitProPath = getCustomDevkitProPath(storage, build);
-
-  if (!customDevkitProPath) {
-    await checkPackagedVendor('devkitPro', event, build);
-  } else {
-    sendLog(event, build.id, 'Checking devkitPro...');
-  }
-
-  await checkDevkitPro(storage, event, build);
-}
 
 async function buildMakefile (
   _storage: Storage,

@@ -41,7 +41,7 @@ const removeButano = async (vendorsPath: string) => {
   }
 };
 
-const removePackagedVendor = async (vendorPath: string, platform: string) => {
+const removePackagedVendor = async (vendorPath: string) => {
   const files = await fse.readdir(vendorPath, { withFileTypes: true });
 
   // Remove unzipped development folders just in case
@@ -52,14 +52,11 @@ const removePackagedVendor = async (vendorPath: string, platform: string) => {
     }
   }
 
-  // Remove all zips but the one for the current platform
+  // Remove all development zips (downloader on first build)
   for (const file of files) {
     if (file.isFile() && file.name.endsWith('.zip')) {
       const filePath = path.join(vendorPath, file.name);
-
-      if (!file.name.startsWith(platform)) {
-        await fse.remove(filePath);
-      }
+      await fse.remove(filePath);
     }
   }
 };
@@ -75,8 +72,8 @@ export default async function removeVendorsPlugin (
 
   // Butano
   await removeButano(vendorsPath);
-  await removePackagedVendor(path.join(vendorsPath, 'devkitPro'), platform);
-  await removePackagedVendor(path.join(vendorsPath, 'python'), platform);
+  await removePackagedVendor(path.join(vendorsPath, 'devkitPro'));
+  await removePackagedVendor(path.join(vendorsPath, 'python'));
 
   next(null);
 }
