@@ -49,6 +49,17 @@ const ConfigurationForm = ({
               onBlur={onFieldBlur}
             />
           </div>
+          <div className="flex flex-col items-start gap-2">
+            <Text>devkitPro root path</Text>
+            <TextField.Root
+              size="3"
+              value={settings?.devkitProPath || ''}
+              onChange={onTextChange.bind(null, 'settings.devkitProPath')}
+              placeholder="/opt/devkitPro"
+              className="w-96"
+              onBlur={onFieldBlur}
+            />
+          </div>
         </Card>
       </div>
       <div className="flex flex-col gap-3">

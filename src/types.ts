@@ -208,6 +208,7 @@ export interface ProjectSceneData {
 
 export interface ProjectSettings {
   pythonPath?: string;
+  devkitProPath?: string;
   emulatorType?: 'internal' | 'external';
   emulatorCommand?: string;
 }

@@ -39,6 +39,18 @@ app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
 app.commandLine.appendSwitch('force_high_performance_gpu');
 app.commandLine.appendSwitch('force-gpu-mem-available-mb', '2048');
 
+// Wayland users have issues with Vulkan & Chromium trying to render canvas/webgl
+// Forcing either vulkan or opengl seems to do the trick
+const isWayland = process.platform === 'linux' &&
+  (
+    process.env.XDG_SESSION_TYPE === 'wayland' ||
+    Boolean(process.env.WAYLAND_DISPLAY)
+  );
+
+if (isWayland) {
+  app.commandLine.appendSwitch('use-angle', 'vulkan');
+}
+
 if (started) {
   app.quit();
 }

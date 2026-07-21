@@ -19,17 +19,8 @@ function getVendorsPath (buildPath: string, platform: string) {
   }
 }
 
-export default function removeVendorsPlugin (
-  buildPath: string,
-  electronVersion: string,
-  platform: string,
-  arch: string,
-  next: (err: Error | null) => void
-) {
-  const vendorsPath = getVendorsPath(buildPath, platform);
-
-  // Butano
-  [
+const removeButano = async (vendorsPath: string) => {
+  const toDelete = [
     'butano/common',
     'butano/credits',
     'butano/docs',
@@ -41,11 +32,51 @@ export default function removeVendorsPlugin (
     'butano/tests',
     'butano/.gitignore',
     'butano/README.md',
-  ].forEach(dir => {
+  ];
+
+  for (const dir of toDelete) {
     try {
-      fse.removeSync(path.join(vendorsPath, dir));
+      await fse.remove(path.join(vendorsPath, dir));
     } catch {}
-  });
+  }
+};
+
+const removePackagedVendor = async (vendorPath: string, platform: string) => {
+  const files = await fse.readdir(vendorPath, { withFileTypes: true });
+
+  // Remove unzipped development folders just in case
+  for (const file of files) {
+    if (file.isDirectory()) {
+      const filePath = path.join(vendorPath, file.name);
+      await fse.remove(filePath);
+    }
+  }
+
+  // Remove all zips but the one for the current platform
+  for (const file of files) {
+    if (file.isFile() && file.name.endsWith('.zip')) {
+      const filePath = path.join(vendorPath, file.name);
+
+      if (!file.name.startsWith(platform)) {
+        await fse.remove(filePath);
+      }
+    }
+  }
+};
+
+export default async function removeVendorsPlugin (
+  buildPath: string,
+  _electronVersion: string,
+  platform: string,
+  _arch: string,
+  next: (err: Error | null) => void
+) {
+  const vendorsPath = getVendorsPath(buildPath, platform);
+
+  // Butano
+  await removeButano(vendorsPath);
+  await removePackagedVendor(path.join(vendorsPath, 'devkitPro'), platform);
+  await removePackagedVendor(path.join(vendorsPath, 'python'), platform);
 
   next(null);
 }

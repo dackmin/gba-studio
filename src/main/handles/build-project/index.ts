@@ -27,10 +27,10 @@ import Storage from '../../storage';
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
 
-const getBuildConfiguration = (
+function getBuildConfiguration (
   storage: Storage,
   build: Build,
-) => {
+) {
   const confName = storage.config?.buildConfiguration || 'default';
 
   if (confName === 'default') {
@@ -40,17 +40,76 @@ const getBuildConfiguration = (
   return build?.data?.project?.configurations?.find(conf =>
     conf.id === confName
   )?.settings;
-};
+}
 
-const getPythonPath = (
+function getCustomPythonPath (
   storage: Storage,
   build: Build,
-) => {
+) {
   const projectSettings = getBuildConfiguration(storage, build);
 
-  return projectSettings?.pythonPath ||
-    (process.platform === 'darwin' ? 'python3' : 'python');
-};
+  return projectSettings?.pythonPath;
+}
+
+function getCustomDevkitProPath (
+  storage: Storage,
+  build: Build,
+) {
+  const projectSettings = getBuildConfiguration(storage, build);
+
+  return projectSettings?.devkitProPath;
+}
+
+async function unzipFile (zipPath: string, destPath: string) {
+  await extractZip(zipPath, { dir: destPath });
+}
+
+async function checkPackagedVendor (
+  vendorName: string,
+  event: IpcMainInvokeEvent,
+  build: Build,
+) {
+  if (build.controller?.signal.aborted) {
+    return;
+  }
+
+  sendLog(event, build.id, `Checking ${vendorName}...`);
+
+  const vendorPath = getVendorPath(vendorName);
+
+  try {
+    await fs.access(vendorPath);
+  } catch {
+    try {
+      await fs.access(vendorPath + '.zip');
+      sendLog(event, build.id, `${vendorName} not setup, extracting from zip...`);
+      await unzipFile(
+        vendorPath + '.zip',
+        vendorPath
+      );
+
+      sendSuccessLog(event, build.id, `${vendorName} extracted successfully.`);
+    } catch (e) {
+      sendError(event, build.id, `${vendorName} not found`);
+      sendError(event, build.id, (e as Error).message);
+      build.controller?.abort();
+      sendAbort(event, build.id);
+    }
+  }
+}
+
+function getVendorPath (vendorName: string) {
+  switch (process.platform) {
+    case 'win32':
+    case 'darwin':
+      return path.join(
+        getResourcesDir(),
+        `./public/vendors/${vendorName}/${process.platform}`
+      );
+    default:
+      return '/opt/devkitpro';
+  }
+}
 
 async function checkPython (
   storage: Storage,
@@ -61,25 +120,21 @@ async function checkPython (
     return;
   }
 
-  const command = getPythonPath(storage, build);
-
-  sendLog(event, build.id, 'Checking Python...');
+  const command = getCustomPythonPath(storage, build) ||
+    getVendorPath('python') + '/bin/python3';
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
     event,
     build,
+    log: false,
   });
 
-  sendSuccessLog(event, build.id, 'Python found: ' + version.trim());
-}
-
-async function unzipFile (zipPath: string, destPath: string) {
-  await extractZip(zipPath, { dir: destPath });
+  sendSuccessLog(event, build.id, version.trim() + ' found');
 }
 
 async function checkDevkitPro (
-  _storage: Storage,
+  storage: Storage,
   event: IpcMainInvokeEvent,
   build: Build,
 ) {
@@ -87,47 +142,17 @@ async function checkDevkitPro (
     return;
   }
 
-  sendLog(event, build.id, 'Checking devkitPro...');
+  const command = getCustomDevkitProPath(storage, build) ||
+    getVendorPath('devkitPro') + '/devkitARM/bin/arm-none-eabi-g++';
 
-  const devkitProBasePath = path.join(
-    getResourcesDir(),
-    './public/vendors/devkitPro'
-  );
+  const version = await runCommand(command, ['--version'], {
+    cwd: path.dirname(build.projectPath),
+    event,
+    build,
+    log: false,
+  });
 
-  const devkitProPath = getDevkitProPath();
-
-  try {
-    await fs.access(devkitProPath);
-    sendSuccessLog(event, build.id, 'devkitPro found');
-  } catch {
-
-    try {
-      await fs.access(path.join(devkitProBasePath, process.platform + '.zip'));
-      sendLog(event, build.id, 'devkitPro not setup, extracting from zip...');
-      await unzipFile(
-        path.join(devkitProBasePath, process.platform + '.zip'),
-        devkitProPath
-      );
-
-      sendSuccessLog(event, build.id, 'devkitPro extracted successfully.');
-    } catch (e) {
-      sendError(event, build.id, 'devkitPro not found');
-      sendError(event, build.id, (e as Error).message);
-      build.controller?.abort();
-      sendAbort(event, build.id);
-    }
-  }
-}
-
-function getDevkitProPath () {
-  if (process.platform === 'win32') {
-    return path.join(
-      getResourcesDir(),
-      './public/vendors/devkitPro/win32'
-    );
-  }
-
-  return '/opt/devkitpro';
+  sendSuccessLog(event, build.id, version.trim().split('\n')[0] + ' found');
 }
 
 async function checkDependencies (
@@ -141,12 +166,29 @@ async function checkDependencies (
 
   sendStep(event, build.id, 'Checking project dependencies...');
 
+  const customPythonPath = getCustomPythonPath(storage, build);
+
+  if (!customPythonPath) {
+    await checkPackagedVendor('python', event, build);
+  } else {
+    sendLog(event, build.id, 'Checking Python...');
+  }
+
   await checkPython(storage, event, build);
+
+  const customDevkitProPath = getCustomDevkitProPath(storage, build);
+
+  if (!customDevkitProPath) {
+    await checkPackagedVendor('devkitPro', event, build);
+  } else {
+    sendLog(event, build.id, 'Checking devkitPro...');
+  }
+
   await checkDevkitPro(storage, event, build);
 }
 
 async function buildMakefile (
-  storage: Storage,
+  _storage: Storage,
   build: Build,
 ) {
   const target = path
@@ -159,12 +201,12 @@ async function buildMakefile (
     ), 'utf-8'),
     {
       target,
-      pythonPath: getPythonPath(storage, build),
+      pythonPath: path.join(getVendorPath('python'), 'bin', 'python3'),
+      devkitProPath: getVendorPath('devkitPro'),
       butanoPath: path.join(
         getResourcesDir(),
         './public/vendors/butano/butano'
       ),
-      devkitProPath: getDevkitProPath(),
       sources: [
         path.relative(
           getBuildDir(build),

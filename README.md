@@ -26,11 +26,11 @@ Download the latest build for your platform from the [build action pipeline](htt
 - [x] Foreground sprites
 - [x] WASM mGBA integration
 - [x] ~~Windows signed installer~~ (I'm too poor for this, enjoy the unsigned version)
+- [x] Portable python & devkitARM
 - [ ] Move target point from the target scene
 - [ ] Side scroller scene type
 - [ ] Parallax backgrounds
 - [ ] images auto convert on build
-- [ ] Portable python & devkitARM
 - [ ] Auto updater
 - [ ] Sprite animations editor
 - [ ] Sound editor
@@ -58,13 +58,15 @@ Please check the [CONTRIBUTING.md](https://github.com/dackmin/gba-studio/blob/ma
 
 ## License
 
-This software is licensed under [MIT](https://github.com/p3ol/oak/blob/master/LICENSE).
+This software is licensed under [GPL-3.0](https://github.com/dackmin/gba-studio/blob/main/LICENSE).
 
 ### Credits
 
 * GBA Studio is heavily inspired by (if not a pale copy of) [GB Studio](https://gbstudio.dev) by [Chris Maltby](https://github.com/chrismaltby).
 * C++ Code is built using the extraordinary [Butano](https://github.com/GValiente/butano) engine.
-* Example assets displayed in the screenshot:
+* devkitARM executables are provided by [devkitPro](https://devkitpro.org/).
+* Python executable is provided by the [Python Software Foundation](https://www.python.org/) and downloaded using [@bjia56/portable-python](https://github.com/bjia56/portable-python).
+* Example assets displayed in the screenshots:
   - [Retro RPG Characters](https://the-pixel-nook.itch.io/retro-rpg-character-pack) from [The Pixel Nook](https://the-pixel-nook.itch.io/)
   - [Pocket Valley Essentials](https://widseylabs.itch.io/pocket-valley-essentials) from [Widsey Labs](https://widseylabs.itch.io/)
   - [Pocket Valley Interiors](https://widseylabs.itch.io/pocket-valley-interiors) from [Widsey Labs](https://widseylabs.itch.io/)
