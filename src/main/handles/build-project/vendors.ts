@@ -12,7 +12,7 @@ import { getResourcesDir } from '../../utils';
 
 const packagesShasum: Record<string, Record<string, string>> = {
   devkitPro: {
-    darwin: '90d662e6175e13e4ab17a39ac11fd86e3fd93428cfa385b15aa107f6f79f1226',
+    darwin: '7e1398acc0b42ceb63ce9ac84084985c2c23495acd4b14206fb04b5a548e6a0d',
     win32: '2a55f51e5c06b259eadf71fb96d4362aceebc4ee7eb96322de361e0fca85a821',
     linux: '8ffb33ae1e89f1f4fda5031974827180bf63a2ad4c01b3fcb009361cae74edb9',
   },
