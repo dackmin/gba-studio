@@ -16,8 +16,8 @@ on:
 jobs:
   extract:
     name: Extract Vendor
-    fail-fast: false
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: macOS
@@ -45,6 +45,33 @@ jobs:
           docker pull devkitpro/devkitarm:20260610
           sudo mkdir -p /opt/devkitpro
           docker run --rm devkitpro/devkitarm:20260610 tar -C /opt -cf - devkitpro | sudo tar -C /opt -xf -
+      - name: Setup MSYS2 (windows)
+        if: matrix.label == 'win32' && inputs.vendor == 'devkitPro'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: true
+          install: tar
+      - name: Install devkitPro (windows)
+        if: matrix.label == 'win32' && inputs.vendor == 'devkitPro'
+        shell: msys2 {0}
+        run: |
+          pacman-key --recv BC26F752D25B92CE272E0F44F7FD5492264BB9D0 --keyserver keyserver.ubuntu.com
+          pacman-key --lsign BC26F752D25B92CE272E0F44F7FD5492264BB9D0
+          pacman -U --noconfirm https://pkg.devkitpro.org/devkitpro-keyring.pkg.tar.zst
+          pacman-key --populate devkitpro
+          cat >> /etc/pacman.conf <<'EOF'
+
+          [dkp-libs]
+          Server = https://pkg.devkitpro.org/packages
+
+          [dkp-windows]
+          Server = https://pkg.devkitpro.org/packages/windows/$arch/
+          EOF
+          pacman -Sy --noconfirm
+          pacman -S --noconfirm gba-dev
+          mkdir -p /c/devkitPro
+          tar -C /opt/devkitpro -cf - . | tar -C /c/devkitPro -xf -
       - name: Install dependencies
         run: yarn install
       - name: Extract Vendor
