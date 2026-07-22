@@ -23,12 +23,12 @@ jobs:
           - name: macOS
             label: darwin
             os: macos-26
-          - name: Windows
-            label: win32
-            os: windows-latest
-          - name: Linux
-            label: linux
-            os: ubuntu-24.04
+          # - name: Windows
+          #   label: win32
+          #   os: windows-latest
+          # - name: Linux
+          #   label: linux
+          #   os: ubuntu-24.04
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -72,6 +72,12 @@ jobs:
           pacman -S --noconfirm gba-dev
           mkdir -p /c/devkitPro
           tar -C /opt/devkitpro -cf - . | tar -C /c/devkitPro -xf -
+      - name: Install devkitPro (macOS)
+        if: matrix.label == 'darwin' && inputs.vendor == 'devkitPro'
+        run: |
+          wget -qO- https://github.com/devkitPro/pacman/releases/download/v6.0.2/devkitpro-pacman-installer.pkg | sudo installer -pkg /dev/stdin -target /
+          sudo dkp-pacman -Sy --noconfirm
+          sudo dkp-pacman -S --noconfirm gba-dev
       - name: Install dependencies
         run: yarn install
       - name: Extract Vendor
