@@ -72,7 +72,7 @@ async function uncompressFile (filePath: string, destPath: string) {
 
 async function downloadPackagedVendor (vendorName: string, platform: string) {
   const response = await fetch(
-    `https://github.com/dackmin/gba-studio/raw/refs/heads/feature/portable-build/public/` +
+    `https://github.com/dackmin/gba-studio/raw/refs/heads/main/public/` +
       `/vendors/${vendorName}/${platform}.tar.gz`,
     {
       method: 'GET',

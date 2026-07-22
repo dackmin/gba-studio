@@ -24,7 +24,8 @@
     "publish": "electron-forge publish",
     "lint": "eslint --max-warnings=0 --cache .",
     "bundle:devkitPro": "node ./scripts/extract-vendor.ts devkitPro",
-    "bundle:python": "node ./scripts/extract-vendor.ts python"
+    "bundle:python": "node ./scripts/extract-vendor.ts python",
+    "shasum": "node ./scripts/shasum.ts"
   },
   "peerDependencies": {
     "@neoframe/electron-window-corner-addon": "0.1.4"
