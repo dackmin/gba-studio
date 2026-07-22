@@ -11,9 +11,6 @@ on:
         options:
           - devkitPro
           - python
-  push:
-    branches:
-      - feature/portable-build
   
 jobs:
   extract:
@@ -44,7 +41,7 @@ jobs:
         if: matrix.label == 'linux' && inputs.vendor == 'devkitPro'
         run: |
           docker pull devkitpro/devkitarm:20260610
-          CONTAINER_ID=$(docker create devkitpro/devkitarm)
+          CONTAINER_ID=$(docker create devkitpro/devkitarm:20260610)
           sudo docker cp "$CONTAINER_ID:/opt/devkitpro" /opt/devkitpro
           docker rm "$CONTAINER_ID"
       - name: Install dependencies
