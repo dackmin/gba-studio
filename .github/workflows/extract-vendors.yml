@@ -23,12 +23,12 @@ jobs:
           - name: macOS
             label: darwin
             os: macos-26
-          # - name: Windows
-          #   label: win32
-          #   os: windows-latest
-          # - name: Linux
-          #   label: linux
-          #   os: ubuntu-24.04
+          - name: Windows
+            label: win32
+            os: windows-latest
+          - name: Linux
+            label: linux
+            os: ubuntu-24.04
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
