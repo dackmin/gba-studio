@@ -69,7 +69,9 @@ if (!files) {
     try {
       await fsp.access(path.join(vendorPath, file));
       existingFiles.push(file);
-    } catch {}
+    } catch (e) {
+      console.warn(`File not found: ${file} in ${vendorPath}, skipping...`, (e as Error).message);
+    }
   }
 
   await tar.create({

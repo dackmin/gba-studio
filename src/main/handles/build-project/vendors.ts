@@ -162,7 +162,8 @@ async function checkPython (
   }
 
   const command = getCustomPythonPath(storage, build) ||
-    path.join(getVendorPath('python'), 'bin', 'python3');
+    path.join(getVendorPath('python'), 'bin', 'python3') +
+    (process.platform === 'win32' ? '.exe' : '');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
@@ -184,7 +185,8 @@ async function checkDevkitPro (
   }
 
   const command = (getCustomDevkitProPath(storage, build) ||
-    getVendorPath('devkitPro')) + '/devkitARM/bin/arm-none-eabi-g++';
+    getVendorPath('devkitPro')) + '/devkitARM/bin/arm-none-eabi-g++' +
+    (process.platform === 'win32' ? '.exe' : '');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
