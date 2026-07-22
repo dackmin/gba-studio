@@ -75,7 +75,8 @@ jobs:
       - name: Install devkitPro (macOS)
         if: matrix.label == 'darwin' && inputs.vendor == 'devkitPro'
         run: |
-          wget -qO- https://github.com/devkitPro/pacman/releases/download/v6.0.2/devkitpro-pacman-installer.pkg | sudo installer -pkg /dev/stdin -target /
+          wget -qO "$RUNNER_TEMP/devkitpro-pacman-installer.pkg" https://github.com/devkitPro/pacman/releases/download/v6.0.2/devkitpro-pacman-installer.pkg
+          sudo installer -pkg "$RUNNER_TEMP/devkitpro-pacman-installer.pkg" -target /
           sudo dkp-pacman -Sy --noconfirm
           sudo dkp-pacman -S --noconfirm gba-dev
       - name: Install dependencies
