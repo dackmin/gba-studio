@@ -17,9 +17,9 @@ const packagesShasum: Record<string, Record<string, string>> = {
     linux: '8ffb33ae1e89f1f4fda5031974827180bf63a2ad4c01b3fcb009361cae74edb9',
   },
   python: {
-    darwin: '9654ba93c99e302e11c86bf0c1527fb7b76f664e87f9cf0ab931399e3db5753a',
-    win32: 'TODO',
-    linux: 'TODO',
+    darwin: '7c51858fe6efebf9534fd9001fe6bc3ee7bef34234d5ab363b6f88fb963b9aed',
+    win32: '1844cf69c5604c3b1fdbb8c9a0b59d3c68bddda29cd502524d43c7530546b882',
+    linux: '71b44294295b7b32370f80a1246d3a8160caf18f28a1886be1bb747ba45acc46',
   },
 };
 
