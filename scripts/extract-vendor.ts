@@ -17,7 +17,7 @@ const vendorPaths: Record<string, Record<string, string>> = {
   },
   python: {
     darwin: 'node_modules/@bjia56/portable-python-3.13/python-headless-3.13.9-darwin-universal2',
-    win32: 'node_modules/@bjia56/portable-python-3.13/python-headless-3.13.9-win64',
+    win32: 'node_modules/@bjia56/portable-python-3.13/python-headless-3.13.9-windows-x86_64',
     linux: 'node_modules/@bjia56/portable-python-3.13/python-headless-3.13.9-linux-x86_64',
   },
 };
