@@ -3,7 +3,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 
 import { IpcMainInvokeEvent } from 'electron';
-import extractZip from 'extract-zip';
+import * as tar from 'tar';
 
 import type { Build } from '../../../types';
 import type Storage from '../../storage';
@@ -12,22 +12,21 @@ import { getResourcesDir } from '../../utils';
 
 const packagesShasum: Record<string, Record<string, string>> = {
   devkitPro: {
-    darwin: '9657875b8135cd18da8baa9f374a0880d653c51c6777c7f9451c400774368fdc',
-    win32: '78be177673ce40993d40a03895bfcae9892d475fbdf8814a260ad549d16f4093',
-    linux: '3be7abd1c3855f9485aaa024763e4a1ee411747d13909ee18c7d0dca2b9567cf',
+    darwin: '90d662e6175e13e4ab17a39ac11fd86e3fd93428cfa385b15aa107f6f79f1226',
+    win32: 'TODO',
+    linux: 'TODO',
   },
   python: {
-    darwin: '28836032813f1a969baf67ef503a8c855083a548474242b9bb85f61d808e1ada',
-    win32: '28e9742888a944f362807cd2df3b8edeeef35b9b4dfa7da5e32e6f86e6962c94',
-    linux: '26e12b9bf7b312865c801c86b9112dc7cb9634fce2d023d80ba36a0c38e237fc',
+    darwin: '9654ba93c99e302e11c86bf0c1527fb7b76f664e87f9cf0ab931399e3db5753a',
+    win32: 'TODO',
+    linux: 'TODO',
   },
 };
 
 async function getFileHash (buffer: Buffer) {
-  const hash = createHash('sha256');
-  hash.update(buffer);
-
-  return hash.digest('hex');
+  return createHash('sha256')
+    .update(buffer)
+    .digest('hex');
 }
 
 export function getBuildConfiguration (
@@ -45,7 +44,7 @@ export function getBuildConfiguration (
   )?.settings;
 }
 
-function getCustomPythonPath (
+export function getCustomPythonPath (
   storage: Storage,
   build: Build,
 ) {
@@ -54,7 +53,7 @@ function getCustomPythonPath (
   return projectSettings?.pythonPath;
 }
 
-function getCustomDevkitProPath (
+export function getCustomDevkitProPath (
   storage: Storage,
   build: Build,
 ) {
@@ -63,14 +62,18 @@ function getCustomDevkitProPath (
   return projectSettings?.devkitProPath;
 }
 
-async function unzipFile (zipPath: string, destPath: string) {
-  await extractZip(zipPath, { dir: destPath });
+async function uncompressFile (filePath: string, destPath: string) {
+  await fsp.mkdir(destPath, { recursive: true });
+  await tar.extract({
+    file: filePath,
+    cwd: destPath,
+  });
 }
 
 async function downloadPackagedVendor (vendorName: string, platform: string) {
   const response = await fetch(
     `https://github.com/dackmin/gba-studio/raw/refs/heads/feature/portable-build/public/` +
-      `/vendors/${vendorName}/${platform}.zip`,
+      `/vendors/${vendorName}/${platform}.tar.gz`,
     {
       method: 'GET',
       headers: {
@@ -93,7 +96,7 @@ async function downloadPackagedVendor (vendorName: string, platform: string) {
   }
 
   await fsp.writeFile(
-    path.join(getResourcesDir(), `./public/vendors/${vendorName}/${platform}.zip`),
+    path.join(getResourcesDir(), `./public/vendors/${vendorName}/${platform}.tar.gz`),
     buffer
   );
 }
@@ -117,17 +120,17 @@ async function checkPackagedVendor (
   } catch {
     // If that fails, try to use the internal zip file
     try {
-      await fsp.access(vendorPath + '.zip');
-      sendLog(event, build.id, `${vendorName} not setup, extracting from zip...`);
-      await unzipFile(vendorPath + '.zip', vendorPath);
+      await fsp.access(vendorPath + '.tar.gz');
+      sendLog(event, build.id, `${vendorName} not setup, extracting from archive...`);
+      await uncompressFile(vendorPath + '.tar.gz', vendorPath);
       sendSuccessLog(event, build.id, `${vendorName} extracted successfully.`);
     } catch {
-      // If that fails, try to download the zip from github
+      // If that fails, try to download archive from github
       try {
-        sendLog(event, build.id, `${vendorName} package not found, downloading from CDN...`);
+        sendLog(event, build.id, `${vendorName} package not found, downloading from GitHub...`);
         await downloadPackagedVendor(vendorName, process.platform);
-        sendLog(event, build.id, `${vendorName} -> extracting from zip...`);
-        await unzipFile(vendorPath + '.zip', vendorPath);
+        sendLog(event, build.id, `extracting ${vendorName} from downloaded archive...`);
+        await uncompressFile(vendorPath + '.tar.gz', vendorPath);
       } catch (e) {
         sendError(event, build.id, `${vendorName} not found`);
         sendError(event, build.id, (e as Error).message);
@@ -182,8 +185,8 @@ async function checkDevkitPro (
     return;
   }
 
-  const command = getCustomDevkitProPath(storage, build) ||
-    getVendorPath('devkitPro') + '/devkitARM/bin/arm-none-eabi-g++';
+  const command = (getCustomDevkitProPath(storage, build) ||
+    getVendorPath('devkitPro')) + '/devkitARM/bin/arm-none-eabi-g++';
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),

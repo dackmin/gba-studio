@@ -19,7 +19,13 @@ import {
   sendSuccessLog,
 } from './utils';
 import { buildTemplates, compileTemplate } from './templates';
-import { checkDependencies, getBuildConfiguration, getVendorPath } from './vendors';
+import {
+  checkDependencies,
+  getBuildConfiguration,
+  getCustomDevkitProPath,
+  getCustomPythonPath,
+  getVendorPath,
+} from './vendors';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
@@ -28,7 +34,7 @@ const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
 
 async function buildMakefile (
-  _storage: Storage,
+  storage: Storage,
   build: Build,
 ) {
   const target = path
@@ -41,8 +47,10 @@ async function buildMakefile (
     ), 'utf-8'),
     {
       target,
-      pythonPath: path.join(getVendorPath('python'), 'bin', 'python3'),
-      devkitProPath: getVendorPath('devkitPro'),
+      pythonPath: getCustomPythonPath(storage, build) ||
+        path.join(getVendorPath('python'), 'bin', 'python3'),
+      devkitProPath: getCustomDevkitProPath(storage, build) ||
+        getVendorPath('devkitPro'),
       butanoPath: path.join(
         getResourcesDir(),
         './public/vendors/butano/butano'
