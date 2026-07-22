@@ -8,6 +8,7 @@ on:
       vendor:
         description: 'Vendor name'
         required: true
+        default: 'devkitPro'
   
 jobs:
   extract:
