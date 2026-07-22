@@ -1,0 +1,43 @@
+name: Extract Vendors
+on:
+  workflow_dispatch:
+    inputs:
+      vendor:
+        description: 'Vendor name'
+        required: true
+  
+jobs:
+  extract:
+    name: Extract Vendor
+    strategy:
+      matrix:
+        include:
+          - name: macOS
+            label: darwin
+            os: macos-26
+          - name: Windows
+            label: win32
+            os: windows-latest
+          - name: Linux
+            label: linux
+            os: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+          check-latest: true
+      - name: Install dependencies
+        run: yarn install
+      - name: Extract Vendor
+        run: |
+          node scripts/extract-vendor.ts ${{ github.event.inputs.vendor }}
+      - name: Upload Vendor Archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.event.inputs.vendor }}-${{ matrix.label }}
+          path: public/vendors/${{ github.event.inputs.vendor }}/${{ matrix.label }}.tar.gz
