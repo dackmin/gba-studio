@@ -41,7 +41,8 @@ const vendorFiles: Record<string, string[]> = {
     `devkitARM/libexec/gcc/arm-none-eabi/16.1.0/cc1${executableSuffix}`,
     `devkitARM/libexec/gcc/arm-none-eabi/16.1.0/cc1plus${executableSuffix}`,
     'devkitARM/libexec/gcc/arm-none-eabi/16.1.0/liblto_plugin.so',
-    'devkitARM/libexec/gcc/arm-none-eabi/16.1.0/liblto_plugin-0.dll',
+    'devkitARM/libexec/gcc/arm-none-eabi/16.1.0/liblto_plugin.dll',
+    'devkitARM/libexec/gcc/arm-none-eabi/16.1.0/liblto_plugin.dll.a',
     'devkitARM/libexec/gcc/arm-none-eabi/16.1.0/liblto_plugin.la',
   ],
   python: [
