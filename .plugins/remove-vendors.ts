@@ -42,22 +42,22 @@ const removeButano = async (vendorsPath: string) => {
 };
 
 const removePackagedVendor = async (vendorPath: string) => {
-  const files = await fse.readdir(vendorPath, { withFileTypes: true });
+  const toDelete = [
+    'darwin.tar.gz',
+    'darwin.zip',
+    'darwin',
+    'linux.tar.gz',
+    'linux.zip',
+    'linux',
+    'win32.tar.gz',
+    'win32.zip',
+    'win32',
+  ];
 
-  // Remove unzipped development folders just in case
-  for (const file of files) {
-    if (file.isDirectory()) {
-      const filePath = path.join(vendorPath, file.name);
-      await fse.remove(filePath);
-    }
-  }
-
-  // Remove all development zips (downloader on first build)
-  for (const file of files) {
-    if (file.isFile() && file.name.endsWith('.zip')) {
-      const filePath = path.join(vendorPath, file.name);
-      await fse.remove(filePath);
-    }
+  for (const file of toDelete) {
+    try {
+      await fse.remove(path.join(vendorPath, file));
+    } catch {}
   }
 };
 

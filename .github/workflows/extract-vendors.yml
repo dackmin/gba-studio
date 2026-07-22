@@ -41,12 +41,13 @@ jobs:
           cache: yarn
           check-latest: true
       - name: Install vendors (linux)
-        if: matrix.label == 'linux'
+        if: matrix.label == 'linux' && inputs.vendor == 'devkitPro'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y devkitpro-pacman
+          wget -U "dkp-apt" https://apt.devkitpro.org/install-devkitpro-pacman
+          chmod +x ./install-devkitpro-pacman
+          sudo ./install-devkitpro-pacman
           sudo dkp-pacman -Syu
-          sudo dkp-pacman -S --noconfirm devkitarm
+          sudo dkp-pacman -S gba-dev
       - name: Install dependencies
         run: yarn install
       - name: Extract Vendor
