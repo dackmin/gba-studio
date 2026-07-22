@@ -12,6 +12,16 @@ on:
         options:
           - devkitPro
           - python
+      os:
+        description: 'Operating system'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - macOS
+          - Windows
+          - Linux
   
 jobs:
   extract:
@@ -19,16 +29,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: macOS
-            label: darwin
-            os: macos-26
-          - name: Windows
-            label: win32
-            os: windows-latest
-          - name: Linux
-            label: linux
-            os: ubuntu-24.04
+        include: ${{ fromJSON(
+          inputs.os == 'all' && '[{"name":"macOS","label":"darwin","os":"macos-26"},{"name":"Windows","label":"win32","os":"windows-latest"},{"name":"Linux","label":"linux","os":"ubuntu-24.04"}]' ||
+          inputs.os == 'macOS' && '[{"name":"macOS","label":"darwin","os":"macos-26"}]' ||
+          inputs.os == 'Windows' && '[{"name":"Windows","label":"win32","os":"windows-latest"}]' ||
+          '[{"name":"Linux","label":"linux","os":"ubuntu-24.04"}]' ) }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
