@@ -42,9 +42,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Extract Vendor
-        run: yarn bundle:${{github.event.inputs.vendor}}
+        run: yarn bundle:${{ inputs.vendor }}
       - name: Upload Vendor Archive
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.inputs.vendor }}-${{ matrix.label }}
-          path: public/vendors/${{ github.event.inputs.vendor }}/${{ matrix.label }}.tar.gz
+          name: ${{ inputs.vendor }}-${{ matrix.label }}
+          path: public/vendors/${{ inputs.vendor }}/${{ matrix.label }}.tar.gz
