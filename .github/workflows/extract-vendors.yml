@@ -8,7 +8,11 @@ on:
       vendor:
         description: 'Vendor name'
         required: true
+        type: choice
         default: 'devkitPro'
+        options:
+          - devkitPro
+          - python
   
 jobs:
   extract:
