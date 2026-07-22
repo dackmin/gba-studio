@@ -1,5 +1,8 @@
 name: Extract Vendors
 on:
+  push:
+    branches:
+      - feature/portable-build
   workflow_dispatch:
     inputs:
       vendor:
