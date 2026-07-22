@@ -87,8 +87,6 @@ async function downloadPackagedVendor (vendorName: string, platform: string) {
   }
 
   const buffer = Buffer.from(await response.arrayBuffer());
-
-  // Verify the downloaded file's hash
   const fileHash = await getFileHash(buffer);
 
   if (fileHash !== packagesShasum[vendorName][platform]) {
