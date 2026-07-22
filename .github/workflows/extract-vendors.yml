@@ -38,8 +38,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Extract Vendor
-        run: |
-          node scripts/extract-vendor.ts ${{ github.event.inputs.vendor }}
+        run: yarn bundle:${{github.event.inputs.vendor}}
       - name: Upload Vendor Archive
         uses: actions/upload-artifact@v7
         with:
