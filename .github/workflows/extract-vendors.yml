@@ -44,7 +44,7 @@ jobs:
         if: matrix.label == 'linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y devkitpro-pacman python3 python3-pip
+          sudo apt-get install -y devkitpro-pacman
           sudo dkp-pacman -Syu
           sudo dkp-pacman -S --noconfirm devkitarm
       - name: Install dependencies
