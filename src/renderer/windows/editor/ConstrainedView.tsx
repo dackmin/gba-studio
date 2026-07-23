@@ -8,7 +8,7 @@ const ConstrainedView = ({
   children,
   ...rest
 }: ScrollAreaProps) => {
-  const { leftSidebarOpened, leftSidebarWidth, bottomBarHeight } = useEditor();
+  const { leftSidebarOpened, leftSidebarWidth, bottomBarOpened, bottomBarHeight } = useEditor();
 
   return (
     <ScrollArea
@@ -19,7 +19,7 @@ const ConstrainedView = ({
       )}
       style={{
         ...(leftSidebarOpened ? { paddingLeft: leftSidebarWidth } : {}),
-        height: `calc(100vh - ${bottomBarHeight}px)`,
+        height: `calc(100vh - ${bottomBarOpened ? bottomBarHeight : 0}px)`,
       }}
     >
       <div className="px-2 min-h-full flex flex-col">
