@@ -215,3 +215,5 @@ const Settings = () => {
 };
 
 export default Settings;
+
+export { default as BottomBar } from './BottomBar';

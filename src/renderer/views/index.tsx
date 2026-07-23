@@ -12,7 +12,9 @@ import Preview, {
   LeftSidebar as PreviewLeftSidebar,
   BottomBar as PreviewBottomBar,
 } from './preview';
-import Settings from './settings';
+import Settings, {
+  BottomBar as SettingsBottomBar,
+} from './settings';
 import Sprites, {
   LeftSidebar as SpritesLeftSidebar,
   RightSidebar as SpritesRightSidebar,
@@ -58,6 +60,7 @@ const views: ViewDefinition[] = [{
   title: 'Settings',
   icon: GearIcon,
   view: Settings,
+  bottomBar: SettingsBottomBar,
 }];
 
 export default views;
