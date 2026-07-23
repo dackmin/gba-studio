@@ -74,12 +74,6 @@ async function downloadPackagedVendor (vendorName: string, platform: string) {
   const response = await fetch(
     `https://github.com/dackmin/gba-studio/raw/refs/heads/main/public/` +
       `/vendors/${vendorName}/${platform}.tar.gz`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/zip',
-      },
-    },
   );
 
   if (!response.ok) {
@@ -125,6 +119,7 @@ async function checkPackagedVendor (
     } catch {
       // If that fails, try to download archive from github
       try {
+        await fsp.unlink(vendorPath + '.tar.gz').catch(() => {});
         sendLog(event, build.id, `${vendorName} package not found, downloading from GitHub...`);
         await downloadPackagedVendor(vendorName, process.platform);
         sendLog(event, build.id, `extracting ${vendorName} from downloaded archive...`);
