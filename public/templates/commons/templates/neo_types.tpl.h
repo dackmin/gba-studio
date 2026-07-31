@@ -421,6 +421,24 @@ namespace neo::types
     }
   };
 
+  struct sprite_animation_frame
+  {
+    int frame_index;
+    int duration;
+    bool reversed;
+  };
+
+  struct sprite_animation
+  {
+    bn::string_view _id;
+    bn::string_view name;
+    neo::types::direction direction;
+    bool moving;
+    bool loop;
+    int frames_count;
+    sprite_animation_frame** frames;
+  };
+
   struct actor
   {
     bn::string_view _id;
@@ -436,6 +454,8 @@ namespace neo::types
     event** interact_events;
     int update_events_count;
     event** update_events;
+    int animations_count;
+    sprite_animation** animations;
   };
 
   struct sprite

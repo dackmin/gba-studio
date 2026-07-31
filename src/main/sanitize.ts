@@ -5,6 +5,7 @@ import { imageSizeFromFile } from 'image-size/fromFile';
 
 import type {
   AppPayload,
+  CharacterDirection,
   GameActor,
   GameProject,
   GameScene,
@@ -17,7 +18,9 @@ import type {
   OnButtonPressEvent,
   SceneEvent,
   SpriteAnimation,
+  SpriteAnimationFrame,
   SpriteAnimations,
+  SpriteAnimationState,
 } from '../types';
 import { getResourcesDir } from './utils';
 
@@ -216,11 +219,92 @@ export const sanitizeVariablesRegistry = async (
   return variables;
 };
 
+export const sanitizeAnimationFrame = async (
+  frame: SpriteAnimationFrame,
+): Promise<SpriteAnimationFrame> => {
+  if (!frame.id) {
+    frame.id = randomUUID();
+  }
+
+  frame.index = Number(frame.index ?? 0);
+  frame.duration = Number(frame.duration ?? 100);
+
+  return frame;
+};
+
+export const sanitizeAnimationState = async (
+  state: SpriteAnimationState,
+): Promise<SpriteAnimationState> => {
+  if (!state.id) {
+    state.id = randomUUID();
+  }
+
+  if (!state.type) {
+    state.type = 'state';
+  }
+
+  if (!state.frames) {
+    state.frames = [];
+  }
+
+  for (const frame of state.frames) {
+    await sanitizeAnimationFrame(frame);
+  }
+
+  return state;
+};
+
 export const sanitizeAnimation = async (
   animation: SpriteAnimation
 ): Promise<SpriteAnimation> => {
   if (!animation.id) {
     animation.id = randomUUID();
+  }
+
+  if (!animation.states) {
+    animation.states = {};
+  }
+
+  if (!animation.type) {
+    animation.type = 'animation';
+  }
+
+  if (!animation.animationType) {
+    animation.animationType = 'fixed';
+  }
+
+  if (animation.animationType === 'fixed') {
+    if (!animation.states.fixed) {
+      animation.states.fixed = {
+        id: randomUUID(),
+        type: 'state',
+        frames: [],
+      };
+    }
+
+    await sanitizeAnimationState(animation.states.fixed);
+  }
+
+  if (animation.animationType !== 'fixed') {
+    for (const stateName of ['idle', 'moving'] as (
+      keyof Omit<typeof animation.states, 'fixed'>
+    )[]) {
+      if (!animation.states[stateName]) {
+        animation.states[stateName] = {};
+      }
+
+      for (const direction of ['up', 'down', 'left', 'right'] as CharacterDirection[]) {
+        if (!animation.states[stateName][direction]) {
+          animation.states[stateName][direction] = {
+            id: randomUUID(),
+            type: 'state',
+            frames: [],
+          };
+        }
+
+        await sanitizeAnimationState(animation.states[stateName][direction]);
+      }
+    }
   }
 
   return animation;

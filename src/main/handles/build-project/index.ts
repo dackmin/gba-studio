@@ -107,6 +107,19 @@ async function buildMakefile (
   );
 }
 
+async function prepareData (build: Build) {
+  for (const sprite of build.data?.sprites ?? []) {
+    const animations = build.data?.animations?.find(a => a._sprite_file === sprite._file);
+
+    if (animations) {
+      // @ts-expect-error - only used inside handlebars, no type pollution needed
+      sprite._animations = animations;
+    }
+  }
+
+  return build;
+}
+
 async function buildProject (
   storage: Storage,
   event: IpcMainInvokeEvent,
@@ -125,7 +138,7 @@ async function buildProject (
   }
 
   sendStep(event, build.id, 'Pre-building templates...');
-  await buildTemplates(event, build);
+  await buildTemplates(event, await prepareData(build));
 
   sendStep(event, build.id, 'Building project...');
   sendLog(event, build.id, `Building project in ${getBuildDir(build)}...`);

@@ -99,6 +99,14 @@ export const setupHandlebars = async () => {
       './public/templates/commons/templates/partials/value.tpl.h'
     ), 'utf-8'))
   );
+
+  Handlebars.registerPartial(
+    'animationsPartial',
+    (await fse.readFile(path.join(
+      getResourcesDir(),
+      './public/templates/commons/templates/partials/animations.tpl.h'
+    ), 'utf-8'))
+  );
 };
 
 export const compileTemplate = async (
