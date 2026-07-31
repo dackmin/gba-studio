@@ -432,6 +432,7 @@ namespace neo::types
   {
     bn::string_view _id;
     bn::string_view name;
+    bn::string_view type;
     neo::types::direction direction;
     bool moving;
     bool loop;

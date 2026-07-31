@@ -27,7 +27,8 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('neq', (a, b) => a !== b);
   Handlebars.registerHelper('isset', v => !!v);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
-  Handlebars.registerHelper('or', (a, b) => a || b);
+  Handlebars.registerHelper('or', (...args) => args.slice(0, -1).some(Boolean));
+  Handlebars.registerHelper('and', (...args) => args.slice(0, -1).every(Boolean));
   Handlebars.registerHelper('len', (a: string | any[]) => a.length);
   Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
@@ -66,6 +67,7 @@ export const setupHandlebars = async () => {
       ? trueValue : falseValue);
   Handlebars.registerHelper('longestMenuChoice', (arr: GameMenuChoice[]) =>
     arr.sort((a, b) => b.text.length - a.text.length)[0]?.text || '');
+  Handlebars.registerHelper('array', (...args) => args.slice(0, -1));
 
   // Add partials
   Handlebars.registerPartial(

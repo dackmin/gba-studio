@@ -108,12 +108,15 @@ async function buildMakefile (
 }
 
 async function prepareData (build: Build) {
-  for (const sprite of build.data?.sprites ?? []) {
-    const animations = build.data?.animations?.find(a => a._sprite_file === sprite._file);
+  for (const scene of build.data?.scenes || []) {
+    for (const actor of scene.actors || []) {
+      const animations = build.data?.animations
+        ?.find(a => a._sprite_file === actor.sprite + '.json');
 
-    if (animations) {
-      // @ts-expect-error - only used inside handlebars, no type pollution needed
-      sprite._animations = animations;
+      if (animations) {
+        // @ts-expect-error - only used inside handlebars, no type pollution needed
+        actor._animations = animations.animations;
+      }
     }
   }
 

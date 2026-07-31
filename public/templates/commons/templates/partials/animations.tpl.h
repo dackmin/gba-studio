@@ -1,26 +1,24 @@
-{{#each animations}}
+{{#with state}}
+{{log ../direction}}
 {{#if (hasItems this.frames)}}
 {{#each this.frames}}
-neo::types::sprite_animation_frame {{../prefix}}_{{@index}} = {
-  {{valuedef this.frame_index 0}},
+neo::types::sprite_animation_frame {{../../prefix}}_frame_{{@index}} = {
+  {{valuedef this.index 0}},
   {{valuedef this.duration 100}},
   {{valuedef this.reversed false}}
 };
 {{/each}}
 neo::types::sprite_animation_frame* {{../prefix}}_frames[] = {
   {{#each this.frames}}
-  &{{../prefix}}_{{@index}}{{#unless @last}},{{/unless}}
+  {{../../prefix}}_frame_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
 };
 {{/if}}
 neo::types::sprite_animation {{../prefix}}_{{@index}} = {
   "{{this.id}}",
-  "{{this.name}}",
-  {{#if (isset ../direction)}}
-  neo::types::direction::{{uppercase ../direction}},
-  {{else}}
-  nullptr,
-  {{/if}}
+  "{{../name}}",
+  "{{valuedef ../type 'fixed'}}",
+  neo::types::direction::{{uppercase (valuedef ../direction 'down')}},
   {{valuedef this.moving false}},
   {{valuedef this.loop true}},
   {{#if (hasItems this.frames)}}
@@ -31,4 +29,4 @@ neo::types::sprite_animation {{../prefix}}_{{@index}} = {
   nullptr
   {{/if}}
 };
-{{/each}}
+{{/with}}
