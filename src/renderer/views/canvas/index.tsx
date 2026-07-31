@@ -331,57 +331,57 @@ const Canvas = () => {
             'cursor-copy': tool === 'add',
           },
         )}
+        center={true}
+        fitAbsolute={true}
         onClick={onCanvasClick}
       >
-        <div className="relative flex items-start gap-8">
-          { appPayload.scenes.map(scene => (
-            <Scene
-              key={scene.name}
-              scene={scene}
-              onSelect={selectScene?.bind(null, scene)}
-              onSelectItem={selectItem}
-              onMove={onMoveScene}
-              onChange={onSceneChange}
-            />
-          )) }
+        { appPayload.scenes.map(scene => (
+          <Scene
+            key={scene.name}
+            scene={scene}
+            onSelect={selectScene?.bind(null, scene)}
+            onSelectItem={selectItem}
+            onMove={onMoveScene}
+            onChange={onSceneChange}
+          />
+        )) }
 
-          { tool === 'add' && subTool === 'scene' && (
-            <Scene
-              scene={DEFAULT_SCENE}
-              className="!fixed pointer-events-none opacity-50 !z-1000"
-              preview={true}
-            />
-          ) }
+        { tool === 'add' && subTool === 'scene' && (
+          <Scene
+            scene={DEFAULT_SCENE}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+          />
+        ) }
 
-          { tool === 'add' && subTool === 'actor' && (
-            <Actor
-              actor={DEFAULT_ACTOR}
-              className="!fixed pointer-events-none opacity-50 !z-1000"
-              preview={true}
-              gridSize={selectedScene?.map?.gridSize}
-            />
-          ) }
+        { tool === 'add' && subTool === 'actor' && (
+          <Actor
+            actor={DEFAULT_ACTOR}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+            gridSize={selectedScene?.map?.gridSize}
+          />
+        ) }
 
-          { tool === 'add' && subTool === 'sensor' && (
-            <Sensor
-              sensor={DEFAULT_SENSOR}
-              className="!fixed pointer-events-none opacity-50 !z-1000"
-              preview={true}
-              gridSize={selectedScene?.map?.gridSize}
-            />
-          ) }
+        { tool === 'add' && subTool === 'sensor' && (
+          <Sensor
+            sensor={DEFAULT_SENSOR}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+            gridSize={selectedScene?.map?.gridSize}
+          />
+        ) }
 
-          { tool === 'add' && subTool === 'sprite' && (
-            <Sprite
-              sprite={DEFAULT_SPRITE}
-              className="!fixed pointer-events-none opacity-50 !z-1000"
-              preview={true}
-              gridSize={selectedScene?.map?.gridSize}
-            />
-          ) }
+        { tool === 'add' && subTool === 'sprite' && (
+          <Sprite
+            sprite={DEFAULT_SPRITE}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+            gridSize={selectedScene?.map?.gridSize}
+          />
+        ) }
 
-          <Arrows />
-        </div>
+        <Arrows />
       </InfiniteCanvas>
 
       <Toolbar
