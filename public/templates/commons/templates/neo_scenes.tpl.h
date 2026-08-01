@@ -186,80 +186,25 @@ namespace neo::scenes
   // -- Animations
   {{#if (hasItems this._animations)}}
   {{#each this._animations}}
-  {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_fixed") type=this.animationType state=this.states.fixed moving=false}}
+  {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_fixed") name=this.name type=this.animationType state=this.states.fixed moving=false}}
   // --- Animation states
   {{#each (array 'idle' 'moving')}}
   {{#each (array 'up' 'down' 'left' 'right')}}
-  {{#if (or (and (eq ../this 'moving') (eq ../../this.animationType 'movements')) (eq ../this 'idle'))}}
-  {{>animationsPartial prefix=(concat (slug ../../../this.name) "_actor_" @../../index "_animation_" @../index "_" @../this "_" this) type=../../this.animationType name=../../this state=(lookup (lookup ../../this.states @../this) this) moving=(and (eq @../this "moving") (eq ../../this.animationType 'movements')) direction=this}}
+  {{#if (or (and (eq ../this 'moving') (contains (array 'movements' 'directions') ../../this.animationType)) (eq ../this 'idle'))}}
+  {{>animationsPartial prefix=(concat (slug ../../../../this.name) "_actor_" @../../../index "_animation_" @../../index "_" @../this "_" this) type=../../this.animationType name=../../this.name state=(lookup (lookup ../../this.states @../this) this) moving=(and (eq @../this "moving") (eq ../../this.animationType 'movements')) direction=this}}
   {{/if}}
   {{/each}}
   {{/each}}
-
-  // {{#if (hasItems this.states.fixed)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_fixed") animations=this.states.fixed moving=false}}
-  // {{/if}}
-  // {{#if (hasItems this.states.idle.up)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_idle_up") animations=this.states.idle.up moving=false direction="up"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.idle.down)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_idle_down") animations=this.states.idle.down moving=false direction="down"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.idle.left)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_idle_left") animations=this.states.idle.left moving=false direction="left"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.idle.right)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_idle_right") animations=this.states.idle.right moving=false direction="right"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.moving.up)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_moving_up") animations=this.states.moving.up moving=true direction="up"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.moving.down)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_moving_down") animations=this.states.moving.down moving=true direction="down"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.moving.left)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_moving_left") animations=this.states.moving.left moving=true direction="left"}}
-  // {{/if}}
-  // {{#if (hasItems this.states.moving.right)}}
-  // {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_moving_right") animations=this.states.moving.right moving=true direction="right"}}
-  // {{/if}}
   neo::types::sprite_animation* {{slug ../../this.name}}_actor_{{@../index}}_animations[] = {
-    {{#each this.states.fixed}}
-    &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_fixed_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
-    {{#each ['idle', 'moving']}}
-    {{#each ['up', 'down', 'left', 'right']}}
-    {{#if (hasItems (lookup (lookup ../this.states this) this))}}
-    {{#each (lookup (lookup ../this.states this) this)}}
-    &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_{{@../../this}}_{{@../this}}_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
+    &{{slug ../../this.name}}_actor_{{@../index}}_animation_{{@index}}_fixed,
+    {{#each (array 'idle' 'moving')}}
+    {{#each (array 'up' 'down' 'left' 'right')}}
+    {{#if (or (and (eq ../this 'moving') (contains (array 'movements' 'directions') ../../this.animationType)) (eq ../this 'idle'))}}
+    &{{slug ../../../../this.name}}_actor_{{@../../../index}}_animation_{{@../../index}}_{{@../this}}_{{this}},
     {{/if}}
     {{/each}}
     {{/each}}
-    // {{#each this.states.idle.up}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_idle_up_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.idle.down}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_idle_down_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.idle.left}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_idle_left_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.idle.right}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_idle_right_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.moving.up}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_moving_up_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.moving.down}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_moving_down_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.moving.left}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_moving_left_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
-    // {{#each this.states.moving.right}}
-    // &{{slug ../../../this.name}}_actor_{{@../../index}}_animation_{{@../index}}_moving_right_{{@index}}{{#unless @last}},{{/unless}}
-    // {{/each}}
+    nullptr,
   };
   {{/each}}
   {{/if}}
@@ -301,7 +246,7 @@ namespace neo::scenes
     {{/if}}
     // Animations
     {{#if (hasItems this._animations)}}
-    {{multiply (valuedef this._animations.length 0) 9}},
+    {{add (multiply (valuedef this._animations.length 0) 9) 1}},
     {{slug ../this.name}}_actor_{{@index}}_animations
     {{else}}
     0,

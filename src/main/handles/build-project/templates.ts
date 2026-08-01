@@ -13,10 +13,11 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('ensureArray', value => [].concat(value || []));
   Handlebars.registerHelper('hasItems', (arr: any[]) =>
     Array.isArray(arr) && arr.length > 0);
-  Handlebars.registerHelper('slug', (str: string) => toSlug(str));
+  Handlebars.registerHelper('slug', (str: string) => toSlug(str || ''));
   Handlebars.registerHelper('int', (v: any) => parseInt(v, 10) || 0);
   Handlebars.registerHelper('bool', (v: any) =>
     typeof v === 'string' ? v === 'true' : !!v);
+  Handlebars.registerHelper('contains', (arr: any[], value: any) => arr.includes(value));
   Handlebars.registerHelper('eq', (a, b) => a === b);
   Handlebars.registerHelper('gt', (a, b) => a > b);
   Handlebars.registerHelper('lt', (a, b) => a < b);
@@ -26,6 +27,7 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('not', (a, b) => a !== b);
   Handlebars.registerHelper('neq', (a, b) => a !== b);
   Handlebars.registerHelper('isset', v => !!v);
+  Handlebars.registerHelper('add', (a, b) => a + b);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
   Handlebars.registerHelper('or', (...args) => args.slice(0, -1).some(Boolean));
   Handlebars.registerHelper('and', (...args) => args.slice(0, -1).every(Boolean));
