@@ -12,6 +12,7 @@
 #include "bn_music_items_info.h"
 #include "bn_sound_items_info.h"
 
+#include <neo_utils.h>
 #include <neo_types.h>
 #include <neo_scenes.h>
 #include <neo_variables.h>
@@ -19,7 +20,6 @@
 #include "player.h"
 #include "game.h"
 #include "commons.h"
-#include "utils.h"
 #include "fade.h"
 #include "buttons.h"
 #include "actor.h"

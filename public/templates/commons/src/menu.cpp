@@ -12,12 +12,12 @@
 #include <bn_sprite_items_gbs_mono.h>
 #include <bn_sprite_items_menu_arrow.h>
 
+#include <neo_utils.h>
 #include <neo_types.h>
 
 #include "menu.h"
 #include "game.h"
 #include "buttons.h"
-#include "utils.h"
 #include "dialog_bg.h"
 
 namespace neo

@@ -185,30 +185,12 @@ namespace neo::scenes
 
   // -- Animations
   {{#if (hasItems this._animations)}}
-  {{#each this._animations}}
-  {{>animationsPartial prefix=(concat (slug ../../this.name) "_actor_" @../index "_animation_" @index "_fixed") name=this.name type=this.animationType state=this.states.fixed moving=false}}
-  // --- Animation states
-  {{#each (array 'idle' 'moving')}}
-  {{#each (array 'up' 'down' 'left' 'right')}}
-  {{#if (or (and (eq ../this 'moving') (contains (array 'movements' 'directions') ../../this.animationType)) (eq ../this 'idle'))}}
-  {{>animationsPartial prefix=(concat (slug ../../../../this.name) "_actor_" @../../../index "_animation_" @../../index "_" @../this "_" this) type=../../this.animationType name=../../this.name state=(lookup (lookup ../../this.states @../this) this) moving=(and (eq @../this "moving") (eq ../../this.animationType 'movements')) direction=this}}
-  {{/if}}
-  {{/each}}
-  {{/each}}
-  neo::types::sprite_animation* {{slug ../../this.name}}_actor_{{@../index}}_animations[] = {
-    &{{slug ../../this.name}}_actor_{{@../index}}_animation_{{@index}}_fixed,
-    {{#each (array 'idle' 'moving')}}
-    {{#each (array 'up' 'down' 'left' 'right')}}
-    {{#if (or (and (eq ../this 'moving') (contains (array 'movements' 'directions') ../../this.animationType)) (eq ../this 'idle'))}}
-    &{{slug ../../../../this.name}}_actor_{{@../../../index}}_animation_{{@../../index}}_{{@../this}}_{{this}},
-    {{else}}
-    nullptr,
-    {{/if}}
+  {{>animationsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_animation") animations=this._animations}}
+  neo::types::sprite_animation* {{slug ../this.name}}_actor_{{@index}}_animations[] = {
+    {{#each this._animations}}
+    &{{slug ../../this.name}}_actor_{{@../index}}_animation_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
-    {{/each}}
-    nullptr,
   };
-  {{/each}}
   {{/if}}
 
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
@@ -248,7 +230,7 @@ namespace neo::scenes
     {{/if}}
     // Animations
     {{#if (hasItems this._animations)}}
-    {{add (multiply (valuedef this._animations.length 0) 9) 1}},
+    {{this._animations.length}},
     {{slug ../this.name}}_actor_{{@index}}_animations
     {{else}}
     0,

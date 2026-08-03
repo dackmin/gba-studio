@@ -10,13 +10,13 @@
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
 
+#include <neo_utils.h>
 #include <neo_types.h>
 
 #include "dialog.h"
 #include "dialog_bg.h"
 #include "game.h"
 #include "buttons.h"
-#include "utils.h"
 
 namespace neo
 {

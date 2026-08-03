@@ -29,6 +29,7 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('isset', v => !!v);
   Handlebars.registerHelper('add', (a, b) => a + b);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
+  Handlebars.registerHelper('divide', (a, b) => a / b);
   Handlebars.registerHelper('max', (...args) => Math.max(...args.slice(0, -1)));
   Handlebars.registerHelper('min', (...args) => Math.min(...args.slice(0, -1)));
   Handlebars.registerHelper('or', (...args) => args.slice(0, -1).some(Boolean));
@@ -150,6 +151,10 @@ export const buildTemplates = async (
   event: IpcMainInvokeEvent,
   build: Build,
 ): Promise<void> => {
+  sendLog(event, build.id, 'Building helpers...');
+  await buildSingleTemplate('neo_utils.tpl.h', build);
+  sendSuccessLog(event, build.id, 'neo_utils.h built');
+
   sendLog(event, build.id, 'Building types...');
   await buildSingleTemplate('neo_types.tpl.h', build);
   sendSuccessLog(event, build.id, 'neo_types.h built');

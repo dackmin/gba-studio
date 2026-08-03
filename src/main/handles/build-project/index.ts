@@ -26,6 +26,7 @@ import {
   getCustomPythonPath,
   getVendorPath,
 } from './vendors';
+import { prepareData } from './data';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
@@ -105,22 +106,6 @@ async function buildMakefile (
     makefileContent,
     'utf-8'
   );
-}
-
-async function prepareData (build: Build) {
-  for (const scene of build.data?.scenes || []) {
-    for (const actor of scene.actors || []) {
-      const animations = build.data?.animations
-        ?.find(a => a._sprite_file === actor.sprite + '.json');
-
-      if (animations) {
-        // @ts-expect-error - only used inside handlebars, no type pollution needed
-        actor._animations = animations.animations;
-      }
-    }
-  }
-
-  return build;
 }
 
 async function buildProject (

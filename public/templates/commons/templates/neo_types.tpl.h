@@ -6,8 +6,11 @@
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
+#include <bn_sprite_ptr.h>
+#include <bn_sprite_tiles_ptr.h>
 #include <bn_vector.h>
 
+#include <neo_utils.h>
 #include <neo_variables.h>
 
 namespace neo::types
@@ -438,6 +441,54 @@ namespace neo::types
     bool loop;
     int frames_count;
     sprite_animation_frame** frames;
+    bool _playing = false;
+    int _current_wanted_index = 0;
+    int _current_displayed_index = -1;
+
+    sprite_animation(
+      bn::string_view _id_,
+      bn::string_view name_,
+      bn::string_view type_,
+      neo::types::direction direction_,
+      bool moving_,
+      bool loop_,
+      int frames_count_,
+      sprite_animation_frame** frames_
+    ):
+      _id(_id_),
+      name(name_),
+      type(type_),
+      direction(direction_),
+      moving(moving_),
+      loop(loop_),
+      frames_count(frames_count_),
+      frames(frames_) {}
+
+    inline void play (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
+    {
+      if (_current_wanted_index == _current_displayed_index)
+      {
+        return;
+      }
+
+      _current_displayed_index = _current_wanted_index;
+      sprite_animation_frame* frame = frames[_current_displayed_index];
+      sprite.set_tiles(tiles->create_tiles(frame->frame_index));
+
+      if (loop)
+      {
+        neo::utils::wait(frame->duration);
+        _current_wanted_index = (_current_wanted_index + 1) % frames_count;
+      }
+    }
+
+    inline void stop (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
+    {
+      _playing = false;
+      _current_wanted_index = 0;
+      _current_displayed_index = -1;
+      sprite.set_tiles(tiles->create_tiles(frames[0]->frame_index));
+    }
   };
 
   struct actor
