@@ -29,6 +29,8 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('isset', v => !!v);
   Handlebars.registerHelper('add', (a, b) => a + b);
   Handlebars.registerHelper('multiply', (a, b) => a * b);
+  Handlebars.registerHelper('max', (...args) => Math.max(...args.slice(0, -1)));
+  Handlebars.registerHelper('min', (...args) => Math.min(...args.slice(0, -1)));
   Handlebars.registerHelper('or', (...args) => args.slice(0, -1).some(Boolean));
   Handlebars.registerHelper('and', (...args) => args.slice(0, -1).every(Boolean));
   Handlebars.registerHelper('len', (a: string | any[]) => a.length);

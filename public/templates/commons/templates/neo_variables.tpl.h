@@ -41,7 +41,7 @@ namespace neo::variables
 
   struct registry
   {
-    bn::unordered_map<bn::string_view, neo::variables::value*, {{or (powerOfTwo (valuesCount variables)) 1}}> all;
+    bn::unordered_map<bn::string_view, neo::variables::value*, {{max (powerOfTwo (valuesCount variables)) 1}}> all;
 
     registry(): all()
     {
