@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { mockState } from '@junipero/react';
 
-import type { SpriteAnimation, SpriteAnimationFrame } from '../../../types';
+import type { DynamicVariableValue, SpriteAnimation, SpriteAnimationFrame } from '../../../types';
 import { type PlaybackContextType, PlaybackContext } from '../../services/contexts';
 import { useSprite } from '../../services/hooks';
 
@@ -43,13 +43,25 @@ const PlaybackProvider = ({ children }: ComponentPropsWithoutRef<'div'>) => {
     clearTimeout(playbackTimerRef.current);
 
     if (state.playing) {
+      let time: number;
+
+      if (typeof frames[state.index] === 'number') {
+        time = 100;
+      } else if (typeof frames[state.index] === 'object') {
+        const duration = (frames[state.index] as SpriteAnimationFrame).duration;
+
+        time = (duration as DynamicVariableValue)?.type === 'variable'
+          ? 100
+          : Number(duration ?? 100);
+      } else {
+        time = 100;
+      }
+
       playbackTimerRef.current = setTimeout(() => {
         dispatch({
           index: (state.index + 1) % frames.length,
         });
-      }, typeof frames[state.index] === 'number'
-        ? 100
-        : (frames[state.index] as SpriteAnimationFrame).duration ?? 100);
+      }, time);
     }
   }, [state.playing, state.index, selectedAnimation, currentState]);
 

@@ -2,6 +2,14 @@
 /// <reference types="@electron-forge/plugin-vite/forge-vite-env" />
 /// <reference types="./src/types.ts" />
 
+interface ImportMetaEnv {
+  readonly VITE_SCHEMAS_BASE: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
 interface AppBridge extends EventTarget {
   addEventListener(
     channel: string,

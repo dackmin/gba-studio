@@ -53,7 +53,7 @@ export interface SpriteAnimationFrame {
   type: 'frame';
   index: number;
   reverse?: boolean;
-  duration?: number;
+  duration?: EventValue;
   // Internals
   id: string;
 }
@@ -91,6 +91,7 @@ export interface SpriteAnimations {
   id: string;
   _sprite_file?: string;
   _file?: string;
+  $schema?: string;
 }
 
 export interface GameVariable {
@@ -107,6 +108,7 @@ export interface GameVariables {
   // Internals
   id: string;
   _file?: string;
+  $schema?: string;
 }
 
 export interface GameMap {
@@ -143,6 +145,7 @@ export interface GameScene {
   // Internals
   id: string;
   _file?: string;
+  $schema?: string;
 }
 
 export interface GameScript {
@@ -152,6 +155,7 @@ export interface GameScript {
   // Internals
   id: string;
   _file?: string;
+  $schema?: string;
 }
 
 export interface GameActor {

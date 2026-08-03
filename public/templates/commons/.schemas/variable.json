@@ -8,6 +8,9 @@
         "$schema": {
           "type": "string"
         },
+        "id": {
+          "type": "string"
+        },
         "type": {
           "type": "string"
         },
