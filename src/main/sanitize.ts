@@ -273,17 +273,15 @@ export const sanitizeAnimation = async (
     animation.animationType = 'fixed';
   }
 
-  if (animation.animationType === 'fixed') {
-    if (!animation.states.fixed) {
-      animation.states.fixed = {
-        id: randomUUID(),
-        type: 'state',
-        frames: [],
-      };
-    }
-
-    await sanitizeAnimationState(animation.states.fixed);
+  if (!animation.states.fixed) {
+    animation.states.fixed = {
+      id: randomUUID(),
+      type: 'state',
+      frames: [],
+    };
   }
+
+  await sanitizeAnimationState(animation.states.fixed);
 
   if (animation.animationType !== 'fixed') {
     for (const stateName of ['idle', 'moving'] as (

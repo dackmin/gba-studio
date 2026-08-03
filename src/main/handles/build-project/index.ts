@@ -234,6 +234,7 @@ async function startBuild (
       sendAbort(event, build.id);
     } else {
       sendError(event, build.id, (e as Error).message);
+      sendAbort(event, build.id);
     }
   }
 }

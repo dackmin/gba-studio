@@ -201,6 +201,8 @@ namespace neo::scenes
     {{#each (array 'up' 'down' 'left' 'right')}}
     {{#if (or (and (eq ../this 'moving') (contains (array 'movements' 'directions') ../../this.animationType)) (eq ../this 'idle'))}}
     &{{slug ../../../../this.name}}_actor_{{@../../../index}}_animation_{{@../../index}}_{{@../this}}_{{this}},
+    {{else}}
+    nullptr,
     {{/if}}
     {{/each}}
     {{/each}}

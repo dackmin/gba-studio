@@ -35,9 +35,9 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('entries', obj => Object.entries(obj));
   Handlebars.registerHelper('concat', (...args) => args.slice(0, -1).join(''));
   Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase());
-  Handlebars.registerHelper('log', (msg: any) => {
+  Handlebars.registerHelper('log', (...args) => {
     // eslint-disable-next-line no-console
-    console.log('[templates]', msg);
+    console.log('[templates]', ...args.slice(0, -1));
 
     return '';
   });
