@@ -4,7 +4,7 @@ import { createContext } from 'react';
 import type {
   AppPayload,
   AppStorage,
-  BuildMessage,
+  LogMessage,
   CharacterDirection,
   GameActor,
   GamePlayer,
@@ -153,15 +153,19 @@ export const BottomBarTabsContext = createContext<BottomBarTabsContextType>({
 });
 
 export interface LogsContextType {
-  buildLogs: BuildMessage[];
-  emulatorLogs: string[];
+  buildLogs: LogMessage[];
+  emulatorLogs: LogMessage[];
   clearBuildLogs(): void;
+  addEmulatorLog(log: LogMessage): void;
+  clearEmulatorLogs(): void;
 }
 
 export const LogsContext = createContext<LogsContextType>({
   buildLogs: [],
   emulatorLogs: [],
   clearBuildLogs: () => {},
+  addEmulatorLog: () => {},
+  clearEmulatorLogs: () => {},
 });
 
 export interface SpriteContextType {

@@ -440,7 +440,7 @@ export interface Build {
   opts?: BuildOptions;
 }
 
-export interface BuildMessage {
+export interface LogMessage {
   id: string;
   type?: 'log' | 'error' | 'success';
   message: string;

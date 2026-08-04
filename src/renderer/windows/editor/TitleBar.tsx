@@ -2,7 +2,7 @@ import { type ComponentPropsWithoutRef, useState } from 'react';
 import { Card, IconButton, Kbd, Spinner, Text, Tooltip } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import type { BuildMessage } from '../../../types';
+import type { LogMessage } from '../../../types';
 import { useApp, useBridgeListener, useEditor } from '../../services/hooks';
 import BottomBarIcon from '../../components/BottomBarIcon';
 import RightSidebarIcon from '../../components/RightSidebarIcon';
@@ -26,7 +26,7 @@ const TitleBar = ({
   } = useEditor();
   const [step, setStep] = useState('Initializing build...');
 
-  useBridgeListener('build-step', ({ message }: BuildMessage) => {
+  useBridgeListener('build-step', ({ message }: LogMessage) => {
     setStep(message);
   }, []);
 

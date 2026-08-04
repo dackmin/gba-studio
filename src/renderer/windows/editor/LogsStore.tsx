@@ -3,13 +3,13 @@ import { mockState } from '@junipero/react';
 
 import { LogsContext, LogsContextType } from '../../services/contexts';
 import { useBridgeListener } from '../../services/hooks';
-import { BuildMessage } from '../../../types';
+import { LogMessage } from '../../../types';
 
 export interface LogsStoreProps extends ComponentPropsWithoutRef<any> {}
 
 export interface LogsState {
-  buildLogs: BuildMessage[];
-  emulatorLogs: string[];
+  buildLogs: LogMessage[];
+  emulatorLogs: LogMessage[];
 }
 
 const LogsStore = ({
@@ -20,7 +20,7 @@ const LogsStore = ({
     emulatorLogs: [],
   });
 
-  useBridgeListener('build-log', (log: BuildMessage) => {
+  useBridgeListener('build-log', (log: LogMessage) => {
     dispatch(s => ({
       ...s,
       buildLogs: s.buildLogs.find(l => l.messageId === log.messageId)
@@ -36,11 +36,32 @@ const LogsStore = ({
     }));
   }, []);
 
+  const addEmulatorLog = useCallback((log: LogMessage) => {
+    dispatch(s => ({
+      ...s,
+      emulatorLogs: s.emulatorLogs.find(l => l.messageId === log.messageId)
+        ? s.emulatorLogs
+        : [...s.emulatorLogs, log].slice(-10000),
+    }));
+  }, []);
+
+  const clearEmulatorLogs = useCallback(() => {
+    dispatch(s => ({
+      ...s,
+      emulatorLogs: [],
+    }));
+  }, []);
+
   const getContext = useCallback((): LogsContextType => ({
     buildLogs: state.buildLogs,
     emulatorLogs: state.emulatorLogs,
     clearBuildLogs,
-  }), [state.buildLogs, state.emulatorLogs, clearBuildLogs]);
+    addEmulatorLog,
+    clearEmulatorLogs,
+  }), [
+    state.buildLogs, state.emulatorLogs,
+    clearBuildLogs, addEmulatorLog, clearEmulatorLogs,
+  ]);
 
   return (
     <LogsContext value={getContext()}>
