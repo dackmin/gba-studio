@@ -1,9 +1,10 @@
 {{#each animations}}
 {{#if (hasItems this.frames)}}
 {{#each this.frames}}
+{{>valuePartial prefix=(concat ../../prefix "_" @../index "_frame_" @index "_duration") value=(valuedef this.duration 100)}}
 neo::types::sprite_animation_frame {{../../prefix}}_{{@../index}}_frame_{{@index}} = {
   {{valuedef this.index 0}},
-  {{valuedef this.duration 100}},
+  &{{../../prefix}}_{{@../index}}_frame_{{@index}}_duration_value,
   {{valuedef this.reversed false}}
 };
 {{/each}}

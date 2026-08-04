@@ -273,6 +273,17 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug this.name) "_player_x") value=(valuedef this.player.x 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_y") value=(valuedef this.player.y 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_z") value=(valuedef this.player.z 1)}}
+
+  // Player
+  {{#if (hasItems this.player._animations)}}
+  {{>animationsPartial prefix=(concat (slug ../this.name) "_player_animation") animations=this.player._animations}}
+  neo::types::sprite_animation* {{slug ../this.name}}_player_animations[] = {
+    {{#each this.player._animations}}
+    &{{slug ../../this.name}}_player_animation_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
+
   bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
   bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
   neo::types::scene scene_{{slug this.name}} = {
@@ -297,6 +308,13 @@ namespace neo::scenes
     &{{slug this.name}}_player_z_value,
     neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
     bn::sprite_items::{{valuedef this.player.sprite "sprite_default"}},
+    {{#if (hasItems this.player._animations)}}
+    {{this.player._animations.length}},
+    {{slug this.name}}_player_animations,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
     {{else}}
     false,
     &{{slug this.name}}_player_x_value,
@@ -304,6 +322,8 @@ namespace neo::scenes
     &{{slug this.name}}_player_z_value,
     neo::types::direction::DOWN,
     bn::sprite_items::sprite_default,
+    0,
+    nullptr,
     {{/if}}
     {{#if this.map}}
     &{{slug this.name}}_map_data,
@@ -346,6 +366,8 @@ namespace neo::scenes
     &default_player_z_value,
     neo::types::direction::DOWN,
     bn::sprite_items::sprite_default,
+    0,
+    nullptr,
     nullptr,
     0,
     nullptr,

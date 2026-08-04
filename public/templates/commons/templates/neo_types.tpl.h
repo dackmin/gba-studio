@@ -427,7 +427,7 @@ namespace neo::types
   struct sprite_animation_frame
   {
     int frame_index;
-    int duration;
+    event_value* duration;
     bool reversed;
   };
 
@@ -444,6 +444,7 @@ namespace neo::types
     bool _playing = false;
     int _current_wanted_index = 0;
     int _current_displayed_index = -1;
+    neo::variables::registry* _variables = nullptr;
 
     sprite_animation(
       bn::string_view _id_,
@@ -477,7 +478,7 @@ namespace neo::types
 
       if (loop)
       {
-        neo::utils::wait(frame->duration);
+        neo::utils::wait(frame->duration->as_int(*_variables));
         _current_wanted_index = (_current_wanted_index + 1) % frames_count;
       }
     }
@@ -543,6 +544,9 @@ namespace neo::types
     event_value* start_z;
     neo::types::direction start_direction;
     bn::sprite_item player_sprite;
+    // Animations
+    int player_animations_count;
+    sprite_animation** player_animations;
     // Map data
     map* map_data;
     // Actors
