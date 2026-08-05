@@ -141,7 +141,7 @@ const Scene = ({
 
   const sensors = useMemo(() => (
     scene.map?.sensors || []
-  ), [scene.map]);
+  ), [scene.map?.sensors]);
 
   const actors = useMemo(() => (
     scene.actors || []

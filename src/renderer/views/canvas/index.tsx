@@ -107,7 +107,7 @@ const Canvas = () => {
             ? selectedScene! : s
         )),
       });
-      selectItem?.();
+      selectItem?.(selectedScene);
 
       return;
     }
@@ -124,7 +124,7 @@ const Canvas = () => {
             ? selectedScene! : s
         )),
       });
-      selectItem?.();
+      selectItem?.(selectedScene);
 
       return;
     }
