@@ -10,8 +10,6 @@ GBA Studio is an Electron game creator built on top of the [Butano](https://gith
 
 ## Installation
 
-GBA Studio still requires you to have [Python 3+](https://www.python.org/downloads/) and [devkitARM](https://devkitpro.org/wiki/Getting_Started/devkitARM) installed on your system.
-
 Download the latest build for your platform from the [build action pipeline](https://github.com/dackmin/gba-studio/actions/workflows/build.yml).
 
 > Note: macOS builds are signed & notarized. Windows builds are unsigned.
@@ -27,12 +25,12 @@ Download the latest build for your platform from the [build action pipeline](htt
 - [x] WASM mGBA integration
 - [x] ~~Windows signed installer~~ (I'm too poor for this, enjoy the unsigned version)
 - [x] Portable python & devkitARM
+- [x] Sprite animations editor
 - [ ] Move target point from the target scene
 - [ ] Side scroller scene type
 - [ ] Parallax backgrounds
 - [ ] images auto convert on build
 - [ ] Auto updater
-- [ ] Sprite animations editor
 - [ ] Sound editor
 - [ ] Plugins
 
