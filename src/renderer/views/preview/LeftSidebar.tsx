@@ -5,10 +5,13 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
+  GearIcon,
   KeyboardIcon,
   MixIcon,
 } from '@radix-ui/react-icons';
-import { Kbd, Text } from '@radix-ui/themes';
+import { Kbd, Slider, Text } from '@radix-ui/themes';
+
+import { useEmulator } from '../../services/hooks';
 
 export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
 
@@ -18,6 +21,7 @@ const LeftSidebar = ({
   const [gamepadConnected, setGamepadConnected] = useState(() => {
     return navigator.getGamepads().some(gp => gp !== null);
   });
+  const { volume, setVolume } = useEmulator();
 
   useEventListener('gamepadconnected', () => {
     setGamepadConnected(true);
@@ -27,9 +31,27 @@ const LeftSidebar = ({
     setGamepadConnected(false);
   }, []);
 
+  const onVolumeChange = (value: number[]) => {
+    setVolume(value[0] / 100);
+  };
+
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
-      <div className="flex flex-col gap-2 mt-4 px-2">
+      <div className="flex flex-col gap-2 mt-4 px-4">
+        <div className="flex items-center gap-2 justify-center py-2">
+          <GearIcon />
+          <Text size="1" className="text-slate">Settings</Text>
+        </div>
+        <div className="flex items-center gap-8">
+          <div className="flex-none">
+            Volume
+          </div>
+          <div className="flex-auto">
+            <Slider min={0} max={200} value={[volume * 100]} onValueChange={onVolumeChange} />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 mt-4 px-4">
         <div className="flex items-center gap-2 justify-center py-2">
           <KeyboardIcon />
           <Text size="1" className="text-slate">Keyboard bindings</Text>

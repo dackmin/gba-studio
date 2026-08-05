@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { classNames, useEventListener } from '@junipero/react';
-import mGBA, { type mGBAEmulator } from '@thenick775/mgba-wasm';
+import mGBA, { type mGBAEmulator, type LogEntry } from '@thenick775/mgba-wasm';
+import { v4 as uuid } from 'uuid';
 
-import { useApp } from '../../services/hooks';
+import { useApp, useBridgeListener, useEmulator, useLogs } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 import Gamepad from '../../components/Gamepad';
 
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [emulator, setEmulator] = useState<mGBAEmulator | null>(null);
+  const { addEmulatorLog } = useLogs();
+  const { volume } = useEmulator();
   const { projectPath } = useApp();
   const scale = 3;
 
@@ -18,6 +21,17 @@ const Preview = () => {
       emulator?.setFastForwardMultiplier(4);
     }
   }, [emulator]);
+
+  useBridgeListener('build-completed', () => {
+    emulator?.quitMgba();
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (emulator) {
+      emulator.setVolume(volume);
+    }
+  }, [volume, emulator]);
 
   const reload = useCallback((module: mGBAEmulator) => {
     // eslint-disable-next-line new-cap
@@ -46,6 +60,21 @@ const Preview = () => {
     }
   }, [emulator]);
 
+  const addLogger = useCallback((module: mGBAEmulator) => {
+    module.setLogger((entry: LogEntry) => {
+      if (['GBA BIOS', 'GBA DMA'].includes(entry.category)) {
+        return;
+      }
+
+      addEmulatorLog({
+        id: '',
+        messageId: uuid(),
+        type: ['ERROR', 'FATAL', 'GAME ERROR'].includes(entry.level) ? 'error' : 'log',
+        message: `[${entry.level}] ${entry.category}: ${entry.message}`,
+      });
+    });
+  }, [addEmulatorLog]);
+
   const init = useCallback(async () => {
     if (!canvasRef.current) {
       return;
@@ -71,10 +100,11 @@ const Preview = () => {
       });
     });
 
+    addLogger(module);
     setEmulator(module);
 
     return module;
-  }, [projectPath, reload]);
+  }, [projectPath, reload, addLogger]);
 
   useEffect(() => {
     init();
@@ -171,3 +201,4 @@ export default Preview;
 
 export { default as LeftSidebar } from './LeftSidebar';
 export { default as BottomBar } from './BottomBar';
+export { default as Provider } from './Provider';

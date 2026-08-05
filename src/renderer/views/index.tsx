@@ -11,6 +11,7 @@ import Canvas, {
 import Preview, {
   LeftSidebar as PreviewLeftSidebar,
   BottomBar as PreviewBottomBar,
+  Provider as PreviewProvider,
 } from './preview';
 import Settings, {
   BottomBar as SettingsBottomBar,
@@ -44,6 +45,7 @@ const views: ViewDefinition[] = [{
   title: 'Preview',
   icon: CardStackIcon,
   view: Preview,
+  provider: PreviewProvider,
   leftSidebar: PreviewLeftSidebar,
   bottomBar: PreviewBottomBar,
 }, {

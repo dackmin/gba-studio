@@ -220,3 +220,13 @@ export const PlaybackContext = createContext<PlaybackContextType>({
   jumpToEnd: () => {},
   jumpTo: () => {},
 });
+
+export interface EmulatorContextType {
+  volume: number;
+  setVolume(volume: number): void;
+}
+
+export const EmulatorContext = createContext<EmulatorContextType>({
+  volume: 1,
+  setVolume: () => {},
+});

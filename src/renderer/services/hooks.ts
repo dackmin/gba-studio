@@ -13,6 +13,7 @@ import {
   BottomBarTabsContext,
   CanvasContext,
   EditorContext,
+  EmulatorContext,
   LogsContext,
   PlaybackContext,
   SceneFormContext,
@@ -61,6 +62,7 @@ export const useBottomBarTabs = () => use(BottomBarTabsContext);
 export const useLogs = () => use(LogsContext);
 export const useSprite = () => use(SpriteContext);
 export const usePlayback = () => use(PlaybackContext);
+export const useEmulator = () => use(EmulatorContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,
