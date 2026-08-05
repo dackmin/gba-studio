@@ -37,6 +37,11 @@ const ConfigurationForm = ({
       ) }
       <div className="flex flex-col gap-3">
         <Heading size="3">Build settings</Heading>
+        <Text color="gray">
+          Python & devkitARM executables are built-in to GBA Studio and downloaded automatically
+          when you first build your game.
+          If you prefer to use your own versions, you can specify the paths here.
+        </Text>
         <Card className="!flex flex-col gap-4">
           <div className="flex flex-col items-start gap-2">
             <Text>Python executable path</Text>

@@ -40,7 +40,7 @@ const Editor = () => {
   useBridgeListener('build-completed', () => {
     const emulatorType = project?.settings?.emulatorType || 'internal';
 
-    if (emulatorType === 'internal') {
+    if (emulatorType !== 'external') {
       dispatch({ view: 'preview' });
     }
   }, []);
