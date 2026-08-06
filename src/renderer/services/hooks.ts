@@ -4,6 +4,7 @@ import {
   use,
   useDeferredValue,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { useTimeout } from '@junipero/react';
@@ -69,12 +70,18 @@ export const useBridgeListener = <T extends any[] = any[]>(
   func: (...args: T) => void,
   deps: any[] = [],
 ) => {
+  const funcRef = useRef(func);
+
+  useEffect(() => {
+    funcRef.current = func;
+  }, [func]);
+
   useEffect(() => {
     const cb = (
       _: IpcRendererEvent,
       ...args: any[]
     ) => {
-      func(...args as T);
+      funcRef.current(...args as T);
     };
 
     window.electron.addEventListener(channel, cb);
@@ -83,7 +90,6 @@ export const useBridgeListener = <T extends any[] = any[]>(
       window.electron.removeEventListener(channel, cb);
     };
   }, [
-    func,
     channel,
     // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
     ...deps,
