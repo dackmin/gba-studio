@@ -6,8 +6,10 @@ import type { IpcMainInvokeEvent } from 'electron';
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameMusicFile,
   GameScene,
   GameScript,
+  GameSoundFile,
   GameSpriteFile,
   GameVariables,
 } from '../../types';
@@ -21,7 +23,9 @@ export const saveItem = async (
     | GameScene
     | GameScript
     | GameSpriteFile
-    | GameBackgroundFile,
+    | GameBackgroundFile
+    | GameMusicFile
+    | GameSoundFile,
   projectDir: string
 ) => {
   if (item._file) {
@@ -88,6 +92,16 @@ export default async (
   // Save sprites
   for (const sprite of data.sprites || []) {
     await saveItem(sprite, projectDir);
+  }
+
+  // Save sounds
+  for (const sound of data.sounds || []) {
+    await saveItem(sound, projectDir);
+  }
+
+  // Save music
+  for (const music of data.music || []) {
+    await saveItem(music, projectDir);
   }
 
   // Save project config

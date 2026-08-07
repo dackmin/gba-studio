@@ -273,14 +273,36 @@ export interface GameBackgroundFile {
   $schema?: string;
 }
 
+export interface GameSoundFile {
+  type: 'sound';
+  name: string;
+  path: string;
+  format?: string;
+  // Internals
+  id?: string;
+  _file?: string;
+  $schema?: string;
+}
+
+export interface GameMusicFile {
+  type: 'music';
+  name: string;
+  path: string;
+  format?: string;
+  // Internals
+  id?: string;
+  _file?: string;
+  $schema?: string;
+}
+
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
   variables: GameVariables[];
   sprites: GameSpriteFile[];
   backgrounds: GameBackgroundFile[];
-  music: string[];
-  sounds: string[];
+  music: GameMusicFile[];
+  sounds: GameSoundFile[];
   scripts: GameScript[];
 };
 

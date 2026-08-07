@@ -85,10 +85,7 @@ async function buildMakefile (
         ),
       ],
       audio: [
-        path.relative(
-          getBuildDir(build),
-          path.join(path.dirname(build.projectPath), 'audio'),
-        ),
+        './audio',
         path.relative(
           getBuildDir(build),
           path.join(getResourcesDir(), './public/templates/commons/audio'),

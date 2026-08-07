@@ -79,4 +79,37 @@ export async function copyAssets (
     await fse.copyFile(source, destination);
     sendLog(event, build.id, `Copied background: ${background.name} (${background._file})`);
   }
+
+  const audioOutputDir = path.join(buildDir, 'audio');
+  await fse.ensureDir(audioOutputDir);
+
+  // Copy sounds
+  for (const sound of build.data?.sounds || []) {
+    const source = path.join(projectDir, sound.path);
+    const destination = path.join(audioOutputDir,
+      sound._file!.replace('.json', `.${sound.format || 'wav'}`));
+
+    if (await isSame(source, destination)) {
+      sendLog(event, build.id, `Skipping ${sound.name}, cached`);
+      continue;
+    }
+
+    await fse.copyFile(source, destination);
+    sendLog(event, build.id, `Copied sound: ${sound.name} (${sound._file})`);
+  }
+
+  // Copy music
+  for (const music of build.data?.music || []) {
+    const source = path.join(projectDir, music.path);
+    const destination = path.join(audioOutputDir,
+      music._file!.replace('.json', `.${music.format || 'mod'}`));
+
+    if (await isSame(source, destination)) {
+      sendLog(event, build.id, `Skipping ${music.name}, cached`);
+      continue;
+    }
+
+    await fse.copyFile(source, destination);
+    sendLog(event, build.id, `Copied music: ${music.name} (${music._file})`);
+  }
 }

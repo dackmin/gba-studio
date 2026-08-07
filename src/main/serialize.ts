@@ -1,8 +1,10 @@
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameMusicFile,
   GameScene,
   GameScript,
+  GameSoundFile,
   GameSpriteFile,
   GameVariables,
 } from '../types';
@@ -35,6 +37,22 @@ export const serializeBackground = async (
   background.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/background.json';
 
   return background;
+};
+
+export const serializeMusic = async (
+  music: GameMusicFile
+): Promise<GameMusicFile> => {
+  music.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/music.json';
+
+  return music;
+};
+
+export const serializeSound = async (
+  sound: GameSoundFile
+): Promise<GameSoundFile> => {
+  sound.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sound.json';
+
+  return sound;
 };
 
 export const serializeScene = (scene: GameScene): GameScene => {
@@ -91,6 +109,16 @@ export const serialize = async (
   if (payload.backgrounds) {
     payload.backgrounds = await Promise
       .all(payload.backgrounds.map(background => serializeBackground(background)));
+  }
+
+  if (payload.sounds) {
+    payload.sounds = await Promise
+      .all(payload.sounds.map(sound => serializeSound(sound)));
+  }
+
+  if (payload.music) {
+    payload.music = await Promise
+      .all(payload.music.map(music => serializeMusic(music)));
   }
 
   return payload;

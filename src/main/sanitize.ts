@@ -7,10 +7,13 @@ import type {
   AppPayload,
   CharacterDirection,
   GameActor,
+  GameBackgroundFile,
+  GameMusicFile,
   GameProject,
   GameScene,
   GameScript,
   GameSensor,
+  GameSoundFile,
   GameSprite,
   GameSpriteFile,
   GameVariable,
@@ -341,6 +344,36 @@ export const sanitizeSprite = async (
   return sprite;
 };
 
+export const sanitizeBackground = async (
+  background: GameBackgroundFile
+): Promise<GameBackgroundFile> => {
+  if (!background.id) {
+    background.id = randomUUID();
+  }
+
+  return background;
+};
+
+export const sanitizeMusic = async (
+  music: GameMusicFile
+): Promise<GameMusicFile> => {
+  if (!music.id) {
+    music.id = randomUUID();
+  }
+
+  return music;
+};
+
+export const sanitizeSound = async (
+  sound: GameSoundFile
+): Promise<GameSoundFile> => {
+  if (!sound.id) {
+    sound.id = randomUUID();
+  }
+
+  return sound;
+};
+
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
 }): Promise<GameProject> => {
@@ -390,6 +423,18 @@ export const sanitize = async (
   // Sprites
   data.sprites = await Promise
     .all((data.sprites || []).map(sprite => sanitizeSprite(sprite)));
+
+  // Backgrounds
+  data.backgrounds = await Promise
+    .all((data.backgrounds || []).map(background => sanitizeBackground(background)));
+
+  // Sounds
+  data.sounds = await Promise
+    .all((data.sounds || []).map(sound => sanitizeSound(sound)));
+
+  // Music
+  data.music = await Promise
+    .all((data.music || []).map(music => sanitizeMusic(music)));
 
   if (data.project) {
     data.project = await sanitizeProject(data.project, {

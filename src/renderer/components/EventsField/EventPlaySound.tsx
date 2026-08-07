@@ -51,8 +51,8 @@ const EventPlaySound = ({
           <Select.Trigger placeholder="Select" />
           <Select.Content>
             { sounds.map(track => (
-              <Select.Item key={track} value={getSoundName(track)}>
-                { getSoundName(track) }
+              <Select.Item key={track.id} value={getSoundName(track._file)}>
+                { track.name || getSoundName(track._file) }
               </Select.Item>
             )) }
           </Select.Content>

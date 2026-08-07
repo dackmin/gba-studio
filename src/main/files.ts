@@ -36,10 +36,9 @@ export const getGraphicsFiles = async (
   return getDataFiles(
     base,
     file =>
-      (file.startsWith('sprite_') ||
-        file.startsWith('background_')) &&
+      (file.startsWith('sprite_') || file.startsWith('background_')) &&
       file.endsWith('.json') &&
-      cond(file)
+      (!cond || cond(file))
   );
 };
 
@@ -47,13 +46,13 @@ export const getSoundFiles = async (
   base: string,
   cond: (file: string) => boolean = () => true
 ) => {
-  try {
-    return (await fs
-      .readdir(path.join(base, 'audio')))
-      .filter(file => cond(file));
-  } catch {
-    return [];
-  }
+  return getDataFiles(
+    base,
+    file =>
+      (file.startsWith('sound_') || file.startsWith('music_')) &&
+      file.endsWith('.json') &&
+      (!cond || cond(file))
+  );
 };
 
 export const getScriptsFiles = async (

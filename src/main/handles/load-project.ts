@@ -11,6 +11,8 @@ import type {
   GameScript,
   GameBackgroundFile,
   GameSpriteFile,
+  GameSoundFile,
+  GameMusicFile,
 } from '../../types';
 import { sanitize } from '../sanitize';
 import {
@@ -48,24 +50,14 @@ export default async (
   // Prepare graphics
   const graphicsFiles = await getGraphicsFiles(
     projectDir,
-    file => file.endsWith('.json')
   );
   total += graphicsFiles.length;
 
-  // Prepare music
-  const musicFiles = await getSoundFiles(
+  // Prepare audio files
+  const audioFiles = await getSoundFiles(
     projectDir,
-    file => file.endsWith('.mod') || file.endsWith('.s3m') ||
-      file.endsWith('.xm') || file.endsWith('.it') || file.endsWith('.vgm')
   );
-  total += musicFiles.length;
-
-  // Prepare sounds
-  const soundFiles = await getSoundFiles(
-    projectDir,
-    file => file.endsWith('.wav')
-  );
-  total += soundFiles.length;
+  total += audioFiles.length;
 
   // Prepare scripts
   const scriptFiles = await getScriptsFiles(projectDir);
@@ -125,19 +117,23 @@ export default async (
   }
 
   // Load music
-  const music: string[] = [];
+  const music: GameMusicFile[] = [];
+  const sounds: GameSoundFile[] = [];
 
-  for (const file of musicFiles) {
-    music.push(file);
-    current++;
-    win?.setProgressBar(current / total);
-  }
+  for (const file of audioFiles) {
+    const audioFile: GameSoundFile | GameMusicFile = JSON.parse(await fs
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
+    audioFile._file = file;
 
-  // Load sounds
-  const sounds: string[] = [];
+    switch (audioFile.type) {
+      case 'sound':
+        sounds.push(audioFile);
+        break;
+      case 'music':
+        music.push(audioFile);
+        break;
+    }
 
-  for (const file of soundFiles) {
-    sounds.push(file);
     current++;
     win?.setProgressBar(current / total);
   }

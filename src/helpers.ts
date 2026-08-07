@@ -19,7 +19,7 @@ export const getGraphicName = (filePath?: string) => {
     return 'unknown';
   }
 
-  return filePath.replace('.bmp', '').replace('.json', '');
+  return filePath.replace(/\.(bmp|json)$/, '');
 };
 
 export const getSoundName = (filePath?: string) => {
@@ -27,7 +27,7 @@ export const getSoundName = (filePath?: string) => {
     return 'unknown';
   }
 
-  return filePath.replace('.wav', '').replace('.mod', '');
+  return filePath.replace(/\.(wav|mod|json)$/, '');
 };
 
 export const loadImage = async (src: string): Promise<HTMLImageElement> => {
