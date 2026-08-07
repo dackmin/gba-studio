@@ -95,6 +95,10 @@ const Canvas = () => {
     e.preventDefault();
     e.stopPropagation();
 
+    if (selectedItem?.type === 'player') {
+      return;
+    }
+
     if (selectedItem?.type === 'sensor') {
       set(selectedScene, 'map.sensors',
         selectedScene?.map?.sensors
@@ -116,6 +120,23 @@ const Canvas = () => {
       set(selectedScene, 'actors',
         selectedScene?.actors
           ?.filter(a => a !== selectedItem) || []);
+      onCanvasChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene?.id ||
+          s._file === selectedScene?._file
+            ? selectedScene! : s
+        )),
+      });
+      selectItem?.(selectedScene);
+
+      return;
+    }
+
+    if (selectedItem?.type === 'sprite') {
+      set(selectedScene, 'sprites',
+        selectedScene?.sprites
+          ?.filter(s => s !== selectedItem) || []);
       onCanvasChange?.({
         ...appPayload,
         scenes: appPayload.scenes.map(s => (
