@@ -5,7 +5,6 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
-import { pick } from '@junipero/react';
 import fse from 'fs-extra';
 
 import type { AppPayload, Build, BuildOptions } from '../../../types';
@@ -31,51 +30,10 @@ import { prepareData } from './data';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
+import { copyAssets } from './assets';
 
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
-
-async function copyAssets (
-  event: IpcMainInvokeEvent,
-  build: Build,
-) {
-  const projectDir = path.dirname(build.projectPath);
-  const buildDir = getBuildDir(build);
-  const graphicsOutputDir = path.join(buildDir, 'graphics');
-
-  await fse.ensureDir(graphicsOutputDir);
-
-  // Copy sprites
-  for (const sprite of build.data?.sprites || []) {
-    fs.writeFile(
-      path.join(graphicsOutputDir, sprite._file!),
-      JSON.stringify({ type: 'sprite', ...pick(sprite, ['width', 'height']) }, null, 2),
-      'utf-8'
-    );
-
-    await fse.copyFile(
-      path.join(projectDir, sprite.path),
-      path.join(graphicsOutputDir, sprite._file!.replace('.json', `.${sprite.format || 'bmp'}`))
-    );
-    sendLog(event, build.id, `Copied sprite: ${sprite.name} (${sprite._file})`);
-  }
-
-  // Copy backgrounds
-  for (const background of build.data?.backgrounds || []) {
-    fs.writeFile(
-      path.join(graphicsOutputDir, background._file!),
-      JSON.stringify({ type: 'regular_bg' }, null, 2),
-      'utf-8'
-    );
-
-    await fse.copyFile(
-      path.join(projectDir, background.path),
-      path.join(graphicsOutputDir, background._file!
-        .replace('.json', `.${background.format || 'bmp'}`))
-    );
-    sendLog(event, build.id, `Copied background: ${background.name} (${background._file})`);
-  }
-}
 
 async function buildMakefile (
   storage: Storage,
@@ -179,7 +137,8 @@ async function buildProject (
 
   const firstBuild = await isFirstBuild(build);
 
-  sendStep(event, build.id, 'Copying assets...');
+  sendStep(event, build.id, 'Preparing assets...');
+  sendLog(event, build.id, `Copying assets...`);
   await copyAssets(event, build);
   sendSuccessLog(event, build.id, 'Assets copied successfully.');
 
