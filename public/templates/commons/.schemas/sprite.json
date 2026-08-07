@@ -8,7 +8,16 @@
       "additionalProperties": false,
       "properties": {
         "duration": {
-          "type": "number"
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "reverse": {
+          "type": "boolean"
+        },
+        "loop": {
+          "type": "boolean"
         },
         "index": {
           "oneOf": [

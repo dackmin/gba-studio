@@ -39,19 +39,19 @@
             "interact": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SceneEvent"
+                "$ref": "event.json#/definitions/Event"
               }
             },
             "init": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SceneEvent"
+                "$ref": "event.json#/definitions/Event"
               }
             },
             "update": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SceneEvent"
+                "$ref": "event.json#/definitions/Event"
               }
             }
           },
@@ -77,7 +77,7 @@
         },
         "events": {
           "items": {
-            "$ref": "#/definitions/SceneEvent"
+            "$ref": "event.json#/definitions/Event"
           },
           "type": "array"
         },
@@ -119,342 +119,6 @@
         "type",
         "name",
         "events"
-      ],
-      "type": "object"
-    },
-    "SceneEvent": {
-      "anyOf": [
-        { "$ref": "#/definitions/SceneWaitForButtonEvent" },
-        { "$ref": "#/definitions/SceneFadeEvent" },
-        { "$ref": "#/definitions/SceneGoToEvent" },
-        { "$ref": "#/definitions/SceneWaitEvent" },
-        { "$ref": "#/definitions/SceneOnButtonPressEvent" },
-        { "$ref": "#/definitions/SceneShowDialogEvent" },
-        { "$ref": "#/definitions/SceneSetVariableEvent" },
-        { "$ref": "#/definitions/SceneIfEvent" },
-        { "$ref": "#/definitions/SceneDisableActorEvent" },
-        { "$ref": "#/definitions/SceneEnableActorEvent" },
-        { "$ref": "#/definitions/SceneExecuteScriptEvent" },
-        { "$ref": "#/definitions/ScenePlayMusicEvent" },
-        { "$ref": "#/definitions/SceneStopMusicEvent" },
-        { "$ref": "#/definitions/ScenePlaySoundEvent" }
-      ]
-    },
-    "SceneWaitForButtonEvent": {
-      "properties": {
-        "every": {
-          "type": "boolean"
-        },
-        "buttons": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            }
-          ]
-        },
-        "type": {
-          "const": "wait-for-button",
-          "type": "string"
-        }
-      },
-      "required": [
-        "buttons",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneFadeEvent": {
-      "properties": {
-        "duration": {
-          "type": "number"
-        },
-        "type": {
-          "enum": [
-            "fade-in",
-            "fade-out"
-          ],
-          "type": "string"
-        }
-      },
-      "required": [
-        "duration",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneGoToEvent": {
-      "properties": {
-        "target": {
-          "type": "string"
-        },
-        "start": {
-          "type": "object",
-          "properties": {
-            "x": { "type": "number" },
-            "y": { "type": "number" },
-            "direction": { "$ref": "#/definitions/CharacterDirection" }
-          },
-          "required": ["x", "y"]
-        },
-        "type": {
-          "const": "go-to-scene",
-          "type": "string"
-        }
-      },
-      "required": [
-        "target",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneWaitEvent": {
-      "properties": {
-        "duration": {
-          "type": "number"
-        },
-        "type": {
-          "const": "wait",
-          "type": "string"
-        }
-      },
-      "required": [
-        "duration",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneOnButtonPressEvent": {
-      "properties": {
-        "buttons": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            }
-          ]
-        },
-        "type": {
-          "const": "on-button-press",
-          "type": "string"
-        },
-        "events": {
-          "items": {
-            "$ref": "#/definitions/SceneEvent"
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "buttons",
-        "type",
-        "events"
-      ],
-      "type": "object"
-    },
-    "SceneShowDialogEvent": {
-      "properties": {
-        "text": {
-          "type": "string"
-        },
-        "type": {
-          "const": "show-dialog",
-          "type": "string"
-        }
-      },
-      "required": [
-        "text",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneSetVariableEvent": {
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": ["string", "boolean", "number"]
-        },
-        "type": {
-          "const": "set-variable",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "value",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneIfEvent": {
-      "properties": {
-        "then": {
-          "items": {
-            "$ref": "#/definitions/SceneEvent"
-          },
-          "type": "array"
-        },
-        "else": {
-          "items": {
-            "$ref": "#/definitions/SceneEvent"
-          },
-          "type": "array"
-        },
-        "conditions": {
-          "items": {
-            "properties": {
-              "left": { "$ref": "condition.json" },
-              "operator": { "$ref": "condition.json#/definitions/ConditionOperator" },
-              "right": { "$ref": "condition.json" }
-            }
-          },
-          "type": "array"
-        },
-        "type": {
-          "const": "if",
-          "type": "string"
-        }
-      },
-      "required": [
-        "then",
-        "conditions",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneDisableActorEvent": {
-      "properties": {
-        "actor": {
-          "type": "string"
-        },
-        "type": {
-          "const": "disable-actor",
-          "type": "string"
-        }
-      },
-      "required": [
-        "actor",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneEnableActorEvent": {
-      "properties": {
-        "actor": {
-          "type": "string"
-        },
-        "type": {
-          "const": "enable-actor",
-          "type": "string"
-        }
-      },
-      "required": [
-        "actor",
-        "type"
-      ],
-      "type": "object"
-    },
-    "ScenePlayMusicEvent": {
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "volume": {
-          "type": "number"
-        },
-        "loop": {
-          "type": "boolean"
-        },
-        "type": {
-          "const": "play-music",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "volume",
-        "loop",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneStopMusicEvent": {
-      "properties": {
-        "type": {
-          "const": "stop-music",
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ],
-      "type": "object"
-    },
-    "ScenePlaySoundEvent": {
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "volume": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "speed": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "panning": {
-          "type": "number",
-          "minimum": -100,
-          "maximum": 100
-        },
-        "priority": {
-          "type": "number",
-          "minimum": -32767,
-          "maximum": 32767
-        },
-        "type": {
-          "const": "play-sound",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "volume",
-        "speed",
-        "panning",
-        "priority",
-        "type"
-      ],
-      "type": "object"
-    },
-    "SceneExecuteScriptEvent": {
-      "properties": {
-        "script": {
-          "type": "string"
-        },
-        "type": {
-          "const": "execute-script",
-          "type": "string"
-        }
-      },
-      "required": [
-        "script",
-        "type"
       ],
       "type": "object"
     },
@@ -506,7 +170,7 @@
               "events": {
                 "type": "array",
                 "items": {
-                  "$ref": "scene.json#/definitions/SceneEvent"
+                  "$ref": "event.json#/definitions/Event"
                 }
               }
             },

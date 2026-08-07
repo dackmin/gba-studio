@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "event.json",
+  "definitions": {
+    "WaitForButtonEvent": {
+      "properties": {
+        "every": {
+          "type": "boolean"
+        },
+        "buttons": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "type": {
+          "const": "wait-for-button",
+          "type": "string"
+        }
+      },
+      "required": [
+        "buttons",
+        "type"
+      ],
+      "type": "object"
+    },
+    "FadeEvent": {
+      "properties": {
+        "duration": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "type": {
+          "enum": [
+            "fade-in",
+            "fade-out"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "duration",
+        "type"
+      ],
+      "type": "object"
+    },
+    "GoToEvent": {
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "start": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "oneOf": [
+                { "type": "number" },
+                { "$ref": "event.json#/definitions/EventValue" }
+              ]
+            },
+            "y": {
+              "oneOf": [
+                { "type": "number" },
+                { "$ref": "event.json#/definitions/EventValue" }
+              ]
+            },
+            "direction": { "$ref": "#/definitions/CharacterDirection" }
+          },
+          "required": ["x", "y"]
+        },
+        "type": {
+          "const": "go-to-scene",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "type"
+      ],
+      "type": "object"
+    },
+    "WaitEvent": {
+      "properties": {
+        "duration": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "type": {
+          "const": "wait",
+          "type": "string"
+        }
+      },
+      "required": [
+        "duration",
+        "type"
+      ],
+      "type": "object"
+    },
+    "OnButtonPressEvent": {
+      "properties": {
+        "buttons": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "type": {
+          "const": "on-button-press",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "buttons",
+        "type",
+        "events"
+      ],
+      "type": "object"
+    },
+    "ShowDialogEvent": {
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "const": "show-dialog",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "type"
+      ],
+      "type": "object"
+    },
+    "SetVariableEvent": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": ["string", "boolean", "number"]
+        },
+        "type": {
+          "const": "set-variable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "type"
+      ],
+      "type": "object"
+    },
+    "IfEvent": {
+      "properties": {
+        "then": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        },
+        "else": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "properties": {
+              "left": { "$ref": "condition.json#/definitions/Condition" },
+              "operator": { "$ref": "condition.json#/definitions/ConditionOperator" },
+              "right": { "$ref": "condition.json#/definitions/Condition" }
+            }
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "if",
+          "type": "string"
+        }
+      },
+      "required": [
+        "then",
+        "conditions",
+        "type"
+      ],
+      "type": "object"
+    },
+    "DisableActorEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "type": {
+          "const": "disable-actor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "type"
+      ],
+      "type": "object"
+    },
+    "EnableActorEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "type": {
+          "const": "enable-actor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "type"
+      ],
+      "type": "object"
+    },
+    "PlayMusicEvent": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "volume": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "type": {
+          "const": "play-music",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "volume",
+        "loop",
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopMusicEvent": {
+      "properties": {
+        "type": {
+          "const": "stop-music",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "PlaySoundEvent": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "volume": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 100 },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "speed": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 100 },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "panning": {
+          "oneOf": [
+            { "type": "number", "minimum": -100, "maximum": 100 },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "priority": {
+          "oneOf": [
+            { "type": "number", "minimum": -32767, "maximum": 32767 },
+            { "$ref": "event.json#/definitions/EventValue" }
+          ]
+        },
+        "type": {
+          "const": "play-sound",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "volume",
+        "speed",
+        "panning",
+        "priority",
+        "type"
+      ],
+      "type": "object"
+    },
+    "ExecuteScriptEvent": {
+      "properties": {
+        "script": {
+          "type": "string"
+        },
+        "type": {
+          "const": "execute-script",
+          "type": "string"
+        }
+      },
+      "required": [
+        "script",
+        "type"
+      ],
+      "type": "object"
+    },
+    "EventValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "name"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "variable"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Event": {
+      "anyOf": [
+        { "$ref": "#/definitions/WaitForButtonEvent" },
+        { "$ref": "#/definitions/FadeEvent" },
+        { "$ref": "#/definitions/GoToEvent" },
+        { "$ref": "#/definitions/WaitEvent" },
+        { "$ref": "#/definitions/OnButtonPressEvent" },
+        { "$ref": "#/definitions/ShowDialogEvent" },
+        { "$ref": "#/definitions/SetVariableEvent" },
+        { "$ref": "#/definitions/IfEvent" },
+        { "$ref": "#/definitions/DisableActorEvent" },
+        { "$ref": "#/definitions/EnableActorEvent" },
+        { "$ref": "#/definitions/ExecuteScriptEvent" },
+        { "$ref": "#/definitions/PlayMusicEvent" },
+        { "$ref": "#/definitions/StopMusicEvent" },
+        { "$ref": "#/definitions/PlaySoundEvent" }
+      ]
+    }
+  },
+  "$ref": "#/definitions/Event"
+}

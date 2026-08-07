@@ -9,25 +9,12 @@
       ],
       "type": "string"
     },
-    "ConditionVariable": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "const": "variable",
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
     "ConditionValue": {
       "type": ["string", "boolean", "number"]
     },
     "Condition": {
       "oneOf": [
-        { "$ref": "#/definitions/ConditionVariable" },
+        { "$ref": "event.json#/definitions/EventValue" },
         { "$ref": "#/definitions/ConditionValue" }
       ]
     },
