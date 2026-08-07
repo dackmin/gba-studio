@@ -16,6 +16,7 @@ import {
 } from '@radix-ui/react-icons';
 
 import { SpriteAnimation } from '../../../types';
+import { useLocalData } from '../../services/hooks';
 
 export interface AnimationsListItemProps {
   animation: SpriteAnimation;
@@ -29,7 +30,7 @@ const AnimationsListItem = ({
   onDelete,
 }: AnimationsListItemProps) => {
   const nameRef = useRef<HTMLDivElement>(null);
-  const [opened, setOpened] = useState(animation._collapsed ?? true);
+  const { collapse, isCollapsed } = useLocalData();
   const [renaming, setRenaming] = useState(false);
 
   const onRename = useCallback(() => {
@@ -81,10 +82,8 @@ const AnimationsListItem = ({
     e.preventDefault();
     e.stopPropagation();
 
-    setOpened(o => !o);
-    animation._collapsed = !opened;
-    onValueChange?.(animation);
-  }, [opened, animation, onValueChange]);
+    collapse(animation.id);
+  }, [collapse, animation]);
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(animation, name, value);
@@ -140,7 +139,7 @@ const AnimationsListItem = ({
             className="flex-none"
             onClick={onToggleCollapsibleClick}
           >
-            { opened ? <CaretDownIcon /> : <CaretRightIcon /> }
+            { !isCollapsed(animation.id) ? <CaretDownIcon /> : <CaretRightIcon /> }
           </IconButton>
         </div>
         <div className="flex-none flex items-center gap-1">
@@ -162,7 +161,7 @@ const AnimationsListItem = ({
           </DropdownMenu.Root>
         </div>
       </div>
-      { opened && (
+      { !isCollapsed(animation.id) && (
         <div className="px-3 pb-3">
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">Type</Text>

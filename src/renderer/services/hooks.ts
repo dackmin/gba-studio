@@ -15,6 +15,7 @@ import {
   CanvasContext,
   EditorContext,
   EmulatorContext,
+  LocalDataContext,
   LogsContext,
   PlaybackContext,
   SceneFormContext,
@@ -64,6 +65,7 @@ export const useLogs = () => use(LogsContext);
 export const useSprite = () => use(SpriteContext);
 export const usePlayback = () => use(PlaybackContext);
 export const useEmulator = () => use(EmulatorContext);
+export const useLocalData = () => use(LocalDataContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,

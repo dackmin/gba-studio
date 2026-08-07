@@ -80,7 +80,6 @@ export interface SpriteAnimation {
   };
   // Internals
   id: string;
-  _collapsed?: boolean;
 }
 
 export interface SpriteAnimations {
@@ -242,6 +241,8 @@ export interface GameProject {
   settings?: ProjectSettings;
   configurations?: ProjectConfiguration[];
   startingScene?: string;
+  // Internal
+  id?: string;
 }
 
 export interface GameSpriteFile {
@@ -327,7 +328,6 @@ export interface SceneEvent {
   // Internals
   id: string;
   _name?: string;
-  _collapsed?: boolean;
 }
 
 export interface WaitEvent extends SceneEvent {

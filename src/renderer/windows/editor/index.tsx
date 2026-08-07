@@ -10,6 +10,7 @@ import TitleBar from './TitleBar';
 import RightSidebar from './RightSidebar';
 import BottomBar from './BottomBar';
 import LogsStore from './LogsStore';
+import LocalDataStore from './LocalDataStore';
 
 export interface EditorState {
   view: string;
@@ -127,41 +128,43 @@ const Editor = () => {
 
   return (
     <EditorContext value={getContext()}>
-      <LogsStore>
-        <Provider>
-          <div
-            className={classNames(
-              'fixed w-screen h-screen top-0 left-0 pointer-events-none z-1000',
-              'flex items-stretch',
-            )}
-          >
+      <LocalDataStore>
+        <LogsStore>
+          <Provider>
             <div
               className={classNames(
-                'fixed top-0 left-0 w-screen h-[15px] app-drag',
-                'pointer-events-auto'
+                'fixed w-screen h-screen top-0 left-0 pointer-events-none z-1000',
+                'flex items-stretch',
               )}
-            />
+            >
+              <div
+                className={classNames(
+                  'fixed top-0 left-0 w-screen h-[15px] app-drag',
+                  'pointer-events-auto'
+                )}
+              />
 
-            <LeftSidebar>
-              <LeftSidebarContent />
-            </LeftSidebar>
-            <TitleBar
-              rightSidebarEnabled={!!RightSidebarContent}
-            />
-            { RightSidebarContent && (
-              <RightSidebar>
-                <RightSidebarContent />
-              </RightSidebar>
-            ) }
-            { BottomBarContent && (
-              <BottomBar>
-                <BottomBarContent />
-              </BottomBar>
-            ) }
-          </div>
-          <View />
-        </Provider>
-      </LogsStore>
+              <LeftSidebar>
+                <LeftSidebarContent />
+              </LeftSidebar>
+              <TitleBar
+                rightSidebarEnabled={!!RightSidebarContent}
+              />
+              { RightSidebarContent && (
+                <RightSidebar>
+                  <RightSidebarContent />
+                </RightSidebar>
+              ) }
+              { BottomBarContent && (
+                <BottomBar>
+                  <BottomBarContent />
+                </BottomBar>
+              ) }
+            </div>
+            <View />
+          </Provider>
+        </LogsStore>
+      </LocalDataStore>
     </EditorContext>
   );
 };

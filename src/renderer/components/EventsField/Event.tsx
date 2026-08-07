@@ -34,7 +34,7 @@ import type {
   WaitForButtonEvent,
 } from '../../../types';
 import { getEventDefinition } from '../../services/events';
-import { useApp } from '../../services/hooks';
+import { useApp, useLocalData } from '../../services/hooks';
 import Switch from '../Switch';
 import EventDuration from './EventDuration';
 import EventGoToScene from './EventGoToScene';
@@ -65,8 +65,8 @@ const Event = ({
   onAppend,
 }: EventProps) => {
   const { clipboard, setClipboard } = useApp();
+  const { collapse, isCollapsed } = useLocalData();
   const nameRef = useRef<HTMLDivElement>(null);
-  const [opened, setOpened] = useState(event._collapsed ?? true);
   const [renaming, setRenaming] = useState(false);
   const {
     attributes,
@@ -94,10 +94,8 @@ const Event = ({
     e.preventDefault();
     e.stopPropagation();
 
-    setOpened(o => !o);
-    event._collapsed = !opened;
-    onValueChange?.(event);
-  }, [opened, event, onValueChange]);
+    collapse(event.id);
+  }, [collapse, event]);
 
   const onToggleEventClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -230,7 +228,7 @@ const Event = ({
             className="flex-none"
             onClick={onToggleCollapsibleClick}
           >
-            { opened ? <CaretDownIcon /> : <CaretRightIcon /> }
+            { !isCollapsed(event.id) ? <CaretDownIcon /> : <CaretRightIcon /> }
           </IconButton>
         </div>
         <div className="flex-none flex items-center gap-1">
@@ -276,7 +274,7 @@ const Event = ({
           </DropdownMenu.Root>
         </div>
       </div>
-      { opened && (
+      { !isCollapsed(event.id) && (
         <div className="px-3 pb-3">
           <Switch value={event.type}>
             <Switch.Case value={['wait', 'fade-in', 'fade-out']}>

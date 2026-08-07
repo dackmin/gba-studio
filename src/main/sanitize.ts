@@ -377,6 +377,10 @@ export const sanitizeSound = async (
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
 }): Promise<GameProject> => {
+  if (!project.id) {
+    project.id = randomUUID();
+  }
+
   if (!project.scenes) {
     project.scenes = [];
   }

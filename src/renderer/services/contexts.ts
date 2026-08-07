@@ -23,6 +23,7 @@ import type {
   ToolType,
 } from '../../types';
 import type EventEmitter from './emitter';
+import { LocalData } from './local-db';
 
 export interface AppContextType extends Omit<AppPayload, 'project'> {
   eventEmitter?: EventEmitter;
@@ -226,4 +227,15 @@ export interface EmulatorContextType {
 export const EmulatorContext = createContext<EmulatorContextType>({
   volume: 1,
   setVolume: () => {},
+});
+
+export interface LocalDataContextType extends LocalData {
+  collapse(key: string): void;
+  isCollapsed(key: string): boolean;
+}
+
+export const LocalDataContext = createContext<LocalDataContextType>({
+  collapsed: [],
+  collapse: () => {},
+  isCollapsed: () => false,
 });
