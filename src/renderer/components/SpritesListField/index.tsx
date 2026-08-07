@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
@@ -17,20 +18,24 @@ const SpritesListField = ({
   const { sprites } = useApp();
   const val = value ?? defaultValue;
 
+  const selected = useMemo(() => (
+    sprites.find(sprite => getGraphicName(sprite._file) === val)
+  ), [sprites, val]);
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
             <Avatar
-              src={!val || val === 'sprite_default'
+              src={!val || val === 'sprite_default' || !selected
                 ? `resources://public/templates` +
                   `/commons/graphics/sprite_default.bmp`
-                : `project://graphics/${val}.bmp`}
+                : `project://${selected.path}`}
               fallback=""
               className="[&>img]:pixelated"
             />
-            <Text>{ val || 'sprite_default' }</Text>
+            <Text>{ selected?.name ?? 'sprite_default' }</Text>
           </div>
         </Card>
       </DropdownMenu.Trigger>
@@ -45,7 +50,7 @@ const SpritesListField = ({
             size="1"
             className="[&>img]:pixelated"
           />
-          <Text>sprite_default</Text>
+          <Text>Default sprite</Text>
         </DropdownMenu.Item>
         { sprites.map(sprite => (
           <DropdownMenu.Item
@@ -54,12 +59,12 @@ const SpritesListField = ({
           >
             <div className="flex items-center gap-2">
               <Avatar
-                src={`project://graphics/${getGraphicName(sprite._file)}.bmp`}
+                src={`project://${sprite.path}`}
                 fallback=""
                 size="1"
                 className="[&>img]:pixelated"
               />
-              <Text>{ getGraphicName(sprite._file) }</Text>
+              <Text>{ sprite.name || getGraphicName(sprite._file) }</Text>
             </div>
           </DropdownMenu.Item>
         ))}

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
@@ -17,18 +18,22 @@ const BackgroundsListField = ({
   const { backgrounds } = useApp();
   const val = value ?? defaultValue ?? '';
 
+  const selected = useMemo(() => (
+    backgrounds.find(bg => getGraphicName(bg._file) === val)
+  ), [backgrounds, val]);
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
             <Avatar
-              src={!val || val === 'bg_default'
+              src={!val || val === 'bg_default' || !selected
                 ? `resources://public/templates/commons/graphics/bg_default.bmp`
-                : `project://graphics/${val}.bmp`}
+                : `project://${selected?.path}`}
               fallback=""
             />
-            <Text>{ val }</Text>
+            <Text>{ selected?.name ?? 'Default background' }</Text>
           </div>
         </Card>
       </DropdownMenu.Trigger>
@@ -43,7 +48,7 @@ const BackgroundsListField = ({
               fallback=""
               size="1"
             />
-            <Text>bg_default</Text>
+            <Text>Default background</Text>
           </div>
         </DropdownMenu.Item>
         { backgrounds.map(bg => (
@@ -53,11 +58,11 @@ const BackgroundsListField = ({
           >
             <div className="flex items-center gap-2">
               <Avatar
-                src={`project://graphics/${getGraphicName(bg._file)}.bmp`}
+                src={`project://${bg.path}`}
                 fallback=""
                 size="1"
               />
-              <Text>{ getGraphicName(bg._file) }</Text>
+              <Text>{ bg.name || getGraphicName(bg._file) }</Text>
             </div>
           </DropdownMenu.Item>
         ))}

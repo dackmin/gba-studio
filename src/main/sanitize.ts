@@ -12,6 +12,7 @@ import type {
   GameScript,
   GameSensor,
   GameSprite,
+  GameSpriteFile,
   GameVariable,
   GameVariables,
   IfEvent,
@@ -92,7 +93,7 @@ export const sanitizeSensor = async (
   return sensor;
 };
 
-export const sanitizeSprite = async (
+export const sanitizeSceneSprite = async (
   sprite: GameSprite
 ): Promise<GameSprite> => {
   if (!sprite.id) {
@@ -122,7 +123,7 @@ export const sanitizeScene = async (
   }
 
   for (const sprite of scene.sprites ?? []) {
-    await sanitizeSprite(sprite);
+    await sanitizeSceneSprite(sprite);
   }
 
   if (!scene.map) {
@@ -325,6 +326,21 @@ export const sanitizeAnimationsRegistry = async (
   return animations;
 };
 
+export const sanitizeSprite = async (
+  sprite: GameSpriteFile
+): Promise<GameSpriteFile> => {
+  if (!sprite.id) {
+    sprite.id = randomUUID();
+  }
+
+  sprite.width = Number(sprite.width ?? 1);
+  sprite.height = Number(sprite.height ?? 1);
+  sprite.animations = await Promise
+    .all((sprite.animations || []).map(animation => sanitizeAnimation(animation)));
+
+  return sprite;
+};
+
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
 }): Promise<GameProject> => {
@@ -359,33 +375,21 @@ export const sanitize = async (
   data: Partial<AppPayload>,
   opts?: SanitizeOptions,
 ): Promise<Partial<AppPayload>> => {
-  if (!data.scenes) {
-    data.scenes = [];
-  }
-
+  // Scenes
   data.scenes = await Promise
-    .all(data.scenes.map(scene => sanitizeScene(scene, opts)));
+    .all((data.scenes || []).map(scene => sanitizeScene(scene, opts)));
 
-  if (!data.scripts) {
-    data.scripts = [];
-  }
-
+  // Scripts
   data.scripts = await Promise
-    .all(data.scripts?.map(script => sanitizeScript(script)));
+    .all((data.scripts || []).map(script => sanitizeScript(script)));
 
-  if (!data.variables) {
-    data.variables = [];
-  }
-
+  // Variables
   data.variables = await Promise
-    .all(data.variables?.map(registry => sanitizeVariablesRegistry(registry)));
+    .all((data.variables || []).map(registry => sanitizeVariablesRegistry(registry)));
 
-  if (!data.animations) {
-    data.animations = [];
-  }
-
-  data.animations = await Promise.all(data.animations
-    ?.map(animation => sanitizeAnimationsRegistry(animation)));
+  // Sprites
+  data.sprites = await Promise
+    .all((data.sprites || []).map(sprite => sanitizeSprite(sprite)));
 
   if (data.project) {
     data.project = await sanitizeProject(data.project, {

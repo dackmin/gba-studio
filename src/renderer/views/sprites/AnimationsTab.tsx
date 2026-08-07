@@ -24,19 +24,20 @@ const AnimationsTabTitle = () => (
 
 const AnimationsTabContent = () => {
   const {
+    selectedSprite,
     selectedAnimation,
     selectedDirection,
     selectedStateName,
-    animationsRegistry,
     selectAnimation,
     selectDirection,
     selectStateName,
     onAnimationsChange,
     onAddAnimation,
   } = useSprite();
+
   const animations = useMemo(() => (
-    animationsRegistry?.animations
-  ), [animationsRegistry]);
+    selectedSprite?.animations || []
+  ), [selectedSprite]);
 
   const onSelectAnimation = useCallback((animationId: string) => {
     const animation = animations?.find(a => a.id === animationId);
@@ -47,17 +48,17 @@ const AnimationsTabContent = () => {
   }, [selectAnimation, animations]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
-    if (!selectedAnimation) {
+    if (!selectedAnimation || !selectedSprite) {
       return;
     }
 
     onAnimationsChange?.({
-      ...animationsRegistry!,
-      animations: animationsRegistry!.animations.map(a => (
+      ...selectedSprite!,
+      animations: selectedSprite.animations?.map(a => (
         a.id === selectedAnimation.id ? animation : a
       )),
     });
-  }, [selectedAnimation, onAnimationsChange, animationsRegistry]);
+  }, [selectedAnimation, selectedSprite, onAnimationsChange]);
 
   const currentState = useMemo(() => (
     selectedAnimation?.animationType === 'fixed'

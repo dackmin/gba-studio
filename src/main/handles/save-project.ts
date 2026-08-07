@@ -3,10 +3,35 @@ import path from 'node:path';
 
 import type { IpcMainInvokeEvent } from 'electron';
 
-import type { AppPayload } from '../../types';
+import type {
+  AppPayload,
+  GameBackgroundFile,
+  GameScene,
+  GameScript,
+  GameSpriteFile,
+  GameVariables,
+} from '../../types';
 import { getSceneFiles, getScriptsFiles } from '../files';
 import { serialize } from '../serialize';
 import { sanitize } from '../sanitize';
+
+export const saveItem = async (
+  item:
+    | GameVariables
+    | GameScene
+    | GameScript
+    | GameSpriteFile
+    | GameBackgroundFile,
+  projectDir: string
+) => {
+  if (item._file) {
+    const fileName = item._file;
+    delete item._file;
+
+    await fs.writeFile(path.join(projectDir, 'content', fileName),
+      JSON.stringify(item, null, 2) + '\n', 'utf-8');
+  }
+};
 
 export default async (
   _: IpcMainInvokeEvent,
@@ -18,13 +43,7 @@ export default async (
 
   // Save variables
   for (const variableSet of data.variables || []) {
-    if (variableSet._file) {
-      const fileName = variableSet._file;
-      delete variableSet._file;
-
-      await fs.writeFile(path.join(projectDir, 'content', fileName),
-        JSON.stringify(variableSet, null, 2) + '\n', 'utf-8');
-    }
+    await saveItem(variableSet, projectDir);
   }
 
   // Delete obsolete scenes
@@ -43,13 +62,7 @@ export default async (
 
   // Save scenes
   for (const scene of data.scenes || []) {
-    if (scene._file) {
-      const fileName = scene._file;
-      delete scene._file;
-
-      await fs.writeFile(path.join(projectDir, 'content', fileName),
-        JSON.stringify(scene, null, 2) + '\n', 'utf-8');
-    }
+    await saveItem(scene, projectDir);
   }
 
   // Delete obsolete scripts
@@ -64,25 +77,17 @@ export default async (
 
   // Save scripts
   for (const script of data.scripts || []) {
-    if (script._file) {
-      const fileName = script._file;
-      delete script._file;
-
-      await fs.writeFile(path.join(projectDir, 'content', fileName),
-        JSON.stringify(script, null, 2) + '\n', 'utf-8');
-    }
+    await saveItem(script, projectDir);
   }
 
-  // Save animations
-  for (const animation of data.animations || []) {
-    if (animation._file) {
-      const fileName = animation._file;
-      delete animation._file;
-      delete animation._sprite_file;
+  // Save graphics
+  for (const background of data.backgrounds || []) {
+    await saveItem(background, projectDir);
+  }
 
-      await fs.writeFile(path.join(projectDir, 'content', fileName),
-        JSON.stringify(animation, null, 2) + '\n', 'utf-8');
-    }
+  // Save sprites
+  for (const sprite of data.sprites || []) {
+    await saveItem(sprite, projectDir);
   }
 
   // Save project config

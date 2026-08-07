@@ -1,6 +1,6 @@
 import { FramesDefinition } from '../../types';
 
-export const HORIZONTAL_FRAMES: FramesDefinition = {
+export const SPRITE_HORIZONTAL_FRAMES: FramesDefinition = {
   idle: {
     down: 0,
     up: 1,

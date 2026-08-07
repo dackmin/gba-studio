@@ -5,6 +5,7 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
+import { pick } from '@junipero/react';
 import fse from 'fs-extra';
 
 import type { AppPayload, Build, BuildOptions } from '../../../types';
@@ -33,6 +34,48 @@ import Storage from '../../storage';
 
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
+
+async function copyAssets (
+  event: IpcMainInvokeEvent,
+  build: Build,
+) {
+  const projectDir = path.dirname(build.projectPath);
+  const buildDir = getBuildDir(build);
+  const graphicsOutputDir = path.join(buildDir, 'graphics');
+
+  await fse.ensureDir(graphicsOutputDir);
+
+  // Copy sprites
+  for (const sprite of build.data?.sprites || []) {
+    fs.writeFile(
+      path.join(graphicsOutputDir, sprite._file!),
+      JSON.stringify({ type: 'sprite', ...pick(sprite, ['width', 'height']) }, null, 2),
+      'utf-8'
+    );
+
+    await fse.copyFile(
+      path.join(projectDir, sprite.path),
+      path.join(graphicsOutputDir, sprite._file!.replace('.json', `.${sprite.format || 'bmp'}`))
+    );
+    sendLog(event, build.id, `Copied sprite: ${sprite.name} (${sprite._file})`);
+  }
+
+  // Copy backgrounds
+  for (const background of build.data?.backgrounds || []) {
+    fs.writeFile(
+      path.join(graphicsOutputDir, background._file!),
+      JSON.stringify({ type: 'regular_bg' }, null, 2),
+      'utf-8'
+    );
+
+    await fse.copyFile(
+      path.join(projectDir, background.path),
+      path.join(graphicsOutputDir, background._file!
+        .replace('.json', `.${background.format || 'bmp'}`))
+    );
+    sendLog(event, build.id, `Copied background: ${background.name} (${background._file})`);
+  }
+}
 
 async function buildMakefile (
   storage: Storage,
@@ -77,10 +120,7 @@ async function buildMakefile (
         ),
       ],
       graphics: [
-        path.relative(
-          getBuildDir(build),
-          path.join(path.dirname(build.projectPath), 'graphics'),
-        ),
+        './graphics',
         path.relative(
           getBuildDir(build),
           path.join(getResourcesDir(), './public/templates/commons/graphics'),
@@ -108,6 +148,18 @@ async function buildMakefile (
   );
 }
 
+async function isFirstBuild (build: Build): Promise<boolean> {
+  const buildDir = getBuildDir(build);
+
+  try {
+    await fs.access(path.join(buildDir, 'Makefile'));
+
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 async function buildProject (
   storage: Storage,
   event: IpcMainInvokeEvent,
@@ -125,6 +177,12 @@ async function buildProject (
     sendSuccessLog(event, build.id, 'Build folder cleaned.');
   }
 
+  const firstBuild = await isFirstBuild(build);
+
+  sendStep(event, build.id, 'Copying assets...');
+  await copyAssets(event, build);
+  sendSuccessLog(event, build.id, 'Assets copied successfully.');
+
   sendStep(event, build.id, 'Pre-building templates...');
   await buildTemplates(event, await prepareData(build));
 
@@ -138,14 +196,18 @@ async function buildProject (
 
   const cores = os.cpus()?.length || 1;
 
-  if (cores > 1) {
+  if (cores > 1 && !firstBuild) {
     sendLog(event, build.id,
       `🚀 ${cores} CPU cores detected, enabling multi-core build`);
+  } else if (cores > 1 && firstBuild) {
+    sendLog(event, build.id,
+      `ℹ️ Multiple CPU cores detected, but multi-core build disabled for first build ` +
+        `(next builds will be faster)`);
   }
 
   // Run make
   await runCommand('make', [
-    ...cores > 1 ? [`-j${cores.toString()}`] : [],
+    ...cores > 1 && !firstBuild ? [`-j${cores.toString()}`] : [],
   ], {
     cwd: getBuildDir(build),
     event,

@@ -11,12 +11,11 @@ import {
 import { PlusIcon } from '@radix-ui/react-icons';
 
 import type { SpriteAnimation } from '../../../types';
-import { useApp, useSprite } from '../../services/hooks';
+import { useSprite } from '../../services/hooks';
 import { getGraphicName } from '../../../helpers';
 import AnimationsListItem from './AnimationsListItem';
 
 const SpriteForm = () => {
-  const { animations } = useApp();
   const {
     selectedSprite,
     onAnimationsChange,
@@ -24,22 +23,22 @@ const SpriteForm = () => {
     onRemoveAnimation,
   } = useSprite();
 
-  const spriteAnimations = useMemo(() => (
-    animations.find(a => a._sprite_file === selectedSprite?._file)
-  ), [animations, selectedSprite]);
-
   const spriteName = useMemo(() => (
     getGraphicName(selectedSprite?._file)
   ), [selectedSprite]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
+    if (!selectedSprite) {
+      return;
+    }
+
     onAnimationsChange?.({
-      ...spriteAnimations!,
-      animations: spriteAnimations!.animations.map(a => (
+      ...selectedSprite!,
+      animations: selectedSprite!.animations?.map(a => (
         a.id === animation.id ? animation : a
       )),
     });
-  }, [spriteAnimations, onAnimationsChange]);
+  }, [selectedSprite, onAnimationsChange]);
 
   return (
     <div
@@ -97,7 +96,7 @@ const SpriteForm = () => {
             <Text className="block text-slate" size="1">Animations</Text>
             <Inset side="x" className="!rounded-none !overflow-visible">
               <div className="flex flex-col gap-[1px]">
-                { spriteAnimations?.animations.map(anim => (
+                { selectedSprite?.animations?.map(anim => (
                   <AnimationsListItem
                     key={anim.id}
                     animation={anim}

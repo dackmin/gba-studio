@@ -43,20 +43,20 @@ export const prepareAnimations = async (
 export async function prepareData (build: Build) {
   for (const scene of build.data?.scenes || []) {
     for (const actor of scene.actors || []) {
-      const animations = build.data?.animations
-        ?.find(a => a._sprite_file === actor.sprite + '.json');
+      const sprite = build.data?.sprites
+        ?.find(a => a._file === actor.sprite + '.json');
 
-      if (animations) {
-        actor._animations = await prepareAnimations(animations.animations);
+      if (sprite?.animations) {
+        actor._animations = await prepareAnimations(sprite.animations);
       }
     }
 
     if (scene.player) {
-      const animations = build.data?.animations
-        ?.find(a => a._sprite_file === scene.player!.sprite + '.json');
+      const sprite = build.data?.sprites
+        ?.find(a => a._file === scene.player!.sprite + '.json');
 
-      if (animations) {
-        scene.player._animations = await prepareAnimations(animations.animations);
+      if (sprite?.animations) {
+        scene.player._animations = await prepareAnimations(sprite.animations);
       }
     }
   }

@@ -49,5 +49,6 @@ build
 .DS_Store
 
 # GBA Studio
+.gbastudio
 tmp
 out

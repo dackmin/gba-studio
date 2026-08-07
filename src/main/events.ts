@@ -68,9 +68,9 @@ export const createGraphicsFileWatcher = async (
           );
 
           if (['sprite'].includes(graphic.type)) {
-            sprites.push(graphic);
+            sprites.push(graphic as GameSpriteFile);
           } else if (['regular_bg'].includes(graphic.type)) {
-            backgrounds.push(graphic);
+            backgrounds.push(graphic as GameBackgroundFile);
           }
 
           graphic._file = file;

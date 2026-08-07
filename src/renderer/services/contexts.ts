@@ -18,7 +18,6 @@ import type {
   GameVariables,
   SpriteAnimation,
   SpriteAnimationFrame,
-  SpriteAnimations,
   SpriteAnimationState,
   SubToolType,
   ToolType,
@@ -46,7 +45,6 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
 
 export const AppContext = createContext<AppContextType>({
   scenes: [],
-  animations: [],
   variables: [],
   sprites: [],
   backgrounds: [],
@@ -175,7 +173,6 @@ export interface SpriteContextType {
   selectedFrame?: SpriteAnimationFrame;
   selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
   selectedDirection?: CharacterDirection;
-  animationsRegistry?: SpriteAnimations;
   selectSprite?(spriteFile?: GameSpriteFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
   selectState?(state?: SpriteAnimationState): void;
@@ -184,7 +181,7 @@ export interface SpriteContextType {
     stateName: Exclude<keyof SpriteAnimation['states'], 'fixed'>
   ): void;
   selectDirection?(direction: CharacterDirection): void;
-  onAnimationsChange?(animation: SpriteAnimations): void;
+  onAnimationsChange?(sprite: GameSpriteFile): void;
   onAddAnimation?(): void;
   onRemoveAnimation?(animation: SpriteAnimation): void;
 }

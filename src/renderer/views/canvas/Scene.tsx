@@ -121,8 +121,8 @@ const Scene = ({
     !background?._file || !scene.background || scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://graphics/${scene.background}.bmp`
-  ), [scene.background, background?._file]);
+      : `project://${background.path}`
+  ), [scene.background, background]);
 
   const updateSize = useCallback(async () => {
     try {

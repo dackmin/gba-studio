@@ -12,12 +12,11 @@ import { classNames, set } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type { EventValue, SpriteAnimation } from '../../../types';
-import { useApp, usePlayback, useSprite } from '../../services/hooks';
+import { usePlayback, useSprite } from '../../services/hooks';
 import { getTilesCount } from '../../../helpers';
 import EventValueField from '../../components/EventValueField';
 
 const FrameForm = () => {
-  const { animations } = useApp();
   const {
     selectedAnimation,
     selectedStateName,
@@ -40,22 +39,18 @@ const FrameForm = () => {
     }).map((_, index) => index)
   ), [selectedSprite]);
 
-  const animationsRegistry = useMemo(() => (
-    animations.find(a => a._sprite_file === selectedSprite?._file)
-  ), [animations, selectedSprite]);
-
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
-    if (!selectedAnimation) {
+    if (!selectedAnimation || !selectedSprite) {
       return;
     }
 
     onAnimationsChange?.({
-      ...animationsRegistry!,
-      animations: animationsRegistry!.animations.map(a => (
+      ...selectedSprite,
+      animations: selectedSprite.animations?.map(a => (
         a.id === selectedAnimation.id ? animation : a
       )),
     });
-  }, [selectedAnimation, onAnimationsChange, animationsRegistry]);
+  }, [selectedAnimation, selectedSprite, onAnimationsChange]);
 
   const onValueChange = useCallback((name: string, value: string | number | EventValue) => {
     const animation = selectedAnimation || {

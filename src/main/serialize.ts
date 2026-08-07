@@ -1,12 +1,11 @@
-import type { AppPayload, GameScene, GameScript, GameVariables, SpriteAnimations } from '../types';
-
-export const serializeAnimation = async (
-  animation: SpriteAnimations
-): Promise<SpriteAnimations> => {
-  animation.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/animation.json';
-
-  return animation;
-};
+import type {
+  AppPayload,
+  GameBackgroundFile,
+  GameScene,
+  GameScript,
+  GameSpriteFile,
+  GameVariables,
+} from '../types';
 
 export const serializeScript = async (script: GameScript): Promise<GameScript> => {
   script.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/script.json';
@@ -20,6 +19,22 @@ export const serializeVariablesRegistry = async (
   registry.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/variable.json';
 
   return registry;
+};
+
+export const serializeSprite = async (
+  sprite: GameSpriteFile
+): Promise<GameSpriteFile> => {
+  sprite.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sprite.json';
+
+  return sprite;
+};
+
+export const serializeBackground = async (
+  background: GameBackgroundFile
+): Promise<GameBackgroundFile> => {
+  background.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/background.json';
+
+  return background;
 };
 
 export const serializeScene = (scene: GameScene): GameScene => {
@@ -58,11 +73,6 @@ export const serialize = async (
       .all(payload.scenes.map(scene => serializeScene(scene)));
   }
 
-  if (payload.animations) {
-    payload.animations = await Promise
-      .all(payload.animations.map(animation => serializeAnimation(animation)));
-  }
-
   if (payload.scripts) {
     payload.scripts = await Promise
       .all(payload.scripts.map(script => serializeScript(script)));
@@ -71,6 +81,16 @@ export const serialize = async (
   if (payload.variables) {
     payload.variables = await Promise
       .all(payload.variables.map(variable => serializeVariablesRegistry(variable)));
+  }
+
+  if (payload.sprites) {
+    payload.sprites = await Promise
+      .all(payload.sprites.map(sprite => serializeSprite(sprite)));
+  }
+
+  if (payload.backgrounds) {
+    payload.backgrounds = await Promise
+      .all(payload.backgrounds.map(background => serializeBackground(background)));
   }
 
   return payload;

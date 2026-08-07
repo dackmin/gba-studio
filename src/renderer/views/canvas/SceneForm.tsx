@@ -18,6 +18,7 @@ import EventsField from '../../components/EventsField';
 import EventValueField from '../../components/EventValueField';
 import DirectionField from '../../components/DirectionField';
 import SpritesListField from '../../components/SpritesListField';
+import { useApp } from '../../services/hooks';
 
 export interface SceneFormProps {
   scene: GameScene;
@@ -32,6 +33,7 @@ const SceneForm = ({
   scene,
   onChange,
 }: SceneFormProps) => {
+  const { backgrounds } = useApp();
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -51,10 +53,13 @@ const SceneForm = ({
   }, [onChange, scene]);
 
   const onBackgroundChange = useCallback(async (value: string) => {
-    const [width, height] = await getImageSize(!value || value === 'bg_default'
-      ? `resources://public/templates/` +
-        `commons/graphics/bg_default.bmp`
-      : `project://graphics/${value}.bmp`);
+    const background = backgrounds.find(bg => getGraphicName(bg._file) === value);
+
+    const [width, height] = await getImageSize(
+      !value || value === 'bg_default' || !background
+        ? `resources://public/templates/commons/graphics/bg_default.bmp`
+        : `project://${background.path}`
+    );
 
     scene.map = scene.map || {
       type: 'map',
@@ -72,7 +77,7 @@ const SceneForm = ({
     }
 
     onValueChange('background', getGraphicName(value || 'bg_default'));
-  }, [scene, onValueChange]);
+  }, [scene, backgrounds, onValueChange]);
 
   const onTypeChange = useCallback((name: string, value: string) => {
     if (value !== scene.sceneType) {

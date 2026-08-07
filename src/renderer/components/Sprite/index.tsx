@@ -11,8 +11,8 @@ import type {
   GameSpriteFile,
   SpriteAnimationFrame,
 } from '../../../types';
-import { getGraphicName, loadImage, tileToPixel } from '../../../helpers';
-import { HORIZONTAL_FRAMES } from '../../services/sprites';
+import { loadImage, tileToPixel } from '../../../helpers';
+import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
 
 export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
@@ -67,10 +67,10 @@ const Sprite = ({
 
     const image = await loadImage(!sprite?._file
       ? `resources://public/templates/commons/graphics/sprite_default.bmp`
-      : `project://graphics/${getGraphicName(sprite._file)}.bmp`);
+      : `project://${sprite.path}`);
 
     const defaultFrames = ([] as number[])
-      .concat(HORIZONTAL_FRAMES.idle[direction]);
+      .concat(SPRITE_HORIZONTAL_FRAMES.idle[direction]);
     const availableFrames = frame
       ? [frame]
       : frames?.length ? frames : defaultFrames;

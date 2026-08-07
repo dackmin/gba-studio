@@ -33,13 +33,14 @@ export const getGraphicsFiles = async (
   base: string,
   cond: (file: string) => boolean = () => true
 ) => {
-  try {
-    return (await fs
-      .readdir(path.join(base, 'graphics')))
-      .filter(file => cond(file));
-  } catch {
-    return [];
-  }
+  return getDataFiles(
+    base,
+    file =>
+      (file.startsWith('sprite_') ||
+        file.startsWith('background_')) &&
+      file.endsWith('.json') &&
+      cond(file)
+  );
 };
 
 export const getSoundFiles = async (
@@ -66,16 +67,6 @@ export const getScriptsFiles = async (
   );
 };
 
-export const getAnimationsFiles = async (
-  base: string,
-) => {
-  return getDataFiles(
-    base,
-    file =>
-      file.endsWith('.animations.json')
-  );
-};
-
 export const getVariableFiles = async (
   base: string,
 ) => {
@@ -92,7 +83,6 @@ export const getGraphicFileSize = async (
   base: string,
   allowedExtensions: string[] = ['bmp'],
 ) => {
-  // let file: Buffer<ArrayBuffer> | undefined;
   const filePath = base.replace('.json', '');
 
   for (const ext of allowedExtensions) {

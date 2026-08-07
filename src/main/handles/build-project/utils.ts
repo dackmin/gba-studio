@@ -154,7 +154,7 @@ export const toSlug = (str: string) => slugify(str, {
 });
 
 export const getBuildDir = (build: Build) => {
-  return path.join(path.dirname(build.projectPath), 'tmp');
+  return path.join(path.dirname(build.projectPath), '.gbastudio');
 
   // TODO: Try to understand why temp dir does not work with
   // make/butano/devkitpro

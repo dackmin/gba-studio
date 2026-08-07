@@ -46,8 +46,8 @@ const LeftSidebar = ({
     scenes,
     variables,
     scripts,
-    animations,
     sprites,
+    backgrounds,
     editorConfig,
     setBuilding,
     setEditorConfig,
@@ -94,11 +94,11 @@ const LeftSidebar = ({
       scenes,
       variables,
       scripts,
-      animations,
       sprites,
+      backgrounds,
     }, { clean });
   }, [
-    building, selectedScene, projectPath, project, scenes, variables, scripts, animations, sprites,
+    building, selectedScene, projectPath, project, scenes, variables, scripts, sprites, backgrounds,
     setBuilding,
   ]);
 

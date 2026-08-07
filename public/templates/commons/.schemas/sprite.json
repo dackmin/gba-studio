@@ -97,19 +97,35 @@
         }
       }
     },
-    "Animations": {
+    "Sprite": {
       "type": "object",
-      "required": ["type", "animations"],
+      "required": ["type", "width", "height", "name", "format", "path"],
       "additionalProperties": false,
       "properties": {
         "$schema": {
           "type": "string"
         },
+        "type": {
+          "const": "sprite",
+          "type": "string"
+        },
         "id": {
           "type": "string"
         },
-        "type": {
-          "const": "animations",
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["bmp"]
+        },
+        "path": {
           "type": "string"
         },
         "animations": {
@@ -119,5 +135,5 @@
       }
     }
   },
-  "$ref": "#/definitions/Animations"
+  "$ref": "#/definitions/Sprite"
 }

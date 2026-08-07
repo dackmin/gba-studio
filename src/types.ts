@@ -245,27 +245,37 @@ export interface GameProject {
 }
 
 export interface GameSpriteFile {
-  type: string;
+  type: 'sprite';
+  name: string;
+  path: string;
   width?: number;
   height?: number;
+  format?: string;
+  animations?: SpriteAnimation[];
   // Internals
+  id?: string;
   _realWidth?: number;
   _realHeight?: number;
   _file?: string;
+  $schema?: string;
 }
 
 export interface GameBackgroundFile {
-  type: string;
+  type: 'background';
+  name: string;
+  path: string;
+  format?: string;
   // Internals
+  id?: string;
   _realWidth?: number;
   _realHeight?: number;
   _file?: string;
+  $schema?: string;
 }
 
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
-  animations: SpriteAnimations[];
   variables: GameVariables[];
   sprites: GameSpriteFile[];
   backgrounds: GameBackgroundFile[];

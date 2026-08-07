@@ -11,11 +11,9 @@ import type {
   GameScript,
   GameBackgroundFile,
   GameSpriteFile,
-  SpriteAnimations,
 } from '../../types';
 import { sanitize } from '../sanitize';
 import {
-  getAnimationsFiles,
   getGraphicsFiles,
   getSceneFiles,
   getScriptsFiles,
@@ -73,10 +71,6 @@ export default async (
   const scriptFiles = await getScriptsFiles(projectDir);
   total += scriptFiles.length;
 
-  // Prepare animations
-  const animationsFiles = await getAnimationsFiles(projectDir);
-  total += animationsFiles.length;
-
   // Load variables
   const variables: GameVariables[] = [];
 
@@ -111,7 +105,7 @@ export default async (
 
   for (const file of graphicsFiles) {
     const graphic: GameSpriteFile | GameBackgroundFile = JSON.parse(await fs
-      .readFile(path.join(projectDir, 'graphics', file), 'utf-8'));
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
 
     if (['sprite'].includes(graphic.type)) {
       const { width, height } = await getGraphicFileSize(path.
@@ -120,9 +114,9 @@ export default async (
       graphic._realWidth = width;
       graphic._realHeight = height;
 
-      sprites.push(graphic);
-    } else if (['regular_bg'].includes(graphic.type)) {
-      backgrounds.push(graphic);
+      sprites.push(graphic as GameSpriteFile);
+    } else if (['background'].includes(graphic.type)) {
+      backgrounds.push(graphic as GameBackgroundFile);
     }
 
     graphic._file = file;
@@ -161,20 +155,6 @@ export default async (
     scripts.push(script);
   }
 
-  // Load animations
-  const animations: SpriteAnimations[] = [];
-
-  for (const file of animationsFiles) {
-    const animation: SpriteAnimations = JSON.parse(await fs
-      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
-
-    animation._file = file;
-    animation._sprite_file = file.replace('.animations.json', '.json');
-    current++;
-    win?.setProgressBar(current / total);
-    animations.push(animation);
-  }
-
   // Load project config
   const project: GameProject = JSON.parse(
     await fs.readFile(projectPath, 'utf-8')
@@ -197,7 +177,6 @@ export default async (
     music,
     sounds,
     scripts,
-    animations,
   };
 
   return await sanitize(await unserialize(payload), { projectPath });
