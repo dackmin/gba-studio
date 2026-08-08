@@ -39,6 +39,7 @@ const CollapsibleRoot = ({
     <CollapsibleContext value={{ open }}>
       <RadixCollapsible.Root
         className={classNames('bg-(--gray-2)', className)}
+        open={open}
         onOpenChange={onOpenChange_}
         { ...rest }
       >

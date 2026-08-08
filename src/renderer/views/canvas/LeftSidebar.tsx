@@ -13,7 +13,7 @@ import { IconButton, InsetProps, Text, ContextMenu } from '@radix-ui/themes';
 import { v4 as uuid } from 'uuid';
 
 import type { GameScene, GameScript, GameVariable } from '../../../types';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useApp, useCanvas, useLocalData } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
 export interface LeftSidebarProps extends InsetProps {}
@@ -36,6 +36,7 @@ const LeftSidebar = ({
     onScriptsChange,
     onScenesChange,
   } = useCanvas();
+  const { collapse, isCollapsed } = useLocalData();
 
   const allVariables = useMemo(() => (
     variables.flatMap(v => Object.keys(v.values || {}))
@@ -132,7 +133,11 @@ const LeftSidebar = ({
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
-      <Collapsible.Root className="!w-full">
+      <Collapsible.Root
+        className="!w-full"
+        open={!isCollapsed('canvas.scenes')}
+        onOpenChange={collapse.bind(null, 'canvas.scenes')}
+      >
         <Collapsible.Trigger>
           <Text>Scenes</Text>
         </Collapsible.Trigger>

@@ -14,32 +14,38 @@ import { useApp } from '../../services/hooks';
 const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
   const { project } = useApp();
   const [ready, setReady] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [state, dispatch] = useReducer(mockState<LocalData>, {
     collapsed: [],
   });
 
   useEffect(() => {
-    if (ready) {
+    if (ready || !project?.id) {
       return;
     }
 
-    dispatch(load(project?.id || 'default'));
+    dispatch(load(project.id));
     setReady(true);
   }, [ready, project?.id]);
 
   useTimeout(() => {
-    save(project?.id || 'default', state);
-  }, 1000, [state, project?.id], { enabled: ready });
+    save(project!.id!, state);
+  }, 1000, [state, project?.id], { enabled: ready && !!project?.id && dirty });
 
   useEventListener('beforeunload', () => {
-    save(project?.id || 'default', state);
-  }, [state, project?.id]);
+    if (ready || !project?.id) {
+      return;
+    }
+
+    save(project.id, state);
+  }, [state, ready, project?.id]);
 
   const isCollapsed = useCallback((key: string) => (
     state.collapsed.includes(key)
   ), [state.collapsed]);
 
   const collapse = useCallback((key: string) => {
+    setDirty(true);
     dispatch(s => ({
       ...s,
       collapsed: isCollapsed(key)
