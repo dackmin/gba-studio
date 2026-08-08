@@ -79,11 +79,11 @@
     "debug": "4.4.3",
     "dotenv": "17.4.2",
     "electron": "43.3.0",
-    "eslint": "10.8.0",
+    "eslint": "10.8.1",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.66.0",
-    "vite": "8.2.0"
+    "vite": "8.2.1"
   },
   "build": {
     "electronLanguages": [
