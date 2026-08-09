@@ -186,7 +186,10 @@ const LeftSidebar = ({
         </Collapsible.Content>
       </Collapsible.Root>
 
-      <Collapsible.Root>
+      <Collapsible.Root
+        open={!isCollapsed('canvas.scripts')}
+        onOpenChange={collapse.bind(null, 'canvas.scripts')}
+      >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
             <Text>Scripts</Text>
@@ -246,7 +249,11 @@ const LeftSidebar = ({
         </Collapsible.Content>
       </Collapsible.Root>
 
-      <Collapsible.Root className="w-full">
+      <Collapsible.Root
+        className="w-full"
+        open={!isCollapsed('canvas.variables')}
+        onOpenChange={collapse.bind(null, 'canvas.variables')}
+      >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
             <Text>Variables</Text>

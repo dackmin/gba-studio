@@ -4,7 +4,7 @@ import { Text, ContextMenu } from '@radix-ui/themes';
 import { ImageIcon } from '@radix-ui/react-icons';
 
 import type { GameSpriteFile } from '../../../types';
-import { useApp, useSprite } from '../../services/hooks';
+import { useApp, useLocalData, useSprite } from '../../services/hooks';
 import { getGraphicName } from '../../../helpers';
 import Collapsible from '../../components/Collapsible';
 
@@ -17,11 +17,16 @@ const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
   const { sprites } = useApp();
+  const { collapse, isCollapsed } = useLocalData();
   const { selectedSprite, selectSprite } = useSprite();
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
-      <Collapsible.Root className="!w-full" defaultOpen>
+      <Collapsible.Root
+        className="!w-full"
+        open={!isCollapsed('canvas.sprites')}
+        onOpenChange={collapse.bind(null, 'canvas.sprites')}
+      >
         <Collapsible.Trigger>
           <Text>Sprites</Text>
         </Collapsible.Trigger>
