@@ -14,7 +14,8 @@ namespace neo
   ) : game(game_),
       definition(actor_definition_),
       sprite(definition->sprite.create_sprite(0, 0)),
-      position(0, 0)
+      position(0, 0),
+      moving(false)
   {
     sprite.set_camera(game->camera);
     sprite.set_visible(true);
@@ -116,5 +117,20 @@ namespace neo
     {
       game->exec_event(definition->update_events[i], true);
     }
+  }
+
+  neo::types::sprite_animation* actor::get_animation (bn::string_view type)
+  {
+    for (int i = 0; i < definition->animations_count; i++)
+    {
+      neo::types::sprite_animation* animation = definition->animations[i];
+
+      if (animation->type == type && animation->direction == direction && animation->moving == moving)
+      {
+        return animation;
+      }
+    }
+
+    return nullptr;
   }
 }

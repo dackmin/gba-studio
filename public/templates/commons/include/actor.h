@@ -23,12 +23,14 @@ namespace neo
       bool collides(int tile_x, int tile_y);
       void disable();
       void enable();
+      neo::types::sprite_animation* get_animation(bn::string_view type);
 
       neo::game* game;
       neo::types::actor* definition;
       bn::sprite_ptr sprite;
       bn::fixed_point position;
       neo::types::direction direction;
+      bool moving;
   };
 }
 

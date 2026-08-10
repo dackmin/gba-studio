@@ -142,6 +142,18 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'enable-actor',
       actor: '',
     }),
+  }, {
+    icon: MoveIcon,
+    name: 'Move Actor To',
+    value: 'move-actor-to',
+    keywords: ['actor', 'move', 'to'],
+    construct: () => ({
+      type: 'move-actor-to',
+      actor: '',
+      x: 0,
+      y: 0,
+      duration: 200,
+    }),
   }],
 }, {
   name: 'Variables',
