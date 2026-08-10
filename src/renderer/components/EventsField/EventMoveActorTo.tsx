@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { set } from '@junipero/react';
-import { Select, Switch, Text, TextField } from '@radix-ui/themes';
+import { Select, Text, TextField } from '@radix-ui/themes';
 
-import type { MoveCameraToEvent } from '../../../types';
+import type { MoveActorToEvent } from '../../../types';
 import { getImageSize, pixelToTile } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
-export interface EventMoveCameraToProps {
-  event: MoveCameraToEvent;
+export interface EventMoveActorToProps {
+  event: MoveActorToEvent;
   onValueChange?: (
-    event: MoveCameraToEvent,
+    event: MoveActorToEvent,
   ) => void;
 }
 
-const EventMoveCameraTo = ({
+const EventMoveActorTo = ({
   event,
   onValueChange,
-}: EventMoveCameraToProps) => {
-  const { eventEmitter, backgrounds } = useApp();
+}: EventMoveActorToProps) => {
+  const { backgrounds } = useApp();
   const { scene } = useSceneForm();
   const [size, setSize] = useState([240, 160]);
 
@@ -49,38 +49,29 @@ const EventMoveCameraTo = ({
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
-
-    if (['x', 'y'].includes(name)) {
-      eventEmitter?.emit('scene:camera:set', {
-        x: typeof event.x === 'number' ? event.x : 0,
-        y: typeof event.y === 'number' ? event.y : 0,
-        sceneId: scene?.id,
-      });
-    }
-
     onValueChange?.(event);
-  }, [eventEmitter, event, onValueChange, scene?.id]);
-
-  const onFocus = useCallback(() => {
-    eventEmitter?.emit('scene:camera:set', {
-      x: typeof event.x === 'number' ? event.x : 0,
-      y: typeof event.y === 'number' ? event.y : 0,
-      sceneId: scene?.id,
-    });
-  }, [eventEmitter, event.x, event.y, scene?.id]);
-
-  const onBlur = useCallback(() => {
-    eventEmitter?.emit('scene:camera:reset', {
-      sceneId: scene?.id,
-    });
-  }, [eventEmitter, scene?.id]);
+  }, [event, onValueChange]);
 
   return (
     <div
       className="flex flex-col gap-4"
-      onMouseEnter={onFocus}
-      onMouseLeave={onBlur}
     >
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Actor</Text>
+        <Select.Root
+          value={event.actor || ''}
+          onValueChange={onValueChange_.bind(null, 'actor')}
+        >
+          <Select.Trigger placeholder="Select" />
+          <Select.Content>
+            { scene?.actors?.map(actor => (
+              <Select.Item key={actor.id} value={actor.id}>
+                { actor.name }
+              </Select.Item>
+            )) }
+          </Select.Content>
+        </Select.Root>
+      </div>
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col gap-2">
@@ -106,39 +97,31 @@ const EventMoveCameraTo = ({
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Duration</Text>
+        <Text size="1" className="text-slate">Speed</Text>
         <EventValueField
           type="number"
-          value={event.duration}
-          onValueChange={onValueChange_.bind(null, 'duration')}
+          value={event.speed}
+          onValueChange={onValueChange_.bind(null, 'speed')}
+          placeholder="1"
         >
-          <TextField.Slot side="right">ms</TextField.Slot>
+          <TextField.Slot side="right">tiles/s</TextField.Slot>
         </EventValueField>
       </div>
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Allow Diagonal</Text>
-        <Switch
-          checked={!!event.allowDiagonal}
-          onCheckedChange={onValueChange_.bind(null, 'allowDiagonal')}
-        />
+        <Text size="1" className="text-slate">Direction Priority</Text>
+        <Select.Root
+          value={event.directionPriority || 'horizontal'}
+          onValueChange={onValueChange_.bind(null, 'directionPriority')}
+        >
+          <Select.Trigger placeholder="Select" />
+          <Select.Content>
+            <Select.Item value="horizontal">Horizontal</Select.Item>
+            <Select.Item value="vertical">Vertical</Select.Item>
+          </Select.Content>
+        </Select.Root>
       </div>
-      { !event.allowDiagonal && (
-        <div className="flex flex-col gap-2">
-          <Text size="1" className="text-slate">Direction Priority</Text>
-          <Select.Root
-            value={event.directionPriority || 'horizontal'}
-            onValueChange={onValueChange_.bind(null, 'directionPriority')}
-          >
-            <Select.Trigger placeholder="Select" />
-            <Select.Content>
-              <Select.Item value="horizontal">Horizontal</Select.Item>
-              <Select.Item value="vertical">Vertical</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </div>
-      ) }
     </div>
   );
 };
 
-export default EventMoveCameraTo;
+export default EventMoveActorTo;

@@ -22,6 +22,7 @@ import type {
   ExecuteScriptEvent,
   GoToSceneEvent,
   IfEvent,
+  MoveActorToEvent,
   MoveCameraToEvent,
   OnButtonPressEvent,
   PlayMusicEvent,
@@ -48,6 +49,7 @@ import EventScript from './EventScript';
 import EventPlaySound from './EventPlaySound';
 import EventMoveCameraTo from './EventMoveCameraTo';
 import EventShowMenu from './EventShowMenu';
+import EventMoveActorTo from './EventMoveActorTo';
 
 export interface EventProps {
   event: SceneEvent;
@@ -340,6 +342,12 @@ const Event = ({
             <Switch.Case value="move-camera-to">
               <EventMoveCameraTo
                 event={event as MoveCameraToEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="move-actor-to">
+              <EventMoveActorTo
+                event={event as MoveActorToEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

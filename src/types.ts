@@ -419,6 +419,15 @@ export interface MoveCameraToEvent extends SceneEvent {
   directionPriority?: 'horizontal' | 'vertical';
 }
 
+export interface MoveActorToEvent extends SceneEvent {
+  type: 'move-actor-to';
+  actor: string;
+  x: EventValue;
+  y: EventValue;
+  speed?: EventValue;
+  directionPriority?: 'horizontal' | 'vertical';
+}
+
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];

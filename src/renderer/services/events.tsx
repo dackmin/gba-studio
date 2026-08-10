@@ -152,7 +152,6 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       actor: '',
       x: 0,
       y: 0,
-      duration: 200,
     }),
   }],
 }, {
