@@ -362,6 +362,20 @@ namespace neo::types
       animation(animation_) {}
   };
 
+  struct set_actor_direction_event: event
+  {
+    bn::string_view actor;
+    neo::types::direction direction;
+    set_actor_direction_event(
+      bn::string_view type_,
+      bn::string_view actor_,
+      neo::types::direction direction_
+    ):
+      event(type_),
+      actor(actor_),
+      direction(direction_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;

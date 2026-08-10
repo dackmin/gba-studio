@@ -252,6 +252,15 @@ neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_direction_priority,
   {{../prefix}}_{{@index}}_animation
 );
+{{else if (eq this.type "set-actor-direction")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";
+bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
+neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_actor,
+  {{../prefix}}_{{@index}}_direction
+);
 {{else}}
 bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);

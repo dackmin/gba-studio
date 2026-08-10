@@ -61,9 +61,7 @@ const EventMoveActorTo = ({
   }, [event, onValueChange]);
 
   return (
-    <div
-      className="flex flex-col gap-4"
-    >
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Actor</Text>
         <Select.Root

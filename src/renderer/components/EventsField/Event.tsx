@@ -50,6 +50,7 @@ import EventPlaySound from './EventPlaySound';
 import EventMoveCameraTo from './EventMoveCameraTo';
 import EventShowMenu from './EventShowMenu';
 import EventMoveActorTo from './EventMoveActorTo';
+import EventSetActorDirection from './EventSetActorDirection';
 
 export interface EventProps {
   event: SceneEvent;
@@ -363,6 +364,12 @@ const Event = ({
               <Text className="text-xs text-slate text-center">
                 This event has no properties
               </Text>
+            </Switch.Case>
+            <Switch.Case value="set-actor-direction">
+              <EventSetActorDirection
+                event={event as any}
+                onValueChange={onValueChange}
+              />
             </Switch.Case>
             <Switch.Case default>
               <pre>{ JSON.stringify(event, null, 2) }</pre>

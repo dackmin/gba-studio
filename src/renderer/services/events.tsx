@@ -14,6 +14,7 @@ import {
   MoveIcon,
   Pencil1Icon,
   PlayIcon,
+  RadiobuttonIcon,
   ShadowIcon,
   ShadowNoneIcon,
   SpeakerLoudIcon,
@@ -45,7 +46,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     keywords: ['button', 'input', 'press'],
     construct: () => ({ type: 'wait-for-button', buttons: [], every: false }),
   }, {
-    icon: AllSidesIcon,
+    icon: RadiobuttonIcon,
     name: 'On Button Press',
     value: 'on-button-press',
     keywords: ['button', 'input', 'press'],
@@ -152,6 +153,16 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       actor: '',
       x: 0,
       y: 0,
+    }),
+  }, {
+    icon: AllSidesIcon,
+    name: 'Set Actor Direction',
+    value: 'set-actor-direction',
+    keywords: ['actor', 'direction', 'facing'],
+    construct: () => ({
+      type: 'set-actor-direction',
+      actor: '',
+      direction: 'down',
     }),
   }],
 }, {

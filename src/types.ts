@@ -462,6 +462,12 @@ export interface ExecuteScriptEvent extends SceneEvent {
   script: string;
 }
 
+export interface SetActorDirectionEvent extends SceneEvent {
+  type: 'set-actor-direction';
+  actor: string;
+  direction: CharacterDirection;
+}
+
 export type AnimationType = 'idle' | 'walk';
 
 export type FramesDefinition = {

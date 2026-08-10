@@ -574,10 +574,20 @@ namespace neo
       }
     }
 
+    /**
+     * @name move-camera-to
+     * @param x number — Target X position in pixels
+     * @param y number — Target Y position in pixels
+     * @param duration number — Duration in milliseconds
+     * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
+     * @param direction_priority string — Direction priority for movement (default: "horizontal")
+     */
     else if (e->type == "move-camera-to")
     {
       const neo::types::move_camera_to_event* move_camera_evt =
         static_cast<const neo::types::move_camera_to_event*>(e);
+
+      BN_LOG("Moving camera to x=", move_camera_evt->x->as_int(variables), ", y=", move_camera_evt->y->as_int(variables));
 
       neo::camera::move_to(
         this,
@@ -590,6 +600,15 @@ namespace neo
       );
     }
 
+    /**
+     * @name move-actor-to
+     * @param actor string — Actor name
+     * @param x number — Target X position in tiles
+     * @param y number — Target Y position in tiles
+     * @param speed number — Movement speed in pixels per frame
+     * @param direction_priority string — Direction priority for movement (default: "horizontal")
+     * @param animation string — Animation id (none if empty)
+     */
     else if (e->type == "move-actor-to")
     {
       const neo::types::move_actor_to_event* move_actor_evt =
@@ -602,7 +621,7 @@ namespace neo
           actors[i]->definition->_id == move_actor_evt->actor
         )
         {
-          BN_LOG("Moving actor: ", actors[i]->definition->name);
+          BN_LOG("Moving actor: ", actors[i]->definition->name, " to x=", move_actor_evt->x->as_int(variables), ", y=", move_actor_evt->y->as_int(variables));
           actors[i]->move_to(
             move_actor_evt->x->as_int(variables),
             move_actor_evt->y->as_int(variables),
@@ -610,6 +629,30 @@ namespace neo
             move_actor_evt->direction_priority,
             move_actor_evt->animation
           );
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name set-actor-direction
+     * @param actor string — Actor name
+     * @param direction string — Direction to set (up, down, left, right)
+     */
+    else if (e->type == "set-actor-direction")
+    {
+      const neo::types::set_actor_direction_event* set_actor_direction_evt =
+        static_cast<const neo::types::set_actor_direction_event*>(e);
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        if (
+          actors[i]->definition->name == set_actor_direction_evt->actor ||
+          actors[i]->definition->_id == set_actor_direction_evt->actor
+        )
+        {
+          BN_LOG("Setting actor direction: ", actors[i]->definition->name, " to direction=", static_cast<int>(set_actor_direction_evt->direction));
+          actors[i]->set_direction(set_actor_direction_evt->direction);
           break;
         }
       }
