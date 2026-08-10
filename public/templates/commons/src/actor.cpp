@@ -130,28 +130,91 @@ namespace neo
     }
 
     moving = true;
-    set_direction(neo::types::direction::DOWN);
 
-    // Normal speed is 1 tile/s
-    // = 16px/s for a 16x16px tile
-    // 60fps = ~16ms/frame
-    // 1tile/s = 16px/s = 1px/frame
-    int speed_in_px = (speed * game->active_scene->map_data->grid_size->as_int(game->variables));
-    int current_tile_x = (int)position.x();
-    int current_tile_y = (int)position.y();
+    neo::types::map* map_data = game->active_scene->map_data;
+    int grid_size = map_data->grid_size->as_int(game->variables);
+    int offset_x = -map_data->pixel_width(game->variables) / 2 + sprite.dimensions().width() / 2;
+    int offset_y = -map_data->pixel_height(game->variables) / 2 + sprite.dimensions().height() / 2;
 
+    // speed is in tiles/s, running at ~60 FPS
+    int px_per_frame = bn::max(1, (speed * grid_size) / 60);
 
-    // if (animation != "")
-    // {
-    //   neo::types::sprite_animation* anim = get_animation(animation);
+    int origin_x = map_data->to_pixel_x(game->variables, (int)position.x()) + offset_x;
+    int origin_y = map_data->to_pixel_y(game->variables, (int)position.y()) + offset_y;
+    int target_x = map_data->to_pixel_x(game->variables, tile_x) + offset_x;
+    int target_y = map_data->to_pixel_y(game->variables, tile_y) + offset_y;
 
-    //   if (anim != nullptr)
-    //   {
-    //     sprite.set_tiles(anim->sprite.tiles_item().create_tiles(anim->tile_index));
-    //     sprite.set_horizontal_flip(anim->horizontal_flip);
-    //   }
-    // }
+    int delta_x = target_x - origin_x;
+    int delta_y = target_y - origin_y;
+    bool horizontal_first = direction_priority != "vertical";
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
+    // Move one axis at a time, one grid step at a time, updating the sprite every frame
+    for (int pass = 0; pass < 2; ++pass)
+    {
+      bool is_horizontal_pass = (pass == 0) == horizontal_first;
+      int delta = is_horizontal_pass ? delta_x : delta_y;
+
+      if (delta == 0)
+      {
+        continue;
+      }
+
+      set_direction(is_horizontal_pass
+        ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
+        : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
+
+      // Animation depends on the (possibly just changed) direction, so it's looked up per pass
+      neo::types::sprite_animation* anim = animation != "" ? get_animation(animation) : nullptr;
+
+      if (anim != nullptr)
+      {
+        anim->reset(sprite, &tiles_item);
+      }
+
+      int step = delta > 0 ? px_per_frame : -px_per_frame;
+      int moved = 0;
+
+      while (abs(moved) < abs(delta))
+      {
+        moved += step;
+
+        if (abs(moved) > abs(delta))
+        {
+          moved = delta;
+        }
+
+        if (is_horizontal_pass)
+        {
+          sprite.set_x(origin_x + moved);
+        }
+        else
+        {
+          sprite.set_y(origin_y + moved);
+        }
+
+        // Play one animation frame
+        if (anim != nullptr)
+        {
+          anim->play(sprite, &tiles_item, game->variables);
+        }
+
+        bn::core::update();
+      }
+
+      if (is_horizontal_pass)
+      {
+        origin_x = target_x;
+      }
+      else
+      {
+        origin_y = target_y;
+      }
+    }
+
+    moving = false;
+    set_direction(direction); // restore the idle tile for the final facing direction
+    set_position(tile_x, tile_y);
   }
 
   neo::types::sprite_animation* actor::get_animation (bn::string_view id)

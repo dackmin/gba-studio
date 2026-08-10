@@ -9,6 +9,7 @@ export const prepareAnimations = async (
     if (animation.states?.fixed) {
       res.push({
         ...animation.states.fixed,
+        id: animation.id,
         type: 'animation',
         name: animation.name,
         animationType: animation.animationType,
@@ -25,8 +26,9 @@ export const prepareAnimations = async (
           continue;
         }
 
-        return res.concat({
+        res.push({
           ...state,
+          id: animation.id,
           type: 'animation',
           name: animation.name,
           animationType: animation.animationType,

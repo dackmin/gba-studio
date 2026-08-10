@@ -468,9 +468,8 @@ namespace neo::types
     int frames_count;
     sprite_animation_frame** frames;
     bool _playing = false;
-    int _current_wanted_index = 0;
-    int _current_displayed_index = -1;
-    neo::variables::registry* _variables = nullptr;
+    int _current_index = 0;
+    int _elapsed_frames = 0;
 
     sprite_animation(
       bn::string_view _id_,
@@ -491,29 +490,64 @@ namespace neo::types
       frames_count(frames_count_),
       frames(frames_) {}
 
-    inline void play (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
+    // Shows the first frame and arms the animation; call once before the per-frame play() loop starts
+    inline void reset (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
     {
-      if (_current_wanted_index == _current_displayed_index)
+      _playing = true;
+      _current_index = 0;
+      _elapsed_frames = 0;
+
+      if (frames_count > 0)
+      {
+        sprite.set_tiles(tiles->create_tiles(frames[0]->frame_index));
+      }
+    }
+
+    // Non-blocking: advances the animation by a single frame, call once per bn::core::update()
+    inline void play (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles, neo::variables::registry& variables)
+    {
+      if (!_playing || frames_count <= 0)
       {
         return;
       }
 
-      _current_displayed_index = _current_wanted_index;
-      sprite_animation_frame* frame = frames[_current_displayed_index];
-      sprite.set_tiles(tiles->create_tiles(frame->frame_index));
+      int wait_frames = frames[_current_index]->duration->as_int(variables) / 16;
 
-      if (loop)
+      if (wait_frames < 1)
       {
-        neo::utils::wait(frame->duration->as_int(*_variables));
-        _current_wanted_index = (_current_wanted_index + 1) % frames_count;
+        wait_frames = 1;
       }
+
+      if (++_elapsed_frames < wait_frames)
+      {
+        return;
+      }
+
+      _elapsed_frames = 0;
+
+      if (_current_index + 1 >= frames_count)
+      {
+        if (!loop)
+        {
+          _playing = false;
+          return;
+        }
+
+        _current_index = 0;
+      }
+      else
+      {
+        ++_current_index;
+      }
+
+      sprite.set_tiles(tiles->create_tiles(frames[_current_index]->frame_index));
     }
 
     inline void stop (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
     {
       _playing = false;
-      _current_wanted_index = 0;
-      _current_displayed_index = -1;
+      _current_index = 0;
+      _elapsed_frames = 0;
       sprite.set_tiles(tiles->create_tiles(frames[0]->frame_index));
     }
   };
