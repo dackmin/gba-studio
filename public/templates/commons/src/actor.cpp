@@ -60,6 +60,9 @@ namespace neo
     }
   }
 
+  /**
+   * Set position with tiles
+   */
   void actor::set_position (int tile_x, int tile_y)
   {
     if (!sprite.visible())
@@ -119,13 +122,45 @@ namespace neo
     }
   }
 
-  neo::types::sprite_animation* actor::get_animation (bn::string_view type)
+  void actor::move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation)
+  {
+    if (!sprite.visible())
+    {
+      return;
+    }
+
+    moving = true;
+    set_direction(neo::types::direction::DOWN);
+
+    // Normal speed is 1 tile/s
+    // = 16px/s for a 16x16px tile
+    // 60fps = ~16ms/frame
+    // 1tile/s = 16px/s = 1px/frame
+    int speed_in_px = (speed * game->active_scene->map_data->grid_size->as_int(game->variables));
+    int current_tile_x = (int)position.x();
+    int current_tile_y = (int)position.y();
+
+
+    // if (animation != "")
+    // {
+    //   neo::types::sprite_animation* anim = get_animation(animation);
+
+    //   if (anim != nullptr)
+    //   {
+    //     sprite.set_tiles(anim->sprite.tiles_item().create_tiles(anim->tile_index));
+    //     sprite.set_horizontal_flip(anim->horizontal_flip);
+    //   }
+    // }
+
+  }
+
+  neo::types::sprite_animation* actor::get_animation (bn::string_view id)
   {
     for (int i = 0; i < definition->animations_count; i++)
     {
       neo::types::sprite_animation* animation = definition->animations[i];
 
-      if (animation->type == type && animation->direction == direction && animation->moving == moving)
+      if (animation->_id == id && animation->direction == direction && animation->moving == moving)
       {
         return animation;
       }

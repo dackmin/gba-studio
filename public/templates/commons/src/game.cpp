@@ -590,6 +590,31 @@ namespace neo
       );
     }
 
+    else if (e->type == "move-actor-to")
+    {
+      const neo::types::move_actor_to_event* move_actor_evt =
+        static_cast<const neo::types::move_actor_to_event*>(e);
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        if (
+          actors[i]->definition->name == move_actor_evt->actor ||
+          actors[i]->definition->_id == move_actor_evt->actor
+        )
+        {
+          BN_LOG("Moving actor: ", actors[i]->definition->name);
+          actors[i]->move_to(
+            move_actor_evt->x->as_int(variables),
+            move_actor_evt->y->as_int(variables),
+            move_actor_evt->speed->as_int(variables),
+            move_actor_evt->direction_priority,
+            move_actor_evt->animation
+          );
+          break;
+        }
+      }
+    }
+
     /**
      * Unknown events are ignored
      */

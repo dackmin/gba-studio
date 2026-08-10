@@ -20,6 +20,7 @@ namespace neo
       void update();
       void set_direction(neo::types::direction direction);
       void set_position(int tile_x, int tile_y);
+      void move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation);
       bool collides(int tile_x, int tile_y);
       void disable();
       void enable();

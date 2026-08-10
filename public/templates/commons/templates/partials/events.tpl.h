@@ -236,6 +236,22 @@ neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
   {{valuedef this.allowDiagonal true}},
   {{../prefix}}_{{@index}}_direction_priority
 );
+{{else if (eq this.type "move-actor-to")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 1)}}
+bn::string_view {{../prefix}}_{{@index}}_type = "move-actor-to";
+bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
+neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  "{{this.actor}}",
+  &{{../prefix}}_{{@index}}_x_value,
+  &{{../prefix}}_{{@index}}_y_value,
+  &{{../prefix}}_{{@index}}_speed_value,
+  {{../prefix}}_{{@index}}_direction_priority,
+  {{../prefix}}_{{@index}}_animation
+);
 {{else}}
 bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);

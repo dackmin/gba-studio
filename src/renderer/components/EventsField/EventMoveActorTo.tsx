@@ -18,7 +18,7 @@ const EventMoveActorTo = ({
   event,
   onValueChange,
 }: EventMoveActorToProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds, sprites } = useApp();
   const { scene } = useSceneForm();
   const [size, setSize] = useState([240, 160]);
 
@@ -31,8 +31,16 @@ const EventMoveActorTo = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://graphics/${scene.background}.bmp`
-  ), [scene, background?._file]);
+      : `project://${background.path}`
+  ), [scene, background]);
+
+  const actor = useMemo(() => (
+    scene?.actors?.find(actor => actor.id === event?.actor)
+  ), [scene, event]);
+
+  const animations = useMemo(() => (
+    sprites.find(sprite => sprite._file === actor?.sprite + '.json')?.animations || []
+  ), [sprites, actor?.sprite]);
 
   const updateSize = useCallback(async () => {
     try {
@@ -117,6 +125,22 @@ const EventMoveActorTo = ({
           <Select.Content>
             <Select.Item value="horizontal">Horizontal</Select.Item>
             <Select.Item value="vertical">Vertical</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Animation</Text>
+        <Select.Root
+          value={event.animation || ''}
+          onValueChange={onValueChange_.bind(null, 'animation')}
+        >
+          <Select.Trigger placeholder="Select" />
+          <Select.Content>
+            { animations?.map(anim => (
+              <Select.Item key={anim.id} value={anim.id}>
+                { anim.name }
+              </Select.Item>
+            )) }
           </Select.Content>
         </Select.Root>
       </div>

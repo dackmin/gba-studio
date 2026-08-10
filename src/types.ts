@@ -426,6 +426,7 @@ export interface MoveActorToEvent extends SceneEvent {
   y: EventValue;
   speed?: EventValue;
   directionPriority?: 'horizontal' | 'vertical';
+  animation?: string;
 }
 
 export interface GameMenuChoice {

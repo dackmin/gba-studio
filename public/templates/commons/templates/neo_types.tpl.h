@@ -336,6 +336,32 @@ namespace neo::types
       direction_priority(direction_priority_) {}
   };
 
+  struct move_actor_to_event: event
+  {
+    bn::string_view actor;
+    event_value* x;
+    event_value* y;
+    event_value* speed;
+    bn::string_view direction_priority;
+    bn::string_view animation;
+    move_actor_to_event(
+      bn::string_view type_,
+      bn::string_view actor_,
+      event_value* x_,
+      event_value* y_,
+      event_value* speed_,
+      bn::string_view direction_priority_,
+      bn::string_view animation_
+    ):
+      event(type_),
+      actor(actor_),
+      x(x_),
+      y(y_),
+      speed(speed_),
+      direction_priority(direction_priority_),
+      animation(animation_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;
