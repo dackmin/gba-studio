@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import { useSortable } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/react/sortable';
 import { classNames, set } from '@junipero/react';
 import { Tooltip } from 'radix-ui';
 
@@ -32,13 +32,11 @@ const Choice = ({
   onValueChange,
 }: ChoiceProps) => {
   const [opened, setOpened] = useState(false);
-  const {
-    attributes,
-    listeners,
-    transform,
-    transition,
-    setNodeRef,
-  } = useSortable({ id: choice.id });
+  const { ref } = useSortable({
+    id: choice.id,
+    index,
+    type: 'choice',
+  });
 
   const onTextChange = useCallback((
     name: string,
@@ -61,14 +59,7 @@ const Choice = ({
     <div
       key={choice.id}
       className="bg-(--gray-2) flex flex-col px-3 py-3 flex flex-col gap-4"
-      ref={setNodeRef}
-      style={{
-        transform: `translate3d(${transform?.x || 0}px, ` +
-          `${transform?.y || 0}px, 0)`,
-        transition,
-      }}
-      { ...attributes }
-      { ...listeners }
+      ref={ref}
     >
       <div
         className="w-full flex items-center flex-nowrap"

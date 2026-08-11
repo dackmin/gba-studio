@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { Card, Inset, Select, Text } from '@radix-ui/themes';
+import { Card, CardProps, Inset, Select, Text } from '@radix-ui/themes';
 import { set } from '@junipero/react';
+import { useDroppable } from '@dnd-kit/react';
+import { CollisionPriority } from '@dnd-kit/abstract';
 
 import type { EventValue, IfEvent, IfEventCondition } from '../../../types';
 import EventValueField from '../EventValueField';
@@ -18,7 +20,7 @@ const EventIf = ({
   const event = useMemo(() => ({
     ...eventProp,
     conditions: eventProp.conditions?.length ? eventProp.conditions : [{
-      type: 'condition', left: '', operator: 'eq', right: '',
+      type: 'condition', left: '', operator: '==', right: '',
     } as IfEventCondition],
   }), [eventProp]);
 
@@ -49,25 +51,25 @@ const EventIf = ({
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Then</Text>
-        <Card>
+        <EventIfDroppable event={event} zone="then">
           <Inset>
             <EventsField
               value={event.then ?? []}
               onValueChange={onValueChange_.bind(null, 'then')}
             />
           </Inset>
-        </Card>
+        </EventIfDroppable>
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Else</Text>
-        <Card>
+        <EventIfDroppable event={event} zone="else">
           <Inset>
             <EventsField
               value={event.else ?? []}
               onValueChange={onValueChange_.bind(null, 'else')}
             />
           </Inset>
-        </Card>
+        </EventIfDroppable>
       </div>
     </div>
   );
@@ -99,7 +101,7 @@ const EventIfCondition = ({
       ) }
       <Select.Root
         size="1"
-        value={condition.operator}
+        value={condition.operator ?? '=='}
         onValueChange={onConditionValueChange.bind(null, 'operator')}
       >
         <Select.Trigger
@@ -123,6 +125,32 @@ const EventIfCondition = ({
         />
       ) }
     </div>
+  );
+};
+
+export interface EventIfDroppableProps extends CardProps {
+  event: IfEvent;
+  zone: 'then' | 'else';
+}
+
+const EventIfDroppable = ({
+  event,
+  zone,
+  children,
+}: EventIfDroppableProps) => {
+  const { isDropTarget, ref } = useDroppable({
+    id: event.id + '-' + zone,
+    accept: 'event',
+    collisionPriority: CollisionPriority.Highest,
+  });
+
+  return (
+    <Card
+      ref={ref}
+      className={isDropTarget ? 'outline-2 outline-dashed outline-blue-500' : ''}
+    >
+      { children }
+    </Card>
   );
 };
 

@@ -14,7 +14,8 @@ import {
 } from '@radix-ui/react-icons';
 import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { classNames, exists } from '@junipero/react';
-import { useSortable } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/react/sortable';
+import { closestCorners } from '@dnd-kit/collision';
 
 import type {
   DisableActorEvent,
@@ -54,6 +55,7 @@ import EventSetActorDirection from './EventSetActorDirection';
 
 export interface EventProps {
   event: SceneEvent;
+  index: number;
   onValueChange?: (event: SceneEvent) => void;
   onDelete?: (event: SceneEvent) => void;
   onPrepend?: (event: SceneEvent, source?: SceneEvent) => void;
@@ -62,6 +64,7 @@ export interface EventProps {
 
 const Event = ({
   event,
+  index,
   onValueChange,
   onDelete,
   onPrepend,
@@ -71,13 +74,12 @@ const Event = ({
   const { collapse, isCollapsed } = useLocalData();
   const nameRef = useRef<HTMLDivElement>(null);
   const [renaming, setRenaming] = useState(false);
-  const {
-    attributes,
-    listeners,
-    transform,
-    transition,
-    setNodeRef,
-  } = useSortable({ id: event.id });
+  const { ref } = useSortable({
+    id: event.id,
+    index,
+    type: 'event',
+    collisionDetector: closestCorners,
+  });
 
   useEffect(() => {
     if (!renaming) {
@@ -182,14 +184,7 @@ const Event = ({
           'bg-(--gray-5)': event.enabled === false,
         }
       )}
-      ref={setNodeRef}
-      style={{
-        transform: `translate3d(${transform?.x || 0}px, ` +
-          `${transform?.y || 0}px, 0)`,
-        transition,
-      }}
-      { ...attributes }
-      { ...!renaming ? listeners : {} }
+      ref={ref}
     >
       <div
         className="px-3 py-2 w-full flex items-center flex-nowrap"

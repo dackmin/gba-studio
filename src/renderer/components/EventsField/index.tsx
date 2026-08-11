@@ -1,25 +1,13 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { cloneDeep, omit } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
-import {
-  type DragEndEvent,
-  DndContext,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  restrictToParentElement,
-  restrictToVerticalAxis,
-} from '@dnd-kit/modifiers';
+import { type DragEndEvent, DragDropProvider, PointerSensor } from '@dnd-kit/react';
+import { RestrictToElement } from '@dnd-kit/dom/modifiers';
+import { PointerActivationConstraints } from '@dnd-kit/dom';
+import { move } from '@dnd-kit/helpers';
+import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers';
 
 import type { SceneEvent } from '../../../types';
 import { getEventDefinition } from '../../services/events';
@@ -39,17 +27,6 @@ const EventsField = ({
   const [selected, setSelected] = useState<
     [SceneEvent, 'append' | 'prepend']
   >();
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-  );
-
-  const eventIds = useMemo(() => (
-    value.map(e => e.id || '')
-  ), [value]);
 
   const onDeleteEvent = useCallback((event: SceneEvent) => {
     onValueChange?.(value.filter(e => e !== event));
@@ -142,62 +119,63 @@ const EventsField = ({
   }, [onCloneEvent]);
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
-    const oldIndex = value.findIndex(e => e.id === event.active.id);
-    const newIndex = value.findIndex(e => e.id === event.over?.id);
-    onValueChange?.(arrayMove(value, oldIndex, newIndex));
+    onValueChange?.(move(value, event));
   }, [onValueChange, value]);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
+    <DragDropProvider
       onDragEnd={onDragEnd}
-      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      modifiers={[RestrictToVerticalAxis, RestrictToElement]}
+      sensors={defaults => [
+        ...defaults.filter(sensor => sensor !== PointerSensor),
+        PointerSensor.configure({
+          activationConstraints: [
+            new PointerActivationConstraints.Distance({ value: 8 }),
+            new PointerActivationConstraints.Delay({ value: 200, tolerance: 10 }),
+          ],
+        }),
+      ]}
     >
-      <SortableContext
-        items={eventIds}
-        strategy={verticalListSortingStrategy}
-      >
+      <div className="flex flex-col gap-[1px]">
         <div className="flex flex-col gap-[1px]">
-          <div className="flex flex-col gap-[1px]">
-            { value.length === 0 ? (
-              <Text size="2" className="block p-3 text-center text-slate">
-                No events
-              </Text>
-            ) : value.map((event, index) => (
-              <Event
-                key={event.id || index}
-                event={event}
-                onValueChange={onChangeEvent.bind(null, event.id || index)}
-                onDelete={onDeleteEvent}
-                onPrepend={onPrependClick}
-                onAppend={onAppendClick}
-              />
-            )) }
-          </div>
-
-          <div className="px-3 my-3">
-            <Dialog.Root>
-              <Dialog.Trigger>
-                <Button ref={addEventButtonRef} className="block !w-full">
-                  <PlusIcon />
-                  <Text>Add Event</Text>
-                </Button>
-              </Dialog.Trigger>
-              <Dialog.Content>
-                <VisuallyHidden>
-                  <Dialog.Title>Event Palette</Dialog.Title>
-                  <Dialog.Description>
-                    Select an event to add to the list
-                  </Dialog.Description>
-                </VisuallyHidden>
-                <Catalogue onSelect={onAddEvent} />
-              </Dialog.Content>
-            </Dialog.Root>
-          </div>
+          { value.length === 0 ? (
+            <Text size="2" className="block p-3 text-center text-slate">
+              No events
+            </Text>
+          ) : value.map((event, index) => (
+            <Event
+              key={event.id}
+              index={index}
+              event={event}
+              onValueChange={onChangeEvent.bind(null, event.id || index)}
+              onDelete={onDeleteEvent}
+              onPrepend={onPrependClick}
+              onAppend={onAppendClick}
+            />
+          )) }
         </div>
-      </SortableContext>
-    </DndContext>
+
+        <div className="px-3 my-3">
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <Button ref={addEventButtonRef} className="block !w-full">
+                <PlusIcon />
+                <Text>Add Event</Text>
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <VisuallyHidden>
+                <Dialog.Title>Event Palette</Dialog.Title>
+                <Dialog.Description>
+                  Select an event to add to the list
+                </Dialog.Description>
+              </VisuallyHidden>
+              <Catalogue onSelect={onAddEvent} />
+            </Dialog.Content>
+          </Dialog.Root>
+        </div>
+      </div>
+    </DragDropProvider>
   );
 };
 

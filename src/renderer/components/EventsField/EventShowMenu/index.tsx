@@ -1,25 +1,17 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { Button, Card, Inset, Text } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
 import { set } from '@junipero/react';
 import {
   type DragEndEvent,
-  DndContext,
+  DragDropProvider,
   PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  restrictToParentElement,
-  restrictToVerticalAxis,
-} from '@dnd-kit/modifiers';
+} from '@dnd-kit/react';
+import { RestrictToElement } from '@dnd-kit/dom/modifiers';
+import { PointerActivationConstraints } from '@dnd-kit/dom';
+import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers';
+import { move } from '@dnd-kit/helpers';
 
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
 import DirectionField from '../../DirectionField';
@@ -34,18 +26,6 @@ const EventShowMenu = ({
   event,
   onValueChange,
 }: EventShowMenuProps) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-  );
-
-  const choiceIds = useMemo(() => (
-    event.choices?.map(e => e.id || '')
-  ), [event.choices]);
-
   const addChoice = useCallback(() => {
     const newChoice = {
       id: uuid(),
@@ -58,9 +38,7 @@ const EventShowMenu = ({
   }, [onValueChange, event]);
 
   const onDragEnd = useCallback((evt: DragEndEvent) => {
-    const oldIndex = event.choices.findIndex(e => e.id === evt.active.id);
-    const newIndex = event.choices.findIndex(e => e.id === evt.over?.id);
-    event.choices = arrayMove(event.choices, oldIndex, newIndex);
+    event.choices = move(event.choices, evt);
     onValueChange?.(event);
   }, [onValueChange, event]);
 
@@ -82,58 +60,60 @@ const EventShowMenu = ({
   }, [onValueChange, event]);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
+    <DragDropProvider
       onDragEnd={onDragEnd}
-      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      modifiers={[RestrictToVerticalAxis, RestrictToElement]}
+      sensors={defaults => [
+        ...defaults.filter(sensor => sensor !== PointerSensor),
+        PointerSensor.configure({
+          activationConstraints: [
+            new PointerActivationConstraints.Distance({ value: 8 }),
+            new PointerActivationConstraints.Delay({ value: 200, tolerance: 10 }),
+          ],
+        }),
+      ]}
     >
-      <SortableContext
-        items={choiceIds}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Text size="1" className="text-slate">Disposition</Text>
-            <DirectionField
-              value={event.direction || 'down_right'}
-              exclude={['left', 'right', 'up', 'down']}
-              onValueChange={onValueChange_.bind(null, 'direction')}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text size="1" className="text-slate">Choices</Text>
-            <Card>
-              <Inset>
-                <div className="flex flex-col gap-[1px]">
-                  { event.choices.map((choice, i) => (
-                    <Choice
-                      key={choice.id}
-                      index={i}
-                      choice={choice}
-                      choices={event.choices}
-                      onDelete={onChoiceDelete}
-                      onValueChange={onChoiceChange}
-                    />
-                  )) }
-                </div>
-
-                <div className="px-3 my-3">
-                  <Button
-                    variant="soft"
-                    className="block !w-full"
-                    onClick={addChoice}
-                  >
-                    <PlusIcon />
-                    <Text>Add Choice</Text>
-                  </Button>
-                </div>
-              </Inset>
-            </Card>
-          </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Text size="1" className="text-slate">Disposition</Text>
+          <DirectionField
+            value={event.direction || 'down_right'}
+            exclude={['left', 'right', 'up', 'down']}
+            onValueChange={onValueChange_.bind(null, 'direction')}
+          />
         </div>
-      </SortableContext>
-    </DndContext>
+        <div className="flex flex-col gap-2">
+          <Text size="1" className="text-slate">Choices</Text>
+          <Card>
+            <Inset>
+              <div className="flex flex-col gap-[1px]">
+                { event.choices.map((choice, i) => (
+                  <Choice
+                    key={choice.id}
+                    index={i}
+                    choice={choice}
+                    choices={event.choices}
+                    onDelete={onChoiceDelete}
+                    onValueChange={onChoiceChange}
+                  />
+                )) }
+              </div>
+
+              <div className="px-3 my-3">
+                <Button
+                  variant="soft"
+                  className="block !w-full"
+                  onClick={addChoice}
+                >
+                  <PlusIcon />
+                  <Text>Add Choice</Text>
+                </Button>
+              </div>
+            </Inset>
+          </Card>
+        </div>
+      </div>
+    </DragDropProvider>
   );
 };
 

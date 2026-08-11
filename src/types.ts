@@ -446,7 +446,7 @@ export interface ShowMenuEvent extends SceneEvent {
 export interface IfEventCondition {
   type: 'condition';
   left: EventValue | IfEventCondition;
-  operator: 'eq' | 'neq' | '&&' | '||';
+  operator: '==' | '!=' | '&&' | '||';
   right: EventValue | IfEventCondition;
 }
 
