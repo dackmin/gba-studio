@@ -1,26 +1,28 @@
 import { useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { cloneDeep, omit } from '@junipero/react';
+import { cloneDeep, get, omit, set } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 import { type DragEndEvent, DragDropProvider, PointerSensor } from '@dnd-kit/react';
 import { RestrictToElement } from '@dnd-kit/dom/modifiers';
-import { PointerActivationConstraints } from '@dnd-kit/dom';
+import { Droppable, PointerActivationConstraints } from '@dnd-kit/dom';
 import { move } from '@dnd-kit/helpers';
 import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers';
 
 import type { SceneEvent } from '../../../types';
-import { getEventDefinition } from '../../services/events';
+import { getEventDefinition, getEventParent, isChildOfEvent } from '../../services/events';
 import Event from './Event';
 import Catalogue from './Catalogue';
 
 export interface EventsFieldProps {
   value: SceneEvent[];
+  zone?: string;
   onValueChange?: (events: SceneEvent[]) => void;
 }
 
 const EventsField = ({
   value,
+  zone,
   onValueChange,
 }: EventsFieldProps) => {
   const addEventButtonRef = useRef<HTMLButtonElement>(null);
@@ -119,6 +121,43 @@ const EventsField = ({
   }, [onCloneEvent]);
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
+    if (event.operation.target instanceof Droppable) {
+      const sourceData = event.operation.source?.data as { event: SceneEvent, zone: string };
+      const targetData = event.operation.target?.data as { event: SceneEvent, zone: string };
+      const sourceParent = getEventParent(event.operation.source?.id?.toString() || '', value);
+
+      if (
+        sourceData.event.id === targetData.event.id ||
+        isChildOfEvent(targetData.event.id, sourceData.event.id, value)
+      ) {
+        return;
+      }
+
+      if (!sourceData.event || !targetData.event) {
+        return;
+      }
+
+      let res = value;
+
+      if (!sourceParent) {
+        res = res.filter(e => e.id !== sourceData.event.id);
+      } else {
+        set(sourceParent, sourceData.zone, [
+          ...get<SceneEvent, SceneEvent[]>(sourceParent, sourceData.zone, [])
+            .filter(e => e.id !== sourceData.event.id),
+        ]);
+      }
+
+      set(targetData.event, targetData.zone, [
+        ...get<SceneEvent, SceneEvent[]>(targetData.event, targetData.zone, []),
+        sourceData.event,
+      ]);
+
+      onValueChange?.(res);
+
+      return;
+    }
+
     onValueChange?.(move(value, event));
   }, [onValueChange, value]);
 
@@ -147,6 +186,7 @@ const EventsField = ({
               key={event.id}
               index={index}
               event={event}
+              zone={zone}
               onValueChange={onChangeEvent.bind(null, event.id || index)}
               onDelete={onDeleteEvent}
               onPrepend={onPrependClick}

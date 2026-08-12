@@ -55,6 +55,7 @@ const EventIf = ({
           <Inset>
             <EventsField
               value={event.then ?? []}
+              zone="then"
               onValueChange={onValueChange_.bind(null, 'then')}
             />
           </Inset>
@@ -66,6 +67,7 @@ const EventIf = ({
           <Inset>
             <EventsField
               value={event.else ?? []}
+              zone="else"
               onValueChange={onValueChange_.bind(null, 'else')}
             />
           </Inset>
@@ -142,6 +144,7 @@ const EventIfDroppable = ({
     id: event.id + '-' + zone,
     accept: 'event',
     collisionPriority: CollisionPriority.Highest,
+    data: { event, zone },
   });
 
   return (

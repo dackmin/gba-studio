@@ -20,20 +20,20 @@ import {
   SpeakerLoudIcon,
   StopIcon,
 } from '@radix-ui/react-icons';
+import { get } from '@junipero/react';
 
 import type {
   ExecuteScriptEvent,
+  GameMenuChoice,
   GameScript,
-  IfEvent,
   ListCategory,
   ListItem,
-  OnButtonPressEvent,
   SceneEvent,
-  ShowMenuEvent,
 } from '../../types';
 
 export interface EventDefinition extends ListItem {
   keywords?: string[];
+  containers?: string[];
   construct?: (params?: any) => any;
 }
 
@@ -49,6 +49,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: RadiobuttonIcon,
     name: 'On Button Press',
     value: 'on-button-press',
+    containers: ['events'],
     keywords: ['button', 'input', 'press'],
     construct: () => ({ type: 'on-button-press', buttons: [], events: [] }),
   }, {
@@ -117,6 +118,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: ListBulletIcon,
     name: 'Show Menu',
     value: 'show-menu',
+    containers: ['choices'],
     keywords: ['menu', 'choices', 'options'],
     construct: () => ({
       type: 'show-menu',
@@ -220,6 +222,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'If',
     value: 'if',
     keywords: ['if', 'condition', 'check'],
+    containers: ['then', 'else'],
     construct: () => ({
       type: 'if',
       conditions: [],
@@ -258,17 +261,6 @@ export const getEventsOfType = <T extends SceneEvent>(
       acc.push(event as T);
     }
 
-    if (event.type === 'if') {
-      const evt = event as IfEvent;
-      acc.push(...getEventsOfType<T>(type, evt.then || []));
-      acc.push(...getEventsOfType<T>(type, evt.else || []));
-    }
-
-    if (event.type === 'on-button-press') {
-      const evt = event as OnButtonPressEvent;
-      acc.push(...getEventsOfType<T>(type, evt.events || []));
-    }
-
     if (event.type === 'execute-script' && opts?.scripts) {
       const evt = event as ExecuteScriptEvent;
       const script = opts.scripts
@@ -276,17 +268,130 @@ export const getEventsOfType = <T extends SceneEvent>(
 
       if (script) {
         acc.push(...getEventsOfType<T>(type, script.events || [], opts));
+
+        return acc;
       }
     }
 
-    if (event.type === 'show-menu') {
-      const evt = event as ShowMenuEvent;
+    const definition = getEventDefinition(event.type);
 
-      for (const choice of evt.choices) {
-        acc.push(...getEventsOfType<T>(type, choice.events || [], opts));
+    if (definition.containers) {
+      for (const container of definition.containers) {
+        const containerEvents = get(event, container, []);
+
+        if (Array.isArray(containerEvents)) {
+          acc.push(...getEventsOfType<T>(type, containerEvents, opts));
+        } else if ((containerEvents as GameMenuChoice)?.events) {
+          acc.push(...getEventsOfType<T>(type, (containerEvents as GameMenuChoice).events, opts));
+        }
       }
     }
 
     return acc;
   }, [] as T[])
 );
+
+export const getEventById = (id: string, events: SceneEvent[]): SceneEvent | undefined => {
+  for (const event of events) {
+    if (event.id === id) {
+      return event;
+    }
+
+    const definition = getEventDefinition(event.type);
+
+    if (definition.containers) {
+      for (const container of definition.containers) {
+        const containerEvents = get(event, container, []);
+
+        if (Array.isArray(containerEvents)) {
+          const found = getEventById(id, containerEvents);
+
+          if (found) {
+            return found;
+          }
+        } else if ((containerEvents as GameMenuChoice)?.events) {
+          const found = getEventById(id, (containerEvents as GameMenuChoice).events);
+
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+  }
+};
+
+export const getEventParent = (id: string, events: SceneEvent[]): SceneEvent | undefined => {
+  for (const event of events) {
+    const definition = getEventDefinition(event.type);
+
+    if (definition.containers) {
+      for (const container of definition.containers) {
+        const containerEvents = get<SceneEvent, SceneEvent[]>(event, container, []);
+
+        if (Array.isArray(containerEvents)) {
+          if (containerEvents.some(e => e.id === id)) {
+            return event;
+          }
+
+          const found = getEventParent(id, containerEvents);
+
+          if (found) {
+            return found;
+          }
+        } else if ((containerEvents as GameMenuChoice)?.events) {
+          if ((containerEvents as GameMenuChoice).events.some(e => e.id === id)) {
+            return event;
+          }
+
+          const found = getEventParent(id, (containerEvents as GameMenuChoice).events);
+
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+  }
+};
+
+export const isChildOfEvent = (
+  childId: string,
+  parentId: string,
+  events: SceneEvent[]
+): boolean => {
+  const parent = getEventById(parentId, events);
+
+  if (!parent) {
+    return false;
+  }
+
+  const definition = getEventDefinition(parent.type);
+
+  if (definition.containers) {
+    for (const container of definition.containers) {
+      const containerEvents = get<SceneEvent, SceneEvent[]>(parent, container, []);
+
+      if (Array.isArray(containerEvents)) {
+        if (containerEvents.some(e => e.id === childId)) {
+          return true;
+        }
+
+        if (containerEvents.some(e => isChildOfEvent(childId, e.id, events))) {
+          return true;
+        }
+      } else if ((containerEvents as GameMenuChoice)?.events) {
+        if ((containerEvents as GameMenuChoice).events.some(e => e.id === childId)) {
+          return true;
+        }
+
+        if ((containerEvents as GameMenuChoice).events
+          .some(e => isChildOfEvent(childId, e.id, events))) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+};

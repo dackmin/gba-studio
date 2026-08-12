@@ -55,6 +55,7 @@ import EventSetActorDirection from './EventSetActorDirection';
 
 export interface EventProps {
   event: SceneEvent;
+  zone?: string;
   index: number;
   onValueChange?: (event: SceneEvent) => void;
   onDelete?: (event: SceneEvent) => void;
@@ -64,6 +65,7 @@ export interface EventProps {
 
 const Event = ({
   event,
+  zone,
   index,
   onValueChange,
   onDelete,
@@ -78,6 +80,7 @@ const Event = ({
     id: event.id,
     index,
     type: 'event',
+    data: { event, zone },
     collisionDetector: closestCorners,
   });
 
