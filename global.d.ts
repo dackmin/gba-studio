@@ -56,7 +56,7 @@ interface AppBridge extends EventTarget {
 
 interface Window {
   electron: AppBridge;
-};
+}
 
 declare module '*.svg?url' {
   const content: string;

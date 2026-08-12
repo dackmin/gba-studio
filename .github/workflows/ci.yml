@@ -25,7 +25,7 @@ jobs:
           check-latest: true
       - name: Install dependencies
         run: yarn install
-      - name: Eslint
+      - name: Oxlint
         run: yarn lint
       - name: TS Check
         run: yarn tsc

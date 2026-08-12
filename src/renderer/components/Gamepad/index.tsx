@@ -77,7 +77,6 @@ const Gamepad = ({
           }
 
           if (button.pressed) {
-
             if (!isPressed(gp, index)) {
               pressed.push(`${gp.index}-${index}`);
             }
