@@ -1,4 +1,5 @@
 {{#each events}}
+// Event {{@index}}: {{this.type}}
 {{#if (neq this.enabled false)}}
 {{#if (eq this.type "wait")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
@@ -147,7 +148,7 @@ neo::types::event* {{../prefix}}_{{@index}}_else[] = {
 {{>ifConditionsPartial prefix=(concat ../prefix "_" @index "_condition") conditions=this.conditions}}
 neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] = {
   {{#each this.conditions}}
-  &{{../../prefix}}_{{@index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
+  &{{../../prefix}}_{{@../index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
 };
 {{/if}}
