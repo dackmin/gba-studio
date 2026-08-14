@@ -18,13 +18,22 @@ import type { BottomBarTab } from '../../components/BottomBarTabs';
 import { useSprite } from '../../services/hooks';
 import FramesField from './FramesField';
 
-const AnimationsTabTitle = () => (
-  <Tabs.Trigger value="animations">Animations Editor</Tabs.Trigger>
-);
+const AnimationsTabTitle = () => {
+  const { selectedSprite, selectedBackground } = useSprite();
+
+  if (!selectedSprite || selectedBackground) {
+    return null;
+  }
+
+  return (
+    <Tabs.Trigger value="animations">Animations Editor</Tabs.Trigger>
+  );
+};
 
 const AnimationsTabContent = () => {
   const {
     selectedSprite,
+    selectedBackground,
     selectedAnimation,
     selectedDirection,
     selectedStateName,
@@ -106,6 +115,10 @@ const AnimationsTabContent = () => {
     selectedAnimation,
     selectedDirection, selectedStateName,
   ]);
+
+  if (!selectedSprite || selectedBackground) {
+    return null;
+  }
 
   return (
     <Tabs.Content

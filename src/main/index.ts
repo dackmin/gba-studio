@@ -29,6 +29,7 @@ import {
   registerClipboard,
   getClipboard,
   cleanBuildFolder,
+  openParentFolder,
 } from './handles';
 import Storage from './storage';
 
@@ -87,11 +88,11 @@ ipcMain.handle('is-fullscreen', isFullscreen);
 ipcMain.handle('start-build-project', startBuildProject.bind(null, storage));
 ipcMain.handle('abort-build-project', abortBuildProject);
 ipcMain.handle('get-rom-path', getRomPath);
-ipcMain.handle('clear-recent-projects',
-  clearRecentProjects.bind(null, storage));
+ipcMain.handle('clear-recent-projects', clearRecentProjects.bind(null, storage));
 ipcMain.handle('get-editor-config', getEditorConfig.bind(null, storage));
 ipcMain.handle('set-editor-config', setEditorConfig.bind(null, storage));
 ipcMain.handle('get-resources-path', getResourcesPath);
 ipcMain.handle('register-clipboard', registerClipboard.bind(null, storage));
 ipcMain.handle('get-clipboard', getClipboard.bind(null, storage));
 ipcMain.handle('clean-build-folder', cleanBuildFolder);
+ipcMain.handle('open-parent-folder', openParentFolder);

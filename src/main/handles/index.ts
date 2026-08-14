@@ -13,5 +13,6 @@ export { default as setEditorConfig } from './set-editor-config';
 export { default as getResourcesPath } from './get-resources-path';
 export { default as registerClipboard } from './register-clipboard';
 export { default as getClipboard } from './get-clipboard';
+export { default as openParentFolder } from './open-parent-folder';
 
 export * from './build-project';

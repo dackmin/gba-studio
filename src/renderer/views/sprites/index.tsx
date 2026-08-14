@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   type InfiniteCanvasRef,
   InfiniteCanvas,
@@ -6,9 +6,10 @@ import {
 } from '@junipero/react';
 
 import type { GameProject, SpriteAnimation } from '../../../types';
-import { useEditor, useSprite } from '../../services/hooks';
+import { useSprite } from '../../services/hooks';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Sprite from '../../components/Sprite';
+import Background from '../../components/Background';
 import Playback from './Playback';
 
 export interface SettingsState {
@@ -18,13 +19,14 @@ export interface SettingsState {
 
 const Sprites = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
-  const { bottomBarHeight } = useEditor();
   const {
     selectedSprite,
+    selectedBackground,
     selectedAnimation,
     selectedStateName,
     selectedDirection,
     selectSprite,
+    selectBackground,
   } = useSprite();
 
   const currentState = useMemo(() => (
@@ -39,6 +41,14 @@ const Sprites = () => {
     currentState?.frames || []
   ), [currentState]);
 
+  const onCanvasClick = useCallback(() => {
+    if (selectedSprite) {
+      selectSprite?.(selectedSprite);
+    } else if (selectedBackground) {
+      selectBackground?.(selectedBackground);
+    }
+  }, [selectedSprite, selectedBackground, selectSprite, selectBackground]);
+
   return (
     <FullscreenView>
       <InfiniteCanvas
@@ -46,16 +56,9 @@ const Sprites = () => {
         className={classNames(
           'flex-auto overflow-hidden !bg-transparent relative z-10',
         )}
-        onClick={selectSprite?.bind(null, selectedSprite)}
+        onClick={onCanvasClick}
       >
-        <div
-          className="w-full h-screen flex items-center justify-center"
-          style={{
-            ...bottomBarHeight && {
-              height: `calc(100vh - ${bottomBarHeight}px)`,
-            },
-          }}
-        >
+        { selectedSprite ? (
           <Sprite
             scale={4}
             sprite={selectedSprite}
@@ -63,7 +66,11 @@ const Sprites = () => {
             className="border-1 border-green-500"
             animated={true}
           />
-        </div>
+        ) : selectedBackground && (
+          <Background
+            background={selectedBackground}
+          />
+        )}
       </InfiniteCanvas>
 
       <Playback />

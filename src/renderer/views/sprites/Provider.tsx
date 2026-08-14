@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 
 import type {
   CharacterDirection,
+  GameBackgroundFile,
   GameSpriteFile,
   SpriteAnimation,
   SpriteAnimationFrame,
@@ -22,6 +23,7 @@ import PlaybackProvider from './PlaybackProvider';
 
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
+  selectedBackground?: GameBackgroundFile;
   selectedAnimation?: SpriteAnimation;
   selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
   selectedDirection?: CharacterDirection;
@@ -36,6 +38,7 @@ const Provider = ({
   const { onCanvasChange, ...appPayload } = useApp();
   const [state, dispatch] = useReducer(mockState<SpriteState>, {
     selectedSprite: sprites?.[0],
+    selectedBackground: undefined,
     selectedAnimation: sprites?.[0]?.animations?.[0],
     selectedStateName: undefined,
     selectedDirection: undefined,
@@ -53,10 +56,27 @@ const Provider = ({
     dispatch({
       selectedSprite: spriteFile,
       selectedAnimation: spriteFile?.animations?.[0],
+      selectedBackground: undefined,
+      selectedStateName: undefined,
+      selectedDirection: undefined,
       selectedState: undefined,
       selectedFrame: undefined,
     });
   }, [state.selectedSprite]);
+
+  const selectBackground = useCallback((backgroundFile: GameBackgroundFile) => {
+    if (state.selectedBackground === backgroundFile) {
+      return;
+    }
+
+    dispatch({
+      selectedBackground: backgroundFile,
+      selectedAnimation: undefined,
+      selectedState: undefined,
+      selectedFrame: undefined,
+      selectedSprite: undefined,
+    });
+  }, [state.selectedBackground]);
 
   const selectAnimation = useCallback((animation?: SpriteAnimation) => {
     if (state.selectedAnimation === animation) {
@@ -172,12 +192,14 @@ const Provider = ({
 
   const getContext = useCallback((): SpriteContextType => ({
     selectedSprite: state.selectedSprite,
+    selectedBackground: state.selectedBackground,
     selectedAnimation: state.selectedAnimation,
     selectedState: state.selectedState,
     selectedFrame: state.selectedFrame,
     selectedStateName: state.selectedStateName,
     selectedDirection: state.selectedDirection,
     selectSprite,
+    selectBackground,
     selectAnimation,
     selectState,
     selectFrame,
@@ -188,12 +210,14 @@ const Provider = ({
     onRemoveAnimation,
   }), [
     state.selectedSprite,
+    state.selectedBackground,
     state.selectedAnimation,
     state.selectedState,
     state.selectedFrame,
     state.selectedDirection,
     state.selectedStateName,
     selectSprite,
+    selectBackground,
     selectAnimation,
     selectState,
     selectFrame,

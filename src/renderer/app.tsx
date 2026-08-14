@@ -6,7 +6,7 @@ import {
   useRef,
 } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { type MoveableState, cloneDeep, mockState } from '@junipero/react';
+import { type MoveableState, cloneDeep, mockState, pick } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import type {
@@ -121,16 +121,21 @@ const App = () => {
   const save = useCallback(async () => {
     if (projectPath) {
       await window.electron.saveProject(projectPath, {
-        project: state.project,
-        scenes: state.scenes,
-        variables: state.variables,
-        scripts: state.scripts,
+        ...pick(state, [
+          'project',
+          'scenes',
+          'variables',
+          'scripts',
+          'backgrounds',
+          'sprites',
+          'music',
+          'sounds',
+        ]),
       });
       dispatch({ dirty: false });
     }
   }, [
-    projectPath,
-    state.project, state.scenes, state.variables, state.scripts,
+    projectPath, state,
   ]);
 
   useHotkeys('mod+s', e => {

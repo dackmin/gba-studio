@@ -49,6 +49,7 @@ interface AppBridge extends EventTarget {
   getResourcesPath(): Promise<string>;
   registerClipboard(data: any): Promise<void>;
   getClipboard(): Promise<any>;
+  openParentFolder(projectPath: string, filePath: string): Promise<void>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

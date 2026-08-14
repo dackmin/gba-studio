@@ -41,6 +41,15 @@ const views: ViewDefinition[] = [{
   bottomBar: CanvasBottomBar,
   provider: CanvasProvider,
 }, {
+  name: 'sprites',
+  title: 'Images',
+  icon: ImageIcon,
+  view: Sprites,
+  provider: SpritesProvider,
+  leftSidebar: SpritesLeftSidebar,
+  rightSidebar: SpritesRightSidebar,
+  bottomBar: SpritesBottomBar,
+}, {
   name: 'preview',
   title: 'Preview',
   icon: CardStackIcon,
@@ -48,15 +57,6 @@ const views: ViewDefinition[] = [{
   provider: PreviewProvider,
   leftSidebar: PreviewLeftSidebar,
   bottomBar: PreviewBottomBar,
-}, {
-  name: 'sprites',
-  title: 'Sprites',
-  icon: ImageIcon,
-  view: Sprites,
-  provider: SpritesProvider,
-  leftSidebar: SpritesLeftSidebar,
-  rightSidebar: SpritesRightSidebar,
-  bottomBar: SpritesBottomBar,
 }, {
   name: 'settings',
   title: 'Settings',

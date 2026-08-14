@@ -8,11 +8,16 @@ import {
 } from '@radix-ui/react-icons';
 import { classNames } from '@junipero/react';
 
-import { useEditor, usePlayback } from '../../services/hooks';
+import { useEditor, usePlayback, useSprite } from '../../services/hooks';
 
 const Playback = () => {
   const { leftSidebarWidth, bottomBarHeight } = useEditor();
+  const { selectedSprite } = useSprite();
   const { playing, index, play, pause, stop, jumpToStart, jumpToEnd } = usePlayback();
+
+  if (!selectedSprite) {
+    return null;
+  }
 
   return (
     <div

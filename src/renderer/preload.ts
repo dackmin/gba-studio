@@ -72,6 +72,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('register-clipboard', data),
   getClipboard: (): Promise<any> =>
     ipcRenderer.invoke('get-clipboard'),
+  openParentFolder: (projectPath: string, filePath: string): Promise<void> =>
+    ipcRenderer.invoke('open-parent-folder', projectPath, filePath),
 
   // Info
   platform: process.platform,

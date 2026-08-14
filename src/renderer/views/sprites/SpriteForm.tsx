@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { classNames } from '@junipero/react';
+import { ChangeEvent, KeyboardEvent, useCallback } from 'react';
+import { classNames, set } from '@junipero/react';
 import {
   Button,
   Heading,
@@ -11,21 +11,17 @@ import {
 import { PlusIcon } from '@radix-ui/react-icons';
 
 import type { SpriteAnimation } from '../../../types';
-import { useSprite } from '../../services/hooks';
-import { getGraphicName } from '../../../helpers';
+import { useApp, useSprite } from '../../services/hooks';
 import AnimationsListItem from './AnimationsListItem';
 
 const SpriteForm = () => {
+  const { onCanvasChange, ...appPayload } = useApp();
   const {
     selectedSprite,
     onAnimationsChange,
     onAddAnimation,
     onRemoveAnimation,
   } = useSprite();
-
-  const spriteName = useMemo(() => (
-    getGraphicName(selectedSprite?._file)
-  ), [selectedSprite]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
     if (!selectedSprite) {
@@ -40,6 +36,56 @@ const SpriteForm = () => {
     });
   }, [selectedSprite, onAnimationsChange]);
 
+  const onTextChange = useCallback((field: string, e: ChangeEvent<HTMLInputElement>) => {
+    if (!selectedSprite) {
+      return;
+    }
+
+    set(selectedSprite, field, e.currentTarget.value);
+    onCanvasChange?.({
+      ...appPayload,
+      sprites: appPayload.sprites.map(s => (
+        s._file === selectedSprite._file ? selectedSprite : s
+      )),
+    });
+  }, [selectedSprite, onCanvasChange, appPayload]);
+
+  const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
+    if (!selectedSprite) {
+      return;
+    }
+
+    const name = (e.currentTarget.textContent || 'Untitled')
+      .trim().slice(0, 32);
+
+    if (name === selectedSprite.name) {
+      return;
+    }
+
+    set(selectedSprite, 'name', name);
+    onCanvasChange?.({
+      ...appPayload,
+      sprites: appPayload.sprites?.map(s => (
+        s._file === selectedSprite._file
+          ? { ...s, name }
+          : s
+      )),
+    });
+  }, [onCanvasChange, selectedSprite, appPayload]);
+
+  const onNameKeyDown = (e: KeyboardEvent<HTMLHeadingElement>) => {
+    e.stopPropagation();
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  };
+
+  if (!selectedSprite) {
+    return null;
+  }
+
   return (
     <div
       className={classNames(
@@ -47,18 +93,31 @@ const SpriteForm = () => {
         'flex flex-col gap-4 justify-between',
       )}
     >
-      <div className="">
-        <Text size="1" className="text-slate">Sprite</Text>
-        <Heading
-          as="h2"
-          size="4"
-          className={classNames(
-            'whitespace-nowrap overflow-scroll focus:outline-2',
-            'outline-(--accent-9) rounded-xs',
-          )}
-        >
-          { spriteName }
-        </Heading>
+      <div>
+        <div>
+          <Text size="1" className="text-slate">Sprite</Text>
+          <Heading
+            contentEditable
+            as="h2"
+            size="4"
+            className={classNames(
+              'whitespace-nowrap overflow-scroll focus:outline-2 outline-(--accent-9) rounded-xs',
+            )}
+            onKeyDown={onNameKeyDown}
+            onBlur={onNameChange}
+            suppressContentEditableWarning
+          >
+            { selectedSprite.name }
+          </Heading>
+        </div>
+        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+        <div>
+          <Text size="1" className="text-slate">File</Text>
+          <div className="flex items-center gap-2">
+            <Text className="flex-auto truncate">{ selectedSprite?.path }</Text>
+            <Button size="1" className="flex-none">Open</Button>
+          </div>
+        </div>
         <Inset side="x"><Separator className="!w-full my-4" /></Inset>
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
@@ -68,7 +127,7 @@ const SpriteForm = () => {
                 type="number"
                 min={0}
                 value={selectedSprite?.width ?? 0}
-                // onValueChange={onValueChange_.bind(null, 'width')}
+                onChange={onTextChange.bind(null, 'width')}
               >
                 <TextField.Slot side="right">
                   px
@@ -81,7 +140,7 @@ const SpriteForm = () => {
                 type="number"
                 min={0}
                 value={selectedSprite?.height ?? 0}
-                // onValueChange={onValueChange.bind(null, 'height')}
+                onChange={onTextChange.bind(null, 'height')}
               >
                 <TextField.Slot side="right">
                   px

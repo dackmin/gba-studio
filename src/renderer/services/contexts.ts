@@ -21,6 +21,7 @@ import type {
   SpriteAnimationState,
   SubToolType,
   ToolType,
+  GameBackgroundFile,
 } from '../../types';
 import type EventEmitter from './emitter';
 import { LocalData } from './local-db';
@@ -169,12 +170,14 @@ export const LogsContext = createContext<LogsContextType>({
 
 export interface SpriteContextType {
   selectedSprite?: GameSpriteFile;
+  selectedBackground?: GameBackgroundFile;
   selectedAnimation?: SpriteAnimation;
   selectedState?: SpriteAnimationState;
   selectedFrame?: SpriteAnimationFrame;
   selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
   selectedDirection?: CharacterDirection;
   selectSprite?(spriteFile?: GameSpriteFile): void;
+  selectBackground?(backgroundFile?: GameBackgroundFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
   selectState?(state?: SpriteAnimationState): void;
   selectFrame?(frame?: SpriteAnimationFrame): void;

@@ -5,7 +5,6 @@ import { ImageIcon } from '@radix-ui/react-icons';
 
 import type { GameSpriteFile } from '../../../types';
 import { useApp, useLocalData, useSprite } from '../../services/hooks';
-import { getGraphicName } from '../../../helpers';
 import Collapsible from '../../components/Collapsible';
 
 export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {
@@ -16,9 +15,9 @@ export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const { sprites } = useApp();
+  const { sprites, backgrounds } = useApp();
   const { collapse, isCollapsed } = useLocalData();
-  const { selectedSprite, selectSprite } = useSprite();
+  const { selectedSprite, selectedBackground, selectSprite, selectBackground } = useSprite();
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
@@ -61,7 +60,61 @@ const LeftSidebar = ({
                         selectedSprite === sprite },
                     )}
                   />
-                  <Text>{ getGraphicName(sprite._file) }</Text>
+                  <Text>{ sprite.name }</Text>
+                </a>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  onClick={() => {}}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
+          )) }
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <Collapsible.Root
+        className="!w-full"
+        open={!isCollapsed('canvas.backgrounds')}
+        onOpenChange={collapse.bind(null, 'canvas.backgrounds')}
+      >
+        <Collapsible.Trigger>
+          <Text>Backgrounds</Text>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          { backgrounds.length === 0 ? (
+            <Text
+              size="1"
+              className="block text-center text-slate pb-3"
+            >
+              No backgrounds available.
+            </Text>
+          ) : backgrounds.map(background => (
+            <ContextMenu.Root
+              key={background._file}
+              onOpenChange={selectBackground?.bind(null, background)}
+            >
+              <ContextMenu.Trigger>
+                <a
+                  key={background._file}
+                  href="#"
+                  className={classNames(
+                    'flex items-center gap-2 px-3 py-1',
+                    { 'bg-(--accent-9)':
+                      selectedBackground === background },
+                  )}
+                  onClick={selectBackground?.bind(null, background)}
+                >
+                  <ImageIcon
+                    className={classNames(
+                      '[&_path]:fill-(--accent-9)',
+                      { '[&_path]:fill-seashell':
+                        selectedBackground === background },
+                    )}
+                  />
+                  <Text>{ background.name }</Text>
                 </a>
               </ContextMenu.Trigger>
               <ContextMenu.Content>
