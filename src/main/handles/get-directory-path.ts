@@ -10,5 +10,9 @@ export default async (_: IpcMainInvokeEvent, opts?: {
     properties: ['openDirectory'],
   });
 
+  if (!result.filePaths[0]) {
+    return '';
+  }
+
   return path.join(opts?.prefix || '', result.filePaths[0], opts?.suffix || '');
 };

@@ -1,8 +1,9 @@
 import { type MouseEvent, useCallback, useEffect, useReducer } from 'react';
-import { Button, Card, Dialog, Heading, Text } from '@radix-ui/themes';
+import { Button, Card, ContextMenu, Dialog, Heading, Text } from '@radix-ui/themes';
 import { classNames, mockState } from '@junipero/react';
 
 import type { RecentProject } from '../../../types';
+import { useBridgeListener, useQuery } from '../../services/hooks';
 import pkg from '../../../../package.json' with { type: 'json' };
 import icon from '../../../../public/icon.svg?url';
 import NewProjectForm from './NewProjectForm';
@@ -14,10 +15,15 @@ export interface ProjectSelectionState {
 }
 
 const ProjectSelection = () => {
+  const { action } = useQuery();
   const [state, dispatch] = useReducer(mockState<ProjectSelectionState>, {
     recentProjects: [],
     selectedProject: undefined,
   });
+
+  useBridgeListener('browse-projects', async () => {
+    await window.electron.browseProjects();
+  }, []);
 
   const onOpenExisting = async () => {
     await window.electron.browseProjects();
@@ -38,9 +44,9 @@ const ProjectSelection = () => {
 
   const onSelectProject = (
     project: RecentProject,
-    e: MouseEvent<HTMLAnchorElement>
+    e?: MouseEvent<HTMLAnchorElement>
   ) => {
-    if (e.detail >= 2) {
+    if ((e?.detail ?? 0) >= 2) {
       window.electron.loadRecentProject(project.path);
 
       return;
@@ -53,6 +59,16 @@ const ProjectSelection = () => {
     await window.electron.clearRecentProjects();
     dispatch({ recentProjects: [], selectedProject: undefined });
   };
+
+  const onRemoveRecentProject = useCallback(async (project: RecentProject) => {
+    await window.electron.removeRecentProject(project.path);
+    dispatch({
+      recentProjects: state.recentProjects.filter(p => p.path !== project.path),
+      selectedProject: state.selectedProject?.path === project.path
+        ? undefined
+        : state.selectedProject,
+    });
+  }, [state.recentProjects, state.selectedProject]);
 
   return (
     <div
@@ -83,7 +99,7 @@ const ProjectSelection = () => {
           <Text>v{ pkg.version }</Text>
         </div>
         <div className="mt-12 flex flex-col items-stretch gap-2">
-          <Dialog.Root>
+          <Dialog.Root defaultOpen={action === 'new-project'}>
             <Dialog.Trigger>
               <Button
                 variant="solid"
@@ -133,23 +149,41 @@ const ProjectSelection = () => {
           <div className="flex flex-col gap-2 h-full overflow-y-scroll p-2">
             { state.recentProjects.length > 0
               ? state.recentProjects.map(project => (
-                <a
+                <ContextMenu.Root
                   key={project.path}
-                  className={classNames(
-                    'block p-3 hover:bg-(--accent-9) rounded-xl select-none',
-                    'cursor-pointer hover:text-seashell',
-                    {
-                      'bg-(--accent-9) text-seashell':
-                        state.selectedProject === project,
-                    },
-                  )}
-                  onClick={onSelectProject.bind(null, project)}
+                  onOpenChange={onSelectProject.bind(null, project, undefined)}
                 >
-                  <div className="truncate text-ellipsis">{ project.name }</div>
-                  <div className="truncate text-ellipsis">
-                    <Text size="1">{ project.path }</Text>
-                  </div>
-                </a>
+                  <ContextMenu.Trigger>
+                    <a
+                      className={classNames(
+                        'block p-3 hover:bg-(--accent-9) rounded-xl select-none',
+                        'cursor-pointer hover:text-seashell',
+                        {
+                          'bg-(--accent-9) text-seashell':
+                            state.selectedProject === project,
+                        },
+                      )}
+                      onClick={onSelectProject.bind(null, project)}
+                    >
+                      <div className="truncate text-ellipsis">{ project.name }</div>
+                      <div className="truncate text-ellipsis">
+                        <Text size="1">{ project.path }</Text>
+                      </div>
+                    </a>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item
+                      onClick={window.electron.loadRecentProject.bind(null, project.path)}
+                    >
+                      Open
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      onClick={onRemoveRecentProject.bind(null, project)}
+                    >
+                      Remove from recent projects
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
               )) : (
                 <div className="flex items-center justify-center w-full h-full">
                   No recent projects

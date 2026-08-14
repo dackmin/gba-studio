@@ -8,7 +8,7 @@ import {
 
 import { createSelectionWindow } from './windows';
 
-export const createMenus = () => {
+export const createMenus = (type: 'project-selection' | 'editor') => {
   const isMac = process.platform === 'darwin';
   const isDev = !!MAIN_WINDOW_VITE_DEV_SERVER_URL;
 
@@ -31,12 +31,55 @@ export const createMenus = () => {
       label: 'File',
       submenu: [
         {
-          label: 'Open Project...',
-          accelerator: 'CmdOrCtrl+Shift+O',
+          label: 'New Project',
+          accelerator: 'CmdOrCtrl+N',
           click: async () => {
-            createSelectionWindow();
+            createSelectionWindow('new-project');
           },
         },
+        {
+          label: 'Open Project',
+          accelerator: 'CmdOrCtrl+Shift+O',
+          click: async () => {
+            if (type === 'editor') {
+              createSelectionWindow();
+            } else {
+              const focusedWindow = BrowserWindow.getFocusedWindow();
+
+              if (focusedWindow) {
+                focusedWindow.webContents.send('browse-projects');
+              }
+            }
+          },
+        },
+        ...type === 'editor' ? [
+          { type: 'separator' },
+          {
+            label: 'Import...',
+            submenu: [
+              {
+                label: 'Sprite...',
+                click: async () => {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+                  if (focusedWindow) {
+                    focusedWindow.webContents.send('import-sprite');
+                  }
+                },
+              },
+              {
+                label: 'Background...',
+                click: async () => {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+                  if (focusedWindow) {
+                    focusedWindow.webContents.send('import-background');
+                  }
+                },
+              },
+            ],
+          },
+        ] as MenuItemConstructorOptions[] : [],
         { type: 'separator' },
         isMac ? { role: 'close' } : { role: 'quit' },
       ],
@@ -74,7 +117,7 @@ export const createMenus = () => {
         { role: 'selectAll' },
       ],
     },
-    {
+    ...type === 'editor' ? [{
       label: 'Build',
       submenu: [
         {
@@ -110,7 +153,7 @@ export const createMenus = () => {
           },
         },
       ],
-    },
+    }] : [],
     {
       label: 'View',
       submenu: [
@@ -120,10 +163,6 @@ export const createMenus = () => {
           { role: 'toggleDevTools' },
           { type: 'separator' },
         ] as MenuItemConstructorOptions[] : [],
-        // { role: 'resetZoom' },
-        // { role: 'zoomIn' },
-        // { role: 'zoomOut' },
-        // { type: 'separator' },
         { role: 'togglefullscreen' },
       ],
     },
@@ -131,7 +170,6 @@ export const createMenus = () => {
       role: 'window',
       submenu: [
         { role: 'minimize' },
-        // { role: 'zoom' },
         ...(isMac
           ? [
             { type: 'separator' },
@@ -148,7 +186,7 @@ export const createMenus = () => {
         {
           label: 'Learn More',
           click: async () => {
-            await shell.openExternal('https://github.com/neoframe/gba-studio');
+            await shell.openExternal('https://github.com/dackmin/gba-studio');
           },
         },
       ],
@@ -156,5 +194,9 @@ export const createMenus = () => {
   ];
 
   const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
+
+  return menu;
 };
+
+export const projectSelectionMenu = createMenus('project-selection');
+export const editorMenu = createMenus('editor');

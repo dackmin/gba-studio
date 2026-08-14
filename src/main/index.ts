@@ -4,7 +4,6 @@
 import { app, ipcMain, protocol } from 'electron';
 import started from 'electron-squirrel-startup';
 
-import { createMenus } from './menus';
 import { createSelectionWindow } from './windows';
 import {
   createBeforeReadyEventListeners,
@@ -30,6 +29,7 @@ import {
   getClipboard,
   cleanBuildFolder,
   openParentFolder,
+  removeRecentProject,
 } from './handles';
 import Storage from './storage';
 
@@ -70,7 +70,6 @@ const storage = new Storage();
 
 // Needs to be called before app is ready
 createBeforeReadyEventListeners();
-createMenus();
 
 app.whenReady().then(() => {
   createEventListeners();
@@ -96,3 +95,4 @@ ipcMain.handle('register-clipboard', registerClipboard.bind(null, storage));
 ipcMain.handle('get-clipboard', getClipboard.bind(null, storage));
 ipcMain.handle('clean-build-folder', cleanBuildFolder);
 ipcMain.handle('open-parent-folder', openParentFolder);
+ipcMain.handle('remove-recent-project', removeRecentProject.bind(null, storage));

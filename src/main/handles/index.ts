@@ -14,5 +14,6 @@ export { default as getResourcesPath } from './get-resources-path';
 export { default as registerClipboard } from './register-clipboard';
 export { default as getClipboard } from './get-clipboard';
 export { default as openParentFolder } from './open-parent-folder';
+export { default as removeRecentProject } from './remove-recent-project';
 
 export * from './build-project';

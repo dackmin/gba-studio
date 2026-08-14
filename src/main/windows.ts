@@ -1,14 +1,15 @@
 import path from 'node:path';
 import url from 'node:url';
 
-import { net, session, BrowserWindow, nativeTheme, app } from 'electron';
+import { net, session, BrowserWindow, nativeTheme, app, Menu } from 'electron';
 
 import { getResourcesDir } from './utils';
 import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
+import { editorMenu, projectSelectionMenu } from './menus';
 
 const opened: Map<string, BrowserWindow> = new Map();
 
-export const createSelectionWindow = async () => {
+export const createSelectionWindow = async (action?: 'new-project' | 'browse-projects') => {
   // const {
   //   WindowCorner,
   //   VibrancyMaterial,
@@ -59,6 +60,7 @@ export const createSelectionWindow = async () => {
     const url = new URL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     url.searchParams.set('theme',
       nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+    url.searchParams.set('action', action || '');
 
     win.loadURL(url.toString());
   } else {
@@ -67,11 +69,17 @@ export const createSelectionWindow = async () => {
         `./.vite/renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
       { query: {
         theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
+        action: action || '',
       } },
     );
   }
 
   win.show();
+
+  Menu.setApplicationMenu(projectSelectionMenu);
+  win.on('focus', () => {
+    Menu.setApplicationMenu(projectSelectionMenu);
+  });
 
   return win;
 };
@@ -207,6 +215,11 @@ export const createProjectWindow = async (projectPath: string) => {
   }
 
   win.show();
+
+  Menu.setApplicationMenu(editorMenu);
+  win.on('focus', () => {
+    Menu.setApplicationMenu(editorMenu);
+  });
 
   // WindowCorner.setCornerRadius(
   //   win,

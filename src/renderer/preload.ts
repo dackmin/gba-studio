@@ -31,6 +31,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('clear-recent-projects'),
   loadRecentProject: (projectPath: string) =>
     ipcRenderer.invoke('load-recent-project', projectPath),
+  removeRecentProject: (projectPath: string) =>
+    ipcRenderer.invoke('remove-recent-project', projectPath),
   browseProjects: () =>
     ipcRenderer.invoke('browse-projects'),
   loadProject: (path: string): Promise<AppPayload> =>

@@ -1,13 +1,24 @@
-import { type IpcMainInvokeEvent, BrowserWindow } from 'electron';
+import fsp from 'node:fs/promises';
+
+import { type IpcMainInvokeEvent, BrowserWindow, dialog } from 'electron';
 
 import { createProjectWindow } from '../windows';
 
 export default async (event: IpcMainInvokeEvent, projectPath: string) => {
-  const selectionWin = BrowserWindow.fromWebContents(event.sender);
-  selectionWin?.hide();
+  try {
+    await fsp.access(projectPath);
 
-  createProjectWindow(projectPath);
+    const selectionWin = BrowserWindow.fromWebContents(event.sender);
+    selectionWin?.hide();
 
-  await new Promise(resolve => setTimeout(resolve, 100));
-  selectionWin?.close();
+    createProjectWindow(projectPath);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    selectionWin?.close();
+  } catch {
+    dialog.showErrorBox(
+      'Project Not Found',
+      `The project at "${projectPath}" could not be found.`
+    );
+  }
 };

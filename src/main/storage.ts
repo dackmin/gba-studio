@@ -46,6 +46,16 @@ export default class Storage {
     return this.save();
   }
 
+  removeRecentProject (projectPath: string) {
+    this.config = {
+      ...this.config,
+      recentProjects: (this.config.recentProjects || [])
+        .filter(p => p.path !== projectPath),
+    };
+
+    return this.save();
+  }
+
   clearRecentProjects () {
     this.config = {
       ...this.config,
