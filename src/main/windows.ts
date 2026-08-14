@@ -8,8 +8,24 @@ import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
 import { editorMenu, projectSelectionMenu } from './menus';
 
 const opened: Map<string, BrowserWindow> = new Map();
+let selectionWindow: BrowserWindow | null = null;
 
 export const createSelectionWindow = async (action?: 'new-project' | 'browse-projects') => {
+  // Reuse the existing selection window instead of opening a new one
+  if (selectionWindow && !selectionWindow.isDestroyed()) {
+    if (selectionWindow.isMinimized()) {
+      selectionWindow.restore();
+    }
+
+    selectionWindow.focus();
+
+    if (action) {
+      selectionWindow.webContents.send(action);
+    }
+
+    return selectionWindow;
+  }
+
   // const {
   //   WindowCorner,
   //   VibrancyMaterial,
@@ -79,6 +95,13 @@ export const createSelectionWindow = async (action?: 'new-project' | 'browse-pro
   Menu.setApplicationMenu(projectSelectionMenu);
   win.on('focus', () => {
     Menu.setApplicationMenu(projectSelectionMenu);
+  });
+
+  selectionWindow = win;
+  win.on('closed', () => {
+    if (selectionWindow === win) {
+      selectionWindow = null;
+    }
   });
 
   return win;

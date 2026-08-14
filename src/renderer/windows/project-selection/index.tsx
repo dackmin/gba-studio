@@ -1,4 +1,4 @@
-import { type MouseEvent, useCallback, useEffect, useReducer } from 'react';
+import { type MouseEvent, useCallback, useEffect, useReducer, useState } from 'react';
 import { Button, Card, ContextMenu, Dialog, Heading, Text } from '@radix-ui/themes';
 import { classNames, mockState } from '@junipero/react';
 
@@ -20,9 +20,14 @@ const ProjectSelection = () => {
     recentProjects: [],
     selectedProject: undefined,
   });
+  const [isNewProjectOpen, setIsNewProjectOpen] = useState(action === 'new-project');
 
   useBridgeListener('browse-projects', async () => {
     await window.electron.browseProjects();
+  }, []);
+
+  useBridgeListener('new-project', () => {
+    setIsNewProjectOpen(true);
   }, []);
 
   const onOpenExisting = async () => {
@@ -99,7 +104,7 @@ const ProjectSelection = () => {
           <Text>v{ pkg.version }</Text>
         </div>
         <div className="mt-12 flex flex-col items-stretch gap-2">
-          <Dialog.Root defaultOpen={action === 'new-project'}>
+          <Dialog.Root open={isNewProjectOpen} onOpenChange={setIsNewProjectOpen}>
             <Dialog.Trigger>
               <Button
                 variant="solid"
