@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardProps, Inset, Select, Text } from '@radix-ui/themes';
 import { set } from '@junipero/react';
-import { useDroppable } from '@dnd-kit/react';
+import { useDragOperation, useDroppable } from '@dnd-kit/react';
 import { CollisionPriority } from '@dnd-kit/abstract';
 
 import type { EventValue, IfEvent, IfEventCondition } from '../../../types';
@@ -140,6 +140,7 @@ const EventIfDroppable = ({
   zone,
   children,
 }: EventIfDroppableProps) => {
+  const { source } = useDragOperation();
   const { isDropTarget, ref } = useDroppable({
     id: event.id + '-' + zone,
     accept: 'event',
@@ -150,7 +151,8 @@ const EventIfDroppable = ({
   return (
     <Card
       ref={ref}
-      className={isDropTarget ? 'outline-2 outline-dashed outline-blue-500' : ''}
+      className={isDropTarget && source?.data?.event.id !== event.id
+        ? 'outline-2 outline-dashed outline-blue-500' : ''}
     >
       { children }
     </Card>
