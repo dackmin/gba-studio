@@ -54,7 +54,6 @@ export const createGraphicsFileWatcher = async (
     async () => {
       const files = await getGraphicsFiles(
         projectBase,
-        file => file.endsWith('.json')
       );
 
       const sprites: GameSpriteFile[] = [];
@@ -69,7 +68,7 @@ export const createGraphicsFileWatcher = async (
 
           if (['sprite'].includes(graphic.type)) {
             sprites.push(graphic as GameSpriteFile);
-          } else if (['regular_bg'].includes(graphic.type)) {
+          } else if (['background'].includes(graphic.type)) {
             backgrounds.push(graphic as GameBackgroundFile);
           }
 

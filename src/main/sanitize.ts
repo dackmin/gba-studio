@@ -336,6 +336,10 @@ export const sanitizeSprite = async (
     sprite.id = randomUUID();
   }
 
+  if (!sprite.format) {
+    sprite.format = path.extname(sprite.path);
+  }
+
   sprite.width = Number(sprite.width ?? 1);
   sprite.height = Number(sprite.height ?? 1);
   sprite.animations = await Promise
@@ -349,6 +353,10 @@ export const sanitizeBackground = async (
 ): Promise<GameBackgroundFile> => {
   if (!background.id) {
     background.id = randomUUID();
+  }
+
+  if (!background.format) {
+    background.format = path.extname(background.path);
   }
 
   return background;

@@ -242,3 +242,11 @@ export const LocalDataContext = createContext<LocalDataContextType>({
   collapse: () => {},
   isCollapsed: () => false,
 });
+
+export interface ModalContextType {
+  close(): void;
+}
+
+export const ModalContext = createContext<ModalContextType>({
+  close: () => {},
+});

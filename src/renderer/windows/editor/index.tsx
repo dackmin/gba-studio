@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useMemo, useReducer } from 'react';
+import { Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
 import { classNames, mockState } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -11,6 +11,7 @@ import RightSidebar from './RightSidebar';
 import BottomBar from './BottomBar';
 import LogsStore from './LogsStore';
 import LocalDataStore from './LocalDataStore';
+import SpriteImportModal, { type SpriteImportModalRef } from './SpriteImportModal';
 
 export interface EditorState {
   view: string;
@@ -26,6 +27,7 @@ export interface EditorState {
 
 const Editor = () => {
   const { project } = useApp();
+  const spriteModalRef = useRef<SpriteImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
     leftSidebarOpened: true,
@@ -45,6 +47,14 @@ const Editor = () => {
       dispatch({ view: 'preview' });
     }
   }, []);
+
+  useBridgeListener('import-sprite', () => {
+    spriteModalRef.current?.open();
+  });
+
+  useBridgeListener('import-background', () => {
+    // dispatch({ backgroundModalOpen: true });
+  });
 
   const {
     view: View,
@@ -162,6 +172,8 @@ const Editor = () => {
               ) }
             </div>
             <View />
+
+            <SpriteImportModal ref={spriteModalRef} />
           </Provider>
         </LogsStore>
       </LocalDataStore>

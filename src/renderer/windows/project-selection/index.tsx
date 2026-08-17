@@ -22,8 +22,8 @@ const ProjectSelection = () => {
   });
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(action === 'new-project');
 
-  useBridgeListener('browse-projects', async () => {
-    await window.electron.browseProjects();
+  useBridgeListener('browse-project', async () => {
+    await window.electron.browseProject();
   }, []);
 
   useBridgeListener('new-project', () => {
@@ -31,7 +31,7 @@ const ProjectSelection = () => {
   }, []);
 
   const onOpenExisting = async () => {
-    await window.electron.browseProjects();
+    await window.electron.browseProject();
   };
 
   const getRecentProjects = useCallback(async () => {

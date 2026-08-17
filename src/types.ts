@@ -494,3 +494,12 @@ export interface LogMessage {
   message: string;
   messageId: string;
 }
+
+export interface SpriteBitmap {
+  data: string;
+  width: number;
+  height: number;
+  mime?: string;
+  isIndexed?: boolean;
+  isCompressed?: boolean;
+}

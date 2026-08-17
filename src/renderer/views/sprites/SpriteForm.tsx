@@ -15,7 +15,7 @@ import { useApp, useSprite } from '../../services/hooks';
 import AnimationsListItem from './AnimationsListItem';
 
 const SpriteForm = () => {
-  const { onCanvasChange, ...appPayload } = useApp();
+  const { onCanvasChange, projectPath, ...appPayload } = useApp();
   const {
     selectedSprite,
     onAnimationsChange,
@@ -71,6 +71,7 @@ const SpriteForm = () => {
           : s
       )),
     });
+    e.currentTarget.textContent = name;
   }, [onCanvasChange, selectedSprite, appPayload]);
 
   const onNameKeyDown = (e: KeyboardEvent<HTMLHeadingElement>) => {
@@ -81,6 +82,14 @@ const SpriteForm = () => {
       e.currentTarget.blur();
     }
   };
+
+  const openParentFolder = useCallback(async () => {
+    if (!selectedSprite) {
+      return;
+    }
+
+    await window.electron.openParentFolder(projectPath, 'project://' + selectedSprite.path);
+  }, [selectedSprite, projectPath]);
 
   if (!selectedSprite) {
     return null;
@@ -107,15 +116,17 @@ const SpriteForm = () => {
             onBlur={onNameChange}
             suppressContentEditableWarning
           >
-            { selectedSprite.name }
+            { selectedSprite.name || 'Untitled' }
           </Heading>
         </div>
         <Inset side="x"><Separator className="!w-full my-4" /></Inset>
         <div>
           <Text size="1" className="text-slate">File</Text>
           <div className="flex items-center gap-2">
-            <Text className="flex-auto truncate">{ selectedSprite?.path }</Text>
-            <Button size="1" className="flex-none">Open</Button>
+            <Text className="flex-auto truncate">{ selectedSprite.path }</Text>
+            <Button type="button" size="1" className="flex-none" onClick={openParentFolder}>
+              Open
+            </Button>
           </div>
         </div>
         <Inset side="x"><Separator className="!w-full my-4" /></Inset>

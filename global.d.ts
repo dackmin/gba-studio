@@ -1,6 +1,7 @@
 /// <reference types="electron" />
 /// <reference types="@electron-forge/plugin-vite/forge-vite-env" />
 /// <reference types="./src/types.ts" />
+/// <reference types="jimp" />
 
 interface ImportMetaEnv {
   readonly VITE_SCHEMAS_BASE: string;
@@ -24,13 +25,18 @@ interface AppBridge extends EventTarget {
   clearRecentProjects(): Promise<void>;
   loadRecentProject(projectPath: string): Promise<void>;
   removeRecentProject(projectPath: string): Promise<void>;
-  browseProjects(): Promise<string>;
-  loadProject(path: string): Promise<AppPayload>;
-  saveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
-  getDirectoryPath(opts?: {
+  browseDirectory(opts?: {
     prefix?: string;
     suffix?: string;
   }): Promise<string>;
+  browseFile(opts?: {
+    prefix?: string;
+    filters?: FileFilter[];
+    projectPath?: string;
+  }): Promise<string>;
+  browseProject(): Promise<string>;
+  loadProject(path: string): Promise<AppPayload>;
+  saveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
   createProject(opts: {
     type: ProjectTemplate;
     name: string;
@@ -51,6 +57,13 @@ interface AppBridge extends EventTarget {
   registerClipboard(data: any): Promise<void>;
   getClipboard(): Promise<any>;
   openParentFolder(projectPath: string, filePath: string): Promise<void>;
+  getProjectRelativePath(projectPath: string, filePath: string): Promise<string>;
+  loadImage(src: string): Promise<SpriteBitmap>;
+  importSprite(
+    projectPath: string,
+    filePath: string,
+    spriteInfo: Partial<GameSpriteFile>,
+  ): Promise<Partial<GameSpriteFile>>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

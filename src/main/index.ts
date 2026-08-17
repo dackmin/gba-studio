@@ -10,12 +10,13 @@ import {
   createEventListeners,
 } from './events';
 import {
-  browseProjects,
+  browseDirectory,
+  browseFile,
+  browseProject,
   getRecentProjects,
   loadRecentProject,
   loadProject,
   saveProject,
-  getDirectoryPath,
   createProject,
   isFullscreen,
   startBuildProject,
@@ -30,6 +31,9 @@ import {
   cleanBuildFolder,
   openParentFolder,
   removeRecentProject,
+  getProjectRelativePath,
+  loadImage,
+  importSprite,
 } from './handles';
 import Storage from './storage';
 
@@ -78,10 +82,11 @@ app.whenReady().then(() => {
 
 ipcMain.handle('get-recent-projects', getRecentProjects.bind(null, storage));
 ipcMain.handle('load-recent-project', loadRecentProject);
-ipcMain.handle('browse-projects', browseProjects);
+ipcMain.handle('browse-directory', browseDirectory);
+ipcMain.handle('browse-file', browseFile);
+ipcMain.handle('browse-project', browseProject);
 ipcMain.handle('load-project', loadProject.bind(null, storage));
 ipcMain.handle('save-project', saveProject);
-ipcMain.handle('get-directory-path', getDirectoryPath);
 ipcMain.handle('create-project', createProject.bind(null, storage));
 ipcMain.handle('is-fullscreen', isFullscreen);
 ipcMain.handle('start-build-project', startBuildProject.bind(null, storage));
@@ -96,3 +101,6 @@ ipcMain.handle('get-clipboard', getClipboard.bind(null, storage));
 ipcMain.handle('clean-build-folder', cleanBuildFolder);
 ipcMain.handle('open-parent-folder', openParentFolder);
 ipcMain.handle('remove-recent-project', removeRecentProject.bind(null, storage));
+ipcMain.handle('get-project-relative-path', getProjectRelativePath);
+ipcMain.handle('load-image', loadImage);
+ipcMain.handle('import-sprite', importSprite);

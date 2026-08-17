@@ -13,7 +13,7 @@ import type {
   GameSpriteFile,
   GameVariables,
 } from '../../types';
-import { getSceneFiles, getScriptsFiles } from '../files';
+import { getGraphicsFiles, getSceneFiles, getScriptsFiles } from '../files';
 import { serialize } from '../serialize';
 import { sanitize } from '../sanitize';
 
@@ -84,9 +84,31 @@ export default async (
     await saveItem(script, projectDir);
   }
 
-  // Save graphics
+  // Delete obsolete backgrounds
+  const existingBackgroundFiles: string[] = await getGraphicsFiles(projectDir, f =>
+    f.startsWith('background_'));
+  const newBackgroundFiles = (data.backgrounds || []).map(b => b._file).filter(Boolean);
+
+  for (const file of existingBackgroundFiles) {
+    if (!newBackgroundFiles.includes(file)) {
+      await fs.unlink(path.join(projectDir, 'content', file));
+    }
+  }
+
+  // Save backgrounds
   for (const background of data.backgrounds || []) {
     await saveItem(background, projectDir);
+  }
+
+  // Delete obsolete backgrounds
+  const existingSpriteFiles: string[] = await getGraphicsFiles(projectDir, f =>
+    f.startsWith('sprite_'));
+  const newSpriteFiles = (data.backgrounds || []).map(b => b._file).filter(Boolean);
+
+  for (const file of existingSpriteFiles) {
+    if (!newSpriteFiles.includes(file)) {
+      await fs.unlink(path.join(projectDir, 'content', file));
+    }
   }
 
   // Save sprites

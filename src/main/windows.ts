@@ -4,13 +4,13 @@ import url from 'node:url';
 import { net, session, BrowserWindow, nativeTheme, app, Menu } from 'electron';
 
 import { getResourcesDir } from './utils';
-import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
+// import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
 import { editorMenu, projectSelectionMenu } from './menus';
 
 const opened: Map<string, BrowserWindow> = new Map();
 let selectionWindow: BrowserWindow | null = null;
 
-export const createSelectionWindow = async (action?: 'new-project' | 'browse-projects') => {
+export const createSelectionWindow = async (action?: 'new-project' | 'browse-project') => {
   // Reuse the existing selection window instead of opening a new one
   if (selectionWindow && !selectionWindow.isDestroyed()) {
     if (selectionWindow.isMinimized()) {
@@ -203,8 +203,8 @@ export const createProjectWindow = async (projectPath: string) => {
     abortController.abort();
   });
 
-  createGraphicsFileWatcher(projectPath, win, abortController.signal);
-  createAudioFileWatcher(projectPath, win, abortController.signal);
+  // createGraphicsFileWatcher(projectPath, win, abortController.signal);
+  // createAudioFileWatcher(projectPath, win, abortController.signal);
 
   win.maximize();
 

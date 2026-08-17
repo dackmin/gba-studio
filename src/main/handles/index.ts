@@ -1,9 +1,10 @@
 export { default as getRecentProjects } from './get-recent-projects';
 export { default as loadRecentProject } from './load-recent-project';
-export { default as browseProjects } from './browse-projects';
+export { default as browseDirectory } from './browse-directory';
+export { default as browseFile } from './browse-file';
+export { default as browseProject } from './browse-project';
 export { default as loadProject } from './load-project';
 export { default as saveProject } from './save-project';
-export { default as getDirectoryPath } from './get-directory-path';
 export { default as createProject } from './create-project';
 export { default as isFullscreen } from './is-fullscreen';
 export { default as getRomPath } from './get-rom-path';
@@ -15,5 +16,8 @@ export { default as registerClipboard } from './register-clipboard';
 export { default as getClipboard } from './get-clipboard';
 export { default as openParentFolder } from './open-parent-folder';
 export { default as removeRecentProject } from './remove-recent-project';
+export { default as getProjectRelativePath } from './get-project-relative-path';
+export { default as loadImage } from './load-image';
+export { default as importSprite } from './import-sprite';
 
 export * from './build-project';

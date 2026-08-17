@@ -16,7 +16,7 @@ import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
 
 export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
-  sprite?: GameSpriteFile;
+  sprite?: Partial<GameSpriteFile>;
   gridSize?: number;
   width?: number;
   height?: number;
@@ -65,9 +65,11 @@ const Sprite = ({
       return;
     }
 
-    const image = await loadImage(!sprite?._file
-      ? `resources://public/templates/commons/graphics/sprite_default.bmp`
-      : `project://${sprite.path}`);
+    const image = sprite?.path?.startsWith('data:')
+      ? await loadImage(sprite.path)
+      : await loadImage(!sprite?._file
+        ? `resources://public/templates/commons/graphics/sprite_default.bmp`
+        : `project://${sprite.path}`);
 
     const defaultFrames = ([] as number[])
       .concat(SPRITE_HORIZONTAL_FRAMES.idle[direction]);

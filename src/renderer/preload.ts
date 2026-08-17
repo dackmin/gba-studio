@@ -1,11 +1,13 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { type FileFilter, contextBridge, ipcRenderer } from 'electron';
 
 import type {
   AppPayload,
   AppStorage,
   BuildOptions,
+  GameSpriteFile,
   ProjectTemplate,
   RecentProject,
+  SpriteBitmap,
 } from '../types';
 
 const queryParams = new URLSearchParams(globalThis.location.search);
@@ -33,17 +35,23 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('load-recent-project', projectPath),
   removeRecentProject: (projectPath: string) =>
     ipcRenderer.invoke('remove-recent-project', projectPath),
-  browseProjects: () =>
-    ipcRenderer.invoke('browse-projects'),
+  browseProject: () =>
+    ipcRenderer.invoke('browse-project'),
   loadProject: (path: string): Promise<AppPayload> =>
     ipcRenderer.invoke('load-project', path),
   saveProject: (path: string, payload: AppPayload): Promise<void> =>
     ipcRenderer.invoke('save-project', path, payload),
-  getDirectoryPath: (opts?: {
+  browseDirectory: (opts?: {
     prefix?: string;
     suffix?: string;
   }): Promise<string> =>
-    ipcRenderer.invoke('get-directory-path', opts),
+    ipcRenderer.invoke('browse-directory', opts),
+  browseFile: (opts?: {
+    prefix?: string;
+    filters?: FileFilter[];
+    projectPath?: string;
+  }): Promise<string> =>
+    ipcRenderer.invoke('browse-file', opts),
   createProject: (opts: {
     type: ProjectTemplate;
     name: string;
@@ -76,6 +84,16 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('get-clipboard'),
   openParentFolder: (projectPath: string, filePath: string): Promise<void> =>
     ipcRenderer.invoke('open-parent-folder', projectPath, filePath),
+  getProjectRelativePath: (projectPath: string, filePath: string): Promise<string> =>
+    ipcRenderer.invoke('get-project-relative-path', projectPath, filePath),
+  loadImage: (src: string): Promise<SpriteBitmap> =>
+    ipcRenderer.invoke('load-image', src),
+  importSprite: (
+    projectPath: string,
+    filePath: string,
+    spriteInfo: Partial<GameSpriteFile>,
+  ): Promise<Partial<GameSpriteFile>> =>
+    ipcRenderer.invoke('import-sprite', projectPath, filePath, spriteInfo),
 
   // Info
   platform: process.platform,

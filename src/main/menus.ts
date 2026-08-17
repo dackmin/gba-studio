@@ -47,7 +47,7 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
               const focusedWindow = BrowserWindow.getFocusedWindow();
 
               if (focusedWindow) {
-                focusedWindow.webContents.send('browse-projects');
+                focusedWindow.webContents.send('browse-project');
               }
             }
           },
