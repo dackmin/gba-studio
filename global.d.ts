@@ -58,7 +58,7 @@ interface AppBridge extends EventTarget {
   getClipboard(): Promise<any>;
   openParentFolder(projectPath: string, filePath: string): Promise<void>;
   getProjectRelativePath(projectPath: string, filePath: string): Promise<string>;
-  loadImage(src: string): Promise<SpriteBitmap>;
+  loadImage(projectPath: string, src: string): Promise<SpriteBitmap>;
   importSprite(
     projectPath: string,
     filePath: string,

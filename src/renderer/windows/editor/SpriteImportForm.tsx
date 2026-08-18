@@ -55,14 +55,14 @@ const SpriteImportForm = () => {
     const file = await window.electron.browseFile({
       projectPath,
       filters: [
-        { name: 'Images', extensions: ['bmp'] },
+        { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
       ],
     });
 
     if (file) {
       dispatch({ fetching: true });
 
-      const imageContent = await window.electron.loadImage(file);
+      const imageContent = await window.electron.loadImage(projectPath, file);
 
       const width = imageContent.width > imageContent.height
         ? imageContent.height : imageContent.width;
@@ -83,7 +83,7 @@ const SpriteImportForm = () => {
   ), [state.fetching, state.importing]);
 
   const sprite = useDelayedValue<Partial<GameSpriteFile>>({
-    path: state.path,
+    path: state.preview?.data,
     width: state.width,
     height: state.height,
   }, { delay: 400 });
@@ -209,7 +209,7 @@ const SpriteImportForm = () => {
         </div>
       ) : state.preview && sprite && (
         <div className="flex items-start gap-8">
-          <div className="flex-1/3 flex flex-col gap-2">
+          <div className="w-1/3! flex-none flex flex-col gap-2">
             <Text size="1" className="text-slate">Preview</Text>
             <Sprite
               sprite={sprite}
@@ -218,6 +218,9 @@ const SpriteImportForm = () => {
               className="border border-slate rounded"
             />
             <div className="flex flex-col gap-2">
+              <Text size="1" className="text-slate">
+                Original size: { state.preview.originalWidth }x{ state.preview.originalHeight }px
+              </Text>
               <Text size="1" className="text-slate">
                 Sprite size: { state.preview.width }x{ state.preview.height }px
               </Text>
@@ -244,6 +247,13 @@ const SpriteImportForm = () => {
               </ChecklistItem>
               <ChecklistItem condition={checklist[3]}>
                 <Text>Colors are indexed</Text>
+              </ChecklistItem>
+              <ChecklistItem warn condition={state.preview?.isResized !== true}>
+                { state.preview?.isResized === true ? (
+                  <Text>Image was resized to fit the grid</Text>
+                ) : (
+                  <Text>No resizing needed</Text>
+                ) }
               </ChecklistItem>
             </div>
           </div>

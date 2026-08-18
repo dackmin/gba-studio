@@ -24,10 +24,20 @@ export default async function (
   // Copy sprite into project/graphics
   const graphicsDir = path.join(projectDir, 'graphics');
   await fsp.mkdir(graphicsDir, { recursive: true });
-  await fsp.copyFile(
-    filePath,
-    path.join(graphicsDir, fileName + fileExt),
-  );
+
+  try {
+    await fsp.access(path.join(projectDir, '.gbastudio/tmp/import/sprite-temp.bmp'));
+    await fsp.copyFile(
+      path.join(projectDir, '.gbastudio/tmp/import/sprite-temp.bmp'),
+      path.join(graphicsDir, fileName + fileExt),
+    );
+    await fsp.rm(path.join(projectDir, '.gbastudio/tmp/import/sprite-temp.bmp'));
+  } catch {
+    await fsp.copyFile(
+      filePath,
+      path.join(graphicsDir, fileName + fileExt),
+    );
+  }
 
   // Create content file
   const contentDir = path.join(projectDir, 'content');
