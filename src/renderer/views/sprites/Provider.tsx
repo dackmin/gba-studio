@@ -156,18 +156,20 @@ const Provider = ({
       id: uuid(),
     };
 
-    onAnimationsChange?.({
+    const newSprite: GameSpriteFile = {
       ...state.selectedSprite!,
       animations: [
         ...(state.selectedSprite?.animations || []),
         newAnimation,
       ],
-    });
+    };
 
+    onAnimationsChange?.(newSprite);
+    selectSprite?.(newSprite);
     selectAnimation?.(newAnimation);
   }, [
     state.selectedSprite,
-    onAnimationsChange, selectAnimation,
+    onAnimationsChange, selectAnimation, selectSprite,
   ]);
 
   const onRemoveAnimation = useCallback((animation: SpriteAnimation) => {
@@ -175,19 +177,22 @@ const Provider = ({
       return;
     }
 
-    onAnimationsChange?.({
+    const newSprite: GameSpriteFile = {
       ...state.selectedSprite,
       animations: state.selectedSprite.animations?.filter(a => (
         a.id !== animation.id
       )),
-    });
+    };
 
     if (state.selectedAnimation?.id === animation.id) {
       selectAnimation?.(undefined);
     }
+
+    onAnimationsChange?.(newSprite);
+    selectSprite?.(newSprite);
   }, [
     state.selectedSprite, state.selectedAnimation,
-    onAnimationsChange, selectAnimation,
+    onAnimationsChange, selectAnimation, selectSprite,
   ]);
 
   const getContext = useCallback((): SpriteContextType => ({
