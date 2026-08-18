@@ -28,6 +28,9 @@ export const serializeSprite = async (
 ): Promise<GameSpriteFile> => {
   sprite.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sprite.json';
 
+  delete sprite._realWidth;
+  delete sprite._realHeight;
+
   return sprite;
 };
 
