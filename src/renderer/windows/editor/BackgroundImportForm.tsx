@@ -96,8 +96,6 @@ const BackgroundImportForm = () => {
       (state.preview?.height || 0) > 0 &&
       [256, 512].includes(state.preview?.width || 0) &&
       [256, 512].includes(state.preview?.height || 0),
-    state.preview?.isCompressed !== true,
-    state?.preview?.isIndexed === true,
   ]), [state.preview]);
 
   const canSubmit = useCallback(() => (
@@ -253,12 +251,6 @@ const BackgroundImportForm = () => {
                 condition={checklist[0]}
               >
                 <Text>Sizes are multiples of each other</Text>
-              </ChecklistItem>
-              <ChecklistItem condition={checklist[1]}>
-                <Text>No compression</Text>
-              </ChecklistItem>
-              <ChecklistItem condition={checklist[2]}>
-                <Text>Colors are indexed</Text>
               </ChecklistItem>
               <ChecklistItem warn condition={state.preview?.isResized !== true}>
                 { state.preview?.isResized === true ? (

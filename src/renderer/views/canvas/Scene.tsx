@@ -114,7 +114,7 @@ const Scene = ({
   ), [project, mouseX, mouseY, offsetX, offsetY, zoom, scene, preview]);
 
   const background = useMemo(() => (
-    backgrounds.find(bg => bg._file === scene.background + '.json')
+    backgrounds.find(bg => bg.id === scene.background || bg.name === scene.background)
   ), [backgrounds, scene.background]);
 
   const backgroundPath = useMemo(() => (

@@ -50,10 +50,6 @@ export const setupHandlebars = async () => {
     arr.reduce((c, i) => c + i.values.length, 0));
   Handlebars.registerHelper('size', (obj: any) =>
     Array.isArray(obj) ? obj.length : Object.keys(obj).length);
-  Handlebars.registerHelper('getVariable', (variables: any[], id: string) => {
-    return variables.flatMap(v => v.values)
-      .find(v => v.id === id || v.name === id);
-  });
   Handlebars.registerHelper('posix', (p: string) =>
     p.replace(/\s/g, '\\ ').replace(/\\/g, '/'));
   Handlebars.registerHelper('isRawValue', (obj: any) =>
@@ -73,6 +69,22 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('longestMenuChoice', (arr: GameMenuChoice[]) =>
     arr.sort((a, b) => b.text.length - a.text.length)[0]?.text || '');
   Handlebars.registerHelper('array', (...args) => args.slice(0, -1));
+
+  // Add content helpers
+  Handlebars.registerHelper('getVariable', (variables: any[], id: string) => {
+    return variables.flatMap(v => v.values)
+      .find(v => v.id === id || v.name === id);
+  });
+  Handlebars.registerHelper('getBackgroundName', (backgrounds: any[], id: string) => {
+    return backgrounds
+      .find(bg => bg.id === id || bg.name === id)
+      ?._file.replace(/\.json$/, '').replace(/^background_/, '') || id;
+  });
+  Handlebars.registerHelper('getSpriteName', (sprites: any[], id: string) => {
+    return sprites
+      .find(s => s.id === id || s.name === id)
+      ?._file.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
+  });
 
   // Add partials
   Handlebars.registerPartial(
@@ -120,7 +132,6 @@ export const compileTemplate = async (
   content: string,
   data: any,
 ): Promise<string> => {
-  await setupHandlebars();
   const compiled = Handlebars.compile(content, {
     noEscape: true,
   });
@@ -151,6 +162,8 @@ export const buildTemplates = async (
   event: IpcMainInvokeEvent,
   build: Build,
 ): Promise<void> => {
+  await setupHandlebars();
+
   sendLog(event, build.id, 'Building helpers...');
   await buildSingleTemplate('neo_utils.tpl.h', build);
   sendSuccessLog(event, build.id, 'neo_utils.h built');

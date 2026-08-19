@@ -31,7 +31,7 @@ const Actor = ({
   const { tool, selectedItem } = useCanvas();
 
   const getSprite = useCallback((name: string) => (
-    sprites?.find(s => s._file === `${name}.json`)
+    sprites?.find(s => s.id === name || s.name === name)
   ), [sprites]);
 
   const previewPosition = useMemo(() => preview ? {

@@ -503,8 +503,6 @@ export interface SpriteBitmap {
   height: number;
   originalWidth: number;
   originalHeight: number;
-  isIndexed: boolean;
-  isCompressed: boolean;
   isResized: boolean;
   mime?: string;
 }

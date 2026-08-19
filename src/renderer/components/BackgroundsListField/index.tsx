@@ -19,7 +19,7 @@ const BackgroundsListField = ({
   const val = value ?? defaultValue ?? '';
 
   const selected = useMemo(() => (
-    backgrounds.find(bg => getGraphicName(bg._file) === val)
+    backgrounds.find(bg => bg.id === val || bg.name === val)
   ), [backgrounds, val]);
 
   return (
@@ -54,7 +54,7 @@ const BackgroundsListField = ({
         { backgrounds.map(bg => (
           <DropdownMenu.Item
             key={bg._file}
-            onClick={() => onValueChange?.(getGraphicName(bg._file))}
+            onClick={() => onValueChange?.(bg.id || bg.name)}
           >
             <div className="flex items-center gap-2">
               <Avatar

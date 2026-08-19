@@ -50,7 +50,7 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, sprite._file!.replace(/^sprite_/, '')),
+      path.join(graphicsOutputDir, sprite._file!),
       JSON.stringify({ type: 'sprite', ...pick(sprite, ['width', 'height']) }, null, 2),
       'utf-8'
     );
@@ -71,7 +71,8 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, background._file!.replace(/^background_/, '')),
+      path.join(graphicsOutputDir, background._file!
+      ),
       JSON.stringify({ type: 'regular_bg' }, null, 2),
       'utf-8'
     );

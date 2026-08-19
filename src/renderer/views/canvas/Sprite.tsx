@@ -31,7 +31,7 @@ const Sprite = ({
   const { sprites } = useApp();
 
   const getSprite = useCallback((name: string) => (
-    sprites?.find(s => s._file === `${name}.json`)
+    sprites?.find(s => s.id === name || s.name === name)
   ), [sprites]);
 
   const previewPosition = useMemo(() => preview ? {

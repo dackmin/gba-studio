@@ -16,10 +16,10 @@ const SpritesListField = ({
   onValueChange,
 }: SpritesListFieldProps) => {
   const { sprites } = useApp();
-  const val = value ?? defaultValue;
+  const val = value ?? defaultValue ?? '';
 
   const selected = useMemo(() => (
-    sprites.find(sprite => getGraphicName(sprite._file) === val)
+    sprites.find(sprite => sprite.id === val || sprite.name === val)
   ), [sprites, val]);
 
   return (
@@ -55,7 +55,7 @@ const SpritesListField = ({
         { sprites.map(sprite => (
           <DropdownMenu.Item
             key={sprite._file}
-            onClick={() => onValueChange?.(getGraphicName(sprite._file))}
+            onClick={() => onValueChange?.(sprite.id || sprite.name)}
           >
             <div className="flex items-center gap-2">
               <Avatar
@@ -67,7 +67,7 @@ const SpritesListField = ({
               <Text>{ sprite.name || getGraphicName(sprite._file) }</Text>
             </div>
           </DropdownMenu.Item>
-        ))}
+        )) }
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );

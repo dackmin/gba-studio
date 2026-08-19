@@ -11,17 +11,17 @@
 // Assets
 #include <bn_regular_bg_items_bg_default.h>
 {{#each scenes}}
-#include <bn_regular_bg_items_{{valuedef this.background "bg_default"}}.h>
+#include <bn_regular_bg_items_{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}.h>
 {{#if this.player.sprite}}
-#include <bn_sprite_items_{{valuedef this.player.sprite "sprite_default"}}.h>
+#include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}.h>
 {{else}}
 #include <bn_sprite_items_sprite_default.h>
 {{/if}}
 {{#each this.actors}}
-#include <bn_sprite_items_{{valuedef this.sprite "sprite_default"}}.h>
+#include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}.h>
 {{/each}}
 {{#each this.sprites}}
-#include <bn_sprite_items_{{valuedef this.sprite "sprite_default"}}.h>
+#include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}.h>
 {{/each}}
 {{/each}}
 
@@ -205,7 +205,7 @@ namespace neo::scenes
     &{{slug ../this.name}}_actor_{{@index}}_y_value,
     &{{slug ../this.name}}_actor_{{@index}}_z_value,
     neo::types::direction::{{uppercase (valuedef this.direction "down")}},
-    bn::sprite_items::{{valuedef this.sprite "sprite_default"}},
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -259,7 +259,7 @@ namespace neo::scenes
     &{{slug ../this.name}}_sprite_{{@index}}_x_value,
     &{{slug ../this.name}}_sprite_{{@index}}_y_value,
     &{{slug ../this.name}}_sprite_{{@index}}_z_value,
-    bn::sprite_items::{{valuedef this.sprite "sprite_default"}}
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}
   };
   {{/each}}
   neo::types::sprite* {{slug this.name}}_sprites[] = {
@@ -290,7 +290,7 @@ namespace neo::scenes
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
     {{#if this.background}}
-    bn::regular_bg_items::{{this.background}},
+    bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}},
     {{else}}
     bn::regular_bg_items::bg_default,
     {{/if}}
@@ -307,7 +307,7 @@ namespace neo::scenes
     &{{slug this.name}}_player_y_value,
     &{{slug this.name}}_player_z_value,
     neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
-    bn::sprite_items::{{valuedef this.player.sprite "sprite_default"}},
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
     {{#if (hasItems this.player._animations)}}
     {{this.player._animations.length}},
     {{slug this.name}}_player_animations,

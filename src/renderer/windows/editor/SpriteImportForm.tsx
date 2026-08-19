@@ -104,8 +104,6 @@ const SpriteImportForm = () => {
         ? state.preview!.width % state.preview!.height === 0
         : state.preview!.height % state.preview!.width === 0),
     tilesCount > 0,
-    state.preview?.isCompressed !== true,
-    state?.preview?.isIndexed === true,
   ]), [tilesCount, state.preview]);
 
   const canSubmit = useCallback(() => (
@@ -269,12 +267,6 @@ const SpriteImportForm = () => {
                 <Text>
                   { tilesCount || 0 } tiles detected
                 </Text>
-              </ChecklistItem>
-              <ChecklistItem condition={checklist[2]}>
-                <Text>No compression</Text>
-              </ChecklistItem>
-              <ChecklistItem condition={checklist[3]}>
-                <Text>Colors are indexed</Text>
               </ChecklistItem>
               <ChecklistItem warn condition={state.preview?.isResized !== true}>
                 { state.preview?.isResized === true ? (

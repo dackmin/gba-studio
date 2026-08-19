@@ -2,15 +2,10 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
-import { HorizontalAlign, Jimp, ResizeStrategy, VerticalAlign, type Bitmap } from 'jimp';
+import { HorizontalAlign, Jimp, ResizeStrategy, VerticalAlign } from 'jimp';
 
 import type { SpriteBitmap } from '../../types';
 import { toBmp } from '../images';
-
-type BmpDecoder = Bitmap & {
-  palette?: any[];
-  compression: number;
-};
 
 // A single sprite frame is at least 8x8, so sprite sheets (grids of frames)
 // only need each dimension padded up to a multiple of 8 to stay valid.
@@ -25,7 +20,7 @@ export default async function (
   mode: 'sprite' | 'background' = 'sprite',
 ) {
   const projectDir = path.dirname(projectPath);
-  let image = await Jimp.read(filePath);
+  const image = await Jimp.read(filePath);
   const originalMime = image.mime;
   const originalWidth = image.bitmap.width;
   const originalHeight = image.bitmap.height;
@@ -93,34 +88,21 @@ export default async function (
     }
   }
 
-  let bitmap = image.bitmap as BmpDecoder;
-
-  // We have to force rewrite the bitmap if it's not a BMP or if it has no palette or is compressed
-  if (
-    image.mime !== 'image/bmp' ||
-    (bitmap.palette?.length || 0) <= 0 ||
-    bitmap.compression !== 0
-  ) {
-    // @ts-expect-error jimp is weird
-    image = await Jimp.fromBuffer(await toBmp(image));
-
-    bitmap = image.bitmap as BmpDecoder;
-  }
+  // @ts-expect-error - jimp is weird
+  const bmpBuffer = await toBmp(image);
 
   // Write data to a temp file
   const tempImportPath = path.join(projectDir, '.gbastudio/tmp/import');
   await fsp.mkdir(tempImportPath, { recursive: true });
-  image.write(`${tempImportPath}/temp.bmp`); // jimp types are WEIRD
+  await fsp.writeFile(`${tempImportPath}/temp.bmp`, bmpBuffer);
 
   return {
-    width: bitmap.width,
-    height: bitmap.height,
+    width: image.bitmap.width,
+    height: image.bitmap.height,
     originalWidth,
     originalHeight,
-    data: await image.getBase64('image/bmp'),
+    data: `data:image/bmp;base64,${bmpBuffer.toString('base64')}`,
     mime: originalMime,
-    isIndexed: (bitmap.palette?.length || 0) > 0,
-    isCompressed: bitmap.compression !== 0,
     isResized: resized,
   } satisfies SpriteBitmap;
 }

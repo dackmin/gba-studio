@@ -337,7 +337,7 @@ export const sanitizeSprite = async (
   }
 
   if (!sprite.format) {
-    sprite.format = path.extname(sprite.path);
+    sprite.format = path.extname(sprite.path).slice(1);
   }
 
   sprite.width = Number(sprite.width ?? 1);
@@ -356,7 +356,7 @@ export const sanitizeBackground = async (
   }
 
   if (!background.format) {
-    background.format = path.extname(background.path);
+    background.format = path.extname(background.path).slice(1);
   }
 
   return background;
