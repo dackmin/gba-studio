@@ -8,7 +8,7 @@ import {
 
 import type { GameSprite } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
-import { tileToPixel } from '../../../helpers';
+import { findSprite, tileToPixel } from '../../../helpers';
 import InnerSprite from '../../components/Sprite';
 
 export interface SpriteProps extends MoveableProps {
@@ -31,7 +31,7 @@ const Sprite = ({
   const { sprites } = useApp();
 
   const getSprite = useCallback((name: string) => (
-    sprites?.find(s => s.id === name || s.name === name)
+    findSprite(sprites, name)
   ), [sprites]);
 
   const previewPosition = useMemo(() => preview ? {

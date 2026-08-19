@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
-import { getGraphicName } from '../../../helpers';
+import { findBackground, getGraphicName } from '../../../helpers';
 
 export interface BackgroundsListFieldProps {
   value?: string;
@@ -19,7 +19,7 @@ const BackgroundsListField = ({
   const val = value ?? defaultValue ?? '';
 
   const selected = useMemo(() => (
-    backgrounds.find(bg => bg.id === val || bg.name === val)
+    findBackground(backgrounds, val)
   ), [backgrounds, val]);
 
   return (

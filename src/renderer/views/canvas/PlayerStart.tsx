@@ -7,7 +7,7 @@ import {
 } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
-import { tileToPixel } from '../../../helpers';
+import { findSprite, tileToPixel } from '../../../helpers';
 import { useApp, useCanvas } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
@@ -29,7 +29,7 @@ const PlayerStart = ({
   const { sprites } = useApp();
 
   const getSprite = useCallback((name: string) => (
-    sprites?.find(s => s._file === `${name}.json`)
+    findSprite(sprites, name)
   ), [sprites]);
 
   if (!scene.player) {

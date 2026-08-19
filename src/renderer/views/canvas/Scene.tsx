@@ -26,6 +26,7 @@ import type {
 } from '../../../types';
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
 import {
+  findBackground,
   getImageSize,
   loadImage,
   pixelToTile,
@@ -114,7 +115,7 @@ const Scene = ({
   ), [project, mouseX, mouseY, offsetX, offsetY, zoom, scene, preview]);
 
   const background = useMemo(() => (
-    backgrounds.find(bg => bg.id === scene.background || bg.name === scene.background)
+    findBackground(backgrounds, scene.background)
   ), [backgrounds, scene.background]);
 
   const backgroundPath = useMemo(() => (

@@ -11,7 +11,7 @@ import {
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
-import { getGraphicName, getImageSize, pixelToTile } from '../../../helpers';
+import { findBackground, getGraphicName, getImageSize, pixelToTile } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import EventsField from '../../components/EventsField';
@@ -53,7 +53,7 @@ const SceneForm = ({
   }, [onChange, scene]);
 
   const onBackgroundChange = useCallback(async (value: string) => {
-    const background = backgrounds.find(bg => getGraphicName(bg._file) === value);
+    const background = findBackground(backgrounds, value);
 
     const [width, height] = await getImageSize(
       !value || value === 'bg_default' || !background

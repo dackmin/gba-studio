@@ -1,3 +1,4 @@
+import { findSprite } from '../../../helpers';
 import type { Build, InternalActorAnimation, SpriteAnimation } from '../../../types';
 
 export const prepareAnimations = async (
@@ -45,8 +46,7 @@ export const prepareAnimations = async (
 export async function prepareData (build: Build) {
   for (const scene of build.data?.scenes || []) {
     for (const actor of scene.actors || []) {
-      const sprite = build.data?.sprites
-        ?.find(a => a._file === actor.sprite + '.json');
+      const sprite = findSprite(build.data?.sprites, actor.sprite);
 
       if (sprite?.animations) {
         actor._animations = await prepareAnimations(sprite.animations);
@@ -54,8 +54,7 @@ export async function prepareData (build: Build) {
     }
 
     if (scene.player) {
-      const sprite = build.data?.sprites
-        ?.find(a => a._file === scene.player!.sprite + '.json');
+      const sprite = findSprite(build.data?.sprites, scene.player!.sprite);
 
       if (sprite?.animations) {
         scene.player._animations = await prepareAnimations(sprite.animations);

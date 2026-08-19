@@ -3,7 +3,7 @@ import { set } from '@junipero/react';
 import { Select, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveActorToEvent } from '../../../types';
-import { getImageSize, pixelToTile } from '../../../helpers';
+import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
@@ -23,7 +23,7 @@ const EventMoveActorTo = ({
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
-    backgrounds.find(bg => bg._file === (scene?.background || '') + '.json')
+    findBackground(backgrounds, scene?.background)
   ), [backgrounds, scene?.background]);
 
   const backgroundPath = useMemo(() => (
@@ -39,7 +39,7 @@ const EventMoveActorTo = ({
   ), [scene, event]);
 
   const animations = useMemo(() => (
-    sprites.find(sprite => sprite._file === actor?.sprite + '.json')?.animations || []
+    findSprite(sprites, actor?.sprite)?.animations || []
   ), [sprites, actor?.sprite]);
 
   const updateSize = useCallback(async () => {

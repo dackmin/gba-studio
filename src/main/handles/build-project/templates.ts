@@ -4,9 +4,10 @@ import type { IpcMainInvokeEvent } from 'electron';
 import Handlebars from 'handlebars';
 import fse from 'fs-extra';
 
-import type { Build, GameMenuChoice } from '../../../types';
+import type { Build, GameBackgroundFile, GameMenuChoice, GameVariables } from '../../../types';
 import { getBuildDir, sendLog, sendSuccessLog, toSlug } from './utils';
 import { getResourcesDir } from '../../utils';
+import { findBackground, findSprite } from '../../../helpers';
 
 export const setupHandlebars = async () => {
   // Add helpers
@@ -71,19 +72,18 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('array', (...args) => args.slice(0, -1));
 
   // Add content helpers
-  Handlebars.registerHelper('getVariable', (variables: any[], id: string) => {
+  Handlebars.registerHelper('getVariable', (variables: GameVariables[], id: string) => {
     return variables.flatMap(v => v.values)
       .find(v => v.id === id || v.name === id);
   });
-  Handlebars.registerHelper('getBackgroundName', (backgrounds: any[], id: string) => {
-    return backgrounds
-      .find(bg => bg.id === id || bg.name === id)
-      ?._file.replace(/\.json$/, '').replace(/^background_/, '') || id;
-  });
+  Handlebars.registerHelper('getBackgroundName', (
+    backgrounds: GameBackgroundFile[],
+    id: string,
+  ) => findBackground(backgrounds, id)
+    ?._file?.replace(/\.json$/, '').replace(/^background_/, '') || id);
   Handlebars.registerHelper('getSpriteName', (sprites: any[], id: string) => {
-    return sprites
-      .find(s => s.id === id || s.name === id)
-      ?._file.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
+    return findSprite(sprites, id)
+      ?._file?.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
   });
 
   // Add partials

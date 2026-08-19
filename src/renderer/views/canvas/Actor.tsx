@@ -8,7 +8,7 @@ import {
 
 import type { GameActor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
-import { tileToPixel } from '../../../helpers';
+import { findSprite, tileToPixel } from '../../../helpers';
 import Sprite from '../../components/Sprite';
 
 export interface ActorProps extends MoveableProps {
@@ -31,7 +31,7 @@ const Actor = ({
   const { tool, selectedItem } = useCanvas();
 
   const getSprite = useCallback((name: string) => (
-    sprites?.find(s => s.id === name || s.name === name)
+    findSprite(sprites, name)
   ), [sprites]);
 
   const previewPosition = useMemo(() => preview ? {

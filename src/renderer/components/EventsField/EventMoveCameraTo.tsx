@@ -3,7 +3,7 @@ import { set } from '@junipero/react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveCameraToEvent } from '../../../types';
-import { getImageSize, pixelToTile } from '../../../helpers';
+import { findBackground, getImageSize, pixelToTile } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
@@ -23,7 +23,7 @@ const EventMoveCameraTo = ({
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
-    backgrounds.find(bg => bg._file === (scene?.background || '') + '.json')
+    findBackground(backgrounds, scene?.background)
   ), [backgrounds, scene?.background]);
 
   const backgroundPath = useMemo(() => (
@@ -31,8 +31,8 @@ const EventMoveCameraTo = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://graphics/${scene.background}.bmp`
-  ), [scene, background?._file]);
+      : `project://${background.path}`
+  ), [scene, background]);
 
   const updateSize = useCallback(async () => {
     try {

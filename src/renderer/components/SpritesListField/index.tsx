@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
-import { getGraphicName } from '../../../helpers';
+import { findSprite, getGraphicName } from '../../../helpers';
 
 export interface SpritesListFieldProps {
   value?: string;
@@ -19,7 +19,7 @@ const SpritesListField = ({
   const val = value ?? defaultValue ?? '';
 
   const selected = useMemo(() => (
-    sprites.find(sprite => sprite.id === val || sprite.name === val)
+    findSprite(sprites, val)
   ), [sprites, val]);
 
   return (
