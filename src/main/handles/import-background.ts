@@ -3,19 +3,19 @@ import fsp from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
 
-import type { GameSpriteFile } from '../../types';
-import { sanitizeSprite } from '../sanitize';
+import type { GameBackgroundFile } from '../../types';
+import { sanitizeBackground } from '../sanitize';
 import { toFileSlug } from '../../helpers';
 
 export default async function (
   _: IpcMainInvokeEvent,
   projectPath: string,
   filePath: string,
-  spriteInfo: GameSpriteFile,
+  backgroundInfo: GameBackgroundFile,
 ) {
   const projectDir = path.dirname(projectPath);
   const fileExt = path.extname(filePath);
-  const fileName = toFileSlug(spriteInfo.name ?? path.basename(filePath, fileExt));
+  const fileName = toFileSlug(path.basename(filePath, fileExt));
 
   // Copy sprite into project/graphics
   const graphicsDir = path.join(projectDir, 'graphics');
@@ -37,20 +37,20 @@ export default async function (
 
   // Create content file
   const contentDir = path.join(projectDir, 'content');
-  const contentFileName = 'sprite_' + fileName + '.json';
+  const contentFileName = 'background_' + fileName + '.json';
   await fsp.mkdir(contentDir, { recursive: true });
 
   try {
     await fsp.access(path.join(contentDir, contentFileName));
-    Object.assign(spriteInfo, JSON.parse(await fsp.readFile(
+    Object.assign(backgroundInfo, JSON.parse(await fsp.readFile(
       path.join(contentDir, contentFileName),
       { encoding: 'utf-8' },
     )));
   } catch {}
 
-  spriteInfo.name = fileName;
-  spriteInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
-  spriteInfo._file = contentFileName;
+  backgroundInfo.name = fileName;
+  backgroundInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
+  backgroundInfo._file = contentFileName;
 
-  return await sanitizeSprite(spriteInfo);
+  return await sanitizeBackground(backgroundInfo);
 }

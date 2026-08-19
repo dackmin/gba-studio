@@ -34,6 +34,7 @@ import {
   getProjectRelativePath,
   loadImage,
   importSprite,
+  importBackground,
 } from './handles';
 import Storage from './storage';
 
@@ -104,3 +105,4 @@ ipcMain.handle('remove-recent-project', removeRecentProject.bind(null, storage))
 ipcMain.handle('get-project-relative-path', getProjectRelativePath);
 ipcMain.handle('load-image', loadImage);
 ipcMain.handle('import-sprite', importSprite);
+ipcMain.handle('import-background', importBackground);

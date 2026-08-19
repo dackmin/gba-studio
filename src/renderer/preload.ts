@@ -4,6 +4,7 @@ import type {
   AppPayload,
   AppStorage,
   BuildOptions,
+  GameBackgroundFile,
   GameSpriteFile,
   ProjectTemplate,
   RecentProject,
@@ -86,14 +87,24 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('open-parent-folder', projectPath, filePath),
   getProjectRelativePath: (projectPath: string, filePath: string): Promise<string> =>
     ipcRenderer.invoke('get-project-relative-path', projectPath, filePath),
-  loadImage: (projectPath: string, src: string): Promise<SpriteBitmap> =>
-    ipcRenderer.invoke('load-image', projectPath, src),
+  loadImage: (
+    projectPath: string,
+    filePath: string,
+    mode: 'sprite' | 'background'
+  ): Promise<SpriteBitmap> =>
+    ipcRenderer.invoke('load-image', projectPath, filePath, mode),
   importSprite: (
     projectPath: string,
     filePath: string,
     spriteInfo: Partial<GameSpriteFile>,
   ): Promise<Partial<GameSpriteFile>> =>
     ipcRenderer.invoke('import-sprite', projectPath, filePath, spriteInfo),
+  importBackground: (
+    projectPath: string,
+    filePath: string,
+    backgroundInfo: Partial<GameBackgroundFile>,
+  ): Promise<Partial<GameBackgroundFile>> =>
+    ipcRenderer.invoke('import-background', projectPath, filePath, backgroundInfo),
 
   // Info
   platform: process.platform,

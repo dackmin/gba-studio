@@ -265,6 +265,8 @@ export interface GameBackgroundFile {
   type: 'background';
   name: string;
   path: string;
+  width?: number;
+  height?: number;
   format?: string;
   // Internals
   id?: string;

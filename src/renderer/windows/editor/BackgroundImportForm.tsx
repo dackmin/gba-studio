@@ -12,13 +12,13 @@ import {
 } from '@radix-ui/themes';
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
-import type { GameSpriteFile, SpriteBitmap } from '../../../types';
-import { getTilesCount, toFileSlug } from '../../../helpers';
+import type { GameBackgroundFile, SpriteBitmap } from '../../../types';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
-import Sprite from '../../components/Sprite';
 import ChecklistItem from '../../components/ChecklistItem';
+import Background from '../../components/Background';
+import { toFileSlug } from '../../../helpers';
 
-export interface SpriteImportFormState {
+export interface BackgroundImportFormState {
   // Internal
   fetching: boolean;
   importing: boolean;
@@ -30,11 +30,11 @@ export interface SpriteImportFormState {
   height: number;
 }
 
-const SpriteImportForm = () => {
-  const { projectPath, projectBase, sprites, onCanvasChange, ...appPayload } = useApp();
-  const { selectSprite } = useSprite();
+const BackgroundImportForm = () => {
+  const { projectPath, projectBase, backgrounds, onCanvasChange, ...appPayload } = useApp();
+  const { selectBackground } = useSprite();
   const { close } = useModal();
-  const [state, dispatch] = useReducer(mockState<SpriteImportFormState>, {
+  const [state, dispatch] = useReducer(mockState<BackgroundImportFormState>, {
     fetching: false,
     importing: false,
     preview: undefined,
@@ -64,7 +64,7 @@ const SpriteImportForm = () => {
     if (file) {
       dispatch({ fetching: true });
 
-      const imageContent = await window.electron.loadImage(projectPath, file, 'sprite');
+      const imageContent = await window.electron.loadImage(projectPath, file, 'background');
 
       const width = imageContent.width > imageContent.height
         ? imageContent.height : imageContent.width;
@@ -85,64 +85,55 @@ const SpriteImportForm = () => {
     !state.fetching && !state.importing
   ), [state.fetching, state.importing]);
 
-  const sprite = useDelayedValue<Partial<GameSpriteFile>>({
+  const background = useDelayedValue<Partial<GameBackgroundFile>>({
     path: state.preview?.data,
     width: state.width,
     height: state.height,
   }, { delay: 400 });
 
-  const tilesCount = useDelayedValue<number>(getTilesCount(
-    state.preview?.width ?? 0,
-    state.preview?.height ?? 0,
-    state.width,
-    state.height,
-  ), { delay: 400 });
-
   const checklist = useMemo(() => ([
-    (state.preview?.width || 0) > 0 && (state.preview?.height || 0) > 0 &&
-      (state.preview!.width > state.preview!.height
-        ? state.preview!.width % state.preview!.height === 0
-        : state.preview!.height % state.preview!.width === 0),
-    tilesCount > 0,
+    (state.preview?.width || 0) > 0 &&
+      (state.preview?.height || 0) > 0 &&
+      [256, 512].includes(state.preview?.width || 0) &&
+      [256, 512].includes(state.preview?.height || 0),
     state.preview?.isCompressed !== true,
     state?.preview?.isIndexed === true,
-  ]), [tilesCount, state.preview]);
+  ]), [state.preview]);
 
   const canSubmit = useCallback(() => (
-    canEdit() && !!state.path && !!state.width && !!state.height && !!state.name &&
-    checklist.every(c => c === true)
-  ), [canEdit, state.path, state.width, state.height, state.name, checklist]);
+    canEdit() && !!state.path && checklist.every(c => c === true)
+  ), [canEdit, state.path, checklist]);
 
   const onImport = useCallback(async () => {
-    if (!canSubmit()) {
+    if (!canSubmit() || !state.preview) {
       return;
     }
 
     dispatch({ importing: true });
 
-    const createdSprite = await window.electron.importSprite(
+    const createdBackground = await window.electron.importBackground(
       projectPath,
       state.path,
       {
-        type: 'sprite',
-        width: state.width,
-        height: state.height,
+        type: 'background',
+        width: state.preview.width,
+        height: state.preview.height,
       },
     );
 
     onCanvasChange?.({
       ...appPayload,
-      sprites: [
-        createdSprite,
-        ...sprites,
+      backgrounds: [
+        createdBackground,
+        ...backgrounds,
       ],
     });
-    selectSprite?.(createdSprite);
+    selectBackground?.(createdBackground);
     close();
   }, [
-    canSubmit, close, onCanvasChange, selectSprite,
-    projectPath, sprites, appPayload,
-    state.path, state.width, state.height,
+    canSubmit, close, onCanvasChange, selectBackground,
+    projectPath, backgrounds, appPayload,
+    state.path, state.preview,
   ]);
 
   const openParentFolder = useCallback(async () => {
@@ -156,11 +147,11 @@ const SpriteImportForm = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Sprite location</Text>
+        <Text size="1" className="text-slate">Background location</Text>
         <TextField.Root
           value={state.path}
           onChange={onInputChange.bind(null, 'path')}
-          placeholder="/path/to/my-sprite.bmp"
+          placeholder="/path/to/my-background.bmp"
           disabled={!canEdit()}
         >
           <TextField.Slot side="right">
@@ -178,7 +169,7 @@ const SpriteImportForm = () => {
             </Callout.Icon>
             <Callout.Text className="flex flex-col items-start gap-2">
               <Text>
-                This sprite is already in your project folder, its configuration will be updated
+                This background is already in your project folder, its configuration will be updated
                 instead of creating a new one.
               </Text>
               <Button type="button" size="1" onClick={openParentFolder}>
@@ -235,14 +226,12 @@ const SpriteImportForm = () => {
         <div className="flex items-center justify-center">
           <Spinner />
         </div>
-      ) : state.preview && sprite && (
+      ) : state.preview && background && (
         <div className="flex items-start gap-8">
           <div className="w-1/3! flex-none flex flex-col gap-2">
             <Text size="1" className="text-slate">Preview</Text>
-            <Sprite
-              sprite={sprite}
-              frame={0}
-              scale={1}
+            <Background
+              background={background}
               className="border border-slate rounded"
             />
             <div className="flex flex-col gap-2">
@@ -266,19 +255,14 @@ const SpriteImportForm = () => {
                 <Text>Sizes are multiples of each other</Text>
               </ChecklistItem>
               <ChecklistItem condition={checklist[1]}>
-                <Text>
-                  { tilesCount || 0 } tiles detected
-                </Text>
-              </ChecklistItem>
-              <ChecklistItem condition={checklist[2]}>
                 <Text>No compression</Text>
               </ChecklistItem>
-              <ChecklistItem condition={checklist[3]}>
+              <ChecklistItem condition={checklist[2]}>
                 <Text>Colors are indexed</Text>
               </ChecklistItem>
               <ChecklistItem warn condition={state.preview?.isResized !== true}>
                 { state.preview?.isResized === true ? (
-                  <Text>Image was resized to fit the grid</Text>
+                  <Text>Image was resized to fit the screen</Text>
                 ) : (
                   <Text>No resizing needed</Text>
                 ) }
@@ -313,4 +297,4 @@ const SpriteImportForm = () => {
   );
 };
 
-export default SpriteImportForm;
+export default BackgroundImportForm;

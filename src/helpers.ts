@@ -1,4 +1,5 @@
-import { exists } from '@junipero/react';
+import { exists } from '@junipero/core';
+import slugify from 'slugify';
 
 export const tileToPixel = (tile: number, gridSize: number) =>
   tile * gridSize;
@@ -75,3 +76,9 @@ export const getTilesCount = (
 
 export const sleep = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
+
+export const toFileSlug = (name: string) => slugify(name, {
+  lower: true,
+  strict: true,
+  replacement: '_',
+});

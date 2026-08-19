@@ -12,6 +12,7 @@ import BottomBar from './BottomBar';
 import LogsStore from './LogsStore';
 import LocalDataStore from './LocalDataStore';
 import SpriteImportModal, { type SpriteImportModalRef } from './SpriteImportModal';
+import BackgroundImportModal, { type BackgroundImportModalRef } from './BackgroundImportModal';
 
 export interface EditorState {
   view: string;
@@ -28,6 +29,7 @@ export interface EditorState {
 const Editor = () => {
   const { project } = useApp();
   const spriteModalRef = useRef<SpriteImportModalRef>(null);
+  const backgroundModalRef = useRef<BackgroundImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
     leftSidebarOpened: true,
@@ -53,7 +55,7 @@ const Editor = () => {
   });
 
   useBridgeListener('import-background', () => {
-    // dispatch({ backgroundModalOpen: true });
+    backgroundModalRef.current?.open();
   });
 
   const {
@@ -174,6 +176,7 @@ const Editor = () => {
             <View />
 
             <SpriteImportModal ref={spriteModalRef} />
+            <BackgroundImportModal ref={backgroundModalRef} />
           </Provider>
         </LogsStore>
       </LocalDataStore>

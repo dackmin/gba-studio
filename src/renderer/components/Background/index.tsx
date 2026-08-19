@@ -1,25 +1,32 @@
-import { useMemo } from 'react';
+import { type ComponentPropsWithoutRef, useMemo } from 'react';
+import { classNames } from '@junipero/react';
 
 import type { GameBackgroundFile } from '../../../types';
 
-export interface BackgroundProps {
-  background: GameBackgroundFile;
+export interface BackgroundProps extends ComponentPropsWithoutRef<'img'> {
+  background: Partial<GameBackgroundFile>;
+  className?: string;
 }
 
 const Background = ({
   background,
+  className,
+  ...rest
 }: BackgroundProps) => {
   const image = useMemo(() => (
-    !background?._file
-      ? `resources://public/templates/commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+    background?.path?.startsWith('data:')
+      ? background.path
+      : !background?._file
+        ? `resources://public/templates/commons/graphics/bg_default.bmp`
+        : `project://${background.path}`
   ), [background]);
 
   return (
     <img
-      className="pixelated"
+      className={classNames('pixelated', className)}
       src={image}
-      alt=""
+      alt={background?.name || 'Background'}
+      {...rest}
     />
   );
 };

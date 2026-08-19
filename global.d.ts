@@ -58,12 +58,21 @@ interface AppBridge extends EventTarget {
   getClipboard(): Promise<any>;
   openParentFolder(projectPath: string, filePath: string): Promise<void>;
   getProjectRelativePath(projectPath: string, filePath: string): Promise<string>;
-  loadImage(projectPath: string, src: string): Promise<SpriteBitmap>;
+  loadImage(
+    projectPath: string,
+    filePath: string,
+    mode: 'sprite' | 'background'
+  ): Promise<SpriteBitmap>;
   importSprite(
     projectPath: string,
     filePath: string,
     spriteInfo: Partial<GameSpriteFile>,
   ): Promise<Partial<GameSpriteFile>>;
+  importBackground(
+    projectPath: string,
+    filePath: string,
+    backgroundInfo: Partial<GameBackgroundFile>,
+  ): Promise<Partial<GameBackgroundFile>>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

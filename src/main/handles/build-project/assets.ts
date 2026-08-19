@@ -42,7 +42,7 @@ export async function copyAssets (
   for (const sprite of build.data?.sprites || []) {
     const source = path.join(projectDir, sprite.path);
     const destination = path.join(graphicsOutputDir,
-      sprite._file!.replace('.json', `.${sprite.format || 'bmp'}`));
+      path.basename(sprite.path).replace(/\.(png|jpg)$/i, '.bmp'));
 
     if (await isSame(source, destination)) {
       sendLog(event, build.id, `Skipping ${sprite.name}, cached`);
@@ -50,7 +50,7 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, sprite._file!),
+      path.join(graphicsOutputDir, sprite._file!.replace(/^sprite_/, '')),
       JSON.stringify({ type: 'sprite', ...pick(sprite, ['width', 'height']) }, null, 2),
       'utf-8'
     );
@@ -63,7 +63,7 @@ export async function copyAssets (
   for (const background of build.data?.backgrounds || []) {
     const source = path.join(projectDir, background.path);
     const destination = path.join(graphicsOutputDir,
-      background._file!.replace('.json', `.${background.format || 'bmp'}`));
+      path.basename(background.path).replace(/\.(png|jpg)$/i, '.bmp'));
 
     if (await isSame(source, destination)) {
       sendLog(event, build.id, `Skipping ${background.name}, cached`);
@@ -71,7 +71,7 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, background._file!),
+      path.join(graphicsOutputDir, background._file!.replace(/^background_/, '')),
       JSON.stringify({ type: 'regular_bg' }, null, 2),
       'utf-8'
     );

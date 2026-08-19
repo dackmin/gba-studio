@@ -3,20 +3,20 @@ import { Dialog } from '@radix-ui/themes';
 
 import { ModalContext, type ModalContextType } from '../../services/contexts';
 import DialogClose from '../../components/DialogClose';
-import SpriteImportForm from './SpriteImportForm';
+import BackgroundImportForm from './BackgroundImportForm';
 
-export interface SpriteImportModalRef {
+export interface BackgroundImportModalRef {
   open: () => void;
   close: () => void;
 }
 
-export interface SpriteImportModalProps {
-  ref: Ref<SpriteImportModalRef>;
+export interface BackgroundImportModalProps {
+  ref: Ref<BackgroundImportModalRef>;
 }
 
-const SpriteImportModal = ({
+const BackgroundImportModal = ({
   ref,
-}: SpriteImportModalProps) => {
+}: BackgroundImportModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -48,13 +48,13 @@ const SpriteImportModal = ({
             <DialogClose />
           </Dialog.Close>
           <Dialog.Title align="center" className="pb-4">
-            Import sprite
+            Import background
           </Dialog.Title>
-          <SpriteImportForm />
+          <BackgroundImportForm />
         </Dialog.Content>
       </Dialog.Root>
     </ModalContext>
   );
 };
 
-export default SpriteImportModal;
+export default BackgroundImportModal;
