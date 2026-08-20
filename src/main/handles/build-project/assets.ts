@@ -41,8 +41,8 @@ export async function copyAssets (
   // Copy sprites
   for (const sprite of build.data?.sprites || []) {
     const source = path.join(projectDir, sprite.path);
-    const destination = path.join(graphicsOutputDir,
-      path.basename(sprite.path).replace(/\.(png|jpg)$/i, '.bmp'));
+    const fileName = path.basename(sprite.path, path.extname(sprite.path));
+    const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
       sendLog(event, build.id, `Skipping ${sprite.name}, cached`);
@@ -50,20 +50,20 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, sprite._file!),
+      path.join(graphicsOutputDir, fileName + '.json'),
       JSON.stringify({ type: 'sprite', ...pick(sprite, ['width', 'height']) }, null, 2),
       'utf-8'
     );
 
     await fse.copyFile(source, destination);
-    sendLog(event, build.id, `Copied sprite: ${sprite.name} (${sprite._file})`);
+    sendLog(event, build.id, `Copied sprite: ${sprite.name} (${fileName}.json)`);
   }
 
   // Copy backgrounds
   for (const background of build.data?.backgrounds || []) {
     const source = path.join(projectDir, background.path);
-    const destination = path.join(graphicsOutputDir,
-      path.basename(background.path).replace(/\.(png|jpg)$/i, '.bmp'));
+    const fileName = path.basename(background.path, path.extname(background.path));
+    const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
       sendLog(event, build.id, `Skipping ${background.name}, cached`);
@@ -71,14 +71,13 @@ export async function copyAssets (
     }
 
     await fs.writeFile(
-      path.join(graphicsOutputDir, background._file!
-      ),
+      path.join(graphicsOutputDir, fileName + '.json'),
       JSON.stringify({ type: 'regular_bg' }, null, 2),
       'utf-8'
     );
 
     await fse.copyFile(source, destination);
-    sendLog(event, build.id, `Copied background: ${background.name} (${background._file})`);
+    sendLog(event, build.id, `Copied background: ${background.name} (${fileName}.json)`);
   }
 
   const audioOutputDir = path.join(buildDir, 'audio');
