@@ -21,7 +21,7 @@ import Sprites, {
   RightSidebar as SpritesRightSidebar,
   BottomBar as SpritesBottomBar,
   Provider as SpritesProvider,
-} from './sprites';
+} from './images';
 
 export const defaultView: ViewDefinition = {
   view: () => null,
@@ -41,7 +41,7 @@ const views: ViewDefinition[] = [{
   bottomBar: CanvasBottomBar,
   provider: CanvasProvider,
 }, {
-  name: 'sprites',
+  name: 'images',
   title: 'Images',
   icon: ImageIcon,
   view: Sprites,
