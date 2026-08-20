@@ -54,7 +54,7 @@
     "sharp": "0.35.3",
     "slugify": "1.6.9",
     "tar": "7.5.22",
-    "uuid": "14.0.1"
+    "uuid": "14.0.2"
   },
   "devDependencies": {
     "@bjia56/portable-python-3.13": "0.1.17",
@@ -76,16 +76,16 @@
     "@types/fs-extra": "11.0.4",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "@vitejs/plugin-react": "6.0.5",
-    "commitlint": "21.2.1",
+    "@vitejs/plugin-react": "6.1.0",
+    "commitlint": "21.2.2",
     "debug": "4.4.3",
     "dotenv": "17.4.2",
-    "electron": "43.4.0",
+    "electron": "43.4.1",
     "eslint": "10.8.1",
-    "oxlint": "1.78.0",
+    "oxlint": "1.79.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vite": "8.2.1"
+    "vite": "8.2.2"
   },
   "build": {
     "electronLanguages": [
