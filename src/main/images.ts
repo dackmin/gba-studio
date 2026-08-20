@@ -1,26 +1,34 @@
 import { Jimp } from 'jimp';
 import { hsva2rgba, parseColor } from '@junipero/core';
 
-interface ToBmpOptions {
-  colors?: 16 | 256;
-  transparentColor?: string;
+export type JimpImage = InstanceType<typeof Jimp>;
+
+export interface QuantizedImage {
+  /**
+   * Image width
+   */
+  width: number;
+  /**
+   * Image height
+   */
+  height: number;
+  /**
+   * Palette index per pixel; 0 is always the reserved transparent entry.
+   */
+  indices: Uint8Array;
+  /**
+   * The palette of colors used in the image, including the reserved transparent entry at index 0.
+   */
+  palette: [number, number, number][];
 }
 
-type JimpImage = InstanceType<typeof Jimp>;
-
-export function hexToRgb (hex: string): [number, number, number] {
-  const { r, g, b } = hsva2rgba(parseColor(hex));
-
-  return [r ?? 0, g ?? 0, b ?? 0];
-}
-
-export async function toBmp<T extends JimpImage> (
+// Quantizes the image down to `colors` palette entries (1 reserved for transparency), the same
+// way butano's BMPs are indexed for grit
+function quantizeToPalette<T extends JimpImage> (
   image: T,
-  opts?: ToBmpOptions,
-): Promise<Buffer> {
-  const colors = opts?.colors ?? 256;
-  const transparentColor = hexToRgb(opts?.transparentColor ?? '#000');
-
+  colors: number,
+  transparentColor: [number, number, number],
+): QuantizedImage {
   const { width, height, data } = image.bitmap;
 
   // Keep the original transparency mask.
@@ -41,12 +49,10 @@ export async function toBmp<T extends JimpImage> (
   ];
 
   const paletteMap = new Map<number, number>();
+  const indices = new Uint8Array(width * height);
 
-  // Store palette
-  for (let i = 0; i < quantized.length; i += 4) {
-    const pixel = i / 4;
-
-    // Transparent pixels don't participate in the palette.
+  for (let i = 0, pixel = 0; i < quantized.length; i += 4, pixel++) {
+    // Transparent pixels don't participate in the palette and keep index 0.
     if (alpha[pixel] === 0) {
       continue;
     }
@@ -57,19 +63,67 @@ export async function toBmp<T extends JimpImage> (
 
     const rgb = (r << 16) | (g << 8) | b;
 
-    if (!paletteMap.has(rgb)) {
+    let index = paletteMap.get(rgb);
+
+    if (index === undefined) {
       if (palette.length >= colors) {
         throw new Error(
           `Image contains more than ${colors - 1} opaque colors`,
         );
       }
 
-      const index = palette.length;
-
+      index = palette.length;
       paletteMap.set(rgb, index);
       palette.push([r, g, b]);
     }
+
+    indices[pixel] = index;
   }
+
+  return { width, height, indices, palette };
+}
+
+export interface ToBmpOptions {
+  /**
+   * The number of colors to quantize the image down to, including the reserved transparent color.
+   * Must be 16 (gbc) or 256 (gba). Defaults to 256.
+   */
+  colors?: 16 | 256;
+  /**
+   * The color to treat as transparent when quantizing the image. Defaults to black (#000).
+   */
+  transparentColor?: string;
+  /**
+   * Matches grit's `-mRt` (identical 8x8 tiles reused instead of duplicated). On by default,
+   * like butano_graphics_tool.py does for regular/affine backgrounds.
+   */
+  repeatedTilesReduction?: boolean;
+  /**
+   * Matches grit's `-mRf` (horizontally/vertically flipped tiles reused too). On by default.
+   */
+  flippedTilesReduction?: boolean;
+}
+
+export interface BmpResult {
+  /**
+   * The BMP file data
+   */
+  buffer: Buffer;
+  /**
+   * Estimated tile count grit would generate for this image (see countUniqueTiles).
+   */
+  tiles: number;
+}
+
+export async function toBmp<T extends JimpImage> (
+  image: T,
+  opts?: ToBmpOptions,
+): Promise<BmpResult> {
+  const colors = opts?.colors ?? 256;
+  const transparentColor = hexToRgb(opts?.transparentColor ?? '#000');
+
+  const { width, height, indices, palette } = quantizeToPalette(image, colors, transparentColor);
+  const tiles = countUniqueTiles(indices, width, height, opts);
 
   // BMP scanlines are padded to 4-byte boundaries.
   const rowSize = (width + 3) & ~3;
@@ -132,30 +186,114 @@ export async function toBmp<T extends JimpImage> (
     const destinationOffset = pixelOffset + y * rowSize;
 
     for (let x = 0; x < width; x++) {
-      const pixel = sourceY * width + x;
-      const sourceOffset = pixel * 4;
-
-      // Transparent -> palette index 0.
-      if (alpha[pixel] === 0) {
-        bmp[destinationOffset + x] = 0;
-        continue;
-      }
-
-      const r = quantized[sourceOffset];
-      const g = quantized[sourceOffset + 1];
-      const b = quantized[sourceOffset + 2];
-
-      const rgb = (r << 16) | (g << 8) | b;
-
-      const paletteIndex = paletteMap.get(rgb);
-
-      if (paletteIndex === undefined) {
-        throw new Error('Failed to find color in palette');
-      }
-
-      bmp[destinationOffset + x] = paletteIndex;
+      bmp[destinationOffset + x] = indices[sourceY * width + x];
     }
   }
 
-  return bmp;
+  return { buffer: bmp, tiles };
+}
+
+/**
+ * Estimates the tile count grit would generate for a background/tileset, without actually
+ * running it. A "tile" is an 8x8px block; grit reduces the tileset by reusing tiles that are
+ * identical (and, optionally, their horizontal/vertical/both-flipped variants) instead of storing
+ * duplicates, so the final count can be much lower than (width / 8) * (height / 8). `indices` are
+ * post-quantize palette indices (e.g. from quantizeToPalette), not raw RGBA.
+ */
+export function countUniqueTiles (
+  indices: Uint8Array,
+  width: number,
+  height: number,
+  opts?: {
+    repeatedTilesReduction?: boolean;
+    flippedTilesReduction?: boolean;
+  },
+): number {
+  const repeatedTilesReduction = opts?.repeatedTilesReduction ?? true;
+  const flippedTilesReduction = opts?.flippedTilesReduction ?? true;
+
+  const tilesX = Math.ceil(width / 8);
+  const tilesY = Math.ceil(height / 8);
+
+  if (!repeatedTilesReduction) {
+    return tilesX * tilesY;
+  }
+
+  const seen = new Set<string>();
+
+  for (let ty = 0; ty < tilesY; ty++) {
+    for (let tx = 0; tx < tilesX; tx++) {
+      const tile = extractTile(indices, width, height, tx * 8, ty * 8);
+
+      seen.add(tileKey(tile, flippedTilesReduction));
+    }
+  }
+
+  return seen.size;
+}
+
+/**
+ * Reads an 8x8 block of palette indices, padding with transparent (index 0) past image edges.
+ */
+export function extractTile (
+  indices: Uint8Array,
+  width: number,
+  height: number,
+  originX: number,
+  originY: number,
+): Uint8Array {
+  const tile = new Uint8Array(64);
+
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      const px = originX + x;
+      const py = originY + y;
+
+      tile[y * 8 + x] = px < width && py < height ? indices[py * width + px] : 0;
+    }
+  }
+
+  return tile;
+}
+
+/**
+ * The key is the smallest of the tile's own and its flipped variants, so identical
+ * tiles under any of those orientations collapse to the same key.
+ */
+export function tileKey (indices: Uint8Array, includeFlips: boolean): string {
+  const normal = indices.join(',');
+
+  if (!includeFlips) {
+    return normal;
+  }
+
+  const flipH = flipTile(indices, true, false);
+  const flipV = flipTile(indices, false, true);
+  const flipHV = flipTile(indices, true, true);
+
+  return [normal, flipH, flipV, flipHV].sort()[0];
+}
+
+/**
+ * Flips an 8x8 tile of palette indices horizontally and/or vertically, returning a string key.
+ */
+export function flipTile (indices: Uint8Array, horizontal: boolean, vertical: boolean): string {
+  const result = new Uint8Array(64);
+
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      const srcX = horizontal ? 7 - x : x;
+      const srcY = vertical ? 7 - y : y;
+
+      result[y * 8 + x] = indices[srcY * 8 + srcX];
+    }
+  }
+
+  return result.join(',');
+}
+
+export function hexToRgb (hex: string): [number, number, number] {
+  const { r, g, b } = hsva2rgba(parseColor(hex));
+
+  return [r ?? 0, g ?? 0, b ?? 0];
 }

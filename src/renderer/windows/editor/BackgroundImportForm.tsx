@@ -188,36 +188,6 @@ const BackgroundImportForm = () => {
               disabled={!canEdit()}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-auto flex flex-col gap-2">
-              <Text size="1" className="text-slate">Frame width</Text>
-              <TextField.Root
-                value={state.width ?? 0}
-                type="number"
-                onChange={onInputChange.bind(null, 'width')}
-                placeholder="0"
-                disabled={!canEdit()}
-              >
-                <TextField.Slot side="right" className="text-slate!">
-                  <Text>px</Text>
-                </TextField.Slot>
-              </TextField.Root>
-            </div>
-            <div className="flex-auto flex flex-col gap-2">
-              <Text size="1" className="text-slate">Frame height</Text>
-              <TextField.Root
-                value={state.height ?? 0}
-                type="number"
-                onChange={onInputChange.bind(null, 'height')}
-                placeholder="0"
-                disabled={!canEdit()}
-              >
-                <TextField.Slot side="right" className="text-slate!">
-                  <Text>px</Text>
-                </TextField.Slot>
-              </TextField.Root>
-            </div>
-          </div>
         </>
       ) }
       { state.fetching ? (
@@ -237,7 +207,7 @@ const BackgroundImportForm = () => {
                 Original size: { state.preview.originalWidth }x{ state.preview.originalHeight }px
               </Text>
               <Text size="1" className="text-slate">
-                Sprite size: { state.preview.width }x{ state.preview.height }px
+                Background size: { state.preview.width }x{ state.preview.height }px
               </Text>
               <Text size="1" className="text-slate">
                 Type: { state.preview.mime }
@@ -251,6 +221,20 @@ const BackgroundImportForm = () => {
                 condition={checklist[0]}
               >
                 <Text>Sizes are multiples of each other</Text>
+              </ChecklistItem>
+              <ChecklistItem warn condition={(state.preview?.tiles || 0) <= 1024}>
+                <Text>Image has { state.preview?.tiles ?? 0 } tiles</Text>
+                <Tooltip
+                  content={(
+                    <Text>
+                      This is an approximation.
+                      Butano/grit cut images into 8x8px tiles to reuse memory. To limit
+                      the memory footprint, an image cannot have more than 1024 tiles.
+                    </Text>
+                  )}
+                >
+                  <InfoCircledIcon />
+                </Tooltip>
               </ChecklistItem>
               <ChecklistItem warn condition={state.preview?.isResized !== true}>
                 { state.preview?.isResized === true ? (

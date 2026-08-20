@@ -504,5 +504,6 @@ export interface SpriteBitmap {
   originalWidth: number;
   originalHeight: number;
   isResized: boolean;
+  tiles: number;
   mime?: string;
 }

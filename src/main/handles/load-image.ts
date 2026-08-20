@@ -89,7 +89,7 @@ export default async function (
   }
 
   // @ts-expect-error - jimp is weird
-  const bmpBuffer = await toBmp(image);
+  const { buffer: bmpBuffer, tiles } = await toBmp(image);
 
   // Write data to a temp file
   const tempImportPath = path.join(projectDir, '.gbastudio/tmp/import');
@@ -104,5 +104,6 @@ export default async function (
     data: `data:image/bmp;base64,${bmpBuffer.toString('base64')}`,
     mime: originalMime,
     isResized: resized,
+    tiles,
   } satisfies SpriteBitmap;
 }
