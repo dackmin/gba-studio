@@ -51,10 +51,12 @@ const Editor = () => {
   }, []);
 
   useBridgeListener('import-sprite', () => {
+    backgroundModalRef.current?.close();
     spriteModalRef.current?.open();
   });
 
   useBridgeListener('import-background', () => {
+    spriteModalRef.current?.close();
     backgroundModalRef.current?.open();
   });
 

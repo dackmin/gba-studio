@@ -1,6 +1,7 @@
 import { type ChangeEvent, useCallback, useMemo, useReducer } from 'react';
 import { mockState, useTimeout } from '@junipero/react';
 import {
+  Badge,
   Button,
   Callout,
   Dialog,
@@ -47,7 +48,7 @@ const SpriteImportForm = () => {
 
   useTimeout(() => {
     dispatch({ fetching: false });
-  }, 400, [state.preview], { enabled: state.fetching === true });
+  }, 400, [state.preview, state.fetching], { enabled: state.fetching === true });
 
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ [name]: e.target.value });
@@ -154,14 +155,22 @@ const SpriteImportForm = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Sprite location</Text>
+        <div className="flex items-center gap-2">
+          <Text size="1" className="text-slate">Sprite location</Text>
+          <Badge size="1" variant="soft" color="blue">.bmp</Badge>
+          <Badge size="1" variant="soft" color="blue">.png</Badge>
+          <Badge size="1" variant="soft" color="blue">.jpg</Badge>
+        </div>
         <TextField.Root
           value={state.path}
           onChange={onInputChange.bind(null, 'path')}
-          placeholder="/path/to/my-sprite.bmp"
+          placeholder="Select a sprite file"
           disabled={!canEdit()}
+          readOnly
+          className="cursor-default! [&>input]:cursor-default!"
+          onClick={onBrowse}
         >
-          <TextField.Slot side="right">
+          <TextField.Slot side="right" className="cursor-default!">
             <Tooltip content="Browse" side="top">
               <IconButton size="1" variant="soft" onClick={onBrowse}>
                 <MagnifyingGlassIcon />
@@ -265,7 +274,7 @@ const SpriteImportForm = () => {
               </ChecklistItem>
               <ChecklistItem condition={checklist[1]}>
                 <Text>
-                  { tilesCount || 0 } tiles detected
+                  { tilesCount || 0 } frames detected
                 </Text>
               </ChecklistItem>
               <ChecklistItem warn condition={state.preview?.isResized !== true}>

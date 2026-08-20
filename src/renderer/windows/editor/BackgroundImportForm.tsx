@@ -1,6 +1,7 @@
 import { type ChangeEvent, useCallback, useMemo, useReducer } from 'react';
 import { mockState, useTimeout } from '@junipero/react';
 import {
+  Badge,
   Button,
   Callout,
   Dialog,
@@ -13,10 +14,10 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, SpriteBitmap } from '../../../types';
+import { toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import ChecklistItem from '../../components/ChecklistItem';
 import Background from '../../components/Background';
-import { toFileSlug } from '../../../helpers';
 
 export interface BackgroundImportFormState {
   // Internal
@@ -47,7 +48,7 @@ const BackgroundImportForm = () => {
 
   useTimeout(() => {
     dispatch({ fetching: false });
-  }, 400, [state.preview], { enabled: state.fetching === true });
+  }, 400, [state.preview, state.fetching], { enabled: state.fetching === true });
 
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ [name]: e.target.value });
@@ -145,14 +146,22 @@ const BackgroundImportForm = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Background location</Text>
+        <div className="flex items-center gap-2">
+          <Text size="1" className="text-slate">Background location</Text>
+          <Badge size="1" variant="soft" color="blue">.bmp</Badge>
+          <Badge size="1" variant="soft" color="blue">.png</Badge>
+          <Badge size="1" variant="soft" color="blue">.jpg</Badge>
+        </div>
         <TextField.Root
           value={state.path}
           onChange={onInputChange.bind(null, 'path')}
           placeholder="/path/to/my-background.bmp"
           disabled={!canEdit()}
+          readOnly
+          className="cursor-default! [&>input]:cursor-default!"
+          onClick={onBrowse}
         >
-          <TextField.Slot side="right">
+          <TextField.Slot side="right" className="cursor-default!">
             <Tooltip content="Browse" side="top">
               <IconButton size="1" variant="soft" onClick={onBrowse}>
                 <MagnifyingGlassIcon />
