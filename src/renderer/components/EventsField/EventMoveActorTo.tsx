@@ -6,6 +6,7 @@ import type { MoveActorToEvent } from '../../../types';
 import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
+import AnimationsListField from '../AnimationsListField';
 
 export interface EventMoveActorToProps {
   event: MoveActorToEvent;
@@ -38,10 +39,6 @@ const EventMoveActorTo = ({
     scene?.actors?.find(actor => actor.id === event?.actor)
   ), [scene, event]);
 
-  const animations = useMemo(() => (
-    findSprite(sprites, actor?.sprite)?.animations || []
-  ), [sprites, actor?.sprite]);
-
   const updateSize = useCallback(async () => {
     try {
       const [width, height] = await getImageSize(backgroundPath);
@@ -59,6 +56,10 @@ const EventMoveActorTo = ({
     set(event, name, value);
     onValueChange?.(event);
   }, [event, onValueChange]);
+
+  const sprite = useMemo(() => (
+    findSprite(sprites, actor?.sprite)
+  ), [sprites, actor?.sprite]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -128,19 +129,11 @@ const EventMoveActorTo = ({
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Animation</Text>
-        <Select.Root
+        <AnimationsListField
+          sprite={sprite}
           value={event.animation || ''}
           onValueChange={onValueChange_.bind(null, 'animation')}
-        >
-          <Select.Trigger placeholder="Select" />
-          <Select.Content>
-            { animations?.map(anim => (
-              <Select.Item key={anim.id} value={anim.id}>
-                { anim.name }
-              </Select.Item>
-            )) }
-          </Select.Content>
-        </Select.Root>
+        />
       </div>
     </div>
   );
