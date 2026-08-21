@@ -11,7 +11,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
 import type { GameScene } from '../../../types';
-import { useApp, useCanvas, useLocalData } from '../../services/hooks';
+import { useApp, useCanvas, useEditor, useLocalData } from '../../services/hooks';
 import {
   DEFAULT_ACTOR,
   DEFAULT_SCENE,
@@ -31,6 +31,7 @@ const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const { getSize, isCollapsed } = useLocalData();
   const { project } = useApp();
+  const { resizingSidebar } = useEditor();
   const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
   const {
     selectedScene,
@@ -409,7 +410,10 @@ const Canvas = () => {
       <Toolbar
         className={classNames(
           '!fixed left-1/2 transform -translate-x-1/2 z-1000',
-          { 'bottom-8': isCollapsed('bottomBar') },
+          {
+            'transition-[bottom] duration-100': !resizingSidebar,
+            'bottom-8': isCollapsed('bottomBar'),
+          },
         )}
         style={{
           ...!isCollapsed('bottomBar') && { bottom: 32 /* bottom-8 */ + bottomBarHeight },

@@ -4,7 +4,7 @@ import { type ResizableProps, Resizable } from 're-resizable';
 import { Card } from '@radix-ui/themes';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import { useLocalData } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 export interface BottomBarProps extends ResizableProps {}
 
@@ -13,6 +13,7 @@ const BottomBar = ({
   children,
   ...rest
 }: BottomBarProps) => {
+  const { resizingSidebar, setResizingSidebar } = useEditor();
   const { getSize, setSize, collapse, isCollapsed } = useLocalData();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
@@ -28,32 +29,66 @@ const BottomBar = ({
     setSize('bottomBarHeight', ref.offsetHeight);
   }, [setSize]);
 
+  const onResizeStart = useCallback((
+    _: any, // don't care, MouseEvent
+    __: any, // re-resizable not-exported Direction type
+    ref: HTMLElement
+  ) => {
+    setResizingSidebar(true);
+    onResize(_, __, ref);
+  }, [setResizingSidebar, onResize]);
+
+  const onResizeStop = useCallback((
+    _: any, // don't care, MouseEvent
+    __: any, // re-resizable not-exported Direction type
+    ref: HTMLElement
+  ) => {
+    setResizingSidebar(false);
+    onResize(_, __, ref);
+  }, [setResizingSidebar, onResize]);
+
   return (
-    <Resizable
-      defaultSize={{ height: bottomBarHeight ?? 300 }}
-      onResize={onResize}
-      onResizeStart={onResize}
-      onResizeStop={onResize}
-      enable={{ top: true }}
-      maxHeight="40vh"
-      minHeight={100}
-      { ...rest }
+    <div
       className={classNames(
-        'flex-none pointer-events-auto !w-screen relative',
-        'transition-[margin-left] duration-100 !fixed bottom-0 left-0',
-        { '!hidden': isCollapsed('bottomBar') },
-        className,
+        'w-screen fixed bottom-0 left-0 pointer-events-none',
+        {
+          'transition-[height] duration-100': !resizingSidebar,
+        }
       )}
+      style={{
+        ...!resizingSidebar && { height: !isCollapsed('bottomBar') ? bottomBarHeight : 0 },
+      }}
     >
-      <Card
+      <Resizable
+        defaultSize={{ height: bottomBarHeight ?? 300 }}
+        onResize={onResize}
+        onResizeStart={onResizeStart}
+        onResizeStop={onResizeStop}
+        enable={{ top: true }}
+        maxHeight="40vh"
+        minHeight={100}
+        { ...rest }
         className={classNames(
-          'w-full h-full bg-seashell dark:bg-onyx !p-0',
-          'before:!rounded-none after:!rounded-none !rounded-none',
+          'flex-none pointer-events-auto !w-screen relative',
+          {
+            'transition-[margin-bottom] duration-100': !resizingSidebar,
+          },
+          className,
         )}
+        style={{
+          marginBottom: -(!isCollapsed('bottomBar') ? 0 : bottomBarHeight),
+        }}
       >
-        { children }
-      </Card>
-    </Resizable>
+        <Card
+          className={classNames(
+            'w-full h-full bg-seashell dark:bg-onyx !p-0',
+            'before:!rounded-none after:!rounded-none !rounded-none',
+          )}
+        >
+          { children }
+        </Card>
+      </Resizable>
+    </div>
   );
 };
 

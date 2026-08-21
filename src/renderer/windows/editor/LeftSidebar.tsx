@@ -60,7 +60,9 @@ const LeftSidebar = ({
     view,
     tileX,
     tileY,
+    resizingSidebar,
     setView,
+    setResizingSidebar,
   } = useEditor();
   const { getSize, setSize, collapse, isCollapsed } = useLocalData();
   const { selectedScene } = useCanvas();
@@ -153,6 +155,24 @@ const LeftSidebar = ({
     setSize('leftSidebarWidth', ref.offsetWidth);
   }, [setSize]);
 
+  const onResizeStart = useCallback((
+    _: any, // don't care, MouseEvent
+    __: any, // re-resizable not-exported Direction type
+    ref: HTMLElement
+  ) => {
+    setResizingSidebar(true);
+    onResize(_, __, ref);
+  }, [setResizingSidebar, onResize]);
+
+  const onResizeStop = useCallback((
+    _: any, // don't care, MouseEvent
+    __: any, // re-resizable not-exported Direction type
+    ref: HTMLElement
+  ) => {
+    setResizingSidebar(false);
+    onResize(_, __, ref);
+  }, [setResizingSidebar, onResize]);
+
   const onBuildConfigChange = useCallback((value: string) => {
     setEditorConfig({
       ...editorConfig,
@@ -166,13 +186,14 @@ const LeftSidebar = ({
         className={classNames(
           'fixed left-0 top-[15px] h-[32px] flex',
           'z-2000 gap-8 items-center w-full pr-4 justify-between !app-no-drag',
-          'pointer-events-auto transition-[padding-left] duration-100',
+          'pointer-events-auto',
           {
+            'transition-[padding-left,width] duration-100': !resizingSidebar,
             'pl-[100px]': !isFullScreen && window.electron.isDarwin,
             'pl-6': isFullScreen || !window.electron.isDarwin,
           },
         )}
-        style={{ width: !isCollapsed('leftSidebar') ? leftSidebarWidth : 'auto' }}
+        style={{ width: !isCollapsed('leftSidebar') ? leftSidebarWidth : 0 }}
       >
         <IconButton variant="ghost" radius="full" onClick={collapse.bind(null, 'leftSidebar')}>
           <ListBulletIcon
@@ -243,14 +264,17 @@ const LeftSidebar = ({
       <Resizable
         defaultSize={{ width: leftSidebarWidth ?? 300 }}
         onResize={onResize}
-        onResizeStart={onResize}
-        onResizeStop={onResize}
+        onResizeStart={onResizeStart}
+        onResizeStop={onResizeStop}
         maxWidth="40vw"
         minWidth={200}
+        enable={{ right: true }}
         { ...rest }
         className={classNames(
           'flex-none pointer-events-auto h-full relative',
-          'transition-[margin-left] duration-100',
+          {
+            'transition-[margin-left] duration-100': !resizingSidebar,
+          },
           className,
         )}
         style={{

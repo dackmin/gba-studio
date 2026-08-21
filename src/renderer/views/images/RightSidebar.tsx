@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Text } from '@radix-ui/themes';
 
 import { useSprite } from '../../services/hooks';
 import Switch from '../../components/Switch';
@@ -25,7 +26,9 @@ const RightSidebar = () => {
         <BackgroundForm />
       </Switch.Case>
       <Switch.Case default>
-        <div className="p-4">No selection</div>
+        <div className="w-full h-full flex items-center justify-center p-4">
+          <Text size="1" className="text-slate">No selection</Text>
+        </div>
       </Switch.Case>
     </Switch>
   );

@@ -19,6 +19,7 @@ export interface EditorState {
   view: string;
   tileX?: number;
   tileY?: number;
+  resizingSidebar: boolean;
 }
 
 const Editor = () => {
@@ -31,6 +32,7 @@ const Editor = () => {
     view: localData?.editor?.view ?? 'canvas',
     tileX: undefined,
     tileY: undefined,
+    resizingSidebar: false,
   });
 
   useBridgeListener('build-completed', () => {
@@ -87,6 +89,10 @@ const Editor = () => {
     dispatch({ tileX: x, tileY: y });
   }, []);
 
+  const setResizingSidebar = useCallback((resizingSidebar: boolean) => {
+    dispatch({ resizingSidebar });
+  }, []);
+
   const getContext = useCallback((): EditorContextType => ({
     view: state.view,
     hasRightSidebar: !!RightSidebarContent,
@@ -94,11 +100,13 @@ const Editor = () => {
     hasLeftSidebar: !!LeftSidebarContent,
     tileX: state.tileX,
     tileY: state.tileY,
+    resizingSidebar: state.resizingSidebar,
     setView,
     setTilePosition,
+    setResizingSidebar,
   }), [
-    state.view, state.tileX, state.tileY,
-    setView, setTilePosition,
+    state.view, state.tileX, state.tileY, state.resizingSidebar,
+    setView, setTilePosition, setResizingSidebar,
     BottomBarContent, RightSidebarContent, LeftSidebarContent,
   ]);
 

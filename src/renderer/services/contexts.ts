@@ -72,10 +72,12 @@ export interface EditorContextType {
   hasBottomBar: boolean;
   hasRightSidebar: boolean;
   hasLeftSidebar: boolean;
+  resizingSidebar: boolean;
   tileX?: number;
   tileY?: number;
   setView(view: string): void;
   setTilePosition(x?: number, y?: number): void;
+  setResizingSidebar(resizingSidebar: boolean): void;
 }
 
 export const EditorContext = createContext<EditorContextType>({
@@ -83,8 +85,10 @@ export const EditorContext = createContext<EditorContextType>({
   hasBottomBar: false,
   hasRightSidebar: false,
   hasLeftSidebar: false,
+  resizingSidebar: false,
   setView: () => {},
   setTilePosition: () => {},
+  setResizingSidebar: () => {},
 });
 
 export interface CanvasContextType {

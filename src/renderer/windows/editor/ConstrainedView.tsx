@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ScrollArea, ScrollAreaProps } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { useLocalData } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 const ConstrainedView = ({
   className,
@@ -10,6 +10,7 @@ const ConstrainedView = ({
   ...rest
 }: ScrollAreaProps) => {
   const { getSize, isCollapsed } = useLocalData();
+  const { resizingSidebar } = useEditor();
   const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
@@ -18,6 +19,9 @@ const ConstrainedView = ({
       { ...rest }
       className={classNames(
         'w-screen relative pt-14',
+        {
+          'transition-[padding-left,height] duration-100': !resizingSidebar,
+        },
         className,
       )}
       style={{

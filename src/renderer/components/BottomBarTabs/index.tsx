@@ -1,9 +1,9 @@
 import { type FC, Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
 import { ScrollArea, Tabs } from '@radix-ui/themes';
-import { mockState } from '@junipero/react';
+import { classNames, mockState } from '@junipero/react';
 
 import { type BottomBarTabsContextType, BottomBarTabsContext } from '../../services/contexts';
-import { useLocalData } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 export interface BottomBarTab {
   id: string;
@@ -27,6 +27,7 @@ const BottomBarTabs = ({
   defaultTab,
 }: BottomBarTabsProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { resizingSidebar } = useEditor();
   const { getSize, isCollapsed } = useLocalData();
   const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
   const [state, dispatch] = useReducer(mockState<BottomBarTabsState>, {
@@ -86,7 +87,12 @@ const BottomBarTabs = ({
         onValueChange={setTab}
       >
         <Tabs.List
-          className="flex-none"
+          className={classNames(
+            'flex-none',
+            {
+              'transition-[padding-left] duration-100': !resizingSidebar,
+            },
+          )}
           style={{
             ...!isCollapsed('leftSidebar') && { paddingLeft: leftSidebarWidth },
           }}
@@ -98,7 +104,12 @@ const BottomBarTabs = ({
 
         <ScrollArea
           ref={scrollAreaRef}
-          className="bg-onyx"
+          className={classNames(
+            'bg-onyx',
+            {
+              'transition-[padding-left] duration-100': !resizingSidebar,
+            },
+          )}
           style={{
             ...!isCollapsed('leftSidebar') && { paddingLeft: leftSidebarWidth },
           }}
