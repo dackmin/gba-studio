@@ -9,16 +9,18 @@ import { get, mockState, set, useEventListener, useTimeout } from '@junipero/rea
 
 import { type LocalData, load, save } from '../../services/local-db';
 import { type LocalDataContextType, LocalDataContext } from '../../services/contexts';
-import { useApp } from '../../services/hooks';
+import { useApp, useEditor } from '../../services/hooks';
 
 const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
   const { project, localData } = useApp();
+  const { view } = useEditor();
   const [ready, setReady] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [state, dispatch] = useReducer(mockState<LocalData>, localData ?? {
     collapsed: [],
     sizes: {},
-  });
+    view: 'canvas',
+  } satisfies LocalData);
 
   useEffect(() => {
     if (ready || !project?.id) {
@@ -71,16 +73,35 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
     });
   }, []);
 
+  const setData = useCallback((key: string, value: any) => {
+    setDirty(true);
+    dispatch(s => {
+      set(s, key, value);
+
+      return { ...s };
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ready || !project?.id) {
+      return;
+    }
+
+    setData('view', view);
+  }, [ready, project?.id, view, setData]);
+
   const getContext = useCallback((): LocalDataContextType => ({
     collapsed: state.collapsed,
     sizes: state.sizes,
+    view: state.view,
     collapse,
     isCollapsed,
     getSize,
     setSize,
+    setData,
   }), [
-    state.collapsed, state.sizes,
-    collapse, isCollapsed, getSize, setSize,
+    state.collapsed, state.sizes, state.view,
+    collapse, isCollapsed, getSize, setSize, setData,
   ]);
 
   return (

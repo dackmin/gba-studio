@@ -22,13 +22,13 @@ export interface EditorState {
 }
 
 const Editor = () => {
-  const { project } = useApp();
+  const { project, localData } = useApp();
   const spriteModalRef = useRef<SpriteImportModalRef>(null);
   const backgroundModalRef = useRef<BackgroundImportModalRef>(null);
   const soundModalRef = useRef<SoundImportModalRef>(null);
   const musicModalRef = useRef<MusicImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
-    view: 'canvas',
+    view: localData?.view ?? 'canvas',
     tileX: undefined,
     tileY: undefined,
   });
