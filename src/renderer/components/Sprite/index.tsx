@@ -26,6 +26,7 @@ export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
   frames?: (number | SpriteAnimationFrame)[];
   animated?: boolean;
   scale?: number;
+  keepAspectRatio?: boolean;
 }
 
 const Sprite = ({
@@ -40,6 +41,7 @@ const Sprite = ({
   transparencyColor = '#00ff00',
   scale = 1,
   animated = false,
+  keepAspectRatio = false,
   ...rest
 }: SpriteProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,9 +93,10 @@ const Sprite = ({
       ctx.scale(-1, 1);
     }
 
+    const x = frameIndex * (width / scale);
     ctx.drawImage(
       image,
-      frameIndex * (width / scale),
+      x >= image.width ? 0 : x,
       0,
       width / scale,
       height / scale,
@@ -141,6 +144,7 @@ const Sprite = ({
         ...style,
         imageRendering: 'pixelated',
         transform: direction === 'left' ? 'scaleX(-1)' : undefined,
+        ...(keepAspectRatio && { objectFit: 'contain' }),
       }}
       width={width * scale}
       height={height * scale}

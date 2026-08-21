@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
+import { Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
 import { findSprite, getGraphicName } from '../../../helpers';
+import Sprite from '../Sprite';
 
 export interface SpritesListFieldProps {
   value?: string;
@@ -27,13 +28,14 @@ const SpritesListField = ({
       <DropdownMenu.Trigger>
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
-            <Avatar
-              src={!val || val === 'sprite_default' || !selected
-                ? `resources://public/templates` +
-                  `/commons/graphics/sprite_default.bmp`
-                : `project://${selected.path}`}
-              fallback=""
-              className="[&>img]:pixelated"
+            <Sprite
+              sprite={selected ?? {
+                path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+                width: 16,
+                height: 16,
+              }}
+              className="w-8 h-8"
+              keepAspectRatio
             />
             <Text>{ selected?.name ?? 'sprite_default' }</Text>
           </div>
@@ -43,12 +45,14 @@ const SpritesListField = ({
         <DropdownMenu.Item
           onClick={() => onValueChange?.('')}
         >
-          <Avatar
-            src={`resources://public/templates` +
-              `/commons/graphics/sprite_default.bmp`}
-            fallback=""
-            size="1"
-            className="[&>img]:pixelated"
+          <Sprite
+            sprite={{
+              path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+              width: 16,
+              height: 16,
+            }}
+            className="w-6 h-6"
+            keepAspectRatio
           />
           <Text>Default sprite</Text>
         </DropdownMenu.Item>
@@ -58,11 +62,10 @@ const SpritesListField = ({
             onClick={() => onValueChange?.(sprite.id || sprite.name)}
           >
             <div className="flex items-center gap-2">
-              <Avatar
-                src={`project://${sprite.path}`}
-                fallback=""
-                size="1"
-                className="[&>img]:pixelated"
+              <Sprite
+                sprite={sprite}
+                className="w-6 h-6"
+                keepAspectRatio
               />
               <Text>{ sprite.name || getGraphicName(sprite._file) }</Text>
             </div>
