@@ -28,7 +28,7 @@ const Editor = () => {
   const soundModalRef = useRef<SoundImportModalRef>(null);
   const musicModalRef = useRef<MusicImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
-    view: localData?.view ?? 'canvas',
+    view: localData?.editor?.view ?? 'canvas',
     tileX: undefined,
     tileY: undefined,
   });

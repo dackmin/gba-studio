@@ -1,7 +1,8 @@
 export interface LocalData {
   collapsed: string[]
   sizes: Record<string, number>
-  view: string;
+  editor: Record<string, any>
+  emulator: Record<string, any>;
 };
 
 export const load = (projectId: string): LocalData => {
@@ -18,7 +19,8 @@ export const load = (projectId: string): LocalData => {
   return {
     collapsed: [],
     sizes: {},
-    view: 'canvas',
+    emulator: {},
+    editor: {},
   };
 };
 

@@ -222,17 +222,20 @@ export interface LocalDataContextType extends LocalData {
   isCollapsed(key: string): boolean;
   getSize(key: string, def?: number): number;
   setSize(key: string, size: number): void;
+  getData(key: string): any;
   setData(key: string, value: any): void;
 }
 
 export const LocalDataContext = createContext<LocalDataContextType>({
   collapsed: [],
   sizes: {},
-  view: 'canvas',
+  editor: {},
+  emulator: {},
   collapse: () => {},
   isCollapsed: () => false,
   getSize: () => 0,
   setSize: () => {},
+  getData: () => {},
   setData: () => {},
 });
 

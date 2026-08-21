@@ -19,7 +19,8 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
   const [state, dispatch] = useReducer(mockState<LocalData>, localData ?? {
     collapsed: [],
     sizes: {},
-    view: 'canvas',
+    emulator: {},
+    editor: {},
   } satisfies LocalData);
 
   useEffect(() => {
@@ -73,6 +74,10 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
     });
   }, []);
 
+  const getData = useCallback(<T = any>(key: string, def?: T) => (
+    get(state, key, def)
+  ), [state]);
+
   const setData = useCallback((key: string, value: any) => {
     setDirty(true);
     dispatch(s => {
@@ -87,21 +92,23 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
       return;
     }
 
-    setData('view', view);
+    setData('editor.view', view);
   }, [ready, project?.id, view, setData]);
 
   const getContext = useCallback((): LocalDataContextType => ({
     collapsed: state.collapsed,
     sizes: state.sizes,
-    view: state.view,
+    editor: state.editor,
+    emulator: state.emulator,
     collapse,
     isCollapsed,
     getSize,
     setSize,
+    getData,
     setData,
   }), [
-    state.collapsed, state.sizes, state.view,
-    collapse, isCollapsed, getSize, setSize, setData,
+    state.collapsed, state.sizes, state.editor, state.emulator,
+    collapse, isCollapsed, getSize, setSize, setData, getData,
   ]);
 
   return (
