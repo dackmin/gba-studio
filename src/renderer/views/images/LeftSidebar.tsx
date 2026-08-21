@@ -1,11 +1,10 @@
-import { type ComponentPropsWithoutRef, useCallback, useRef } from 'react';
+import { type ComponentPropsWithoutRef, useCallback } from 'react';
 import { classNames } from '@junipero/react';
-import { Text, ContextMenu, Dialog } from '@radix-ui/themes';
+import { Text, ContextMenu } from '@radix-ui/themes';
 import { ImageIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, GameSpriteFile } from '../../../types';
 import { useApp, useLocalData, useSprite } from '../../services/hooks';
-import DeleteModal, { type DeleteModalRef } from '../../components/DeleteModal';
 import Collapsible from '../../components/Collapsible';
 
 export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
@@ -18,17 +17,11 @@ export interface LeftSidebarState {
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const deleteSpriteModalRef = useRef<DeleteModalRef>(null);
-  const deleteBackgroundModalRef = useRef<DeleteModalRef>(null);
   const { sprites, backgrounds, onCanvasChange, ...appPayload } = useApp();
   const { collapse, isCollapsed } = useLocalData();
   const { selectedSprite, selectedBackground, selectSprite, selectBackground } = useSprite();
 
-  const onOpenDeleteSpriteModal = useCallback(() => {
-    deleteSpriteModalRef.current?.open();
-  }, []);
-
-  const onComfirmDeleteSprite = useCallback(async () => {
+  const onDeleteSprite = useCallback(async () => {
     if (!selectedSprite) {
       return;
     }
@@ -42,11 +35,7 @@ const LeftSidebar = ({
     selectSprite?.(updatedSprites[0]);
   }, [selectedSprite, sprites, backgrounds, appPayload, onCanvasChange, selectSprite]);
 
-  const onOpenDeleteBackgroundModal = useCallback(() => {
-    deleteBackgroundModalRef.current?.open();
-  }, []);
-
-  const onComfirmDeleteBackground = useCallback(async () => {
+  const onDeleteBackground = useCallback(async () => {
     if (!selectedBackground) {
       return;
     }
@@ -105,7 +94,7 @@ const LeftSidebar = ({
               <ContextMenu.Content>
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
-                  onClick={onOpenDeleteSpriteModal}
+                  onClick={onDeleteSprite}
                 >
                   Delete
                 </ContextMenu.Item>
@@ -159,7 +148,7 @@ const LeftSidebar = ({
               <ContextMenu.Content>
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
-                  onClick={onOpenDeleteBackgroundModal}
+                  onClick={onDeleteBackground}
                 >
                   Delete
                 </ContextMenu.Item>
@@ -168,38 +157,6 @@ const LeftSidebar = ({
           )) }
         </Collapsible.Content>
       </Collapsible.Root>
-
-      <DeleteModal
-        ref={deleteSpriteModalRef}
-        onConfirm={onComfirmDeleteSprite}
-      >
-        <div className="flex flex-col gap-2 text-center">
-          <Text>
-            Are you sure you want to delete the sprite <strong>{ selectedSprite?.name }</strong>?
-          </Text>
-          <Text size="1" className="text-slate">
-            This action cannot be undone.
-          </Text>
-        </div>
-      </DeleteModal>
-
-      <DeleteModal
-        ref={deleteBackgroundModalRef}
-        onConfirm={onComfirmDeleteBackground}
-      >
-        <Dialog.Title align="center" className="pb-4">
-          Delete background
-        </Dialog.Title>
-        <div>
-          <Text size="1" className="text-slate">
-            Are you sure you want to delete the background
-            <strong>{ selectedBackground?.name }</strong>?
-          </Text>
-          <Text size="1" className="text-slate">
-            This action cannot be undone.
-          </Text>
-        </div>
-      </DeleteModal>
     </div>
   );
 };

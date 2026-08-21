@@ -2,6 +2,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
+import { omit } from '@junipero/core';
 
 import type { GameSpriteFile } from '../../types';
 import { sanitizeSprite } from '../sanitize';
@@ -40,17 +41,17 @@ export default async function (
   const contentFileName = 'sprite_' + fileName + '.json';
   await fsp.mkdir(contentDir, { recursive: true });
 
-  try {
-    await fsp.access(path.join(contentDir, contentFileName));
-    Object.assign(spriteInfo, JSON.parse(await fsp.readFile(
-      path.join(contentDir, contentFileName),
-      { encoding: 'utf-8' },
-    )));
-  } catch {}
-
-  spriteInfo.name = fileName;
+  spriteInfo.name = spriteInfo.name || fileName;
   spriteInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
   spriteInfo._file = contentFileName;
+
+  try {
+    await fsp.access(path.join(contentDir, contentFileName));
+    Object.assign(spriteInfo, omit(JSON.parse(await fsp.readFile(
+      path.join(contentDir, contentFileName),
+      { encoding: 'utf-8' },
+    )), Object.keys(spriteInfo)));
+  } catch {}
 
   return await sanitizeSprite(spriteInfo);
 }

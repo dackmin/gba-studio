@@ -58,7 +58,7 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
             label: 'Import...',
             submenu: [
               {
-                label: 'Sprite...',
+                label: 'Sprite',
                 click: async () => {
                   const focusedWindow = BrowserWindow.getFocusedWindow();
 
@@ -68,12 +68,32 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
                 },
               },
               {
-                label: 'Background...',
+                label: 'Background',
                 click: async () => {
                   const focusedWindow = BrowserWindow.getFocusedWindow();
 
                   if (focusedWindow) {
                     focusedWindow.webContents.send('import-background');
+                  }
+                },
+              },
+              {
+                label: 'Sound',
+                click: async () => {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+                  if (focusedWindow) {
+                    focusedWindow.webContents.send('import-sound');
+                  }
+                },
+              },
+              {
+                label: 'Music',
+                click: async () => {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+                  if (focusedWindow) {
+                    focusedWindow.webContents.send('import-music');
                   }
                 },
               },

@@ -13,7 +13,7 @@ import type {
   GameSpriteFile,
   GameVariables,
 } from '../../types';
-import { getGraphicsFiles, getSceneFiles, getScriptsFiles } from '../files';
+import { getAudioFiles, getGraphicsFiles, getSceneFiles, getScriptsFiles } from '../files';
 import { serialize } from '../serialize';
 import { sanitize } from '../sanitize';
 
@@ -37,6 +37,26 @@ export const saveItem = async (
   }
 };
 
+export const cleanObsoleteItems = async (
+  projectDir: string,
+  existingFiles: string[],
+  newItems?: (
+    | GameVariables
+    | GameScene
+    | GameScript
+    | GameSpriteFile
+    | GameBackgroundFile
+    | GameMusicFile
+    | GameSoundFile
+  )[],
+) => {
+  for (const file of existingFiles) {
+    if (!newItems?.some(i => i._file === file)) {
+      await fs.unlink(path.join(projectDir, 'content', file));
+    }
+  }
+};
+
 export default async (
   _: IpcMainInvokeEvent,
   projectPath: string,
@@ -51,18 +71,11 @@ export default async (
   }
 
   // Delete obsolete scenes
-  const existingSceneFiles: string[] = ([] as string[])
-    .concat(await getSceneFiles(projectDir));
-
-  const newSceneFiles = (data.scenes || []).map(s =>
-    s._file
-  ).filter(f => f) as string[];
-
-  for (const file of existingSceneFiles) {
-    if (!newSceneFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'content', file));
-    }
-  }
+  await cleanObsoleteItems(
+    projectDir,
+    await getSceneFiles(projectDir),
+    data.scenes
+  );
 
   // Save scenes
   for (const scene of data.scenes || []) {
@@ -70,14 +83,11 @@ export default async (
   }
 
   // Delete obsolete scripts
-  const existingScriptFiles: string[] = await getScriptsFiles(projectDir);
-  const newScriptFiles = (data.scripts || []).map(s => s._file).filter(f => f);
-
-  for (const file of existingScriptFiles) {
-    if (!newScriptFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'content', file));
-    }
-  }
+  await cleanObsoleteItems(
+    projectDir,
+    await getScriptsFiles(projectDir),
+    data.scripts
+  );
 
   // Save scripts
   for (const script of data.scripts || []) {
@@ -85,41 +95,47 @@ export default async (
   }
 
   // Delete obsolete backgrounds
-  const existingBackgroundFiles: string[] = await getGraphicsFiles(projectDir, f =>
-    f.startsWith('background_'));
-  const newBackgroundFiles = (data.backgrounds || []).map(b => b._file).filter(Boolean);
-
-  for (const file of existingBackgroundFiles) {
-    if (!newBackgroundFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'content', file));
-    }
-  }
+  await cleanObsoleteItems(
+    projectDir,
+    await getGraphicsFiles(projectDir, f => f.startsWith('background_')),
+    data.backgrounds
+  );
 
   // Save backgrounds
   for (const background of data.backgrounds || []) {
     await saveItem(background, projectDir);
   }
 
-  // Delete obsolete backgrounds
-  const existingSpriteFiles: string[] = await getGraphicsFiles(projectDir, f =>
-    f.startsWith('sprite_'));
-  const newSpriteFiles = (data.backgrounds || []).map(b => b._file).filter(Boolean);
-
-  for (const file of existingSpriteFiles) {
-    if (!newSpriteFiles.includes(file)) {
-      await fs.unlink(path.join(projectDir, 'content', file));
-    }
-  }
+  // Delete obsolete sprites
+  await cleanObsoleteItems(
+    projectDir,
+    await getGraphicsFiles(projectDir, f => f.startsWith('sprite_')),
+    data.sprites
+  );
 
   // Save sprites
   for (const sprite of data.sprites || []) {
     await saveItem(sprite, projectDir);
   }
 
+  // Delete obsolete sounds
+  await cleanObsoleteItems(
+    projectDir,
+    await getAudioFiles(projectDir, f => f.startsWith('sound_')),
+    data.sounds
+  );
+
   // Save sounds
   for (const sound of data.sounds || []) {
     await saveItem(sound, projectDir);
   }
+
+  // Delete obsolete music
+  await cleanObsoleteItems(
+    projectDir,
+    await getAudioFiles(projectDir, f => f.startsWith('music_')),
+    data.music
+  );
 
   // Save music
   for (const music of data.music || []) {

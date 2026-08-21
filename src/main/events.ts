@@ -5,7 +5,7 @@ import { app, BrowserWindow, globalShortcut } from 'electron';
 
 import type { GameBackgroundFile, GameSpriteFile } from '../types';
 import { createProjectWindow, createSelectionWindow } from './windows';
-import { getGraphicsFiles, getSoundFiles } from './files';
+import { getAudioFiles, getGraphicsFiles } from './files';
 
 export const createBeforeReadyEventListeners = () => {
   app.on('open-file', (event, path) => {
@@ -96,13 +96,13 @@ export const createAudioFileWatcher = async (
     path.join(projectBase, 'audio'),
     { signal },
     async () => {
-      const music = await getSoundFiles(
+      const music = await getAudioFiles(
         projectBase,
         file => file.endsWith('.mod') || file.endsWith('.s3m') ||
           file.endsWith('.xm') || file.endsWith('.it') || file.endsWith('.vgm')
       );
 
-      const sounds = await getSoundFiles(
+      const sounds = await getAudioFiles(
         projectBase,
         file => file.endsWith('.wav')
       );

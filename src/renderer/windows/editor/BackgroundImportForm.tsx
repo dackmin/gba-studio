@@ -14,7 +14,7 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, SpriteBitmap } from '../../../types';
-import { toFileSlug } from '../../../helpers';
+import { findBackground, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import ChecklistItem from '../../components/ChecklistItem';
 import Background from '../../components/Background';
@@ -115,16 +115,19 @@ const BackgroundImportForm = () => {
       state.path,
       {
         type: 'background',
+        name: state.name,
         width: state.preview.width,
         height: state.preview.height,
       },
     );
 
+    const exists = findBackground(backgrounds, createdBackground.id);
+
     onCanvasChange?.({
       ...appPayload,
       backgrounds: [
-        createdBackground,
-        ...backgrounds,
+        ...!exists ? [createdBackground] : [],
+        ...backgrounds.map(b => b.id === createdBackground.id ? createdBackground : b),
       ],
     });
     selectBackground?.(createdBackground);
@@ -132,7 +135,7 @@ const BackgroundImportForm = () => {
   }, [
     canSubmit, close, onCanvasChange, selectBackground,
     projectPath, backgrounds, appPayload,
-    state.path, state.preview,
+    state.path, state.preview, state.name,
   ]);
 
   const openParentFolder = useCallback(async () => {

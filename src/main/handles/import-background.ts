@@ -2,6 +2,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
+import { omit } from '@junipero/core';
 
 import type { GameBackgroundFile } from '../../types';
 import { sanitizeBackground } from '../sanitize';
@@ -40,17 +41,17 @@ export default async function (
   const contentFileName = 'background_' + fileName + '.json';
   await fsp.mkdir(contentDir, { recursive: true });
 
-  try {
-    await fsp.access(path.join(contentDir, contentFileName));
-    Object.assign(backgroundInfo, JSON.parse(await fsp.readFile(
-      path.join(contentDir, contentFileName),
-      { encoding: 'utf-8' },
-    )));
-  } catch {}
-
-  backgroundInfo.name = fileName;
+  backgroundInfo.name = backgroundInfo.name || fileName;
   backgroundInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
   backgroundInfo._file = contentFileName;
+
+  try {
+    await fsp.access(path.join(contentDir, contentFileName));
+    Object.assign(backgroundInfo, omit(JSON.parse(await fsp.readFile(
+      path.join(contentDir, contentFileName),
+      { encoding: 'utf-8' },
+    )), Object.keys(backgroundInfo)));
+  } catch {}
 
   return await sanitizeBackground(backgroundInfo);
 }

@@ -1,7 +1,7 @@
 import { exists } from '@junipero/core';
 import slugify from 'slugify';
 
-import type { GameBackgroundFile, GameSoundFile, GameSpriteFile } from './types';
+import type { GameBackgroundFile, GameMusicFile, GameSoundFile, GameSpriteFile } from './types';
 
 export const tileToPixel = (tile: number, gridSize: number) =>
   tile * gridSize;
@@ -107,8 +107,8 @@ export const findSound = (
 };
 
 export const findMusic = (
-  music: GameSoundFile[] = [],
+  music: GameMusicFile[] = [],
   id?: string,
-): GameSoundFile | undefined => {
+): GameMusicFile | undefined => {
   return music.find(m => m.id === id || m.name === id || m._file === id);
 };

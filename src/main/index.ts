@@ -35,6 +35,8 @@ import {
   loadImage,
   importSprite,
   importBackground,
+  importSound,
+  importMusic,
 } from './handles';
 import Storage from './storage';
 
@@ -106,3 +108,5 @@ ipcMain.handle('get-project-relative-path', getProjectRelativePath);
 ipcMain.handle('load-image', loadImage);
 ipcMain.handle('import-sprite', importSprite);
 ipcMain.handle('import-background', importBackground);
+ipcMain.handle('import-sound', importSound);
+ipcMain.handle('import-music', importMusic);

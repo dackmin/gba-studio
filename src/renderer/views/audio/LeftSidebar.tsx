@@ -1,10 +1,9 @@
-import { type ComponentPropsWithoutRef, useRef } from 'react';
+import { type ComponentPropsWithoutRef, useCallback } from 'react';
 import { classNames } from '@junipero/react';
 import { ContextMenu, Text } from '@radix-ui/themes';
 import { SpeakerLoudIcon } from '@radix-ui/react-icons';
 
 import { useApp, useAudio, useLocalData } from '../../services/hooks';
-import { DeleteModalRef } from '../../components/DeleteModal';
 import Collapsible from '../../components/Collapsible';
 
 export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
@@ -12,19 +11,35 @@ export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const deleteSoundModalRef = useRef<DeleteModalRef>(null);
-  const deleteMusicModalRef = useRef<DeleteModalRef>(null);
   const { collapse, isCollapsed } = useLocalData();
-  const { sounds, music } = useApp();
+  const { sounds, music, onCanvasChange, ...appPayload } = useApp();
   const { selectedSound, selectedMusic, selectSound, selectMusic } = useAudio();
 
-  const onOpenDeleteSoundModal = () => {
-    deleteSoundModalRef.current?.open();
-  };
+  const onDeleteSound = useCallback(async () => {
+    if (!selectedSound) {
+      return;
+    }
 
-  const onOpenDeleteMusicModal = () => {
-    deleteMusicModalRef.current?.open();
-  };
+    const updatedSounds = sounds.filter(s => s._file !== selectedSound._file);
+    onCanvasChange?.({
+      ...appPayload,
+      sounds: updatedSounds,
+    });
+    selectSound?.(updatedSounds[0]);
+  }, [selectedSound, sounds, appPayload, selectSound, onCanvasChange]);
+
+  const onDeleteMusic = useCallback(async () => {
+    if (!selectedMusic) {
+      return;
+    }
+
+    const updatedMusic = music.filter(m => m._file !== selectedMusic._file);
+    onCanvasChange?.({
+      ...appPayload,
+      music: updatedMusic,
+    });
+    selectMusic?.(updatedMusic[0]);
+  }, [selectedMusic, music, appPayload, selectMusic, onCanvasChange]);
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
@@ -46,12 +61,11 @@ const LeftSidebar = ({
             </Text>
           ) : sounds.map(sound => (
             <ContextMenu.Root
-              key={sound._file}
+              key={sound.id}
               onOpenChange={selectSound?.bind(null, sound)}
             >
               <ContextMenu.Trigger>
                 <a
-                  key={sound._file}
                   href="#"
                   className={classNames(
                     'flex items-center gap-2 px-3 py-1',
@@ -72,7 +86,7 @@ const LeftSidebar = ({
               <ContextMenu.Content>
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
-                  onClick={onOpenDeleteSoundModal}
+                  onClick={onDeleteSound}
                 >
                   Delete
                 </ContextMenu.Item>
@@ -99,12 +113,11 @@ const LeftSidebar = ({
             </Text>
           ) : music.map(musicFile => (
             <ContextMenu.Root
-              key={musicFile._file}
+              key={musicFile.id}
               onOpenChange={selectMusic?.bind(null, musicFile)}
             >
               <ContextMenu.Trigger>
                 <a
-                  key={musicFile._file}
                   href="#"
                   className={classNames(
                     'flex items-center gap-2 px-3 py-1',
@@ -125,7 +138,7 @@ const LeftSidebar = ({
               <ContextMenu.Content>
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
-                  onClick={onOpenDeleteMusicModal}
+                  onClick={onDeleteMusic}
                 >
                   Delete
                 </ContextMenu.Item>

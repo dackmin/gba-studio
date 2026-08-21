@@ -42,7 +42,7 @@ export const getGraphicsFiles = async (
   );
 };
 
-export const getSoundFiles = async (
+export const getAudioFiles = async (
   base: string,
   cond: (file: string) => boolean = () => true
 ) => {

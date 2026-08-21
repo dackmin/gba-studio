@@ -5,6 +5,8 @@ import type {
   AppStorage,
   BuildOptions,
   GameBackgroundFile,
+  GameMusicFile,
+  GameSoundFile,
   GameSpriteFile,
   ProjectTemplate,
   RecentProject,
@@ -105,6 +107,18 @@ contextBridge.exposeInMainWorld('electron', {
     backgroundInfo: Partial<GameBackgroundFile>,
   ): Promise<Partial<GameBackgroundFile>> =>
     ipcRenderer.invoke('import-background', projectPath, filePath, backgroundInfo),
+  importSound: (
+    projectPath: string,
+    filePath: string,
+    soundInfo: Partial<GameSoundFile>,
+  ): Promise<Partial<GameSoundFile>> =>
+    ipcRenderer.invoke('import-sound', projectPath, filePath, soundInfo),
+  importMusic: (
+    projectPath: string,
+    filePath: string,
+    musicInfo: Partial<GameMusicFile>,
+  ): Promise<Partial<GameMusicFile>> =>
+    ipcRenderer.invoke('import-music', projectPath, filePath, musicInfo),
 
   // Info
   platform: process.platform,

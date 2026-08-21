@@ -14,7 +14,7 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameSpriteFile, SpriteBitmap } from '../../../types';
-import { getTilesCount, toFileSlug } from '../../../helpers';
+import { findSprite, getTilesCount, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 import ChecklistItem from '../../components/ChecklistItem';
@@ -124,16 +124,19 @@ const SpriteImportForm = () => {
       state.path,
       {
         type: 'sprite',
+        name: state.name,
         width: state.width,
         height: state.height,
       },
     );
 
+    const exists = findSprite(sprites, createdSprite.id);
+
     onCanvasChange?.({
       ...appPayload,
       sprites: [
-        createdSprite,
-        ...sprites,
+        ...!exists ? [createdSprite] : [],
+        ...sprites.map(s => s.id === createdSprite.id ? createdSprite : s),
       ],
     });
     selectSprite?.(createdSprite);
@@ -141,7 +144,7 @@ const SpriteImportForm = () => {
   }, [
     canSubmit, close, onCanvasChange, selectSprite,
     projectPath, sprites, appPayload,
-    state.path, state.width, state.height,
+    state.path, state.width, state.height, state.name,
   ]);
 
   const openParentFolder = useCallback(async () => {

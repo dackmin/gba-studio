@@ -19,7 +19,7 @@ import {
   getGraphicsFiles,
   getSceneFiles,
   getScriptsFiles,
-  getSoundFiles,
+  getAudioFiles,
   getVariableFiles,
   getGraphicFileSize,
 } from '../files';
@@ -54,7 +54,7 @@ export default async (
   total += graphicsFiles.length;
 
   // Prepare audio files
-  const audioFiles = await getSoundFiles(
+  const audioFiles = await getAudioFiles(
     projectDir,
   );
   total += audioFiles.length;

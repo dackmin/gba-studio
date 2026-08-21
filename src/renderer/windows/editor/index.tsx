@@ -13,6 +13,8 @@ import LogsStore from './LogsStore';
 import LocalDataStore from './LocalDataStore';
 import SpriteImportModal, { type SpriteImportModalRef } from './SpriteImportModal';
 import BackgroundImportModal, { type BackgroundImportModalRef } from './BackgroundImportModal';
+import SoundImportModal, { type SoundImportModalRef } from './SoundImportModal';
+import MusicImportModal, { type MusicImportModalRef } from './MusicImportModal';
 
 export interface EditorState {
   view: string;
@@ -30,6 +32,8 @@ const Editor = () => {
   const { project } = useApp();
   const spriteModalRef = useRef<SpriteImportModalRef>(null);
   const backgroundModalRef = useRef<BackgroundImportModalRef>(null);
+  const soundModalRef = useRef<SoundImportModalRef>(null);
+  const musicModalRef = useRef<MusicImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
     leftSidebarOpened: true,
@@ -52,12 +56,30 @@ const Editor = () => {
 
   useBridgeListener('import-sprite', () => {
     backgroundModalRef.current?.close();
+    soundModalRef.current?.close();
+    musicModalRef.current?.close();
     spriteModalRef.current?.open();
   });
 
   useBridgeListener('import-background', () => {
     spriteModalRef.current?.close();
+    soundModalRef.current?.close();
+    musicModalRef.current?.close();
     backgroundModalRef.current?.open();
+  });
+
+  useBridgeListener('import-sound', () => {
+    backgroundModalRef.current?.close();
+    spriteModalRef.current?.close();
+    musicModalRef.current?.close();
+    soundModalRef.current?.open();
+  });
+
+  useBridgeListener('import-music', () => {
+    backgroundModalRef.current?.close();
+    spriteModalRef.current?.close();
+    soundModalRef.current?.close();
+    musicModalRef.current?.open();
   });
 
   const {
@@ -180,6 +202,8 @@ const Editor = () => {
 
             <SpriteImportModal ref={spriteModalRef} />
             <BackgroundImportModal ref={backgroundModalRef} />
+            <SoundImportModal ref={soundModalRef} />
+            <MusicImportModal ref={musicModalRef} />
           </Provider>
         </LogsStore>
       </LocalDataStore>

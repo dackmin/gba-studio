@@ -73,6 +73,16 @@ interface AppBridge extends EventTarget {
     filePath: string,
     backgroundInfo: Partial<GameBackgroundFile>,
   ): Promise<Partial<GameBackgroundFile>>;
+  importSound(
+    projectPath: string,
+    filePath: string,
+    soundInfo: Partial<GameSoundFile>,
+  ): Promise<Partial<GameSoundFile>>;
+  importMusic(
+    projectPath: string,
+    filePath: string,
+    musicInfo: Partial<GameMusicFile>,
+  ): Promise<Partial<GameMusicFile>>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

@@ -48,7 +48,7 @@ const SpriteImportModal = ({
             <DialogClose />
           </Dialog.Close>
           <Dialog.Title align="center" className="pb-4">
-            Import sprite
+            Import Sprite
           </Dialog.Title>
           <SpriteImportForm />
         </Dialog.Content>

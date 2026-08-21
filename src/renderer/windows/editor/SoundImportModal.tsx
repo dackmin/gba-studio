@@ -3,20 +3,20 @@ import { Dialog } from '@radix-ui/themes';
 
 import { ModalContext, type ModalContextType } from '../../services/contexts';
 import DialogClose from '../../components/DialogClose';
-import BackgroundImportForm from './BackgroundImportForm';
+import SoundImportForm from './SoundImportForm';
 
-export interface BackgroundImportModalRef {
+export interface SoundImportModalRef {
   open: () => void;
   close: () => void;
 }
 
-export interface BackgroundImportModalProps {
-  ref: Ref<BackgroundImportModalRef>;
+export interface SoundImportModalProps {
+  ref: Ref<SoundImportModalRef>;
 }
 
-const BackgroundImportModal = ({
+const SoundImportModal = ({
   ref,
-}: BackgroundImportModalProps) => {
+}: SoundImportModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -48,13 +48,13 @@ const BackgroundImportModal = ({
             <DialogClose />
           </Dialog.Close>
           <Dialog.Title align="center" className="pb-4">
-            Import Background
+            Import Sound
           </Dialog.Title>
-          <BackgroundImportForm />
+          <SoundImportForm />
         </Dialog.Content>
       </Dialog.Root>
     </ModalContext>
   );
 };
 
-export default BackgroundImportModal;
+export default SoundImportModal;
