@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 import { type ResizableProps, Resizable } from 're-resizable';
 import { Card } from '@radix-ui/themes';
 
-import { useEditor } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 export interface BottomBarProps extends ResizableProps {}
 
@@ -12,19 +12,17 @@ const BottomBar = ({
   children,
   ...rest
 }: BottomBarProps) => {
-  const {
-    bottomBarOpened,
-    bottomBarHeight,
-    setBottomBarHeight,
-  } = useEditor();
+  const { bottomBarOpened } = useEditor();
+  const { getSize, setSize } = useLocalData();
+  const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
   const onResize = useCallback((
     _: any, // don't care, MouseEvent
     __: any, // re-resizable not-exported Direction type
     ref: HTMLElement
   ) => {
-    setBottomBarHeight(ref.offsetHeight);
-  }, [setBottomBarHeight]);
+    setSize('bottomBarHeight', ref.offsetHeight);
+  }, [setSize]);
 
   return (
     <Resizable

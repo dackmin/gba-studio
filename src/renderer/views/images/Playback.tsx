@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { IconButton, Text } from '@radix-ui/themes';
 import {
   PauseIcon,
@@ -8,10 +9,12 @@ import {
 } from '@radix-ui/react-icons';
 import { classNames } from '@junipero/react';
 
-import { useEditor, usePlayback, useSprite } from '../../services/hooks';
+import { useLocalData, usePlayback, useSprite } from '../../services/hooks';
 
 const Playback = () => {
-  const { leftSidebarWidth, bottomBarHeight } = useEditor();
+  const { getSize } = useLocalData();
+  const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
+  const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
   const { selectedSprite } = useSprite();
   const { playing, index, play, pause, stop, jumpToStart, jumpToEnd } = usePlayback();
 

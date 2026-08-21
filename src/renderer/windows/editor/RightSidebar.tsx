@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
 
-import { useEditor } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 export interface RightSidebarProps extends ResizableProps {}
 
@@ -15,22 +15,23 @@ const RightSidebar = ({
   const {
     bottomBarOpened,
     hasBottomBar,
-    bottomBarHeight,
     rightSidebarOpened,
-    setRightSidebarWidth,
   } = useEditor();
+  const { getSize, setSize } = useLocalData();
+  const rightSidebarWidth = useMemo(() => getSize('rightSidebarWidth', 300), [getSize]);
+  const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
   const onResize = useCallback((
     _: any, // don't care, MouseEvent
     __: any, // re-resizable not-exported Direction type
     ref: HTMLElement
   ) => {
-    setRightSidebarWidth(ref.offsetWidth);
-  }, [setRightSidebarWidth]);
+    setSize('rightSidebarWidth', ref.offsetWidth);
+  }, [setSize]);
 
   return (
     <Resizable
-      defaultSize={{ width: 300 }}
+      defaultSize={{ width: rightSidebarWidth ?? 300 }}
       onResize={onResize}
       onResizeStart={onResize}
       onResizeStop={onResize}

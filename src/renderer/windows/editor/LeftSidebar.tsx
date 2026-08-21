@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { classNames, useEventListener } from '@junipero/react';
@@ -28,6 +29,7 @@ import {
   useBridgeListener,
   useCanvas,
   useEditor,
+  useLocalData,
 } from '../../services/hooks';
 import views from '../../views';
 
@@ -57,14 +59,18 @@ const LeftSidebar = ({
   const {
     view,
     leftSidebarOpened,
-    leftSidebarWidth,
+    // leftSidebarWidth,
     tileX,
     tileY,
     setView,
     toggleLeftSidebar,
-    setLeftSidebarWidth,
+    // setLeftSidebarWidth,
   } = useEditor();
+  const { getSize, setSize } = useLocalData();
   const { selectedScene } = useCanvas();
+  const leftSidebarWidth = useMemo(() => (
+    getSize('leftSidebarWidth', 300)
+  ), [getSize]);
 
   const checkFullscreen = useCallback(async () => {
     setIsFullScreen(await window.electron.isFullscreen());
@@ -144,8 +150,8 @@ const LeftSidebar = ({
     __: any, // re-resizable not-exported Direction type
     ref: HTMLElement
   ) => {
-    setLeftSidebarWidth(ref.offsetWidth);
-  }, [setLeftSidebarWidth]);
+    setSize('leftSidebarWidth', ref.offsetWidth);
+  }, [setSize]);
 
   const onBuildConfigChange = useCallback((value: string) => {
     setEditorConfig({
@@ -235,7 +241,7 @@ const LeftSidebar = ({
         </div>
       </div>
       <Resizable
-        defaultSize={{ width: 300 }}
+        defaultSize={{ width: leftSidebarWidth ?? 300 }}
         onResize={onResize}
         onResizeStart={onResize}
         onResizeStop={onResize}

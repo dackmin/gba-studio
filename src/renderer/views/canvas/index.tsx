@@ -1,4 +1,4 @@
-import { type MouseEvent, useCallback, useEffect, useRef } from 'react';
+import { type MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   type InfiniteCanvasRef,
   type InfiniteCanvasCursorMode,
@@ -11,7 +11,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
 import type { GameScene } from '../../../types';
-import { useApp, useCanvas, useEditor } from '../../services/hooks';
+import { useApp, useCanvas, useEditor, useLocalData } from '../../services/hooks';
 import {
   DEFAULT_ACTOR,
   DEFAULT_SCENE,
@@ -29,7 +29,8 @@ import Sprite from './Sprite';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
-  const { bottomBarOpened, bottomBarHeight } = useEditor();
+  const { bottomBarOpened } = useEditor();
+  const { getSize } = useLocalData();
   const { project } = useApp();
   const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
   const {
@@ -43,6 +44,7 @@ const Canvas = () => {
     resetSelection,
     selectScene,
   } = useCanvas();
+  const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
   useEffect(() => {
     infiniteCanvasRef.current?.fitIntoView(200);

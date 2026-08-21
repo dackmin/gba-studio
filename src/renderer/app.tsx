@@ -24,6 +24,7 @@ import {
 import EventEmitter from './services/emitter';
 import ProjectSelection from './windows/project-selection';
 import Editor from './windows/editor';
+import { load, LocalData } from './services/local-db';
 
 export interface AppState extends Omit<AppPayload, 'project'> {
   projectBase: string;
@@ -37,6 +38,7 @@ export interface AppState extends Omit<AppPayload, 'project'> {
   project?: GameProject;
   editorConfig?: AppStorage;
   clipboard?: any;
+  localData?: LocalData;
 }
 
 const App = () => {
@@ -60,6 +62,7 @@ const App = () => {
     historyIndex: 0,
     building: false,
     clipboard: undefined,
+    localData: undefined,
   });
 
   useBridgeListener('theme-updated', (newTheme: string) => {
@@ -106,6 +109,7 @@ const App = () => {
         editorConfig,
         ready: true,
         clipboard,
+        localData: load(data.project?.id || ''),
       });
     }
   }, [projectPath]);
@@ -284,6 +288,7 @@ const App = () => {
     projectBase: state.projectBase,
     editorConfig: state.editorConfig,
     clipboard: state.clipboard,
+    localData: state.localData,
     resourcesPath,
     save,
     setBuilding,
@@ -297,7 +302,7 @@ const App = () => {
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building, state.editorConfig,
-    state.clipboard,
+    state.clipboard, state.localData,
     save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
     setEditorConfig, setClipboard,
   ]);
@@ -305,7 +310,7 @@ const App = () => {
   return (
     <Theme hasBackground={false}>
       <AppContext value={getContext()}>
-        { projectPath ? (
+        { projectPath ? state.ready && (
           <Editor />
         ) : (
           <ProjectSelection />

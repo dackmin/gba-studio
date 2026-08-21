@@ -19,11 +19,8 @@ import MusicImportModal, { type MusicImportModalRef } from './MusicImportModal';
 export interface EditorState {
   view: string;
   leftSidebarOpened: boolean;
-  leftSidebarWidth: number;
   rightSidebarOpened: boolean;
-  rightSidebarWidth: number;
   bottomBarOpened: boolean;
-  bottomBarHeight: number;
   tileX?: number;
   tileY?: number;
 }
@@ -37,11 +34,8 @@ const Editor = () => {
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
     leftSidebarOpened: true,
-    leftSidebarWidth: 300,
     rightSidebarOpened: true,
-    rightSidebarWidth: 300,
     bottomBarOpened: true,
-    bottomBarHeight: 300,
     tileX: undefined,
     tileY: undefined,
   });
@@ -108,18 +102,6 @@ const Editor = () => {
     dispatch({ view });
   }, []);
 
-  const setLeftSidebarWidth = useCallback((width: number) => {
-    dispatch({ leftSidebarWidth: width });
-  }, []);
-
-  const setRightSidebarWidth = useCallback((width: number) => {
-    dispatch({ rightSidebarWidth: width });
-  }, []);
-
-  const setBottomBarHeight = useCallback((height: number) => {
-    dispatch({ bottomBarHeight: height });
-  }, []);
-
   const setTilePosition = useCallback((x?: number, y?: number) => {
     dispatch({ tileX: x, tileY: y });
   }, []);
@@ -139,29 +121,24 @@ const Editor = () => {
   const getContext = useCallback((): EditorContextType => ({
     view: state.view,
     leftSidebarOpened: state.leftSidebarOpened,
-    leftSidebarWidth: state.leftSidebarWidth,
     rightSidebarOpened: state.rightSidebarOpened,
-    rightSidebarWidth: state.rightSidebarWidth,
     hasRightSidebar: !!RightSidebarContent,
     bottomBarOpened: state.bottomBarOpened,
-    bottomBarHeight: state.bottomBarHeight,
     hasBottomBar: !!BottomBarContent,
     tileX: state.tileX,
     tileY: state.tileY,
     setView,
     toggleLeftSidebar,
-    setLeftSidebarWidth,
     toggleRightSidebar,
-    setRightSidebarWidth,
     toggleBottomBar,
-    setBottomBarHeight,
     setTilePosition,
   }), [
-    state.view, state.leftSidebarOpened, state.leftSidebarWidth,
-    state.rightSidebarWidth, state.bottomBarOpened, state.bottomBarHeight,
+    state.view, state.leftSidebarOpened,
+    state.bottomBarOpened,
     state.rightSidebarOpened, state.tileX, state.tileY,
-    setView, toggleLeftSidebar, setLeftSidebarWidth, setRightSidebarWidth,
-    toggleRightSidebar, setBottomBarHeight, toggleBottomBar, setTilePosition,
+    setView, toggleLeftSidebar,
+    toggleRightSidebar,
+    toggleBottomBar, setTilePosition,
     BottomBarContent, RightSidebarContent,
   ]);
 

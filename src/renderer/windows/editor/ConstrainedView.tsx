@@ -1,14 +1,18 @@
+import { useMemo } from 'react';
 import { ScrollArea, ScrollAreaProps } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { useEditor } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 const ConstrainedView = ({
   className,
   children,
   ...rest
 }: ScrollAreaProps) => {
-  const { leftSidebarOpened, leftSidebarWidth, bottomBarOpened, bottomBarHeight } = useEditor();
+  const { leftSidebarOpened, bottomBarOpened } = useEditor();
+  const { getSize } = useLocalData();
+  const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
+  const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
   return (
     <ScrollArea

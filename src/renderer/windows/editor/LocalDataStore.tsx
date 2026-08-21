@@ -5,18 +5,19 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { mockState, useEventListener, useTimeout } from '@junipero/react';
+import { get, mockState, set, useEventListener, useTimeout } from '@junipero/react';
 
 import { type LocalData, load, save } from '../../services/local-db';
 import { type LocalDataContextType, LocalDataContext } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
 
 const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
-  const { project } = useApp();
+  const { project, localData } = useApp();
   const [ready, setReady] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [state, dispatch] = useReducer(mockState<LocalData>, {
+  const [state, dispatch] = useReducer(mockState<LocalData>, localData ?? {
     collapsed: [],
+    sizes: {},
   });
 
   useEffect(() => {
@@ -54,13 +55,32 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
     }));
   }, [isCollapsed]);
 
+  const getSize = useCallback((key: string, def?: number) => (
+    get(state.sizes, key, def ?? 0)
+  ), [state.sizes]);
+
+  const setSize = useCallback((key: string, size: number) => {
+    setDirty(true);
+    dispatch(s => {
+      set(s.sizes, key, size);
+
+      return {
+        ...s,
+        sizes: { ...s.sizes },
+      };
+    });
+  }, []);
+
   const getContext = useCallback((): LocalDataContextType => ({
     collapsed: state.collapsed,
+    sizes: state.sizes,
     collapse,
     isCollapsed,
+    getSize,
+    setSize,
   }), [
-    state.collapsed,
-    collapse, isCollapsed,
+    state.collapsed, state.sizes,
+    collapse, isCollapsed, getSize, setSize,
   ]);
 
   return (

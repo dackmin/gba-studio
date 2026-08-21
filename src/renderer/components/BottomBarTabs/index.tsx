@@ -1,4 +1,4 @@
-import { type FC, Fragment, useCallback, useReducer, useRef } from 'react';
+import { type FC, Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
 import { ScrollArea, Tabs } from '@radix-ui/themes';
 import { mockState } from '@junipero/react';
 
@@ -6,7 +6,7 @@ import {
   type BottomBarTabsContextType,
   BottomBarTabsContext,
 } from '../../services/contexts';
-import { useEditor } from '../../services/hooks';
+import { useEditor, useLocalData } from '../../services/hooks';
 
 export interface BottomBarTab {
   id: string;
@@ -30,10 +30,9 @@ const BottomBarTabs = ({
   defaultTab,
 }: BottomBarTabsProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const {
-    leftSidebarOpened,
-    leftSidebarWidth,
-  } = useEditor();
+  const { leftSidebarOpened } = useEditor();
+  const { getSize } = useLocalData();
+  const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
   const [state, dispatch] = useReducer(mockState<BottomBarTabsState>, {
     tab: defaultTab ?? tabs?.[0]?.id ?? 'build',
     manualScroll: false,

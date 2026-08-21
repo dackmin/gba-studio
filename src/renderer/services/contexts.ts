@@ -38,6 +38,7 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   building: boolean;
   editorConfig?: AppStorage;
   clipboard?: any;
+  localData?: LocalData;
   save(): Promise<void>;
   setBuilding(building: boolean): void;
   setEditorConfig(config: AppStorage): void;
@@ -69,42 +70,42 @@ export const AppContext = createContext<AppContextType>({
 export interface EditorContextType {
   view: string;
   leftSidebarOpened: boolean;
-  leftSidebarWidth: number;
+  // leftSidebarWidth: number;
   rightSidebarOpened: boolean;
-  rightSidebarWidth: number;
+  // rightSidebarWidth: number;
   bottomBarOpened: boolean;
-  bottomBarHeight: number;
+  // bottomBarHeight: number;
   hasBottomBar: boolean;
   hasRightSidebar: boolean;
   tileX?: number;
   tileY?: number;
   setView(view: string): void;
   toggleLeftSidebar(): void;
-  setLeftSidebarWidth(width: number): void;
+  // setLeftSidebarWidth(width: number): void;
   toggleRightSidebar(): void;
-  setRightSidebarWidth(width: number): void;
+  // setRightSidebarWidth(width: number): void;
   toggleBottomBar(): void;
-  setBottomBarHeight(height: number): void;
+  // setBottomBarHeight(height: number): void;
   setTilePosition(x?: number, y?: number): void;
 }
 
 export const EditorContext = createContext<EditorContextType>({
   view: '',
   leftSidebarOpened: true,
-  leftSidebarWidth: 300,
+  // leftSidebarWidth: 300,
   rightSidebarOpened: true,
-  rightSidebarWidth: 300,
+  // rightSidebarWidth: 300,
   hasRightSidebar: false,
   bottomBarOpened: true,
-  bottomBarHeight: 300,
+  // bottomBarHeight: 300,
   hasBottomBar: false,
   setView: () => {},
   toggleLeftSidebar: () => {},
-  setLeftSidebarWidth: _ => {},
-  setRightSidebarWidth: _ => {},
+  // setLeftSidebarWidth: _ => {},
   toggleRightSidebar: () => {},
-  setBottomBarHeight: _ => {},
+  // setRightSidebarWidth: _ => {},
   toggleBottomBar: () => {},
+  // setBottomBarHeight: _ => {},
   setTilePosition: () => {},
 });
 
@@ -241,12 +242,17 @@ export const EmulatorContext = createContext<EmulatorContextType>({
 export interface LocalDataContextType extends LocalData {
   collapse(key: string): void;
   isCollapsed(key: string): boolean;
+  getSize(key: string, def?: number): number;
+  setSize(key: string, size: number): void;
 }
 
 export const LocalDataContext = createContext<LocalDataContextType>({
   collapsed: [],
+  sizes: {},
   collapse: () => {},
   isCollapsed: () => false,
+  getSize: () => 0,
+  setSize: () => {},
 });
 
 export interface ModalContextType {
