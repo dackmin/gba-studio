@@ -15,6 +15,7 @@ import type {
 
 const queryParams = new URLSearchParams(globalThis.location.search);
 const isDev = queryParams.get('isDev') === 'true';
+const isFullscreen = queryParams.get('isFullscreen') === 'true';
 
 contextBridge.exposeInMainWorld('electron', {
   // EventTarget
@@ -61,8 +62,6 @@ contextBridge.exposeInMainWorld('electron', {
     path: string;
   }): Promise<void> =>
     ipcRenderer.invoke('create-project', opts),
-  isFullscreen: (): Promise<boolean> =>
-    ipcRenderer.invoke('is-fullscreen'),
   startBuildProject: (
     projectPath: string,
     data?: Partial<AppPayload>,
@@ -125,4 +124,5 @@ contextBridge.exposeInMainWorld('electron', {
   isDarwin: process.platform === 'darwin',
   isWindows: process.platform === 'win32',
   isDev,
+  isFullscreen,
 } as Omit<AppBridge, 'dispatchEvent'>);

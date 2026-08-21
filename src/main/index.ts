@@ -18,7 +18,6 @@ import {
   loadProject,
   saveProject,
   createProject,
-  isFullscreen,
   startBuildProject,
   abortBuildProject,
   getRomPath,
@@ -91,7 +90,6 @@ ipcMain.handle('browse-project', browseProject);
 ipcMain.handle('load-project', loadProject.bind(null, storage));
 ipcMain.handle('save-project', saveProject);
 ipcMain.handle('create-project', createProject.bind(null, storage));
-ipcMain.handle('is-fullscreen', isFullscreen);
 ipcMain.handle('start-build-project', startBuildProject.bind(null, storage));
 ipcMain.handle('abort-build-project', abortBuildProject);
 ipcMain.handle('get-rom-path', getRomPath);

@@ -42,7 +42,6 @@ interface AppBridge extends EventTarget {
     name: string;
     path: string;
   }): Promise<void>;
-  isFullscreen(): Promise<boolean>;
   startBuildProject(
     projectPath: string,
     data?: Partial<AppPayload>,
@@ -86,6 +85,8 @@ interface AppBridge extends EventTarget {
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;
+  isDev: boolean;
+  isFullscreen: boolean;
 }
 
 interface Window {

@@ -6,7 +6,6 @@ export { default as browseProject } from './browse-project';
 export { default as loadProject } from './load-project';
 export { default as saveProject } from './save-project';
 export { default as createProject } from './create-project';
-export { default as isFullscreen } from './is-fullscreen';
 export { default as getRomPath } from './get-rom-path';
 export { default as clearRecentProjects } from './clear-recent-projects';
 export { default as getEditorConfig } from './get-editor-config';

@@ -1,10 +1,8 @@
 import {
   useCallback,
-  useEffect,
   useMemo,
-  useState,
 } from 'react';
-import { classNames, useEventListener } from '@junipero/react';
+import { classNames } from '@junipero/react';
 import {
   ListBulletIcon,
   PlayIcon,
@@ -40,7 +38,6 @@ const LeftSidebar = ({
   children,
   ...rest
 }: LeftSidebarProps) => {
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const {
     projectPath,
     building,
@@ -53,6 +50,7 @@ const LeftSidebar = ({
     sounds,
     music,
     editorConfig,
+    isFullscreen,
     setBuilding,
     setEditorConfig,
   } = useApp();
@@ -69,18 +67,6 @@ const LeftSidebar = ({
   const leftSidebarWidth = useMemo(() => (
     getSize('leftSidebarWidth', 300)
   ), [getSize]);
-
-  const checkFullscreen = useCallback(async () => {
-    setIsFullScreen(await window.electron.isFullscreen());
-  }, []);
-
-  useEventListener('resize', () => {
-    checkFullscreen();
-  }, [checkFullscreen]);
-
-  useEffect(() => {
-    checkFullscreen();
-  }, [checkFullscreen]);
 
   const onToggleBuild = useCallback(async (clean?: boolean) => {
     if (building) {
@@ -189,8 +175,8 @@ const LeftSidebar = ({
           'pointer-events-auto',
           {
             'transition-[padding-left,width] duration-100': !resizingSidebar,
-            'pl-[100px]': !isFullScreen && window.electron.isDarwin,
-            'pl-6': isFullScreen || !window.electron.isDarwin,
+            'pl-[100px]': !isFullscreen && window.electron.isDarwin,
+            'pl-6': isFullscreen || !window.electron.isDarwin,
           },
         )}
         style={{ width: !isCollapsed('leftSidebar') ? leftSidebarWidth : 0 }}

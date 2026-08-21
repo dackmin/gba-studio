@@ -39,11 +39,12 @@ export interface AppState extends Omit<AppPayload, 'project'> {
   editorConfig?: AppStorage;
   clipboard?: any;
   localData?: LocalData;
+  isFullscreen: boolean;
 }
 
 const App = () => {
   const eventsRef = useRef<EventEmitter>(new EventEmitter());
-  const { projectPath, resourcesPath, projectBase, theme } = useQuery();
+  const { projectPath, resourcesPath, projectBase, theme, isFullscreen } = useQuery();
   const [state, dispatch] = useReducer(mockState<AppState>, {
     theme,
     projectBase,
@@ -63,7 +64,12 @@ const App = () => {
     building: false,
     clipboard: undefined,
     localData: undefined,
+    isFullscreen: isFullscreen === 'true',
   });
+
+  useBridgeListener('fullscreen-updated', (isFullscreen: boolean) => {
+    dispatch({ isFullscreen });
+  }, []);
 
   useBridgeListener('theme-updated', (newTheme: string) => {
     document.querySelector('html')?.classList.remove('light', 'dark');
@@ -289,6 +295,7 @@ const App = () => {
     editorConfig: state.editorConfig,
     clipboard: state.clipboard,
     localData: state.localData,
+    isFullscreen: state.isFullscreen,
     resourcesPath,
     save,
     setBuilding,
@@ -302,7 +309,7 @@ const App = () => {
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.building, state.editorConfig,
-    state.clipboard, state.localData,
+    state.clipboard, state.localData, state.isFullscreen,
     save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
     setEditorConfig, setClipboard,
   ]);

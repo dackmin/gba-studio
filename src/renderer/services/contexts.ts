@@ -39,6 +39,7 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   editorConfig?: AppStorage;
   clipboard?: any;
   localData?: LocalData;
+  isFullscreen: boolean;
   save(): Promise<void>;
   setBuilding(building: boolean): void;
   setEditorConfig(config: AppStorage): void;
@@ -61,6 +62,7 @@ export const AppContext = createContext<AppContextType>({
   resourcesPath: '',
   dirty: false,
   building: false,
+  isFullscreen: window.electron.isFullscreen,
   save: async () => {},
   setBuilding: () => {},
   setEditorConfig: () => {},

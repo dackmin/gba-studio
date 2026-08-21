@@ -215,6 +215,7 @@ export const createProjectWindow = async (projectPath: string) => {
     url.searchParams.set('projectPath', projectPath);
     url.searchParams.set('projectBase', path.dirname(projectPath));
     url.searchParams.set('resourcesPath', getResourcesDir());
+    url.searchParams.set('isFullscreen', '' + win.isFullScreen());
     url.searchParams.set('isDev', '' + !app.isPackaged);
     url.searchParams.set('theme',
       nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
@@ -230,12 +231,21 @@ export const createProjectWindow = async (projectPath: string) => {
       { query: {
         projectPath,
         projectBase: path.dirname(projectPath),
+        isFullscreen: '' + win.isFullScreen(),
         isDev: '' + !app.isPackaged,
         theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
         resourcesPath: getResourcesDir(),
       } },
     );
   }
+
+  win.on('enter-full-screen', () => {
+    win.webContents.send('fullscreen-updated', true);
+  });
+
+  win.on('leave-full-screen', () => {
+    win.webContents.send('fullscreen-updated', false);
+  });
 
   win.show();
 
