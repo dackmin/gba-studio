@@ -5,19 +5,14 @@ import {
   classNames,
 } from '@junipero/react';
 
-import type { GameProject, SpriteAnimation } from '../../../types';
+import type { SpriteAnimation } from '../../../types';
 import { useSprite } from '../../services/hooks';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Sprite from '../../components/Sprite';
 import Background from '../../components/Background';
 import Playback from './Playback';
 
-export interface SettingsState {
-  project: GameProject;
-  selectedConfiguration?: string;
-}
-
-const Sprites = () => {
+const Images = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
   const {
     selectedSprite,
@@ -78,7 +73,7 @@ const Sprites = () => {
   );
 };
 
-export default Sprites;
+export default Images;
 
 export { default as LeftSidebar } from './LeftSidebar';
 export { default as RightSidebar } from './RightSidebar';

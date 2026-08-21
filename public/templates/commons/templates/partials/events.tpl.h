@@ -193,7 +193,7 @@ neo::types::enable_actor_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "play-music")}}
 bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
-bn::string_view {{../prefix}}_{{@index}}_music_name = "{{this.name}}";
+bn::string_view {{../prefix}}_{{@index}}_music_name = "{{getMusicName @root/music this.name}}";
 neo::types::play_music_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_music_name,
@@ -207,7 +207,7 @@ neo::types::stop_music_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "play-sound")}}
 bn::string_view {{../prefix}}_{{@index}}_type = "play-sound";
-bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{this.name}}";
+bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{getSoundName @root/sounds this.name}}";
 neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_sound_name,

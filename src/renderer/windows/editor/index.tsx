@@ -120,8 +120,10 @@ const Editor = () => {
     leftSidebarWidth: state.leftSidebarWidth,
     rightSidebarOpened: state.rightSidebarOpened,
     rightSidebarWidth: state.rightSidebarWidth,
+    hasRightSidebar: !!RightSidebarContent,
     bottomBarOpened: state.bottomBarOpened,
     bottomBarHeight: state.bottomBarHeight,
+    hasBottomBar: !!BottomBarContent,
     tileX: state.tileX,
     tileY: state.tileY,
     setView,
@@ -138,6 +140,7 @@ const Editor = () => {
     state.rightSidebarOpened, state.tileX, state.tileY,
     setView, toggleLeftSidebar, setLeftSidebarWidth, setRightSidebarWidth,
     toggleRightSidebar, setBottomBarHeight, toggleBottomBar, setTilePosition,
+    BottomBarContent, RightSidebarContent,
   ]);
 
   return (
@@ -161,9 +164,7 @@ const Editor = () => {
               <LeftSidebar>
                 <LeftSidebarContent />
               </LeftSidebar>
-              <TitleBar
-                rightSidebarEnabled={!!RightSidebarContent}
-              />
+              <TitleBar />
               { RightSidebarContent && (
                 <RightSidebar>
                   <RightSidebarContent />

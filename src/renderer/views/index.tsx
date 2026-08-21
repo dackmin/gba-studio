@@ -1,5 +1,11 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { CardStackIcon, GearIcon, LayersIcon, ImageIcon } from '@radix-ui/react-icons';
+import {
+  CardStackIcon,
+  GearIcon,
+  LayersIcon,
+  ImageIcon,
+  SpeakerLoudIcon,
+} from '@radix-ui/react-icons';
 
 import type { ViewDefinition } from '../../types';
 import Canvas, {
@@ -22,6 +28,11 @@ import Sprites, {
   BottomBar as SpritesBottomBar,
   Provider as SpritesProvider,
 } from './images';
+import Audio, {
+  LeftSidebar as AudioLeftSidebar,
+  RightSidebar as AudioRightSidebar,
+  Provider as AudioProvider,
+} from './audio';
 
 export const defaultView: ViewDefinition = {
   view: () => null,
@@ -49,6 +60,14 @@ const views: ViewDefinition[] = [{
   leftSidebar: SpritesLeftSidebar,
   rightSidebar: SpritesRightSidebar,
   bottomBar: SpritesBottomBar,
+}, {
+  name: 'audio',
+  title: 'Audio',
+  icon: SpeakerLoudIcon,
+  view: Audio,
+  leftSidebar: AudioLeftSidebar,
+  rightSidebar: AudioRightSidebar,
+  provider: AudioProvider,
 }, {
   name: 'preview',
   title: 'Preview',

@@ -22,6 +22,8 @@ import type {
   SubToolType,
   ToolType,
   GameBackgroundFile,
+  GameSoundFile,
+  GameMusicFile,
 } from '../../types';
 import type EventEmitter from './emitter';
 import { LocalData } from './local-db';
@@ -72,6 +74,8 @@ export interface EditorContextType {
   rightSidebarWidth: number;
   bottomBarOpened: boolean;
   bottomBarHeight: number;
+  hasBottomBar: boolean;
+  hasRightSidebar: boolean;
   tileX?: number;
   tileY?: number;
   setView(view: string): void;
@@ -90,8 +94,10 @@ export const EditorContext = createContext<EditorContextType>({
   leftSidebarWidth: 300,
   rightSidebarOpened: true,
   rightSidebarWidth: 300,
+  hasRightSidebar: false,
   bottomBarOpened: true,
   bottomBarHeight: 300,
+  hasBottomBar: false,
   setView: () => {},
   toggleLeftSidebar: () => {},
   setLeftSidebarWidth: _ => {},
@@ -249,4 +255,18 @@ export interface ModalContextType {
 
 export const ModalContext = createContext<ModalContextType>({
   close: () => {},
+});
+
+export interface AudioContextType {
+  selectedSound?: GameSoundFile;
+  selectedMusic?: GameMusicFile;
+  selectSound?(soundFile?: GameSoundFile): void;
+  selectMusic?(musicFile?: GameMusicFile): void;
+}
+
+export const AudioContext = createContext<AudioContextType>({
+  selectedSound: undefined,
+  selectedMusic: undefined,
+  selectSound: () => {},
+  selectMusic: () => {},
 });

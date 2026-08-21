@@ -1,12 +1,9 @@
 import { useCallback } from 'react';
 import { set } from '@junipero/react';
-import { Select, Slider, Switch, Text } from '@radix-ui/themes';
+import { Slider, Switch, Text } from '@radix-ui/themes';
 
-import type {
-  PlayMusicEvent,
-} from '../../../types';
-import { getSoundName } from '../../../helpers';
-import { useApp } from '../../services/hooks';
+import type { PlayMusicEvent } from '../../../types';
+import MusicListField from '../MusicListField';
 
 export interface EventPlayMusicProps {
   event: PlayMusicEvent;
@@ -19,8 +16,6 @@ const EventPlayMusic = ({
   event,
   onValueChange,
 }: EventPlayMusicProps) => {
-  const { music } = useApp();
-
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
     onValueChange?.(event);
@@ -36,19 +31,10 @@ const EventPlayMusic = ({
       <div className="flex items-center gap-4">
         <div className="flex flex-col gap-2 flex-auto">
           <Text size="1" className="text-slate">Music</Text>
-          <Select.Root
+          <MusicListField
             value={event.name || ''}
             onValueChange={onValueChange_.bind(null, 'name')}
-          >
-            <Select.Trigger placeholder="Select" />
-            <Select.Content>
-              { music.map(track => (
-                <Select.Item key={track.id} value={getSoundName(track._file)}>
-                  { track.name || getSoundName(track._file) }
-                </Select.Item>
-              )) }
-            </Select.Content>
-          </Select.Root>
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Text size="1" className="text-slate">Loop</Text>

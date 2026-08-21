@@ -484,16 +484,23 @@ namespace neo
     {
       const neo::types::play_music_event* music_evt =
         static_cast<const neo::types::play_music_event*>(e);
+      bool found = false;
 
       for (const auto& [item, name] : bn::music_items_info::span)
       {
         if (name == music_evt->music_name && !bn::music::playing())
         {
           BN_LOG("Playing music: ", name);
+          found = true;
           item.play(music_evt->volume / 100, music_evt->loop);
 
           break;
         }
+      }
+
+      if (!found)
+      {
+        BN_LOG("Music not found: ", music_evt->music_name);
       }
     }
 

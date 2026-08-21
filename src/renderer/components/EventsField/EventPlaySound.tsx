@@ -1,12 +1,10 @@
 import { type ChangeEvent, useCallback } from 'react';
 import { set } from '@junipero/react';
-import { Select, Slider, Text, TextField } from '@radix-ui/themes';
+import { Slider, Text, TextField } from '@radix-ui/themes';
 
-import type {
-  PlaySoundEvent,
-} from '../../../types';
-import { getSoundName } from '../../../helpers';
-import { useApp, useDelayedCallback } from '../../services/hooks';
+import type { PlaySoundEvent } from '../../../types';
+import { useDelayedCallback } from '../../services/hooks';
+import SoundsListField from '../SoundsListField';
 
 export interface EventPlaySoundProps {
   event: PlaySoundEvent;
@@ -19,7 +17,6 @@ const EventPlaySound = ({
   event,
   onValueChange,
 }: EventPlaySoundProps) => {
-  const { sounds } = useApp();
   const onDelayedValueChange = useDelayedCallback(onValueChange, 300);
 
   const onValueChange_ = useCallback((name: string, value: any) => {
@@ -44,19 +41,10 @@ const EventPlaySound = ({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Sound</Text>
-        <Select.Root
+        <SoundsListField
           value={event.name || ''}
           onValueChange={onValueChange_.bind(null, 'name')}
-        >
-          <Select.Trigger placeholder="Select" />
-          <Select.Content>
-            { sounds.map(track => (
-              <Select.Item key={track.id} value={getSoundName(track._file)}>
-                { track.name || getSoundName(track._file) }
-              </Select.Item>
-            )) }
-          </Select.Content>
-        </Select.Root>
+        />
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Volume</Text>

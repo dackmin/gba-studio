@@ -14,6 +14,7 @@ const RightSidebar = ({
 }: RightSidebarProps) => {
   const {
     bottomBarOpened,
+    hasBottomBar,
     bottomBarHeight,
     rightSidebarOpened,
     setRightSidebarWidth,
@@ -42,7 +43,7 @@ const RightSidebar = ({
         className,
       )}
       style={{
-        ...bottomBarOpened && {
+        ...bottomBarOpened && hasBottomBar && {
           paddingBottom: bottomBarHeight,
         },
       }}

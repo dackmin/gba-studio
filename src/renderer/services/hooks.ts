@@ -11,6 +11,7 @@ import { useTimeout } from '@junipero/react';
 
 import {
   AppContext,
+  AudioContext,
   BottomBarTabsContext,
   CanvasContext,
   EditorContext,
@@ -68,6 +69,7 @@ export const usePlayback = () => use(PlaybackContext);
 export const useEmulator = () => use(EmulatorContext);
 export const useLocalData = () => use(LocalDataContext);
 export const useModal = () => use(ModalContext);
+export const useAudio = () => use(AudioContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,

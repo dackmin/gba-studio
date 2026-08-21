@@ -7,7 +7,7 @@ import fse from 'fs-extra';
 import type { Build, GameBackgroundFile, GameMenuChoice, GameVariables } from '../../../types';
 import { getBuildDir, sendLog, sendSuccessLog, toSlug } from './utils';
 import { getResourcesDir } from '../../utils';
-import { findBackground, findSprite } from '../../../helpers';
+import { findBackground, findSound, findSprite } from '../../../helpers';
 
 export const setupHandlebars = async () => {
   // Add helpers
@@ -84,6 +84,14 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('getSpriteName', (sprites: any[], id: string) => {
     return findSprite(sprites, id)
       ?._file?.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
+  });
+  Handlebars.registerHelper('getSoundName', (sounds: any[], id: string) => {
+    return findSound(sounds, id)
+      ?._file?.replace(/\.json$/, '').replace(/^sound_/, '') || id;
+  });
+  Handlebars.registerHelper('getMusicName', (musics: any[], id: string) => {
+    return findSound(musics, id)
+      ?._file?.replace(/\.json$/, '').replace(/^music_/, '') || id;
   });
 
   // Add partials

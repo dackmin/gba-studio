@@ -7,20 +7,19 @@ import { useApp, useBridgeListener, useEditor } from '../../services/hooks';
 import BottomBarIcon from '../../components/BottomBarIcon';
 import RightSidebarIcon from '../../components/RightSidebarIcon';
 
-export interface TitleBarProps extends ComponentPropsWithoutRef<'div'> {
-  rightSidebarEnabled: boolean;
-}
+export interface TitleBarProps extends ComponentPropsWithoutRef<'div'> {}
 
 const TitleBar = ({
   className,
-  rightSidebarEnabled,
   ...rest
 }: TitleBarProps) => {
   const { project, dirty, building } = useApp();
   const {
     leftSidebarOpened,
     bottomBarOpened,
+    hasBottomBar,
     rightSidebarOpened,
+    hasRightSidebar,
     toggleRightSidebar,
     toggleBottomBar,
   } = useEditor();
@@ -74,35 +73,37 @@ const TitleBar = ({
           <div
             className="flex-none w-[300px] flex items-center gap-2 justify-end"
           >
-            <IconButton
-              className="!m-0 !w-6 !h-6 !p-0"
-              size="2"
-              variant={bottomBarOpened ? 'solid' : 'ghost'}
-              onClick={toggleBottomBar}
-            >
-              <Tooltip
-                side="bottom"
-                content={(
-                  <span className="flex items-center gap-2">
-                    <Text>Toggle Bottom Bar</Text>
-                    <Kbd>
-                      { window.electron.platform === 'darwin' ? '⌘' : 'Ctrl' }
-                      →
-                    </Kbd>
-                  </span>
-                )}
+            { hasBottomBar && (
+              <IconButton
+                className="!m-0 !w-6 !h-6 !p-0"
+                size="2"
+                variant={bottomBarOpened ? 'solid' : 'ghost'}
+                onClick={toggleBottomBar}
               >
-                <BottomBarIcon
-                  width={12}
-                  height={12}
-                  className={classNames(
-                    '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
-                    { '[&_path]:!fill-seashell': bottomBarOpened },
+                <Tooltip
+                  side="bottom"
+                  content={(
+                    <span className="flex items-center gap-2">
+                      <Text>Toggle Bottom Bar</Text>
+                      <Kbd>
+                        { window.electron.platform === 'darwin' ? '⌘' : 'Ctrl' }
+                        →
+                      </Kbd>
+                    </span>
                   )}
-                />
-              </Tooltip>
-            </IconButton>
-            { rightSidebarEnabled && (
+                >
+                  <BottomBarIcon
+                    width={12}
+                    height={12}
+                    className={classNames(
+                      '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
+                      { '[&_path]:!fill-seashell': bottomBarOpened },
+                    )}
+                  />
+                </Tooltip>
+              </IconButton>
+            ) }
+            { hasRightSidebar && (
               <IconButton
                 className="!m-0 !w-6 !h-6 !p-0"
                 size="2"
