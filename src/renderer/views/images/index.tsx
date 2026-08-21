@@ -52,6 +52,7 @@ const Images = () => {
           'flex-auto overflow-hidden !bg-transparent relative z-10',
         )}
         onClick={onCanvasClick}
+        cursorMode="pan"
       >
         { selectedSprite ? (
           <Sprite
