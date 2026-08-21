@@ -2,8 +2,9 @@ import { useCallback, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 import { type ResizableProps, Resizable } from 're-resizable';
 import { Card } from '@radix-ui/themes';
+import { useHotkeys } from 'react-hotkeys-hook';
 
-import { useEditor, useLocalData } from '../../services/hooks';
+import { useLocalData } from '../../services/hooks';
 
 export interface BottomBarProps extends ResizableProps {}
 
@@ -12,9 +13,12 @@ const BottomBar = ({
   children,
   ...rest
 }: BottomBarProps) => {
-  const { bottomBarOpened } = useEditor();
-  const { getSize, setSize } = useLocalData();
+  const { getSize, setSize, collapse, isCollapsed } = useLocalData();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
+
+  useHotkeys('mod+down', () => {
+    collapse('bottomBar');
+  }, [collapse]);
 
   const onResize = useCallback((
     _: any, // don't care, MouseEvent
@@ -37,7 +41,7 @@ const BottomBar = ({
       className={classNames(
         'flex-none pointer-events-auto !w-screen relative',
         'transition-[margin-left] duration-100 !fixed bottom-0 left-0',
-        { '!hidden': !bottomBarOpened },
+        { '!hidden': isCollapsed('bottomBar') },
         className,
       )}
     >

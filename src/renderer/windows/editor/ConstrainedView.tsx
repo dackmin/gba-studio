@@ -2,15 +2,14 @@ import { useMemo } from 'react';
 import { ScrollArea, ScrollAreaProps } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { useEditor, useLocalData } from '../../services/hooks';
+import { useLocalData } from '../../services/hooks';
 
 const ConstrainedView = ({
   className,
   children,
   ...rest
 }: ScrollAreaProps) => {
-  const { leftSidebarOpened, bottomBarOpened } = useEditor();
-  const { getSize } = useLocalData();
+  const { getSize, isCollapsed } = useLocalData();
   const leftSidebarWidth = useMemo(() => getSize('leftSidebarWidth', 300), [getSize]);
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
@@ -22,8 +21,8 @@ const ConstrainedView = ({
         className,
       )}
       style={{
-        ...(leftSidebarOpened ? { paddingLeft: leftSidebarWidth } : {}),
-        height: `calc(100vh - ${bottomBarOpened ? bottomBarHeight : 0}px)`,
+        ...( !isCollapsed('leftSidebar') ? { paddingLeft: leftSidebarWidth } : {}),
+        height: `calc(100vh - ${!isCollapsed('bottomBar') ? bottomBarHeight : 0}px)`,
       }}
     >
       <div className="px-2 min-h-full flex flex-col">

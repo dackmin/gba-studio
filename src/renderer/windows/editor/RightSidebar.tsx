@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 import { Card } from '@radix-ui/themes';
 import { type ResizableProps, Resizable } from 're-resizable';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import { useEditor, useLocalData } from '../../services/hooks';
 
@@ -12,14 +13,14 @@ const RightSidebar = ({
   children,
   ...rest
 }: RightSidebarProps) => {
-  const {
-    bottomBarOpened,
-    hasBottomBar,
-    rightSidebarOpened,
-  } = useEditor();
-  const { getSize, setSize } = useLocalData();
+  const { hasBottomBar } = useEditor();
+  const { getSize, setSize, isCollapsed, collapse } = useLocalData();
   const rightSidebarWidth = useMemo(() => getSize('rightSidebarWidth', 300), [getSize]);
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
+
+  useHotkeys('mod+right', () => {
+    collapse('rightSidebar');
+  }, [collapse]);
 
   const onResize = useCallback((
     _: any, // don't care, MouseEvent
@@ -40,11 +41,11 @@ const RightSidebar = ({
       { ...rest }
       className={classNames(
         'flex-none pointer-events-auto',
-        { '!hidden': !rightSidebarOpened },
+        { '!hidden': isCollapsed('rightSidebar') },
         className,
       )}
       style={{
-        ...bottomBarOpened && hasBottomBar && {
+        ...!isCollapsed('bottomBar') && hasBottomBar && {
           paddingBottom: bottomBarHeight,
         },
       }}

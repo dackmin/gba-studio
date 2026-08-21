@@ -3,7 +3,7 @@ import { Card, IconButton, Kbd, Spinner, Text, Tooltip } from '@radix-ui/themes'
 import { classNames } from '@junipero/react';
 
 import type { LogMessage } from '../../../types';
-import { useApp, useBridgeListener, useEditor } from '../../services/hooks';
+import { useApp, useBridgeListener, useEditor, useLocalData } from '../../services/hooks';
 import BottomBarIcon from '../../components/BottomBarIcon';
 import RightSidebarIcon from '../../components/RightSidebarIcon';
 
@@ -14,15 +14,8 @@ const TitleBar = ({
   ...rest
 }: TitleBarProps) => {
   const { project, dirty, building } = useApp();
-  const {
-    leftSidebarOpened,
-    bottomBarOpened,
-    hasBottomBar,
-    rightSidebarOpened,
-    hasRightSidebar,
-    toggleRightSidebar,
-    toggleBottomBar,
-  } = useEditor();
+  const { hasBottomBar, hasRightSidebar } = useEditor();
+  const { collapse, isCollapsed } = useLocalData();
   const [step, setStep] = useState('Initializing build...');
 
   useBridgeListener('build-step', ({ message }: LogMessage) => {
@@ -53,7 +46,7 @@ const TitleBar = ({
               'flex-none w-[300px] truncate flex justify-start items-center',
               'gap-2',
               {
-                'pl-48': !leftSidebarOpened,
+                'pl-48': isCollapsed('leftSidebar'),
               }
             )}
           >
@@ -77,8 +70,8 @@ const TitleBar = ({
               <IconButton
                 className="!m-0 !w-6 !h-6 !p-0"
                 size="2"
-                variant={bottomBarOpened ? 'solid' : 'ghost'}
-                onClick={toggleBottomBar}
+                variant={!isCollapsed('bottomBar') ? 'solid' : 'ghost'}
+                onClick={collapse.bind(null, 'bottomBar')}
               >
                 <Tooltip
                   side="bottom"
@@ -97,7 +90,7 @@ const TitleBar = ({
                     height={12}
                     className={classNames(
                       '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
-                      { '[&_path]:!fill-seashell': bottomBarOpened },
+                      { '[&_path]:!fill-seashell': !isCollapsed('bottomBar') },
                     )}
                   />
                 </Tooltip>
@@ -107,15 +100,15 @@ const TitleBar = ({
               <IconButton
                 className="!m-0 !w-6 !h-6 !p-0"
                 size="2"
-                variant={rightSidebarOpened ? 'solid' : 'ghost'}
-                onClick={toggleRightSidebar}
+                variant={!isCollapsed('rightSidebar') ? 'solid' : 'ghost'}
+                onClick={collapse.bind(null, 'rightSidebar')}
               >
                 <RightSidebarIcon
                   width={12}
                   height={12}
                   className={classNames(
                     '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
-                    { '[&_path]:!fill-seashell': rightSidebarOpened },
+                    { '[&_path]:!fill-seashell': !isCollapsed('rightSidebar') },
                   )}
                 />
               </IconButton>

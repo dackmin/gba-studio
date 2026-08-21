@@ -1,6 +1,5 @@
 import { Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
 import { classNames, mockState } from '@junipero/react';
-import { useHotkeys } from 'react-hotkeys-hook';
 
 import { type EditorContextType, EditorContext } from '../../services/contexts';
 import { useApp, useBridgeListener } from '../../services/hooks';
@@ -18,9 +17,6 @@ import MusicImportModal, { type MusicImportModalRef } from './MusicImportModal';
 
 export interface EditorState {
   view: string;
-  leftSidebarOpened: boolean;
-  rightSidebarOpened: boolean;
-  bottomBarOpened: boolean;
   tileX?: number;
   tileY?: number;
 }
@@ -33,9 +29,6 @@ const Editor = () => {
   const musicModalRef = useRef<MusicImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: 'canvas',
-    leftSidebarOpened: true,
-    rightSidebarOpened: true,
-    bottomBarOpened: true,
     tileX: undefined,
     tileY: undefined,
   });
@@ -86,18 +79,6 @@ const Editor = () => {
     views.find(v => v.name === state.view) || defaultView
   ), [state.view]);
 
-  const toggleLeftSidebar = useCallback(() => {
-    dispatch(s => ({ ...s, leftSidebarOpened: !s.leftSidebarOpened }));
-  }, []);
-
-  const toggleRightSidebar = useCallback(() => {
-    dispatch(s => ({ ...s, rightSidebarOpened: !s.rightSidebarOpened }));
-  }, []);
-
-  const toggleBottomBar = useCallback(() => {
-    dispatch(s => ({ ...s, bottomBarOpened: !s.bottomBarOpened }));
-  }, []);
-
   const setView = useCallback((view: string) => {
     dispatch({ view });
   }, []);
@@ -106,40 +87,19 @@ const Editor = () => {
     dispatch({ tileX: x, tileY: y });
   }, []);
 
-  useHotkeys('mod+right', () => {
-    toggleRightSidebar();
-  }, [toggleRightSidebar]);
-
-  useHotkeys('mod+down', () => {
-    toggleBottomBar();
-  }, [toggleBottomBar]);
-
-  useHotkeys('mod+left', () => {
-    toggleLeftSidebar();
-  }, [toggleLeftSidebar]);
-
   const getContext = useCallback((): EditorContextType => ({
     view: state.view,
-    leftSidebarOpened: state.leftSidebarOpened,
-    rightSidebarOpened: state.rightSidebarOpened,
     hasRightSidebar: !!RightSidebarContent,
-    bottomBarOpened: state.bottomBarOpened,
     hasBottomBar: !!BottomBarContent,
+    hasLeftSidebar: !!LeftSidebarContent,
     tileX: state.tileX,
     tileY: state.tileY,
     setView,
-    toggleLeftSidebar,
-    toggleRightSidebar,
-    toggleBottomBar,
     setTilePosition,
   }), [
-    state.view, state.leftSidebarOpened,
-    state.bottomBarOpened,
-    state.rightSidebarOpened, state.tileX, state.tileY,
-    setView, toggleLeftSidebar,
-    toggleRightSidebar,
-    toggleBottomBar, setTilePosition,
-    BottomBarContent, RightSidebarContent,
+    state.view, state.tileX, state.tileY,
+    setView, setTilePosition,
+    BottomBarContent, RightSidebarContent, LeftSidebarContent,
   ]);
 
   return (

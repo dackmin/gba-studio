@@ -69,43 +69,21 @@ export const AppContext = createContext<AppContextType>({
 
 export interface EditorContextType {
   view: string;
-  leftSidebarOpened: boolean;
-  // leftSidebarWidth: number;
-  rightSidebarOpened: boolean;
-  // rightSidebarWidth: number;
-  bottomBarOpened: boolean;
-  // bottomBarHeight: number;
   hasBottomBar: boolean;
   hasRightSidebar: boolean;
+  hasLeftSidebar: boolean;
   tileX?: number;
   tileY?: number;
   setView(view: string): void;
-  toggleLeftSidebar(): void;
-  // setLeftSidebarWidth(width: number): void;
-  toggleRightSidebar(): void;
-  // setRightSidebarWidth(width: number): void;
-  toggleBottomBar(): void;
-  // setBottomBarHeight(height: number): void;
   setTilePosition(x?: number, y?: number): void;
 }
 
 export const EditorContext = createContext<EditorContextType>({
   view: '',
-  leftSidebarOpened: true,
-  // leftSidebarWidth: 300,
-  rightSidebarOpened: true,
-  // rightSidebarWidth: 300,
-  hasRightSidebar: false,
-  bottomBarOpened: true,
-  // bottomBarHeight: 300,
   hasBottomBar: false,
+  hasRightSidebar: false,
+  hasLeftSidebar: false,
   setView: () => {},
-  toggleLeftSidebar: () => {},
-  // setLeftSidebarWidth: _ => {},
-  toggleRightSidebar: () => {},
-  // setRightSidebarWidth: _ => {},
-  toggleBottomBar: () => {},
-  // setBottomBarHeight: _ => {},
   setTilePosition: () => {},
 });
 

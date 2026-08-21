@@ -58,15 +58,11 @@ const LeftSidebar = ({
   } = useApp();
   const {
     view,
-    leftSidebarOpened,
-    // leftSidebarWidth,
     tileX,
     tileY,
     setView,
-    toggleLeftSidebar,
-    // setLeftSidebarWidth,
   } = useEditor();
-  const { getSize, setSize } = useLocalData();
+  const { getSize, setSize, collapse, isCollapsed } = useLocalData();
   const { selectedScene } = useCanvas();
   const leftSidebarWidth = useMemo(() => (
     getSize('leftSidebarWidth', 300)
@@ -116,6 +112,10 @@ const LeftSidebar = ({
   useHotkeys('mod+enter', () => {
     onToggleBuild();
   }, [onToggleBuild]);
+
+  useHotkeys('mod+left', () => {
+    collapse('leftSidebar');
+  }, [collapse]);
 
   useBridgeListener('build-project', () => {
     onToggleBuild();
@@ -172,9 +172,9 @@ const LeftSidebar = ({
             'pl-6': isFullScreen || !window.electron.isDarwin,
           },
         )}
-        style={{ width: leftSidebarOpened ? leftSidebarWidth : 'auto' }}
+        style={{ width: !isCollapsed('leftSidebar') ? leftSidebarWidth : 'auto' }}
       >
-        <IconButton variant="ghost" radius="full" onClick={toggleLeftSidebar}>
+        <IconButton variant="ghost" radius="full" onClick={collapse.bind(null, 'leftSidebar')}>
           <ListBulletIcon
             width={20}
             height={20}
@@ -254,7 +254,7 @@ const LeftSidebar = ({
           className,
         )}
         style={{
-          marginLeft: -(leftSidebarOpened ? 0 : leftSidebarWidth),
+          marginLeft: -(!isCollapsed('leftSidebar') ? 0 : leftSidebarWidth),
         }}
       >
         <div className="p-2 pr-0 w-full h-full relative">
