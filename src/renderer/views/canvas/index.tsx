@@ -181,6 +181,11 @@ const Canvas = () => {
       const scene: GameScene = {
         ...DEFAULT_SCENE,
         id: uuid(),
+        player: {
+          type: 'player',
+          x: 0,
+          y: 0,
+        },
         _file: `scene_${appPayload.scenes.length + 1}.json`,
         name: `Scene ${appPayload.scenes.length + 1}`,
       };

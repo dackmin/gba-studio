@@ -1,6 +1,13 @@
 import { Text } from '@radix-ui/themes';
 
-import type { GameActor, GameScript, GameSensor, GameSprite, GameVariable } from '../../../types';
+import type {
+  GameActor,
+  GamePlayer,
+  GameScript,
+  GameSensor,
+  GameSprite,
+  GameVariable,
+} from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import Switch from '../../components/Switch';
 import SceneForm from './SceneForm';
@@ -9,6 +16,7 @@ import SensorForm from './SensorForm';
 import ActorForm from './ActorForm';
 import SpriteForm from './SpriteForm';
 import VariableForm from './VariableForm';
+import PlayerForm from './PlayerForm';
 
 const RightSidebar = () => {
   const {
@@ -21,6 +29,12 @@ const RightSidebar = () => {
 
   return (
     <Switch value={selectedItem?.type || ''}>
+      <Switch.Case value="player">
+        <PlayerForm
+          player={selectedItem as GamePlayer}
+          onChange={onSceneChange}
+        />
+      </Switch.Case>
       <Switch.Case value="script">
         <ScriptForm
           script={selectedItem as GameScript}

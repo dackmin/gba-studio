@@ -541,7 +541,7 @@ const Scene = ({
             />
           )) }
 
-          { scene.sceneType === '2d-top-down' && scene.player && (
+          { scene.sceneType === '2d-top-down' && (
             <PlayerStart
               scene={scene}
               onMouseDown={e => e.stopPropagation()}

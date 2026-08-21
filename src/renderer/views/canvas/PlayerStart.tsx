@@ -28,7 +28,7 @@ const PlayerStart = ({
   const { tool, selectedItem } = useCanvas();
   const { sprites } = useApp();
 
-  const getSprite = useCallback((name: string) => (
+  const getSprite = useCallback((name?: string) => (
     findSprite(sprites, name)
   ), [sprites]);
 

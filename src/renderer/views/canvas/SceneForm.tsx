@@ -1,4 +1,4 @@
-import { type ChangeEvent, type KeyboardEvent, useCallback } from 'react';
+import { type ChangeEvent, type KeyboardEvent, useCallback, useMemo } from 'react';
 import {
   Heading,
   Inset,
@@ -7,18 +7,19 @@ import {
   Tabs,
   Text,
   TextField,
+  Tooltip,
 } from '@radix-ui/themes';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
 import { findBackground, getGraphicName, getImageSize, pixelToTile } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
+import { useApp } from '../../services/hooks';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import EventsField from '../../components/EventsField';
 import EventValueField from '../../components/EventValueField';
-import DirectionField from '../../components/DirectionField';
-import SpritesListField from '../../components/SpritesListField';
-import { useApp } from '../../services/hooks';
+import { getEventsOfType } from '../../services/events';
 
 export interface SceneFormProps {
   scene: GameScene;
@@ -102,6 +103,10 @@ const SceneForm = ({
     scene,
   }), [scene]);
 
+  const hasFadeInEvent = useMemo(() => (
+    getEventsOfType('fade-in', scene.events || []).length > 0
+  ), [scene.events]);
+
   return (
     <SceneFormContext value={getContext()}>
       <div className="p-3 w-full h-full overflow-x-hidden overflow-y-scroll">
@@ -155,60 +160,6 @@ const SceneForm = ({
             </div>
           ) }
         </div>
-        { scene.sceneType === '2d-top-down' && (
-          <>
-            <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Text className="block text-slate" size="1">Player sprite</Text>
-                <SpritesListField
-                  value={scene.player?.sprite}
-                  onValueChange={onValueChange.bind(null, 'player.sprite')}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="flex flex-col gap-2">
-                    <Text size="1" className="text-slate">Start X</Text>
-                    <EventValueField
-                      type="number"
-                      value={scene.player?.x}
-                      onValueChange={onValueChange.bind(null, 'player.x')}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Text size="1" className="text-slate">Start Y</Text>
-                    <EventValueField
-                      type="number"
-                      value={scene.player?.y}
-                      onValueChange={onValueChange.bind(null, 'player.y')}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Text size="1" className="text-slate">Direction</Text>
-                    <DirectionField
-                      value={scene.player?.direction ?? 'down'}
-                      onValueChange={onValueChange
-                        .bind(null, 'player.direction')}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Text className="block text-slate" size="1">
-                  Drawing priority
-                </Text>
-                <EventValueField
-                  type="number"
-                  min={-32767}
-                  max={32767}
-                  value={scene.player?.z ?? 2}
-                  onValueChange={onValueChange.bind(null, 'player.z')}
-                />
-              </div>
-            </div>
-          </>
-        ) }
         <Inset side="x"><Separator className="!w-full my-4" /></Inset>
         <div className="flex flex-col gap-4 pb-10">
           <div className="flex flex-col gap-2">
@@ -217,7 +168,21 @@ const SceneForm = ({
               <Tabs.Root defaultValue="init">
                 <Tabs.List size="1" className="px-1">
                   <Tabs.Trigger value="init">
-                    On Init
+                    <div className="inline-flex items-center gap-2">
+                      <Text>On Init</Text>
+                      { !hasFadeInEvent && (
+                        <Tooltip
+                          content={(
+                            <Text>
+                              Scenes should have at-least a fade-in event to avoid a black screen
+                              on start.
+                            </Text>
+                          )}
+                        >
+                          <ExclamationTriangleIcon width={12} color="orange" />
+                        </Tooltip>
+                      ) }
+                    </div>
                   </Tabs.Trigger>
                 </Tabs.List>
 
