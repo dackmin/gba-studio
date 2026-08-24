@@ -1,10 +1,11 @@
-import { type MouseEvent, useMemo } from 'react';
+import { type MouseEvent, useCallback, useMemo } from 'react';
 import {
   type MoveableProps,
   Moveable,
   classNames,
   useInfiniteCanvas,
 } from '@junipero/react';
+import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameSensor } from '../../../types';
 import { tileToPixel } from '../../../helpers';
@@ -14,7 +15,8 @@ export interface SensorProps extends MoveableProps {
   sensor: GameSensor;
   gridSize?: number;
   preview?: boolean;
-  onSelect?: (e: MouseEvent<HTMLDivElement>) => void;
+  onSelect?: (e: MouseEvent<HTMLElement>) => void;
+  onDelete?: () => void;
 }
 
 const Sensor = ({
@@ -23,10 +25,16 @@ const Sensor = ({
   preview = false,
   onMoveEnd,
   onSelect,
+  onDelete,
   ...rest
 }: SensorProps) => {
   const { zoom, mouseX, mouseY, offsetX, offsetY } = useInfiniteCanvas();
   const { tool, selectedItem } = useCanvas();
+
+  const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    onSelect?.(e);
+  }, [onSelect]);
 
   const previewPosition = useMemo(() => preview ? {
     x: Math.round((mouseX - offsetX) / zoom),
@@ -43,7 +51,7 @@ const Sensor = ({
       }
       x={preview ? previewPosition?.x : tileToPixel(sensor.x || 0, gridSize)}
       y={preview ? previewPosition?.y : tileToPixel(sensor.y || 0, gridSize)}
-      onMouseDown={e => e.stopPropagation()}
+      onMouseDown={onSelect_}
       onMoveEnd={onMoveEnd}
       step={preview ? undefined : gridSize}
       style={{
@@ -58,8 +66,22 @@ const Sensor = ({
           'absolute bg-orange-500/50 hover:border-1 border-(--accent-9)',
           { 'border-1': selectedItem === sensor}
         )}
-        onClick={onSelect}
-      />
+      >
+        <ContextMenu.Root>
+          <ContextMenu.Trigger>
+            <div className="w-full h-full" />
+          </ContextMenu.Trigger>
+          <ContextMenu.Content>
+            <ContextMenu.Label className="text-xs!">Sensor</ContextMenu.Label>
+            <ContextMenu.Item
+              onClick={onDelete}
+              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+            >
+              Delete
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Root>
+      </div>
     </Moveable>
   );
 };

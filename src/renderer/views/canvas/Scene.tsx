@@ -15,7 +15,7 @@ import {
   useInfiniteCanvas,
   useEventListener,
 } from '@junipero/react';
-import { Card } from '@radix-ui/themes';
+import { Card, ContextMenu } from '@radix-ui/themes';
 
 import type {
   GameActor,
@@ -48,6 +48,10 @@ export interface SceneProps
     item?: GameActor | GameSensor | GamePlayer | GameSprite
   ) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
+  onDelete?: (scene?: GameScene) => void;
+  onDeleteActor?: (actor: GameActor) => void;
+  onDeleteSensor?: (sensor: GameSensor) => void;
+  onDeleteSprite?: (sprite: GameSprite) => void;
 }
 
 export interface SceneState {
@@ -66,6 +70,10 @@ const Scene = ({
   onSelect,
   onSelectItem,
   onMove,
+  onDelete,
+  onDeleteActor,
+  onDeleteSensor,
+  onDeleteSprite,
   ...rest
 }: SceneProps) => {
   const moveableRef = useRef<HTMLDivElement>(null);
@@ -120,8 +128,7 @@ const Scene = ({
 
   const backgroundPath = useMemo(() => (
     !background?._file || !scene.background || scene.background === 'bg_default'
-      ? `resources://public/templates/` +
-        `commons/graphics/bg_default.bmp`
+      ? `resources://public/templates/commons/graphics/bg_default.bmp`
       : `project://${background.path}`
   ), [scene.background, background]);
 
@@ -244,14 +251,14 @@ const Scene = ({
 
   const onSelectSensor_ = useCallback((
     sensor: GameSensor,
-    e: MouseEvent<HTMLDivElement>
+    e: MouseEvent<HTMLElement>
   ) => {
     e.preventDefault();
     e.stopPropagation();
     onSelectItem?.(scene, sensor);
   }, [onSelectItem, scene]);
 
-  const onSelectPlayer = useCallback((e: MouseEvent<HTMLDivElement>) => {
+  const onSelectPlayer = useCallback((e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
     onSelectItem?.(scene, scene.player);
@@ -265,10 +272,10 @@ const Scene = ({
 
   const onSelectActor_ = useCallback((
     actor: GameActor,
-    e: MouseEvent<HTMLDivElement>
+    e?: MouseEvent<HTMLElement>
   ) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e?.preventDefault();
+    e?.stopPropagation();
     onSelectItem?.(scene, actor);
   }, [onSelectItem, scene]);
 
@@ -287,7 +294,7 @@ const Scene = ({
 
   const onSelectSprite_ = useCallback((
     sprite: GameSprite,
-    e: MouseEvent<HTMLDivElement>
+    e: MouseEvent<HTMLElement>
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -359,9 +366,9 @@ const Scene = ({
 
       // mousemove uses .buttons because it does not have a source button
       // and uses active buttons during the event
-      c[y][x] = e.buttons === 1 // Left button
+      c[y][x] = e.buttons === 1 // Left button -> add collision
         ? '1'
-        : e.buttons === 2 // Right button
+        : e.buttons === 2 // Right button -> remove collision
           ? '0'
           : c[y][x];
 
@@ -439,6 +446,22 @@ const Scene = ({
     scene,
   ]);
 
+  const onResetCollisions = useCallback(() => {
+    if (!scene.map) {
+      scene.map = {
+        type: 'map',
+        width: tileWidth,
+        height: tileHeight,
+        gridSize,
+      };
+    }
+
+    scene.map.collisions = [];
+
+    requestAnimationFrame(drawBackground);
+    onChange?.(scene);
+  }, [gridSize, tileWidth, tileHeight, drawBackground, onChange, scene]);
+
   useEventListener('mouseup', () => {
     if (!state.isMouseDown) {
       return;
@@ -471,86 +494,106 @@ const Scene = ({
         <span className="absolute block w-full left-0 bottom-full text-center">
           { scene.name }
         </span>
-        <Card
-          className={classNames(
-            '!relative bg-cover bg-center transition-[outline-width]',
-            'duration-200 overflow-hidden group',
-            { '!outline-4 !outline-(--accent-9)': selectedScene === scene },
-            className
-          )}
-          style={{
-            width: state.size[0],
-            height: state.size[1],
-          }}
-          onMouseOver={onMouseEnter}
-          onMouseMove={onMouseMove}
-          onMouseOut={onMouseOut}
-          onMouseDown={onMouseDown}
-        >
-          <canvas
-            ref={backgroundRef}
-            width={state.size[0]}
-            height={state.size[1]}
-            className={classNames(
-              'absolute left-0 top-0 pointer-events-none w-full h-full z-0',
-              'pixelated',
-            )}
-          />
-
-          { state.cameraEnabled && (
-            <div
+        <ContextMenu.Root>
+          <ContextMenu.Trigger>
+            <Card
               className={classNames(
-                'absolute z-100 w-[240px] h-[160px] border-2',
-                'border-yellow-500 pointer-events-none',
+                '!relative bg-cover bg-center transition-[outline-width]',
+                'duration-200 overflow-hidden group',
+                { '!outline-4 !outline-(--accent-9)': selectedScene === scene },
+                className
               )}
               style={{
-                left: tileToPixel(state.cameraPosition[0], gridSize),
-                top: tileToPixel(state.cameraPosition[1], gridSize),
-                boxShadow: '0 0 0 10000px rgba(0, 0, 0, 0.25)',
+                width: state.size[0],
+                height: state.size[1],
               }}
-            />
-          )}
+              onMouseOver={onMouseEnter}
+              onMouseMove={onMouseMove}
+              onMouseOut={onMouseOut}
+              onMouseDown={onMouseDown}
+            >
+              <canvas
+                ref={backgroundRef}
+                width={state.size[0]}
+                height={state.size[1]}
+                className={classNames(
+                  'absolute left-0 top-0 pointer-events-none w-full h-full z-0',
+                  'pixelated',
+                )}
+              />
 
-          { sensors.map(sensor => (
-            <Sensor
-              key={sensor.id}
-              sensor={sensor}
-              onMoveEnd={onMovedSensor.bind(null, sensor)}
-              onSelect={onSelectSensor_.bind(null, sensor)}
-              gridSize={gridSize}
-            />
-          )) }
+              { state.cameraEnabled && (
+                <div
+                  className={classNames(
+                    'absolute z-100 w-[240px] h-[160px] border-2',
+                    'border-yellow-500 pointer-events-none',
+                  )}
+                  style={{
+                    left: tileToPixel(state.cameraPosition[0], gridSize),
+                    top: tileToPixel(state.cameraPosition[1], gridSize),
+                    boxShadow: '0 0 0 10000px rgba(0, 0, 0, 0.25)',
+                  }}
+                />
+              )}
 
-          { actors.map(actor => (
-            <Actor
-              key={actor.id}
-              actor={actor}
-              onMoveEnd={onMovedActor.bind(null, actor)}
-              onSelect={onSelectActor_.bind(null, actor)}
-              gridSize={gridSize}
-            />
-          )) }
+              { sensors.map(sensor => (
+                <Sensor
+                  key={sensor.id}
+                  sensor={sensor}
+                  gridSize={gridSize}
+                  onMoveEnd={onMovedSensor.bind(null, sensor)}
+                  onSelect={onSelectSensor_.bind(null, sensor)}
+                  onDelete={onDeleteSensor?.bind(null, sensor)}
+                />
+              )) }
 
-          { sprites.map(sprite => (
-            <Sprite
-              key={sprite.id}
-              sprite={sprite}
-              gridSize={gridSize}
-              onMoveEnd={onMovedSprite.bind(null, sprite)}
-              onSelect={onSelectSprite_.bind(null, sprite)}
-            />
-          )) }
+              { actors.map(actor => (
+                <Actor
+                  key={actor.id}
+                  actor={actor}
+                  gridSize={gridSize}
+                  onMoveEnd={onMovedActor.bind(null, actor)}
+                  onSelect={onSelectActor_.bind(null, actor)}
+                  onDelete={onDeleteActor?.bind(null, actor)}
+                />
+              )) }
 
-          { scene.sceneType === '2d-top-down' && (
-            <PlayerStart
-              scene={scene}
-              onMouseDown={e => e.stopPropagation()}
-              onMoveEnd={onMovedPlayer}
-              onSelect={onSelectPlayer}
-              gridSize={gridSize}
-            />
-          ) }
-        </Card>
+              { sprites.map(sprite => (
+                <Sprite
+                  key={sprite.id}
+                  sprite={sprite}
+                  gridSize={gridSize}
+                  onMoveEnd={onMovedSprite.bind(null, sprite)}
+                  onSelect={onSelectSprite_.bind(null, sprite)}
+                  onDelete={onDeleteSprite?.bind(null, sprite)}
+                />
+              )) }
+
+              { scene.sceneType === '2d-top-down' && (
+                <PlayerStart
+                  scene={scene}
+                  onMouseDown={e => e.stopPropagation()}
+                  onMoveEnd={onMovedPlayer}
+                  onSelect={onSelectPlayer}
+                  gridSize={gridSize}
+                />
+              ) }
+            </Card>
+          </ContextMenu.Trigger>
+          <ContextMenu.Content>
+            <ContextMenu.Label className="text-xs!">Scene</ContextMenu.Label>
+            <ContextMenu.Item onClick={onResetCollisions}>
+              Reset collisions
+            </ContextMenu.Item>
+            <ContextMenu.Separator />
+            <ContextMenu.Item
+              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+              onClick={onDelete?.bind(null, scene)}
+            >
+              Delete
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Root>
       </div>
     </Moveable>
   );

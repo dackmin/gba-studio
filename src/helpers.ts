@@ -1,7 +1,13 @@
 import { exists } from '@junipero/core';
 import slugify from 'slugify';
 
-import type { GameBackgroundFile, GameMusicFile, GameSoundFile, GameSpriteFile } from './types';
+import type {
+  GameBackgroundFile,
+  GameMusicFile,
+  GameScene,
+  GameSoundFile,
+  GameSpriteFile,
+} from './types';
 
 export const tileToPixel = (tile: number, gridSize: number) =>
   tile * gridSize;
@@ -84,6 +90,13 @@ export const toFileSlug = (name: string) => slugify(name, {
   strict: true,
   replacement: '_',
 });
+
+export const findScene = (
+  scenes: GameScene[] = [],
+  id?: string,
+): GameScene | undefined => {
+  return scenes.find(s => s.id === id || s.name === id || s._file === id);
+};
 
 export const findSprite = (
   sprites: GameSpriteFile[] = [],

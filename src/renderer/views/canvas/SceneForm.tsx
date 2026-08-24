@@ -16,10 +16,10 @@ import type { GameScene } from '../../../types';
 import { findBackground, getGraphicName, getImageSize, pixelToTile } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
+import { getEventsOfType } from '../../services/events';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import EventsField from '../../components/EventsField';
 import EventValueField from '../../components/EventValueField';
-import { getEventsOfType } from '../../services/events';
 
 export interface SceneFormProps {
   scene: GameScene;

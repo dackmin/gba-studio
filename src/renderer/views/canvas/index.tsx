@@ -10,7 +10,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
-import type { GameScene } from '../../../types';
+import type { GameActor, GameScene, GameSensor, GameSprite } from '../../../types';
 import { useApp, useCanvas, useEditor, useLocalData } from '../../services/hooks';
 import {
   DEFAULT_ACTOR,
@@ -93,6 +93,60 @@ const Canvas = () => {
     }
   }, [tool, resetTool]);
 
+  const onDeleteScene = useCallback((scene?: GameScene) => {
+    if (!scene) {
+      return;
+    }
+
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.filter(s => (
+        s.id !== scene?.id &&
+        s._file !== scene?._file
+      )),
+    });
+    resetSelection?.();
+  }, [appPayload, onCanvasChange, resetSelection]);
+
+  const onDeleteActor = useCallback((scene: GameScene, actor: GameActor) => {
+    set(scene, 'actors', scene?.actors?.filter(a => a.id !== actor.id) || []);
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.map(s => (
+        s.id === scene?.id ||
+        s._file === scene?._file
+          ? scene! : s
+      )),
+    });
+    selectItem?.(scene);
+  }, [appPayload, onCanvasChange, selectItem]);
+
+  const onDeleteSensor = useCallback((scene: GameScene, sensor: GameSensor) => {
+    set(scene, 'map.sensors', scene?.map?.sensors?.filter(s => s.id !== sensor.id) || []);
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.map(s => (
+        s.id === scene?.id ||
+        s._file === scene?._file
+          ? scene! : s
+      )),
+    });
+    selectItem?.(scene);
+  }, [appPayload, onCanvasChange, selectItem]);
+
+  const onDeleteSprite = useCallback((scene: GameScene, sprite: GameSprite) => {
+    set(scene, 'sprites', scene?.sprites?.filter(s => s.id !== sprite.id) || []);
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.map(s => (
+        s.id === scene?.id ||
+        s._file === scene?._file
+          ? scene! : s
+      )),
+    });
+    selectItem?.(scene);
+  }, [appPayload, onCanvasChange, selectItem]);
+
   useHotkeys('delete, backspace', e => {
     e.preventDefault();
     e.stopPropagation();
@@ -101,70 +155,31 @@ const Canvas = () => {
       return;
     }
 
-    if (selectedItem?.type === 'sensor') {
-      set(selectedScene, 'map.sensors',
-        selectedScene?.map?.sensors
-          ?.filter(s => s !== selectedItem) || []);
-      onCanvasChange?.({
-        ...appPayload,
-        scenes: appPayload.scenes.map(s => (
-          s.id === selectedScene?.id ||
-          s._file === selectedScene?._file
-            ? selectedScene! : s
-        )),
-      });
-      selectItem?.(selectedScene);
+    if (selectedScene && selectedItem?.type === 'sensor') {
+      onDeleteSensor?.(selectedScene, selectedItem);
 
       return;
     }
 
-    if (selectedItem?.type === 'actor') {
-      set(selectedScene, 'actors',
-        selectedScene?.actors
-          ?.filter(a => a !== selectedItem) || []);
-      onCanvasChange?.({
-        ...appPayload,
-        scenes: appPayload.scenes.map(s => (
-          s.id === selectedScene?.id ||
-          s._file === selectedScene?._file
-            ? selectedScene! : s
-        )),
-      });
-      selectItem?.(selectedScene);
+    if (selectedScene && selectedItem?.type === 'actor') {
+      onDeleteActor?.(selectedScene, selectedItem);
 
       return;
     }
 
-    if (selectedItem?.type === 'sprite') {
-      set(selectedScene, 'sprites',
-        selectedScene?.sprites
-          ?.filter(s => s !== selectedItem) || []);
-      onCanvasChange?.({
-        ...appPayload,
-        scenes: appPayload.scenes.map(s => (
-          s.id === selectedScene?.id ||
-          s._file === selectedScene?._file
-            ? selectedScene! : s
-        )),
-      });
-      selectItem?.(selectedScene);
+    if (selectedScene && selectedItem?.type === 'sprite') {
+      onDeleteSprite?.(selectedScene, selectedItem);
 
       return;
     }
 
     if (selectedScene) {
-      onCanvasChange?.({
-        ...appPayload,
-        scenes: appPayload.scenes.filter(s => (
-          s.id !== selectedScene?.id &&
-          s._file !== selectedScene?._file
-        )),
-      });
-      resetSelection?.();
+      onDeleteScene?.(selectedScene);
     }
   }, [
     selectedScene, selectedItem, appPayload,
     onCanvasChange, selectItem, resetSelection,
+    onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite,
   ]);
 
   const onSceneChange = useCallback((scene?: GameScene) => {
@@ -371,6 +386,10 @@ const Canvas = () => {
             onSelectItem={selectItem}
             onMove={onMoveScene}
             onChange={onSceneChange}
+            onDelete={onDeleteScene.bind(null, scene)}
+            onDeleteActor={onDeleteActor.bind(null, scene)}
+            onDeleteSensor={onDeleteSensor.bind(null, scene)}
+            onDeleteSprite={onDeleteSprite?.bind(null, scene)}
           />
         )) }
 

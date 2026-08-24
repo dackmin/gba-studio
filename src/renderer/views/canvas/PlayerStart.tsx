@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { type MouseEvent, useCallback } from 'react';
 import {
   type MoveableProps,
   classNames,
@@ -14,7 +14,7 @@ import Sprite from '../../components/Sprite';
 export interface PlayerStartProps extends MoveableProps {
   scene: GameScene;
   gridSize?: number;
-  onSelect?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onSelect?: (e: MouseEvent<HTMLElement>) => void;
 }
 
 const PlayerStart = ({
@@ -27,6 +27,11 @@ const PlayerStart = ({
   const { zoom } = useInfiniteCanvas();
   const { tool, selectedItem } = useCanvas();
   const { sprites } = useApp();
+
+  const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    onSelect?.(e);
+  }, [onSelect]);
 
   const getSprite = useCallback((name?: string) => (
     findSprite(sprites, name)
@@ -43,7 +48,7 @@ const PlayerStart = ({
       x={tileToPixel(scene.player.x || 0, gridSize)}
       y={tileToPixel(scene.player.y || 0, gridSize)}
       disabled={tool !== 'default' || selectedItem !== scene.player}
-      onMouseDown={e => e.stopPropagation()}
+      onMouseDown={onSelect_}
       onMoveEnd={onMoveEnd}
       step={gridSize}
       style={{
@@ -59,10 +64,7 @@ const PlayerStart = ({
             ?.height ?? gridSize,
       }}
     >
-      <div
-        className="absolute w-full h-full"
-        onClick={onSelect}
-      >
+      <div className="absolute w-full h-full">
         <div className="relative w-full h-full">
           <div
             className={classNames(
