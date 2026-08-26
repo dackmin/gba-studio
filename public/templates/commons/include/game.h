@@ -44,6 +44,7 @@ namespace neo
       bool is_input_enabled;
 
       void set_scene(bn::string_view scene_name);
+      void set_background(const bn::regular_bg_ptr* background);
       void exec_event(const neo::types::event* e, bool is_loop);
       void run();
       void enable_blending();

@@ -376,6 +376,17 @@ namespace neo::types
       direction(direction_) {}
   };
 
+  struct set_background_event: event
+  {
+    bn::regular_bg_ptr background;
+    set_background_event(
+      bn::string_view type_,
+      bn::regular_bg_ptr background_
+    ):
+      event(type_),
+      background(background_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;

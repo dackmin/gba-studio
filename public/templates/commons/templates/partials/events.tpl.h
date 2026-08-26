@@ -262,6 +262,12 @@ neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_actor,
   {{../prefix}}_{{@index}}_direction
 );
+{{else if (eq this.type "set-background")}}
+bn::string_view {{../prefix}}_{{@index}}_type = "set-background";
+neo::types::set_background_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}.create_bg(0, 0)
+);
 {{else}}
 bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);

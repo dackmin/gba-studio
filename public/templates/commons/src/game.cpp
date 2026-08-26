@@ -55,6 +55,14 @@ namespace neo
     scene_changed = true;
   }
 
+  void game::set_background(const bn::regular_bg_ptr* background)
+  {
+    scene_bg = background;
+    scene_bg->set_camera(camera);
+    scene_bg->set_visible(false);
+    scene_bg->set_priority(3);
+  }
+
   void game::run () {
     auto scene = neo::scenes::get_scene(current_scene);
     active_scene = &scene;
@@ -96,10 +104,7 @@ namespace neo
     }
 
     bn::regular_bg_ptr bg = active_scene->background.create_bg(0, 0);
-    scene_bg = &bg;
-    scene_bg->set_camera(camera);
-    scene_bg->set_visible(false);
-    scene_bg->set_priority(3);
+    set_background(&bg);
     scene_changed = false;
 
     BN_LOG("Starting scene: ", active_scene->name);
@@ -224,7 +229,10 @@ namespace neo
       bn::core::update();
     }
 
-    bg.set_visible(false);
+    if (scene_bg != nullptr)
+    {
+      scene_bg->set_visible(false);
+    }
   }
 
   void game::exec_event (const neo::types::event* e, bool is_loop) {
@@ -663,6 +671,22 @@ namespace neo
           break;
         }
       }
+    }
+
+    /**
+     * @name set-background
+     * @param background bn::regular_bg_item — Background item to set
+     */
+    else if (e->type == "set-background")
+    {
+      const neo::types::set_background_event* set_bg_evt =
+        static_cast<const neo::types::set_background_event*>(e);
+
+      // BN_LOG("Setting background to: ", set_bg_evt->background.name());
+      // bn::regular_bg_ptr bg = set_bg_evt->background.create_bg(0, 0);
+      // scene_bg = &bg;
+      // scene_bg->set_tiles(set_bg_evt->background.tiles_item());
+      set_background(&set_bg_evt->background);
     }
 
     /**

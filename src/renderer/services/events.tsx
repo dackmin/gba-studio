@@ -7,6 +7,7 @@ import {
   EyeClosedIcon,
   EyeOpenIcon,
   GroupIcon,
+  ImageIcon,
   LapTimerIcon,
   LayersIcon,
   ListBulletIcon,
@@ -101,6 +102,15 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'go-to-scene',
       target: '',
+    }),
+  }, {
+    icon: ImageIcon,
+    name: 'Set Background',
+    value: 'set-background',
+    keywords: ['background', 'scene', 'image', 'set'],
+    construct: () => ({
+      type: 'set-background',
+      background: '',
     }),
   }],
 }, {

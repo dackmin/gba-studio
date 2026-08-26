@@ -470,6 +470,11 @@ export interface SetActorDirectionEvent extends SceneEvent {
   direction: CharacterDirection;
 }
 
+export interface SetBackgroundEvent extends SceneEvent {
+  type: 'set-background';
+  background: string;
+}
+
 export type AnimationType = 'idle' | 'walk';
 
 export type FramesDefinition = {
