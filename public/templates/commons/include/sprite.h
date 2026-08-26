@@ -19,6 +19,7 @@ namespace neo
       void set_position(int tile_x, int tile_y);
       void disable();
       void enable();
+      void init();
 
       neo::game* game;
       neo::types::sprite* definition;

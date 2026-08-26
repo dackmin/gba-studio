@@ -190,12 +190,15 @@ export interface GameActor {
 export interface GameSprite {
   type: 'sprite';
   name: string;
+  sprite: string;
   width?: number;
   height?: number;
   x: number;
   y: number;
   z?: number;
-  sprite: string;
+  events?: {
+    init?: SceneEvent[];
+  };
   // Internals
   id: string;
 }

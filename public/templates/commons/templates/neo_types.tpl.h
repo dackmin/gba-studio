@@ -604,6 +604,8 @@ namespace neo::types
     event_value* y;
     event_value* z;
     bn::sprite_item sprite;
+    int init_events_count;
+    event** init_events;
   };
 
   struct script

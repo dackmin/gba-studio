@@ -59,4 +59,12 @@ namespace neo
   {
     inner_sprite.set_visible(true);
   }
+
+  void sprite::init()
+  {
+    for (int i = 0; i < definition->init_events_count; ++i)
+    {
+      game->exec_event(definition->init_events[i], false);
+    }
+  }
 }

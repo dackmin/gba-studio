@@ -248,6 +248,15 @@ namespace neo::scenes
   {{#if (hasItems this.sprites)}}
   // Sprites
   {{#each this.sprites}}
+  // -- Sprite events
+  {{#if (hasItems this.events.init)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_init_event") events=this.events.init}}
+  neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_init_events[] = {
+    {{#each this.events.init}}
+    &{{slug ../../this.name}}_sprite_{{@../index}}_init_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
@@ -259,7 +268,15 @@ namespace neo::scenes
     &{{slug ../this.name}}_sprite_{{@index}}_x_value,
     &{{slug ../this.name}}_sprite_{{@index}}_y_value,
     &{{slug ../this.name}}_sprite_{{@index}}_z_value,
-    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
+    // Events
+    {{#if (hasItems this.events.init)}}
+    {{this.events.init.length}},
+    {{slug ../this.name}}_sprite_{{@index}}_init_events
+    {{else}}
+    0,
+    nullptr
+    {{/if}}
   };
   {{/each}}
   neo::types::sprite* {{slug this.name}}_sprites[] = {

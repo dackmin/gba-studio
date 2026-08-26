@@ -162,9 +162,6 @@ namespace neo
         BN_LOG("Creating actor: ", active_scene->actors[i]->name);
         neo::actor* a = new neo::actor(this, active_scene->actors[i]);
         actors.push_back(a);
-
-        // Execute actors init events
-        a->init();
       }
     }
 
@@ -205,6 +202,24 @@ namespace neo
       neo::types::event* e = active_scene->events[i];
       BN_LOG("Executing scene event: ", e->type);
       exec_event(e, false);
+    }
+
+    // Execute sprites init events
+    if (active_scene->sprites != nullptr)
+    {
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        sprites[i]->init();
+      }
+    }
+
+    // Execute actors init events
+    if (active_scene->actors != nullptr)
+    {
+      for (int i = 0; i < actors_count; ++i)
+      {
+        actors[i]->init();
+      }
     }
 
     while (!scene_changed)

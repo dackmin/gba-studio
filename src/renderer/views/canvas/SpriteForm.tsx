@@ -1,11 +1,12 @@
 import { ChangeEvent, KeyboardEvent, useCallback } from 'react';
-import { Heading, Inset, Separator, Text, TextField } from '@radix-ui/themes';
+import { Heading, Inset, Separator, Tabs, Text, TextField } from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene, GameSprite } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import SpritesListField from '../../components/SpritesListField';
 import EventValueField from '../../components/EventValueField';
+import EventsField from '../../components/EventsField';
 
 export interface SpriteFormProps {
   sprite: GameSprite;
@@ -135,6 +136,24 @@ const SpriteForm = ({
             value={sprite.z ?? 2}
             onValueChange={onValueChange.bind(null, 'z')}
           />
+        </div>
+        <div className="flex flex-col gap-4 pb-10">
+          <Text className="block text-slate" size="1">Events</Text>
+          <Inset className="!rounded-none !overflow-visible">
+            <Tabs.Root defaultValue="init">
+              <Tabs.List size="1" className="px-1">
+                <Tabs.Trigger value="init">
+                  On Init
+                </Tabs.Trigger>
+              </Tabs.List>
+              <Tabs.Content value="init">
+                <EventsField
+                  value={sprite.events?.init ?? []}
+                  onValueChange={onValueChange.bind(null, 'events.init')}
+                />
+              </Tabs.Content>
+            </Tabs.Root>
+          </Inset>
         </div>
       </div>
     </div>

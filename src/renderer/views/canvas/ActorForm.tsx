@@ -180,10 +180,7 @@ const ActorForm = ({
                 <div className="flex items-center gap-1">
                   <Text>On Update</Text>
                   <Tooltip
-                    content={
-                      'These events will be executed every frame, use with ' +
-                      'caution'
-                    }
+                    content="These events will be executed on every frame, use with caution"
                   >
                     <InfoCircledIcon
                       width={12}
