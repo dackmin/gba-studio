@@ -1,7 +1,10 @@
+#define BN_CFG_LOG_ENABLED true
+
 #include <bn_core.h>
 #include <bn_keypad.h>
 #include <bn_vector.h>
 #include <bn_string_view.h>
+#include <bn_log.h>
 
 namespace neo::buttons
 {
@@ -24,7 +27,11 @@ namespace neo::buttons
   {
     for (const bn::string_view& button : buttons)
     {
-      if (is_pressed(button)) return true;
+      if (is_pressed(button))
+      {
+        BN_LOG("Button pressed: ", button);
+        return true;
+      }
     }
     return false;
   }

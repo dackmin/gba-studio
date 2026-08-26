@@ -38,7 +38,7 @@ const Preview = () => {
     module.bindKey('z', 'b');
     module.bindKey('q', 'l');
     module.bindKey('s', 'r');
-    module.bindKey('enter', 'start');
+    module.bindKey('return', 'start');
     module.bindKey('backspace', 'select');
     module.bindKey('up', 'up');
     module.bindKey('down', 'down');

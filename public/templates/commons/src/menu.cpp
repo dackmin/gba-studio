@@ -73,6 +73,8 @@ namespace neo
         break;
     }
 
+    BN_LOG("Drawing menu with ", choices.size(), " choices (", total_width, "x", total_height, ")");
+
     // Draw bg
     neo::dialog_bg bg = dialog_bg(
       game,
@@ -98,6 +100,8 @@ namespace neo
       bn::string_view choice = choices.at(i).text;
       bn::fixed text_x = x + PADDING_LEFT;
       bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
+
+      BN_LOG("Rendering menu choice: ", choice, " at position (", text_x, ",", text_y, ")");
 
       text_generator.generate_top_left(
         text_x,
@@ -131,6 +135,7 @@ namespace neo
         {
           choice_index--;
           arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          BN_LOG("Moved up inside menu to choice index: ", choice_index);
           bn::core::update();
         }
       }
@@ -140,16 +145,20 @@ namespace neo
         {
           choice_index++;
           arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          BN_LOG("Moved down inside menu to choice index: ", choice_index);
           bn::core::update();
         }
       }
       else if (neo::buttons::is_pressed("A"))
       {
         selected_index = choice_index;
+        BN_LOG("Selected menu choice index: ", selected_index);
       }
 
       bn::core::update();
     }
+
+    BN_LOG("Menu closed with selected index: ", selected_index);
 
     text_sprites.clear();
 

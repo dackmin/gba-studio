@@ -305,6 +305,8 @@ namespace neo
       {
         bn::core::update();
       }
+
+      BN_LOG("Wait-for-button event completed");
     }
 
     /**
@@ -394,6 +396,7 @@ namespace neo
       neo::menu* m = new neo::menu(this, menu_evt->choices);
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
+      BN_LOG("Opening menu");
       int selected = m->show();
       delete m;
 
