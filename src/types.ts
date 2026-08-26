@@ -503,6 +503,7 @@ export interface LogMessage {
   type?: 'log' | 'error' | 'success';
   message: string;
   messageId: string;
+  time?: number;
 }
 
 export interface SpriteBitmap {

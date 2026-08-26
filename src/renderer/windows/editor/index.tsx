@@ -41,35 +41,35 @@ const Editor = () => {
     if (emulatorType !== 'external') {
       dispatch({ view: 'preview' });
     }
-  }, []);
+  }, [project?.settings?.emulatorType]);
 
   useBridgeListener('import-sprite', () => {
     backgroundModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
     spriteModalRef.current?.open();
-  });
+  }, []);
 
   useBridgeListener('import-background', () => {
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
     backgroundModalRef.current?.open();
-  });
+  }, []);
 
   useBridgeListener('import-sound', () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
     musicModalRef.current?.close();
     soundModalRef.current?.open();
-  });
+  }, []);
 
   useBridgeListener('import-music', () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.open();
-  });
+  }, []);
 
   const {
     view: View,

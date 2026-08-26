@@ -1,9 +1,10 @@
 import { type ComponentPropsWithoutRef, useCallback, useReducer } from 'react';
 import { mockState } from '@junipero/react';
+import { v4 as uuid } from 'uuid';
 
 import { LogsContext, LogsContextType } from '../../services/contexts';
 import { useBridgeListener } from '../../services/hooks';
-import { LogMessage } from '../../../types';
+import { Build, LogMessage } from '../../../types';
 
 export interface LogsStoreProps extends ComponentPropsWithoutRef<any> {}
 
@@ -20,7 +21,7 @@ const LogsStore = ({
     emulatorLogs: [],
   });
 
-  useBridgeListener('build-log', (log: LogMessage) => {
+  const addBuildLog = useCallback((log: LogMessage) => {
     dispatch(s => ({
       ...s,
       buildLogs: s.buildLogs.find(l => l.messageId === log.messageId)
@@ -28,6 +29,22 @@ const LogsStore = ({
         : [...s.buildLogs, log].slice(-10000),
     }));
   }, []);
+
+  useBridgeListener('build-log', addBuildLog, [addBuildLog]);
+
+  useBridgeListener('build-started', (build: Partial<Build>) => {
+    if (!state.buildLogs.length) {
+      return;
+    }
+
+    addBuildLog({
+      id: build.id || state.buildLogs[0].id,
+      messageId: uuid(),
+      type: 'log',
+      message: '----------------- New Build Started -----------------',
+      time: Date.now(),
+    });
+  }, [state.buildLogs, addBuildLog]);
 
   const clearBuildLogs = useCallback(() => {
     dispatch(s => ({

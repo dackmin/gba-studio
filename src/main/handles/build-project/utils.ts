@@ -29,6 +29,7 @@ export function sendLog (
     type: 'log',
     message,
     messageId: uuid(),
+    time: Date.now(),
   });
 }
 
@@ -42,6 +43,7 @@ export function sendError (
     type: 'error',
     message,
     messageId: uuid(),
+    time: Date.now(),
   });
   event.sender.send('build-error', {
     id: buildId,
@@ -60,6 +62,7 @@ export function sendSuccessLog (
     type: 'success',
     message,
     messageId: uuid(),
+    time: Date.now(),
   });
 }
 
@@ -114,7 +117,10 @@ export function runCommand (
         line.includes('\n') &&
         opts?.log !== false
       ) {
-        sendLog(opts.event, opts.build.id, line.trim());
+        for (const l of line.trim().split('\n')) {
+          sendLog(opts.event, opts.build.id, l.trim());
+        }
+
         line = '';
       }
     });
