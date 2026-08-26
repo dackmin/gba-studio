@@ -38,7 +38,7 @@ namespace neo
     player(player_),
     variables(),
     active_scene(nullptr),
-    scene_bg(nullptr)
+    scene_bg()
   {
     current_scene = neo::scenes::STARTING_SCENE;
     scene_changed = false;
@@ -55,11 +55,13 @@ namespace neo
     scene_changed = true;
   }
 
-  void game::set_background(const bn::regular_bg_ptr* background)
+  void game::set_background(bn::regular_bg_item background, bool visible)
   {
-    scene_bg = background;
+    // prevent NO MORE VRAM errors by first releasing the previous background pointer
+    scene_bg.reset();
+    scene_bg = background.create_bg(0, 0);
     scene_bg->set_camera(camera);
-    scene_bg->set_visible(false);
+    scene_bg->set_visible(visible);
     scene_bg->set_priority(3);
   }
 
@@ -103,8 +105,7 @@ namespace neo
       sprites_count = 0;
     }
 
-    bn::regular_bg_ptr bg = active_scene->background.create_bg(0, 0);
-    set_background(&bg);
+    set_background(active_scene->background, false);
     scene_changed = false;
 
     BN_LOG("Starting scene: ", active_scene->name);
@@ -229,7 +230,7 @@ namespace neo
       bn::core::update();
     }
 
-    if (scene_bg != nullptr)
+    if (scene_bg.has_value())
     {
       scene_bg->set_visible(false);
     }
@@ -251,7 +252,7 @@ namespace neo
      * @name fade-in
      * @param duration number (default: 500)
      */
-    else if (e->type == "fade-in" && scene_bg != nullptr)
+    else if (e->type == "fade-in" && scene_bg.has_value())
     {
       const neo::types::fade_event* fade_evt =
         static_cast<const neo::types::fade_event*>(e);
@@ -268,7 +269,7 @@ namespace neo
      * @name fade-out
      * @param duration number (default: 500)
      */
-    else if (e->type == "fade-out" && scene_bg != nullptr)
+    else if (e->type == "fade-out" && scene_bg.has_value())
     {
       const neo::types::fade_event* fade_evt =
         static_cast<const neo::types::fade_event*>(e);
@@ -682,11 +683,8 @@ namespace neo
       const neo::types::set_background_event* set_bg_evt =
         static_cast<const neo::types::set_background_event*>(e);
 
-      // BN_LOG("Setting background to: ", set_bg_evt->background.name());
-      // bn::regular_bg_ptr bg = set_bg_evt->background.create_bg(0, 0);
-      // scene_bg = &bg;
-      // scene_bg->set_tiles(set_bg_evt->background.tiles_item());
-      set_background(&set_bg_evt->background);
+      bool was_visible = scene_bg.has_value() && scene_bg->visible();
+      set_background(set_bg_evt->background, was_visible);
     }
 
     /**

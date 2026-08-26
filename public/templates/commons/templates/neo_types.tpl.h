@@ -378,10 +378,10 @@ namespace neo::types
 
   struct set_background_event: event
   {
-    bn::regular_bg_ptr background;
+    bn::regular_bg_item background;
     set_background_event(
       bn::string_view type_,
-      bn::regular_bg_ptr background_
+      bn::regular_bg_item background_
     ):
       event(type_),
       background(background_) {}
