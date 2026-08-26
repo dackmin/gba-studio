@@ -130,9 +130,42 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
           },
         },
         { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
+        {
+          label: 'Cut',
+          accelerator: 'CmdOrCtrl+X',
+          click: async () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+              focusedWindow.webContents.cut();
+              focusedWindow.webContents.send('cut');
+            }
+          },
+        },
+        {
+          label: 'Copy',
+          accelerator: 'CmdOrCtrl+C',
+          click: async () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+              focusedWindow.webContents.copy();
+              focusedWindow.webContents.send('copy');
+            }
+          },
+        },
+        {
+          label: 'Paste',
+          accelerator: 'CmdOrCtrl+V',
+          click: async () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+              focusedWindow.webContents.paste();
+              focusedWindow.webContents.send('paste');
+            }
+          },
+        },
         { role: 'delete' },
         { role: 'selectAll' },
       ],

@@ -1,11 +1,15 @@
-import { exists } from '@junipero/core';
+import { cloneDeep, exists, omit } from '@junipero/core';
+import { v4 as uuid } from 'uuid';
 import slugify from 'slugify';
 
 import type {
+  GameActor,
   GameBackgroundFile,
   GameMusicFile,
   GameScene,
+  GameSensor,
   GameSoundFile,
+  GameSprite,
   GameSpriteFile,
 } from './types';
 
@@ -124,4 +128,61 @@ export const findMusic = (
   id?: string,
 ): GameMusicFile | undefined => {
   return music.find(m => m.id === id || m.name === id || m._file === id);
+};
+
+export const duplicateActor = (scene: GameScene, actor: GameActor): GameActor => {
+  const sceneActor = (scene.actors || []).find(a => a.id === actor.id);
+  const isSamePosition = sceneActor?.x === actor.x && sceneActor?.y === actor.y;
+
+  const newActor: GameActor = {
+    ...cloneDeep(omit(actor, ['id'])),
+    id: uuid(),
+    name: `${actor.name} copy`,
+    x: sceneActor
+      ? Math.min((actor.x || 0) + (isSamePosition ? 1 : 0), (scene.map?.width || 0) - 1)
+      : 0,
+    y: sceneActor
+      ? Math.min((actor.y || 0) + (isSamePosition ? 1 : 0), (scene.map?.height || 0) - 1)
+      : 0,
+  };
+
+  return newActor;
+};
+
+export const duplicateSprite = (scene: GameScene, sprite: GameSprite): GameSprite => {
+  const sceneSprite = (scene.sprites || []).find(s => s.id === sprite.id);
+  const isSamePosition = sceneSprite?.x === sprite.x && sceneSprite?.y === sprite.y;
+
+  const newSprite: GameSprite = {
+    ...cloneDeep(omit(sprite, ['id'])),
+    id: uuid(),
+    name: `${sprite.name} copy`,
+    x: sceneSprite
+      ? Math.min((sprite.x || 0) + (isSamePosition ? 1 : 0), (scene.map?.width || 0) - 1)
+      : 0,
+    y: sceneSprite
+      ? Math.min((sprite.y || 0) + (isSamePosition ? 1 : 0), (scene.map?.height || 0) - 1)
+      : 0,
+  };
+
+  return newSprite;
+};
+
+export const duplicateSensor = (scene: GameScene, sensor: GameSensor): GameSensor => {
+  const sceneSensor = (scene.map?.sensors || []).find(s => s.id === sensor.id);
+  const isSamePosition = sceneSensor?.x === sensor.x && sceneSensor?.y === sensor.y;
+
+  const newSensor: GameSensor = {
+    ...cloneDeep(omit(sensor, ['id'])),
+    id: uuid(),
+    name: `${sensor.name} copy`,
+    x: sceneSensor
+      ? Math.min((sensor.x || 0) + (isSamePosition ? 1 : 0), (scene.map?.width || 0) - 1)
+      : 0,
+    y: sceneSensor
+      ? Math.min((sensor.y || 0) + (isSamePosition ? 1 : 0), (scene.map?.height || 0) - 1)
+      : 0,
+  };
+
+  return newSensor;
 };

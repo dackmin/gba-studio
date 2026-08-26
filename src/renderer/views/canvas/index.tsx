@@ -1,4 +1,11 @@
-import { type MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   type InfiniteCanvasRef,
   type InfiniteCanvasCursorMode,
@@ -11,14 +18,20 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
 import type { GameActor, GameScene, GameSensor, GameSprite } from '../../../types';
-import { useApp, useCanvas, useEditor, useLocalData } from '../../services/hooks';
+import {
+  useApp,
+  useBridgeListener,
+  useCanvas,
+  useEditor,
+  useLocalData,
+} from '../../services/hooks';
 import {
   DEFAULT_ACTOR,
   DEFAULT_SCENE,
   DEFAULT_SENSOR,
   DEFAULT_SPRITE,
 } from '../../services/defaults';
-import { pixelToTile } from '../../../helpers';
+import { duplicateActor, duplicateSensor, duplicateSprite, pixelToTile } from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
@@ -181,6 +194,116 @@ const Canvas = () => {
     onCanvasChange, selectItem, resetSelection,
     onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite,
   ]);
+
+  const onCopy = useCallback((e?: globalThis.KeyboardEvent) => {
+    if (!['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
+      return;
+    }
+
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    window.electron.registerClipboard(selectedItem);
+  }, [selectedItem]);
+
+  useBridgeListener('copy', onCopy, [onCopy]);
+
+  const onPaste = useCallback(async (e?: globalThis.KeyboardEvent) => {
+    const clipboard = await window.electron.getClipboard();
+
+    if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(clipboard?.type || '')) {
+      return;
+    }
+
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    let newItem: typeof selectedItem;
+
+    switch (clipboard?.type) {
+      case 'actor': {
+        const clipboardActor = clipboard as GameActor;
+        const duplicated = duplicateActor(selectedScene, clipboardActor);
+
+        set(selectedScene, 'actors', [
+          ...(selectedScene.actors || []),
+          duplicated,
+        ]);
+
+        newItem = duplicated;
+
+        break;
+      }
+      case 'sensor': {
+        const clipboardSensor = clipboard as GameSensor;
+        const duplicated = duplicateSensor(selectedScene, clipboardSensor);
+
+        set(selectedScene, 'map.sensors', [
+          ...(selectedScene.map?.sensors || []),
+          duplicated,
+        ]);
+
+        newItem = duplicated;
+
+        break;
+      }
+      case 'sprite': {
+        const clipboardSprite = clipboard as GameSprite;
+        const duplicated = duplicateSprite(selectedScene, clipboardSprite);
+
+        set(selectedScene, 'sprites', [
+          ...(selectedScene.sprites || []),
+          duplicated,
+        ]);
+
+        newItem = duplicated;
+
+        break;
+      }
+      default:
+        break;
+    }
+
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.map(s => (
+        s.id === selectedScene.id ||
+        s._file === selectedScene._file
+          ? selectedScene! : s
+      )),
+    });
+
+    selectItem?.(selectedScene, newItem);
+  }, [selectedScene, appPayload, onCanvasChange, selectItem]);
+
+  useBridgeListener('paste', onPaste, [onPaste]);
+
+  const onCut = useCallback((e?: globalThis.KeyboardEvent) => {
+    if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
+      return;
+    }
+
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    window.electron.registerClipboard(selectedItem);
+
+    switch (selectedItem?.type) {
+      case 'actor':
+        onDeleteActor?.(selectedScene, selectedItem);
+        break;
+      case 'sensor':
+        onDeleteSensor?.(selectedScene, selectedItem);
+        break;
+      case 'sprite':
+        onDeleteSprite?.(selectedScene, selectedItem);
+        break;
+      default:
+        break;
+    }
+  }, [selectedScene, selectedItem, onDeleteActor, onDeleteSensor, onDeleteSprite]);
+
+  useBridgeListener('cut', onCut, [onCut]);
 
   const onSceneChange = useCallback((scene?: GameScene) => {
     onCanvasChange?.({

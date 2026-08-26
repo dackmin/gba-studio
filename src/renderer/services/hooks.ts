@@ -80,7 +80,11 @@ export const useBridgeListener = <T extends any[] = any[]>(
 
   useEffect(() => {
     funcRef.current = func;
-  }, [func]);
+    // func is included so the ref is always fresh even if deps is incomplete;
+    // this must never re-run the effect below (that would tear down and
+    // re-add the native listener on every change).
+    // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
+  }, [func, ...deps]);
 
   useEffect(() => {
     const cb = (
@@ -95,11 +99,7 @@ export const useBridgeListener = <T extends any[] = any[]>(
     return () => {
       window.electron.removeEventListener(channel, cb);
     };
-  }, [
-    channel,
-    // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
-    ...deps,
-  ]);
+  }, [channel]);
 };
 
 export interface UseDelayedValueOptions {
