@@ -198,12 +198,16 @@ const App = () => {
   }, [redo]);
 
   const addToHistory = useDelayedCallback((currentState: AppState) => {
-    const newHistoryEntry: Partial<AppPayload> = {
-      project: cloneDeep(currentState.project!),
-      scenes: cloneDeep(currentState.scenes),
-      variables: cloneDeep(currentState.variables),
-      scripts: cloneDeep(currentState.scripts),
-    };
+    const newHistoryEntry: Partial<AppPayload> = cloneDeep(pick(currentState, [
+      'project',
+      'scenes',
+      'variables',
+      'scripts',
+      'sprites',
+      'backgrounds',
+      'music',
+      'sounds',
+    ]));
 
     const newHistory = currentState.history.slice(currentState.historyIndex);
     newHistory.unshift(newHistoryEntry);
