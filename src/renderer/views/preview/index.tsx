@@ -10,7 +10,7 @@ import Gamepad from '../../components/Gamepad';
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [emulator, setEmulator] = useState<mGBAEmulator | null>(null);
-  const { addEmulatorLog } = useLogs();
+  const { emulatorLogs, addEmulatorLog } = useLogs();
   const { volume } = useEmulator();
   const { projectPath } = useApp();
   const scale = 3;
@@ -22,11 +22,6 @@ const Preview = () => {
     }
   }, [emulator]);
 
-  useBridgeListener('build-completed', () => {
-    emulator?.quitMgba();
-    init();
-  }, []);
-
   useEffect(() => {
     if (emulator) {
       emulator.setVolume(volume);
@@ -37,6 +32,7 @@ const Preview = () => {
     // eslint-disable-next-line new-cap
     module.FSSync();
     module.loadGame('/data/games/game.gba');
+    module.setVolume(volume);
 
     module.bindKey('a', 'a');
     module.bindKey('z', 'b');
@@ -48,6 +44,7 @@ const Preview = () => {
     module.bindKey('down', 'down');
     module.bindKey('left', 'left');
     module.bindKey('right', 'right');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEventListener('keyup', event => {
@@ -109,6 +106,27 @@ const Preview = () => {
   useEffect(() => {
     init();
   }, [init]);
+
+  useBridgeListener('build-completed', () => {
+    try {
+      emulator?.quitGame();
+      emulator?.quitMgba();
+    } catch (error) {
+      console.error('Failed to quit mGBA emulator:', error);
+    }
+
+    if (emulatorLogs.length > 0) {
+      addEmulatorLog?.({
+        id: emulatorLogs[0].id || '',
+        messageId: uuid(),
+        type: 'log',
+        message: '----------------- New Session Started -----------------',
+        time: Date.now(),
+      });
+    }
+
+    init();
+  }, [emulatorLogs, init, emulator]);
 
   useEffect(() => {
     return () => {
