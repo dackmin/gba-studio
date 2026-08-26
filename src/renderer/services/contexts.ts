@@ -103,7 +103,7 @@ export interface CanvasContextType {
   resetTool?(): void;
   selectItem?(
     scene?: GameScene,
-    item?: GameActor | GameSensor | GamePlayer | GameScript | GameSprite
+    item?: GameActor | GameSensor | GamePlayer | GameScript | GameSprite | GameVariable
   ): void;
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;
