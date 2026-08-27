@@ -26,6 +26,11 @@ const LeftSidebar = ({
     window.electron.send('import-sprite');
   }, []);
 
+  const onAddBackground = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    window.electron.send('import-background');
+  }, []);
+
   const onDeleteSprite = useCallback(async () => {
     if (!selectedSprite) {
       return;
@@ -126,7 +131,19 @@ const LeftSidebar = ({
         onOpenChange={collapse.bind(null, 'canvas.backgrounds')}
       >
         <Collapsible.Trigger>
-          <Text>Backgrounds</Text>
+          <div className="flex items-center justify-between w-full">
+            <Text>Backgrounds</Text>
+            <IconButton
+              variant="ghost"
+              radius="full"
+              onClick={onAddBackground}
+            >
+              <PlusCircledIcon
+                width={16}
+                height={16}
+              />
+            </IconButton>
+          </div>
         </Collapsible.Trigger>
         <Collapsible.Content>
           { backgrounds.length === 0 ? (
