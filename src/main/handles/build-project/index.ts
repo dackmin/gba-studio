@@ -289,8 +289,10 @@ export async function cleanBuildFolder (
     projectPath,
   };
 
+  event.sender.send('clean-started', { id: build.id });
   sendStep(event, build.id, 'Cleaning build folder...');
   await fse.remove(getBuildDir(build));
+  event.sender.send('clean-completed', { id: build.id });
   sendSuccessLog(event, build.id, 'Build folder cleaned.');
 }
 

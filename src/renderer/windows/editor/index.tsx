@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
-import { classNames, mockState } from '@junipero/react';
+import { classNames, mockState, useTimeout } from '@junipero/react';
 
+import type { LogMessage } from '../../../types';
 import { type EditorContextType, EditorContext } from '../../services/contexts';
 import { useApp, useBridgeListener } from '../../services/hooks';
 import views, { defaultView } from '../../views';
@@ -20,6 +21,9 @@ export interface EditorState {
   tileX?: number;
   tileY?: number;
   resizingSidebar: boolean;
+  building: boolean;
+  built: boolean;
+  buildStep: string;
 }
 
 const Editor = () => {
@@ -33,7 +37,38 @@ const Editor = () => {
     tileX: undefined,
     tileY: undefined,
     resizingSidebar: false,
+    building: false,
+    built: false,
+    buildStep: '',
   });
+
+  useTimeout(() => {
+    dispatch({ built: false, buildStep: '' });
+  }, 2000, [state.built], { enabled: state.built });
+
+  useBridgeListener('build-started', () => {
+    dispatch({ building: true, built: false, buildStep: 'Initializing build...' });
+  }, []);
+
+  useBridgeListener('clean-started', () => {
+    dispatch({ building: true, built: false, buildStep: 'Cleaning project...' });
+  }, []);
+
+  useBridgeListener('build-step', ({ message }: LogMessage) => {
+    dispatch({ buildStep: message });
+  }, []);
+
+  useBridgeListener('build-completed', () => {
+    dispatch({ building: false, built: true, buildStep: 'Build successful' });
+  }, []);
+
+  useBridgeListener('clean-completed', () => {
+    dispatch({ building: false, built: true, buildStep: 'Build folder cleaned.' });
+  }, []);
+
+  useBridgeListener('build-aborted', () => {
+    dispatch({ building: false, built: false, buildStep: '' });
+  }, []);
 
   useBridgeListener('build-completed', () => {
     const emulatorType = project?.settings?.emulatorType || 'internal';
@@ -101,11 +136,15 @@ const Editor = () => {
     tileX: state.tileX,
     tileY: state.tileY,
     resizingSidebar: state.resizingSidebar,
+    building: state.building,
+    built: state.built,
+    buildStep: state.buildStep,
     setView,
     setTilePosition,
     setResizingSidebar,
   }), [
     state.view, state.tileX, state.tileY, state.resizingSidebar,
+    state.building, state.built, state.buildStep,
     setView, setTilePosition, setResizingSidebar,
     BottomBarContent, RightSidebarContent, LeftSidebarContent,
   ]);

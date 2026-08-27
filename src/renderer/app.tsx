@@ -34,7 +34,6 @@ export interface AppState extends Omit<AppPayload, 'project'> {
   loading: boolean;
   ready: boolean;
   dirty: boolean;
-  building: boolean;
   project?: GameProject;
   editorConfig?: AppStorage;
   clipboard?: any;
@@ -61,7 +60,6 @@ const App = () => {
     dirty: false,
     history: [],
     historyIndex: 0,
-    building: false,
     clipboard: undefined,
     localData: undefined,
     isFullscreen: isFullscreen === 'true',
@@ -82,14 +80,6 @@ const App = () => {
 
   useBridgeListener('audio-updated', ({ music, sounds }) => {
     dispatch({ music, sounds });
-  }, []);
-
-  useBridgeListener('build-completed', () => {
-    dispatch({ building: false });
-  }, []);
-
-  useBridgeListener('build-aborted', () => {
-    dispatch({ building: false });
   }, []);
 
   useLayoutEffect(() => {
@@ -268,10 +258,6 @@ const App = () => {
     });
   }, [addToHistory]);
 
-  const setBuilding = useCallback((building: boolean) => {
-    dispatch({ building });
-  }, []);
-
   const setEditorConfig = useCallback((config: AppStorage) => {
     dispatch({ editorConfig: config });
     window.electron.setEditorConfig(config);
@@ -287,7 +273,6 @@ const App = () => {
     project: state.project,
     scenes: state.scenes,
     dirty: state.dirty,
-    building: state.building,
     variables: state.variables,
     sprites: state.sprites,
     backgrounds: state.backgrounds,
@@ -302,7 +287,6 @@ const App = () => {
     isFullscreen: state.isFullscreen,
     resourcesPath,
     save,
-    setBuilding,
     setEditorConfig,
     setClipboard,
     onMoveScene,
@@ -312,9 +296,9 @@ const App = () => {
     projectPath, resourcesPath,
     state.scenes, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
-    state.scripts, state.music, state.building, state.editorConfig,
+    state.scripts, state.music, state.editorConfig,
     state.clipboard, state.localData, state.isFullscreen,
-    save, setBuilding, onCanvasChange, onMoveScene, onProjectChange,
+    save, onCanvasChange, onMoveScene, onProjectChange,
     setEditorConfig, setClipboard,
   ]);
 

@@ -40,7 +40,6 @@ const LeftSidebar = ({
 }: LeftSidebarProps) => {
   const {
     projectPath,
-    building,
     project,
     scenes,
     variables,
@@ -51,7 +50,6 @@ const LeftSidebar = ({
     music,
     editorConfig,
     isFullscreen,
-    setBuilding,
     setEditorConfig,
   } = useApp();
   const {
@@ -59,6 +57,7 @@ const LeftSidebar = ({
     tileX,
     tileY,
     resizingSidebar,
+    building,
     setView,
     setResizingSidebar,
   } = useEditor();
@@ -75,7 +74,6 @@ const LeftSidebar = ({
       return;
     }
 
-    setBuilding(true);
     await window.electron.startBuildProject(projectPath, {
       project: {
         ...project,
@@ -94,24 +92,15 @@ const LeftSidebar = ({
   }, [
     building, selectedScene, projectPath, project, scenes, variables, scripts, sprites, backgrounds,
     sounds, music,
-    setBuilding,
   ]);
-
-  useHotkeys('mod+enter', () => {
-    onToggleBuild();
-  }, [onToggleBuild]);
 
   useHotkeys('mod+left', () => {
     collapse('leftSidebar');
   }, [collapse]);
 
-  useBridgeListener('build-project', () => {
-    onToggleBuild();
-  }, [onToggleBuild]);
+  useBridgeListener('build-project', onToggleBuild, [onToggleBuild]);
 
-  useBridgeListener('rebuild-project', () => {
-    onToggleBuild(true);
-  }, [onToggleBuild]);
+  useBridgeListener('rebuild-project', onToggleBuild.bind(null, true), [onToggleBuild]);
 
   const onCleanBuildFolder = useCallback(async () => {
     if (building) {
@@ -120,14 +109,10 @@ const LeftSidebar = ({
       return;
     }
 
-    setBuilding(true);
     await window.electron.cleanBuildFolder(projectPath);
-    setBuilding(false);
-  }, [setBuilding, building, projectPath]);
+  }, [building, projectPath]);
 
-  useBridgeListener('clean-build-folder', () => {
-    onCleanBuildFolder();
-  }, [onCleanBuildFolder]);
+  useBridgeListener('clean-build-folder', onCleanBuildFolder, [onCleanBuildFolder]);
 
   const onTabChange = useCallback((newView: string) => {
     setView(newView);

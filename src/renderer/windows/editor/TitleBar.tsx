@@ -1,9 +1,9 @@
-import { type ComponentPropsWithoutRef, useState } from 'react';
+import { type ComponentPropsWithoutRef } from 'react';
 import { Card, IconButton, Kbd, Spinner, Text, Tooltip } from '@radix-ui/themes';
+import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { classNames } from '@junipero/react';
 
-import type { LogMessage } from '../../../types';
-import { useApp, useBridgeListener, useEditor, useLocalData } from '../../services/hooks';
+import { useApp, useEditor, useLocalData } from '../../services/hooks';
 import BottomBarIcon from '../../components/BottomBarIcon';
 import RightSidebarIcon from '../../components/RightSidebarIcon';
 
@@ -13,18 +13,9 @@ const TitleBar = ({
   className,
   ...rest
 }: TitleBarProps) => {
-  const { project, dirty, building } = useApp();
-  const { hasBottomBar, hasRightSidebar } = useEditor();
+  const { project, dirty } = useApp();
+  const { hasBottomBar, hasRightSidebar, building, built, buildStep } = useEditor();
   const { collapse, isCollapsed } = useLocalData();
-  const [step, setStep] = useState('Initializing build...');
-
-  useBridgeListener('build-step', ({ message }: LogMessage) => {
-    setStep(message);
-  }, []);
-
-  useBridgeListener('build-aborted', () => {
-    setStep('');
-  }, []);
 
   return (
     <div
@@ -50,12 +41,15 @@ const TitleBar = ({
               }
             )}
           >
-            { building && (
-              <>
+            <>
+              { building && (
                 <Spinner size="1" />
-                <Text size="1">{ step }</Text>
-              </>
-            ) }
+              ) }
+              { !building && built && (
+                <CheckCircledIcon className="text-green-500" />
+              ) }
+              <Text size="1">{ buildStep }</Text>
+            </>
           </div>
           <div className="flex-auto text-center">
             <Text>{ project?.name }</Text>

@@ -35,13 +35,11 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   projectBase: string;
   resourcesPath: string;
   dirty: boolean;
-  building: boolean;
   editorConfig?: AppStorage;
   clipboard?: any;
   localData?: LocalData;
   isFullscreen: boolean;
   save(): Promise<void>;
-  setBuilding(building: boolean): void;
   setEditorConfig(config: AppStorage): void;
   setClipboard(data: any): void;
   onMoveScene?(scene: GameScene, e: Partial<MoveableState>): void;
@@ -61,10 +59,8 @@ export const AppContext = createContext<AppContextType>({
   projectBase: '',
   resourcesPath: '',
   dirty: false,
-  building: false,
   isFullscreen: window.electron.isFullscreen,
   save: async () => {},
-  setBuilding: () => {},
   setEditorConfig: () => {},
   setClipboard: () => {},
 });
@@ -77,6 +73,9 @@ export interface EditorContextType {
   resizingSidebar: boolean;
   tileX?: number;
   tileY?: number;
+  building: boolean;
+  built: boolean;
+  buildStep: string;
   setView(view: string): void;
   setTilePosition(x?: number, y?: number): void;
   setResizingSidebar(resizingSidebar: boolean): void;
@@ -88,6 +87,9 @@ export const EditorContext = createContext<EditorContextType>({
   hasRightSidebar: false,
   hasLeftSidebar: false,
   resizingSidebar: false,
+  building: false,
+  built: false,
+  buildStep: '',
   setView: () => {},
   setTilePosition: () => {},
   setResizingSidebar: () => {},
