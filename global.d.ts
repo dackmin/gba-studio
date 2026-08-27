@@ -15,7 +15,7 @@ interface AppBridge extends EventTarget {
   addEventListener(
     channel: string,
     func: ((...args: any[]) => void)
-  ): void;
+  ): (() => void);
   removeEventListener(
     channel: string,
     func: ((...args: any[]) => void)

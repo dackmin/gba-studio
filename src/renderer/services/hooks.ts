@@ -94,10 +94,10 @@ export const useBridgeListener = <T extends any[] = any[]>(
       funcRef.current(...args as T);
     };
 
-    window.electron.addEventListener(channel, cb);
+    const off = window.electron.addEventListener(channel, cb);
 
     return () => {
-      window.electron.removeEventListener(channel, cb);
+      off();
     };
   }, [channel]);
 };
