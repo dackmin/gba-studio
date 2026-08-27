@@ -6,6 +6,7 @@
 #include <bn_display.h>
 #include <bn_sprite_item.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_unique_ptr.h>
 
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
@@ -31,6 +32,7 @@ namespace neo
 
   void dialog::show ()
   {
+    BN_LOG("Showing dialog");
     int total_width = bn::display::width() - MARGIN * 2;
     int total_height = LINE_HEIGHT * lines_count + PADDING_TOP + PADDING_BOTTOM;
     int x = 0;
@@ -52,7 +54,7 @@ namespace neo
         break;
     }
 
-    neo::dialog_bg bg = dialog_bg(
+    bn::unique_ptr<neo::dialog_bg> bg_storage = bn::make_unique<neo::dialog_bg>(
       game,
       &bn::sprite_items::textbox,
       x,
@@ -60,9 +62,12 @@ namespace neo
       total_width,
       total_height
     );
+    neo::dialog_bg& bg = *bg_storage;
 
     // Create font
-    bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH> text_sprites;
+    bn::unique_ptr<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>> text_sprites_storage =
+      bn::make_unique<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>>();
+    bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>& text_sprites = *text_sprites_storage;
     bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
     bn::sprite_text_generator text_generator(font);
     text_generator.set_left_alignment();
@@ -105,6 +110,7 @@ namespace neo
     }
 
     // Hide dialog
+    BN_LOG("Hiding dialog");
     text_sprites.clear();
     bg.set_visible(false);
   }

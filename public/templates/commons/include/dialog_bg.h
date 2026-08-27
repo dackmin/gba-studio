@@ -56,9 +56,9 @@ namespace neo
       int _corner_height;
 
       bn::sprite_ptr _create_slice(bn::sprite_tiles_ptr tiles, int x, int y);
-      bn::vector<bn::sprite_ptr, 4> _create_corners(bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height);
-      bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> _create_side(bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal);
-      bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> _create_center(bn::sprite_tiles_ptr tiles, int x, int y, int width, int height);
+      void _create_corners(bn::vector<bn::sprite_ptr, 4>& out, bn::sprite_tiles_item* tiles_item, int x, int y, int width, int height);
+      void _create_side(bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES>& out, bn::sprite_tiles_ptr tiles, int x, int y, int length, bool horizontal);
+      void _create_center(bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES>& out, bn::sprite_tiles_ptr tiles, int x, int y, int width, int height);
   };
 }
 

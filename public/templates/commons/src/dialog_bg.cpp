@@ -33,7 +33,8 @@ namespace neo
   {
     bn::sprite_tiles_item tiles = sprite->tiles_item();
 
-    corners = _create_corners(
+    _create_corners(
+      corners,
       &tiles,
       x,
       y,
@@ -46,7 +47,8 @@ namespace neo
     _corner_height = corner.dimensions().height();
 
     bn::fixed top_count = bn::fixed(width - _corner_width * 2) / bn::fixed(_corner_width);
-    bg_top = _create_side(
+    _create_side(
+      bg_top,
       tiles.create_tiles(4),
       x + _corner_width,
       y,
@@ -55,7 +57,8 @@ namespace neo
     );
 
     bn::fixed bottom_count = bn::fixed(width - _corner_width * 2) / bn::fixed(_corner_width);
-    bg_bottom = _create_side(
+    _create_side(
+      bg_bottom,
       tiles.create_tiles(5),
       x + _corner_width,
       y + height - _corner_height,
@@ -64,7 +67,8 @@ namespace neo
     );
 
     bn::fixed left_count = bn::fixed(height - _corner_height * 2) / bn::fixed(_corner_height);
-    bg_left = _create_side(
+    _create_side(
+      bg_left,
       tiles.create_tiles(7),
       x,
       y + _corner_height,
@@ -73,7 +77,8 @@ namespace neo
     );
 
     bn::fixed right_count = bn::fixed(height - _corner_height * 2) / bn::fixed(_corner_height);
-    bg_right = _create_side(
+    _create_side(
+      bg_right,
       tiles.create_tiles(6),
       x + width - _corner_width,
       y + _corner_height,
@@ -81,7 +86,8 @@ namespace neo
       false
     );
 
-    bg_center = _create_center(
+    _create_center(
+      bg_center,
       tiles.create_tiles(8),
       x + _corner_width,
       y + _corner_height,
@@ -261,45 +267,39 @@ namespace neo
     return slice;
   }
   
-  bn::vector<bn::sprite_ptr, 4> dialog_bg::_create_corners (bn::sprite_tiles_item* tiles_item, int x_, int y_, int width_, int height_)
+  void dialog_bg::_create_corners (bn::vector<bn::sprite_ptr, 4>& out, bn::sprite_tiles_item* tiles_item, int x_, int y_, int width_, int height_)
   {
-    bn::vector<bn::sprite_ptr, 4> corners_;
-
     bn::sprite_ptr bg_top_left = _create_slice(
       tiles_item->create_tiles(0),
       x_,
       y_
     );
-    corners_.push_back(bg_top_left);
+    out.push_back(bg_top_left);
 
     bn::sprite_ptr bg_down_left = _create_slice(
       tiles_item->create_tiles(1),
       x_,
       y_ + height_ - bg_top_left.dimensions().height()
     );
-    corners_.push_back(bg_down_left);
+    out.push_back(bg_down_left);
 
     bn::sprite_ptr bg_top_right = _create_slice(
       tiles_item->create_tiles(2),
       x_ + width_ - bg_top_left.dimensions().width(),
       y_
     );
-    corners_.push_back(bg_top_right);
+    out.push_back(bg_top_right);
 
     bn::sprite_ptr bg_down_right = _create_slice(
       tiles_item->create_tiles(3),
       x_ + width_ - bg_top_left.dimensions().width(),
       y_ + height_ - bg_top_left.dimensions().height()
     );
-    corners_.push_back(bg_down_right);
-
-    return corners_;
+    out.push_back(bg_down_right);
   }
 
-  bn::vector<bn::sprite_ptr, dialog_bg::MAX_SIDE_SLICES> dialog_bg::_create_side (bn::sprite_tiles_ptr tiles, int x_, int y_, int length, bool horizontal)
+  void dialog_bg::_create_side (bn::vector<bn::sprite_ptr, dialog_bg::MAX_SIDE_SLICES>& out, bn::sprite_tiles_ptr tiles, int x_, int y_, int length, bool horizontal)
   {
-    bn::vector<bn::sprite_ptr, MAX_SIDE_SLICES> slices;
-
     for (int i = 0; i < length && i < MAX_SIDE_SLICES; i++)
     {
       bn::sprite_ptr slice = _create_slice(
@@ -308,16 +308,12 @@ namespace neo
         horizontal ? y_ : y_ + (i * _corner_height)
       );
 
-      slices.push_back(slice);
+      out.push_back(slice);
     }
-
-    return slices;
   }
 
-  bn::vector<bn::sprite_ptr, dialog_bg::MAX_CENTER_SLICES> dialog_bg::_create_center (bn::sprite_tiles_ptr tiles, int x_, int y_, int width_, int height_)
+  void dialog_bg::_create_center (bn::vector<bn::sprite_ptr, dialog_bg::MAX_CENTER_SLICES>& out, bn::sprite_tiles_ptr tiles, int x_, int y_, int width_, int height_)
   {
-    bn::vector<bn::sprite_ptr, MAX_CENTER_SLICES> slices;
-
     bn::fixed horizontal_count = bn::fixed(width_) / bn::fixed(_corner_width);
     bn::fixed vertical_count = bn::fixed(height_) / bn::fixed(_corner_height);
 
@@ -331,10 +327,8 @@ namespace neo
           y_ + (j * _corner_height)
         );
 
-        slices.push_back(slice);
+        out.push_back(slice);
       }
     }
-
-    return slices;
   }
 }
