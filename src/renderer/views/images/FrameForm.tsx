@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Heading,
   Inset,
@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 
 import type { EventValue, SpriteAnimation } from '../../../types';
 import { usePlayback, useSprite } from '../../services/hooks';
-import { getTilesCount } from '../../../helpers';
+import { getTilesCount, loadImage } from '../../../helpers';
 import EventValueField from '../../components/EventValueField';
 
 const FrameForm = () => {
@@ -27,17 +27,34 @@ const FrameForm = () => {
     onAnimationsChange,
   } = useSprite();
   const { jumpTo } = usePlayback();
+  const [size, setSize] = useState([0, 0]);
+  const [loading, setLoading] = useState(true);
+
+  const init = useCallback(async () => {
+    const image = selectedSprite?.path?.startsWith('data:')
+      ? await loadImage(selectedSprite.path)
+      : await loadImage(!selectedSprite?._file
+        ? `resources://public/templates/commons/graphics/sprite_default.bmp`
+        : `project://${selectedSprite.path}`);
+
+    setSize([image.width, image.height]);
+    setLoading(false);
+  }, [selectedSprite]);
+
+  useEffect(() => {
+    init();
+  }, [init]);
 
   const availableTiles = useMemo(() => (
     Array.from({
       length: getTilesCount(
-        selectedSprite?._realWidth,
-        selectedSprite?._realHeight,
+        size[0],
+        size[1],
         selectedSprite?.width,
         selectedSprite?.height,
       ),
     }).map((_, index) => index)
-  ), [selectedSprite]);
+  ), [size, selectedSprite]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
     if (!selectedAnimation || !selectedSprite) {
@@ -112,6 +129,10 @@ const FrameForm = () => {
     onAnimationChange, selectFrame, jumpTo,
     selectedAnimation, selectedStateName, selectedDirection, selectedFrame,
   ]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <div
