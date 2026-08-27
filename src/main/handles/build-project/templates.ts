@@ -16,8 +16,11 @@ export const setupHandlebars = async () => {
     Array.isArray(arr) && arr.length > 0);
   Handlebars.registerHelper('slug', (str: string) => toSlug(str || ''));
   Handlebars.registerHelper('int', (v: any) => parseInt(v, 10) || 0);
+  Handlebars.registerHelper('isInt', (v: any) => Number.isInteger(parseInt(v, 10)));
   Handlebars.registerHelper('bool', (v: any) =>
     typeof v === 'string' ? v === 'true' : !!v);
+  Handlebars.registerHelper('isBool', (v: any) =>
+    typeof v === 'boolean' || ['true', 'false'].includes(v));
   Handlebars.registerHelper('contains', (arr: any[], value: any) => arr.includes(value));
   Handlebars.registerHelper('eq', (a, b) => a === b);
   Handlebars.registerHelper('gt', (a, b) => a > b);
