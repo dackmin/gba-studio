@@ -127,6 +127,11 @@ namespace neo
     ));
   }
 
+  void actor::set_z_order(int z)
+  {
+    sprite.set_z_order(z);
+  }
+
   bool actor::collides(int tile_x, int tile_y)
   {
     if (!sprite.visible())

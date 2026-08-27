@@ -132,6 +132,9 @@ namespace neo
 
         int x = last_goto_event->start_x->as_int(variables);
         int y = last_goto_event->start_y->as_int(variables);
+
+        BN_LOG("Player start position: x=", x, ", y=", y, ", z=", player->sprite.z_order());
+
         neo::types::direction dir = last_goto_event->start_direction;
         last_goto_event = nullptr;
 
@@ -141,7 +144,6 @@ namespace neo
           active_scene->map_data->to_pixel_y(variables, y)
         ));
       }
-      BN_LOG("Player start position: x=", x, ", y=", y, ", z=", z);
     }
 
     // Actors
