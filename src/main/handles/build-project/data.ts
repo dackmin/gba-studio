@@ -1,11 +1,11 @@
 import { findSprite } from '../../../helpers';
-import type { Build, InternalActorAnimation, SpriteAnimation } from '../../../types';
+import type { Build, InternalSpriteAnimation, SpriteAnimation } from '../../../types';
 
 export const prepareAnimations = async (
   animations: SpriteAnimation[],
-): Promise<InternalActorAnimation[]> => {
+): Promise<InternalSpriteAnimation[]> => {
   return animations.reduce((acc, animation) => {
-    const res: InternalActorAnimation[] = acc || [];
+    const res: InternalSpriteAnimation[] = acc || [];
 
     if (animation.states?.fixed) {
       res.push({
@@ -40,24 +40,30 @@ export const prepareAnimations = async (
     }
 
     return res;
-  }, [] as InternalActorAnimation[]);
+  }, [] as InternalSpriteAnimation[]);
 };
 
 export async function prepareData (build: Build) {
+  for (const sprite of build.data?.sprites || []) {
+    if (sprite.animations) {
+      sprite._animations = await prepareAnimations(sprite.animations);
+    }
+  }
+
   for (const scene of build.data?.scenes || []) {
     for (const actor of scene.actors || []) {
       const sprite = findSprite(build.data?.sprites, actor.sprite);
 
-      if (sprite?.animations) {
-        actor._animations = await prepareAnimations(sprite.animations);
+      if (sprite?._animations) {
+        actor._spriteHasAnimations = true;
       }
     }
 
     if (scene.player) {
       const sprite = findSprite(build.data?.sprites, scene.player!.sprite);
 
-      if (sprite?.animations) {
-        scene.player._animations = await prepareAnimations(sprite.animations);
+      if (sprite?._animations) {
+        scene.player._spriteHasAnimations = true;
       }
     }
   }

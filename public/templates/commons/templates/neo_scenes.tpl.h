@@ -68,6 +68,21 @@ namespace neo::scenes
     return vec;
   }
 
+  {{#each sprites}}
+  //////////////////////////
+  // Sprite: {{this.name}} //
+  //////////////////////////
+  {{#if (hasItems this._animations)}}
+  {{>animationsPartial prefix=(concat (slug this.name) "_animation") animations=this._animations}}
+  BN_DATA_EWRAM int {{slug this.name}}_animations_count = {{this._animations.length}};
+  BN_DATA_EWRAM neo::types::sprite_animation* {{slug this.name}}_animations[] = {
+    {{#each this._animations}}
+    &{{slug ../this.name}}_animation_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
+  {{/each}}
+
   {{#each scenes}}
   //////////////////////////
   // Scene: {{this.name}} //
@@ -183,16 +198,6 @@ namespace neo::scenes
   };
   {{/if}}
 
-  // -- Animations
-  {{#if (hasItems this._animations)}}
-  {{>animationsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_animation") animations=this._animations}}
-  neo::types::sprite_animation* {{slug ../this.name}}_actor_{{@index}}_animations[] = {
-    {{#each this._animations}}
-    &{{slug ../../this.name}}_actor_{{@../index}}_animation_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
-  };
-  {{/if}}
-
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
@@ -229,9 +234,9 @@ namespace neo::scenes
     nullptr,
     {{/if}}
     // Animations
-    {{#if (hasItems this._animations)}}
-    {{this._animations.length}},
-    {{slug ../this.name}}_actor_{{@index}}_animations
+    {{#if this._spriteHasAnimations}}
+    {{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}_animations_count,
+    {{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}_animations,
     {{else}}
     0,
     nullptr
@@ -293,14 +298,6 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug this.name) "_player_z") value=(valuedef this.player.z 1)}}
 
   // Player
-  {{#if (hasItems this.player._animations)}}
-  {{>animationsPartial prefix=(concat (slug this.name) "_player_animation") animations=this.player._animations}}
-  neo::types::sprite_animation* {{slug this.name}}_player_animations[] = {
-    {{#each this.player._animations}}
-    &{{slug ../this.name}}_player_animation_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
-  };
-  {{/if}}
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_id = "player";
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_name = "player";
   BN_DATA_EWRAM neo::types::actor {{slug this.name}}_player_actor = {
@@ -317,9 +314,9 @@ namespace neo::scenes
     nullptr,
     0,
     nullptr,
-    {{#if (hasItems this.player._animations)}}
-    {{this.player._animations.length}},
-    {{slug this.name}}_player_animations
+    {{#if this.player._spriteHasAnimations}}
+    {{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}_animations_count,
+    {{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}_animations
     {{else}}
     0,
     nullptr

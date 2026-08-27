@@ -93,7 +93,7 @@ export interface SpriteAnimations {
   $schema?: string;
 }
 
-export interface InternalActorAnimation extends Omit<SpriteAnimationState, 'type'> {
+export interface InternalSpriteAnimation extends Omit<SpriteAnimationState, 'type'> {
   type: 'animation';
   animationType: SpriteAnimationType;
   name?: string;
@@ -138,7 +138,7 @@ export interface GamePlayer {
   direction?: CharacterDirection;
   sprite?: string;
   // Internals
-  _animations?: InternalActorAnimation[];
+  _spriteHasAnimations?: boolean;
 }
 
 export interface GameScene {
@@ -183,8 +183,8 @@ export interface GameActor {
     update?: SceneEvent[];
   };
   // Internals
+  _spriteHasAnimations?: boolean;
   id: string;
-  _animations?: InternalActorAnimation[];
 }
 
 export interface GameSprite {
@@ -261,6 +261,7 @@ export interface GameSpriteFile {
   _realWidth?: number;
   _realHeight?: number;
   _file?: string;
+  _animations?: InternalSpriteAnimation[];
   $schema?: string;
 }
 
