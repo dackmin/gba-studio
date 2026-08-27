@@ -3,16 +3,16 @@
 {{#if (neq this.enabled false)}}
 {{#if (eq this.type "wait")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-bn::string_view {{../prefix}}_{{@index}}_type = "wait";
-neo::types::wait_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "wait";
+BN_DATA_EWRAM neo::types::wait_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-in")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-bn::string_view {{../prefix}}_{{@index}}_type = "fade-in";
-neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "fade-in";
+BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-out")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-bn::string_view {{../prefix}}_{{@index}}_type = "fade-out";
-neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "fade-out";
+BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (or (eq this.type "wait-for-button") (eq this.type "on-button-press"))}}
 {{#if (eq this.type "on-button-press")}}
 {{#if this.events}}
@@ -24,13 +24,16 @@ neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-bn::string_view {{../prefix}}_{{@index}}_type = "{{this.type}}";
-neo::types::button_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "{{this.type}}";
+{{#each this.buttons}}
+BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_button_{{@index}} = "{{this}}";
+{{/each}}
+BN_DATA_EWRAM neo::types::button_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef this.every false}},
   make_button_vector(
     {{#each this.buttons}}
-    "{{this}}"{{#unless @last}},{{/unless}}
+    {{../../prefix}}_{{@../index}}_button_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
   ),
   {{#if (eq this.type "on-button-press")}}
@@ -42,21 +45,21 @@ neo::types::button_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "disable-input")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "disable-input";
-neo::types::input_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "disable-input";
+BN_DATA_EWRAM neo::types::input_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
 {{else if (eq this.type "enable-input")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "enable-input";
-neo::types::input_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "enable-input";
+BN_DATA_EWRAM neo::types::input_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
-bn::string_view {{../prefix}}_{{@index}}_type = "go-to-scene";
-bn::string_view {{../prefix}}_{{@index}}_target = "{{this.target}}";
-neo::types::scene_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "go-to-scene";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_target = "{{this.target}}";
+BN_DATA_EWRAM neo::types::scene_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_target,
   &{{../prefix}}_{{@index}}_start_x_value,
@@ -64,11 +67,11 @@ neo::types::scene_event {{../prefix}}_{{@index}}(
   neo::types::direction::{{uppercase (valuedef this.start.direction 'down')}}
 );
 {{else if (eq this.type "show-dialog")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
 {{#each (truncate this.text 27)}}
-bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{this}}";
+BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{this}}";
 {{/each}}
-neo::types::dialog_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
   {{valuedef this.z 1}},
@@ -79,7 +82,7 @@ neo::types::dialog_event {{../prefix}}_{{@index}}(
   )
 );
 {{else if (eq this.type "show-menu")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
 {{#each this.choices}}
 {{#if this.events.length}}
 {{>eventsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_event") events=this.events}}
@@ -89,8 +92,8 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 26}}";
-neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
+BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 26}}";
+BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
   {{this.events.length}},
   {{#if this.events.length}}
@@ -100,7 +103,7 @@ neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{/if}}
 );
 {{/each}}
-neo::types::menu_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef (len (longestMenuChoice this.choices)) 0}},
   {{valuedef this.choices.length 0}},
@@ -113,16 +116,16 @@ neo::types::menu_event {{../prefix}}_{{@index}}(
   )
 );
 {{else if (eq this.type "set-variable")}}
-bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
-bn::string_view {{../prefix}}_{{@index}}_string_value = "{{this.value}}";
-neo::variables::value {{../prefix}}_{{@index}}_value(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_string_value = "{{this.value}}";
+BN_DATA_EWRAM neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_variable_name,
   {{int this.value}},
   {{bool this.value}},
   {{../prefix}}_{{@index}}_string_value
 );
-bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
-neo::types::set_variable_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
+BN_DATA_EWRAM neo::types::set_variable_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_variable_name,
   &{{../prefix}}_{{@index}}_value
@@ -152,8 +155,8 @@ neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] = {
   {{/each}}
 };
 {{/if}}
-bn::string_view {{../prefix}}_{{@index}}_type = "if";
-neo::types::if_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "if";
+BN_DATA_EWRAM neo::types::if_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{#if this.conditions.length}}
   {{this.conditions.length}},
@@ -178,37 +181,37 @@ neo::types::if_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "disable-actor")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "disable-actor";
-bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
-neo::types::disable_actor_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "disable-actor";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+BN_DATA_EWRAM neo::types::disable_actor_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_actor
 );
 {{else if (eq this.type "enable-actor")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "enable-actor";
-bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
-neo::types::enable_actor_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "enable-actor";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+BN_DATA_EWRAM neo::types::enable_actor_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_actor
 );
 {{else if (eq this.type "play-music")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
-bn::string_view {{../prefix}}_{{@index}}_music_name = "{{getMusicName @root/music this.name}}";
-neo::types::play_music_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_music_name = "{{getMusicName @root/music this.name}}";
+BN_DATA_EWRAM neo::types::play_music_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_music_name,
   {{this.volume}},
   {{this.loop}}
 );
 {{else if (eq this.type "stop-music")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "stop-music";
-neo::types::stop_music_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "stop-music";
+BN_DATA_EWRAM neo::types::stop_music_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
 {{else if (eq this.type "play-sound")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "play-sound";
-bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{getSoundName @root/sounds this.name}}";
-neo::types::play_sound_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "play-sound";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{getSoundName @root/sounds this.name}}";
+BN_DATA_EWRAM neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_sound_name,
   {{this.volume}},
@@ -217,9 +220,9 @@ neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{this.priority}}
 );
 {{else if (eq this.type "execute-script")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
-bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
-neo::types::execute_script_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
+BN_DATA_EWRAM neo::types::execute_script_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_script_name
 );
@@ -227,9 +230,9 @@ neo::types::execute_script_event {{../prefix}}_{{@index}}(
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
-bn::string_view {{../prefix}}_{{@index}}_type = "move-camera-to";
-bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
-neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "move-camera-to";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+BN_DATA_EWRAM neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
@@ -241,12 +244,13 @@ neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 1)}}
-bn::string_view {{../prefix}}_{{@index}}_type = "move-actor-to";
-bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
-bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
-neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "move-actor-to";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
+BN_DATA_EWRAM neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
-  "{{this.actor}}",
+  {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_speed_value,
@@ -254,26 +258,26 @@ neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_animation
 );
 {{else if (eq this.type "set-actor-direction")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";
-bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
-neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
-neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+BN_DATA_EWRAM neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
+BN_DATA_EWRAM neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_actor,
   {{../prefix}}_{{@index}}_direction
 );
 {{else if (eq this.type "set-background")}}
-bn::string_view {{../prefix}}_{{@index}}_type = "set-background";
-neo::types::set_background_event {{../prefix}}_{{@index}}(
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-background";
+BN_DATA_EWRAM neo::types::set_background_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}
 );
 {{else}}
-bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
-neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
+BN_DATA_EWRAM neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
 {{/if}}
 {{else}}
-bn::string_view {{../prefix}}_{{@index}}_type = "disabled:{{this.type}}";
-neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "disabled:{{this.type}}";
+BN_DATA_EWRAM neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
 {{/if}}
 {{/each}}

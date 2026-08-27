@@ -626,14 +626,7 @@ namespace neo::types
     event** events;
     // Player
     bool has_player;
-    event_value* start_x;
-    event_value* start_y;
-    event_value* start_z;
-    neo::types::direction start_direction;
-    bn::sprite_item player_sprite;
-    // Animations
-    int player_animations_count;
-    sprite_animation** player_animations;
+    actor* player;
     // Map data
     map* map_data;
     // Actors

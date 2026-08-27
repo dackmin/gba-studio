@@ -27,7 +27,7 @@
 
 namespace neo::scenes
 {
-  constexpr bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
+  BN_DATA_EWRAM bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
 
   bn::vector<bn::string_view, 10> make_button_vector()
   {
@@ -86,7 +86,7 @@ namespace neo::scenes
   // Map collisions
   {{#if this.map}}
   {{#if (hasItems this.map.collisions)}}
-  constexpr int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
+  BN_DATA_EWRAM int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
     {{#each this.map.collisions}}
     {{this}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -107,8 +107,8 @@ namespace neo::scenes
   };
 
   // -- Sensor
-  bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
-  neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
+  BN_DATA_EWRAM neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
     {{slug ../this.name}}_sensor_{{@index}}_id,
     {{this.x}},
     {{this.y}},
@@ -132,7 +132,7 @@ namespace neo::scenes
 
   // Map
   {{>valuePartial prefix=(concat (slug this.name) "_map_grid_size") value=(valuedef this.map.gridSize 16)}}
-  neo::types::map {{slug this.name}}_map_data = {
+  BN_DATA_EWRAM neo::types::map {{slug this.name}}_map_data = {
     {{#if this.map}}
     {{valuedef this.map.width 0}},
     {{valuedef this.map.height 0}},
@@ -196,9 +196,9 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
-  bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
-  bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{this.name}}";
-  neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{this.name}}";
+  BN_DATA_EWRAM neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
     {{slug ../this.name}}_actor_{{@index}}_id,
     {{slug ../this.name}}_actor_{{@index}}_name,
     &{{slug ../this.name}}_actor_{{@index}}_x_value,
@@ -260,9 +260,9 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
-  bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
-  bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{this.name}}";
-  neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{this.name}}";
+  BN_DATA_EWRAM neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
     {{slug ../this.name}}_sprite_{{@index}}_id,
     {{slug ../this.name}}_sprite_{{@index}}_name,
     &{{slug ../this.name}}_sprite_{{@index}}_x_value,
@@ -287,6 +287,7 @@ namespace neo::scenes
   {{/if}}
 
   // Scene
+  {{#if this.player}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_x") value=(valuedef this.player.x 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_y") value=(valuedef this.player.y 0)}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_z") value=(valuedef this.player.z 1)}}
@@ -301,9 +302,9 @@ namespace neo::scenes
   };
   {{/if}}
 
-  bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
-  bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
-  neo::types::scene scene_{{slug this.name}} = {
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
+  BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
     {{#if this.background}}
