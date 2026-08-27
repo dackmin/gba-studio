@@ -7,6 +7,7 @@
 #include <bn_sprite_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_unique_ptr.h>
 
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
@@ -76,7 +77,10 @@ namespace neo
     BN_LOG("Drawing menu with ", choices.size(), " choices (", total_width, "x", total_height, ")");
 
     // Draw bg
-    neo::dialog_bg bg = dialog_bg(
+    // dialog_bg and text_sprites hold ~340 sprite_ptr slots combined: too large for IWRAM,
+    // whether on the stack or as static data, so both are heap-allocated (Butano's heap lives
+    // in the much larger EWRAM) and freed automatically when they go out of scope below
+    bn::unique_ptr<neo::dialog_bg> bg_storage = bn::make_unique<neo::dialog_bg>(
       game,
       &bn::sprite_items::textbox,
       x,
@@ -84,10 +88,13 @@ namespace neo
       total_width,
       total_height
     );
+    neo::dialog_bg& bg = *bg_storage;
     bg.set_z_order(bg_z_order);
 
     // Create font
-    bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH> text_sprites;
+    bn::unique_ptr<bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>> text_sprites_storage =
+      bn::make_unique<bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>>();
+    bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>& text_sprites = *text_sprites_storage;
     bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
     bn::sprite_text_generator text_generator(font);
     text_generator.set_left_alignment();
