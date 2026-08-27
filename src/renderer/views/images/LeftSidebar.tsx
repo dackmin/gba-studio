@@ -1,7 +1,7 @@
-import { type ComponentPropsWithoutRef, useCallback } from 'react';
+import { type ComponentPropsWithoutRef, MouseEvent, useCallback } from 'react';
 import { classNames } from '@junipero/react';
-import { Text, ContextMenu } from '@radix-ui/themes';
-import { ImageIcon } from '@radix-ui/react-icons';
+import { Text, ContextMenu, IconButton } from '@radix-ui/themes';
+import { ImageIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, GameSpriteFile } from '../../../types';
 import { useApp, useLocalData, useSprite } from '../../services/hooks';
@@ -20,6 +20,11 @@ const LeftSidebar = ({
   const { sprites, backgrounds, onCanvasChange, ...appPayload } = useApp();
   const { collapse, isCollapsed } = useLocalData();
   const { selectedSprite, selectedBackground, selectSprite, selectBackground } = useSprite();
+
+  const onAddSprite = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    window.electron.send('import-sprite');
+  }, []);
 
   const onDeleteSprite = useCallback(async () => {
     if (!selectedSprite) {
@@ -55,7 +60,19 @@ const LeftSidebar = ({
         onOpenChange={collapse.bind(null, 'canvas.sprites')}
       >
         <Collapsible.Trigger>
-          <Text>Sprites</Text>
+          <div className="flex items-center justify-between w-full">
+            <Text>Sprites</Text>
+            <IconButton
+              variant="ghost"
+              radius="full"
+              onClick={onAddSprite}
+            >
+              <PlusCircledIcon
+                width={16}
+                height={16}
+              />
+            </IconButton>
+          </div>
         </Collapsible.Trigger>
         <Collapsible.Content>
           { sprites.length === 0 ? (

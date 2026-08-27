@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld('electron', {
   removeEventListener: (channel: string, func: (...args: any[]) => void) => {
     ipcRenderer.removeListener(channel, func);
   },
+  send: (channel: string, ...args: any[]) => {
+    ipcRenderer.emit(channel, ...args);
+  },
 
   // Invokables
   getRecentProjects: (): Promise<RecentProject[]> =>

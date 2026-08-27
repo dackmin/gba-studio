@@ -20,6 +20,7 @@ interface AppBridge extends EventTarget {
     channel: string,
     func: ((...args: any[]) => void)
   ): void;
+  send(channel: string, ...args: any[]): void;
 
   getRecentProjects(): Promise<RecentProject[]>;
   clearRecentProjects(): Promise<void>;
