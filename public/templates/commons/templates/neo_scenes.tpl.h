@@ -294,11 +294,36 @@ namespace neo::scenes
 
   // Player
   {{#if (hasItems this.player._animations)}}
-  {{>animationsPartial prefix=(concat (slug ../this.name) "_player_animation") animations=this.player._animations}}
-  neo::types::sprite_animation* {{slug ../this.name}}_player_animations[] = {
+  {{>animationsPartial prefix=(concat (slug this.name) "_player_animation") animations=this.player._animations}}
+  neo::types::sprite_animation* {{slug this.name}}_player_animations[] = {
     {{#each this.player._animations}}
-    &{{slug ../../this.name}}_player_animation_{{@index}}{{#unless @last}},{{/unless}}
+    &{{slug ../this.name}}_player_animation_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
+  };
+  {{/if}}
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_id = "player";
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_name = "player";
+  BN_DATA_EWRAM neo::types::actor {{slug this.name}}_player_actor = {
+    {{slug this.name}}_player_id,
+    {{slug this.name}}_player_name,
+    &{{slug this.name}}_player_x_value,
+    &{{slug this.name}}_player_y_value,
+    &{{slug this.name}}_player_z_value,
+    neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    {{#if (hasItems this.player._animations)}}
+    {{this.player._animations.length}},
+    {{slug this.name}}_player_animations
+    {{else}}
+    0,
+    nullptr
+    {{/if}}
   };
   {{/if}}
 
@@ -321,26 +346,9 @@ namespace neo::scenes
     {{/if}}
     {{#if this.player}}
     true,
-    &{{slug this.name}}_player_x_value,
-    &{{slug this.name}}_player_y_value,
-    &{{slug this.name}}_player_z_value,
-    neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
-    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
-    {{#if (hasItems this.player._animations)}}
-    {{this.player._animations.length}},
-    {{slug this.name}}_player_animations,
-    {{else}}
-    0,
-    nullptr,
-    {{/if}}
+    &{{slug this.name}}_player_actor,
     {{else}}
     false,
-    &{{slug this.name}}_player_x_value,
-    &{{slug this.name}}_player_y_value,
-    &{{slug this.name}}_player_z_value,
-    neo::types::direction::DOWN,
-    bn::sprite_items::sprite_default,
-    0,
     nullptr,
     {{/if}}
     {{#if this.map}}
@@ -367,24 +375,15 @@ namespace neo::scenes
   {{/each}}
 
   // Default scene
-  {{>valuePartial prefix="default_player_x" value="0"}}
-  {{>valuePartial prefix="default_player_y" value="0"}}
-  {{>valuePartial prefix="default_player_z" value="1"}}
-  bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
-  bn::string_view default_scene_name = "default";
-  neo::types::scene scene_default = {
+  BN_DATA_EWRAM bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+  BN_DATA_EWRAM bn::string_view default_scene_name = "default";
+  BN_DATA_EWRAM neo::types::scene scene_default = {
     default_scene_id,
     default_scene_name,
     bn::regular_bg_items::bg_default,
     0,
     nullptr,
     false,
-    &default_player_x_value,
-    &default_player_y_value,
-    &default_player_z_value,
-    neo::types::direction::DOWN,
-    bn::sprite_items::sprite_default,
-    0,
     nullptr,
     nullptr,
     0,

@@ -17,7 +17,6 @@
 #include <neo_scenes.h>
 #include <neo_variables.h>
 
-#include "player.h"
 #include "game.h"
 #include "commons.h"
 #include "fade.h"
@@ -31,14 +30,13 @@
 namespace neo
 {
   game::game(
-    bn::camera_ptr& camera_,
-    neo::player& player_
+    bn::camera_ptr& camera_
   ) :
     camera(camera_),
-    player(player_),
     variables(),
     active_scene(nullptr),
-    scene_bg()
+    scene_bg(),
+    player(nullptr)
   {
     current_scene = neo::scenes::STARTING_SCENE;
     scene_changed = false;
@@ -79,6 +77,13 @@ namespace neo
     }
 
 
+    // Clean up old player just in case
+    if (player != nullptr)
+    {
+      delete player;
+      player = nullptr;
+    }
+
     // Clean up old actors just in case
     BN_LOG("Cleaning up old actors, count:", actors_count);
     if (actors_count > 0)
@@ -110,14 +115,11 @@ namespace neo
 
     BN_LOG("Starting scene: ", active_scene->name);
 
-    if (active_scene->has_player && active_scene->map_data != nullptr)
+    if (active_scene->has_player && active_scene->player != nullptr && active_scene->map_data != nullptr)
     {
       BN_LOG("Has player");
 
-      int x = active_scene->start_x->as_int(variables);
-      int y = active_scene->start_y->as_int(variables);
-      int z = active_scene->start_z->as_int(variables);
-      neo::types::direction dir = active_scene->start_direction;
+      player = new neo::actor(this, active_scene->player, true);
 
       if (
         last_goto_event != nullptr &&
@@ -127,23 +129,19 @@ namespace neo
       )
       {
         BN_LOG("Using last go-to-scene event position");
-        x = last_goto_event->start_x->as_int(variables);
-        y = last_goto_event->start_y->as_int(variables);
-        dir = last_goto_event->start_direction;
+
+        int x = last_goto_event->start_x->as_int(variables);
+        int y = last_goto_event->start_y->as_int(variables);
+        neo::types::direction dir = last_goto_event->start_direction;
         last_goto_event = nullptr;
+
+        player->set_direction(dir);
+        player->set_position(bn::fixed_point(
+          active_scene->map_data->to_pixel_x(variables, x),
+          active_scene->map_data->to_pixel_y(variables, y)
+        ));
       }
-
       BN_LOG("Player start position: x=", x, ", y=", y, ", z=", z);
-
-      player.play(
-        *active_scene->map_data,
-        x,
-        y,
-        z,
-        dir,
-        active_scene->player_sprite.create_sprite(0, 0),
-        active_scene->player_sprite.tiles_item()
-      );
     }
 
     // Actors
@@ -213,6 +211,12 @@ namespace neo
       }
     }
 
+    // Execute player init events
+    if (player != nullptr)
+    {
+      player->init();
+    }
+
     // Execute actors init events
     if (active_scene->actors != nullptr)
     {
@@ -231,9 +235,9 @@ namespace neo
         exec_event(e, true);
       }
 
-      if (active_scene->has_player)
+      if (active_scene->has_player && player != nullptr)
       {
-        player.update();
+        player->update();
       }
 
       for (int i = 0; i < actors_count; ++i)
@@ -765,7 +769,10 @@ namespace neo
 
   void game::enable_blending ()
   {
-    player.sprite.set_blending_enabled(true);
+    if (player != nullptr)
+    {
+      player->sprite.set_blending_enabled(true);
+    }
 
     for (int i = 0; i < actors_count; ++i)
     {
@@ -780,7 +787,10 @@ namespace neo
 
   void game::disable_blending ()
   {
-    player.sprite.set_blending_enabled(false);
+    if (player != nullptr)
+    {
+      player->sprite.set_blending_enabled(false);
+    }
 
     // Actors
     for (int i = 0; i < actors_count; ++i)

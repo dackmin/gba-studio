@@ -11,7 +11,6 @@
 #include <neo_types.h>
 #include <neo_variables.h>
 
-#include "player.h"
 #include "commons.h"
 #include "actor.h"
 #include "sprite.h"
@@ -22,13 +21,12 @@ namespace neo
   {
     public:
       game();
-      game(bn::camera_ptr& camera_ptr, neo::player& player);
+      game(bn::camera_ptr& camera_ptr);
 
       bn::string_view current_scene;
       bool scene_changed;
 
       bn::camera_ptr& camera;
-      neo::player& player;
       neo::variables::registry variables;
 
       neo::types::scene* active_scene;
@@ -45,6 +43,8 @@ namespace neo
       bn::vector<neo::sprite*, 50> sprites;
 
       bool is_input_enabled;
+
+      neo::actor* player;
 
       void set_scene(bn::string_view scene_name);
       void set_background(bn::regular_bg_item background, bool visible = false);
