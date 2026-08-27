@@ -233,7 +233,7 @@ namespace neo
           anim->reset(sprite, &tiles_item);
         }
 
-        while (bn::keypad::left_held())
+        while (bn::keypad::left_held() && !game->scene_changed)
         {
           move(anim);
         }
@@ -260,7 +260,7 @@ namespace neo
           anim->reset(sprite, &tiles_item);
         }
 
-        while (bn::keypad::right_held())
+        while (bn::keypad::right_held() && !game->scene_changed)
         {
           move(anim);
         }
@@ -287,7 +287,7 @@ namespace neo
           anim->reset(sprite, &tiles_item);
         }
 
-        while (bn::keypad::up_held())
+        while (bn::keypad::up_held() && !game->scene_changed)
         {
           move(anim);
         }
@@ -313,7 +313,7 @@ namespace neo
           anim->reset(sprite, &tiles_item);
         }
 
-        while (bn::keypad::down_held())
+        while (bn::keypad::down_held() && !game->scene_changed)
         {
           move(anim);
         }
