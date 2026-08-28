@@ -34,7 +34,7 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
 
   useTimeout(() => {
     save(project!.id!, state);
-  }, 1000, [state, project?.id], { enabled: ready && !!project?.id && dirty });
+  }, 500, [state, project?.id], { enabled: ready && !!project?.id && dirty });
 
   useEventListener('beforeunload', () => {
     if (ready || !project?.id) {

@@ -18,7 +18,7 @@ import type {
   ToolType,
 } from '../../../types';
 import { type CanvasContextType, CanvasContext } from '../../services/contexts';
-import { useApp } from '../../services/hooks';
+import { useApp, useLocalData } from '../../services/hooks';
 
 export interface CanvasState {
   selectedScene?: string;
@@ -33,8 +33,9 @@ const Provider = ({
   children,
 }: ComponentPropsWithoutRef<any>) => {
   const { onCanvasChange, ...appPayload } = useApp();
+  const { getData, setData } = useLocalData();
   const [state, dispatch] = useReducer(mockState<CanvasState>, {
-    selectedScene: undefined,
+    selectedScene: getData?.('canvas.selectedScene'),
     selectedItem: undefined,
     tool: 'default',
     subTool: undefined,
@@ -54,8 +55,9 @@ const Provider = ({
       return;
     }
 
+    setData?.('canvas.selectedScene', scene?.id);
     dispatch({ selectedScene: scene?.id, selectedItem: undefined });
-  }, [selectedScene]);
+  }, [setData, selectedScene]);
 
   const selectScript = useCallback((script: GameScript) => {
     if (state.selectedItem === script) {

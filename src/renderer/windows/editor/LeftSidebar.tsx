@@ -30,6 +30,7 @@ import {
   useLocalData,
 } from '../../services/hooks';
 import views from '../../views';
+import { findScene } from '../../../helpers';
 
 export interface LeftSidebarProps extends ResizableProps {}
 
@@ -61,7 +62,7 @@ const LeftSidebar = ({
     setView,
     setResizingSidebar,
   } = useEditor();
-  const { getSize, setSize, collapse, isCollapsed } = useLocalData();
+  const { getSize, setSize, collapse, isCollapsed, getData } = useLocalData();
   const { selectedScene } = useCanvas();
   const leftSidebarWidth = useMemo(() => (
     getSize('leftSidebarWidth', 300)
@@ -74,11 +75,14 @@ const LeftSidebar = ({
       return;
     }
 
+    const startingScene = selectedScene?.id ??
+      findScene(scenes, getData('canvas.selectedScene'))?.id;
+
     await window.electron.startBuildProject(projectPath, {
       project: {
         ...project,
-        startingScene: selectedScene
-          ? selectedScene.id
+        startingScene: startingScene
+          ? startingScene
           : project?.startingScene,
       },
       scenes,
@@ -92,6 +96,7 @@ const LeftSidebar = ({
   }, [
     building, selectedScene, projectPath, project, scenes, variables, scripts, sprites, backgrounds,
     sounds, music,
+    getData,
   ]);
 
   useHotkeys('mod+left', () => {
