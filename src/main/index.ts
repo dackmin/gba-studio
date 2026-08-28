@@ -45,6 +45,7 @@ import Storage from './storage';
 app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
 app.commandLine.appendSwitch('force_high_performance_gpu');
 app.commandLine.appendSwitch('force-gpu-mem-available-mb', '2048');
+app.commandLine.appendSwitch('enable-features','SharedArrayBuffer');
 
 // Wayland users have issues with Vulkan & Chromium trying to render canvas/webgl
 // Forcing either vulkan or opengl seems to do the trick
@@ -69,6 +70,9 @@ protocol.registerSchemesAsPrivileged([
   } },
   { scheme: 'resources', privileges: {
     standard: true, bypassCSP: true, supportFetchAPI: true, corsEnabled: true,
+  } },
+  { scheme: 'app', privileges: {
+    standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true,
   } },
 ]);
 

@@ -168,18 +168,16 @@ export const createProjectWindow = async (projectPath: string) => {
   });
 
   // Enable crossOriginIsolated for mgba/wasm
-  win.webContents.session.webRequest
-    .onHeadersReceived((details, callback) => {
-      if (!details.responseHeaders) {
-        details.responseHeaders = {};
-      }
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    if (!details.responseHeaders) {
+      details.responseHeaders = {};
+    }
 
-      details.responseHeaders['Cross-Origin-Opener-Policy'] = ['same-origin'];
-      details.responseHeaders['Cross-Origin-Embedder-Policy'] =
-        ['require-corp'];
+    details.responseHeaders['Cross-Origin-Opener-Policy'] = ['same-origin'];
+    details.responseHeaders['Cross-Origin-Embedder-Policy'] = ['require-corp'];
 
-      callback({ responseHeaders: details.responseHeaders });
-    });
+    callback({ responseHeaders: details.responseHeaders });
+  });
 
   ses.protocol.handle('project', req => {
     const filePath = req.url.replace('project://', '');
@@ -195,11 +193,33 @@ export const createProjectWindow = async (projectPath: string) => {
       .join(getResourcesDir(), filePath)).toString());
   });
 
+  ses.protocol.handle('app', async req => {
+    const { pathname } = new URL(req.url);
+    const relativePath = pathname.replace(/^\/+/, '') || 'index.html';
+    const filePath = path.join(
+      app.getAppPath(),
+      `./.vite/renderer/${MAIN_WINDOW_VITE_NAME}`,
+      relativePath,
+    );
+
+    const response = await net.fetch(url.pathToFileURL(filePath).toString());
+    const headers = new Headers(response.headers);
+    headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+    headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  });
+
   const abortController = new AbortController();
 
   win.on('close', () => {
     ses.protocol.unhandle('project');
     ses.protocol.unhandle('resources');
+    ses.protocol.unhandle('app');
     abortController.abort();
   });
 
@@ -225,18 +245,17 @@ export const createProjectWindow = async (projectPath: string) => {
         'Cross-Origin-Embedder-Policy: require-corp',
     });
   } else {
-    win.loadFile(
-      path.join(app.getAppPath(),
-        `./.vite/renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-      { query: {
-        projectPath,
-        projectBase: path.dirname(projectPath),
-        isFullscreen: '' + win.isFullScreen(),
-        isDev: '' + !app.isPackaged,
-        theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
-        resourcesPath: getResourcesDir(),
-      } },
-    );
+    const appUrl = new URL('app://bundle/index.html');
+
+    appUrl.searchParams.set('projectPath', projectPath);
+    appUrl.searchParams.set('projectBase', path.dirname(projectPath));
+    appUrl.searchParams.set('isFullscreen', '' + win.isFullScreen());
+    appUrl.searchParams.set('isDev', '' + !app.isPackaged);
+    appUrl.searchParams.set('theme',
+      nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+    appUrl.searchParams.set('resourcesPath', getResourcesDir());
+
+    win.loadURL(appUrl.toString());
   }
 
   win.on('enter-full-screen', () => {

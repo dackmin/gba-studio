@@ -9,6 +9,7 @@ import Gamepad from '../../components/Gamepad';
 
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isInitializingRef = useRef(false);
   const [emulator, setEmulator] = useState<mGBAEmulator | null>(null);
   const { emulatorLogs, addEmulatorLog } = useLogs();
   const { volume } = useEmulator();
@@ -73,34 +74,43 @@ const Preview = () => {
   }, [addEmulatorLog]);
 
   const init = useCallback(async () => {
-    if (!canvasRef.current) {
+    if (!canvasRef.current || isInitializingRef.current) {
       return;
     }
 
-    const module = await mGBA({ canvas: canvasRef.current });
-    // eslint-disable-next-line new-cap
-    await module.FSInit();
-    module.setCoreSettings({
-      autoSaveStateEnable: false,
-      restoreAutoSaveStateOnLoad: false,
-    });
+    isInitializingRef.current = true;
 
-    const romPath = await window.electron.getRomPath(projectPath);
-    const file = await fetch(`project://${romPath}`);
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+    try {
+      const module = await mGBA({ canvas: canvasRef.current });
+      // eslint-disable-next-line new-cap
+      await module.FSInit();
 
-    await new Promise(resolve => {
-      module.uploadRom(new File([uint8Array], 'game.gba'), () => {
-        reload(module);
-        resolve(true);
+      module.setCoreSettings({
+        autoSaveStateEnable: false,
+        restoreAutoSaveStateOnLoad: false,
       });
-    });
 
-    addLogger(module);
-    setEmulator(module);
+      const romPath = await window.electron.getRomPath(projectPath);
+      const file = await fetch(`project://${romPath}`);
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
 
-    return module;
+      await new Promise(resolve => {
+        module.uploadRom(new File([uint8Array], 'game.gba'), () => {
+          reload(module);
+          resolve(true);
+        });
+      });
+
+      addLogger(module);
+      setEmulator(module);
+
+      return module;
+    } catch (error) {
+      console.error('Failed to initialize emulator:', error);
+    } finally {
+      isInitializingRef.current = false;
+    }
   }, [projectPath, reload, addLogger]);
 
   useEffect(() => {
@@ -191,6 +201,14 @@ const Preview = () => {
     }
   }, [emulator]);
 
+  const onCanvasClick = useCallback(() => {
+    if (emulator) {
+      emulator.resumeGame();
+    } else {
+      init();
+    }
+  }, [emulator, init]);
+
   return (
     <ConstrainedView>
       <Gamepad
@@ -207,7 +225,7 @@ const Preview = () => {
             ref={canvasRef}
             className="bg-black rounded-lg pixelated"
             style={{ width: 240 * scale, height: 160 * scale }}
-            onClick={() => emulator ? emulator.resumeGame() : init()}
+            onClick={onCanvasClick}
           />
         </div>
       </Gamepad>

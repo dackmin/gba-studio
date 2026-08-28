@@ -8,9 +8,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  optimizeDeps: {
-    exclude: ['@thenick775/mgba-wasm'],
-  },
   build: {
     outDir: '../../.vite/renderer/main_window',
   },
