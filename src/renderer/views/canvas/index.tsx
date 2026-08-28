@@ -35,7 +35,7 @@ import { duplicateActor, duplicateSensor, duplicateSprite, pixelToTile } from '.
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
-import Arrows from './Arrows';
+// import Arrows from './Arrows';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import Sprite from './Sprite';
@@ -551,7 +551,7 @@ const Canvas = () => {
           />
         ) }
 
-        <Arrows />
+        {/* <Arrows /> */}
       </InfiniteCanvas>
 
       <Toolbar
