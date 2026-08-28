@@ -63,6 +63,7 @@ export interface SceneState {
 }
 
 const Scene = ({
+  ref,
   scene,
   className,
   preview = false,
@@ -486,6 +487,7 @@ const Scene = ({
       }
     >
       <div
+        ref={ref}
         className={classNames(
           '!absolute select-none',
           { 'z-100' : selectedScene === scene },

@@ -25,6 +25,7 @@ const LeftSidebar = ({
     scenes,
     scripts,
     variables,
+    eventEmitter,
   } = useApp();
   const {
     selectedScene,
@@ -131,6 +132,11 @@ const LeftSidebar = ({
     );
   }, [scenes, onScenesChange]);
 
+  const onSelectScene = useCallback((scene: GameScene) => {
+    selectScene?.(scene);
+    eventEmitter?.emit('canvas:center', scene);
+  }, [selectScene, eventEmitter]);
+
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root
@@ -162,7 +168,7 @@ const LeftSidebar = ({
                     'flex items-center gap-2 px-3 py-1',
                     { 'bg-(--accent-9)': selectedScene === scene },
                   )}
-                  onClick={selectScene?.bind(null, scene)}
+                  onClick={onSelectScene.bind(null, scene)}
                 >
                   <StackIcon
                     className={classNames(

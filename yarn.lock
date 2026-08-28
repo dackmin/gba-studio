@@ -1595,9 +1595,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@junipero/react@npm:3.14.2":
-  version: 3.14.2
-  resolution: "@junipero/react@npm:3.14.2"
+"@junipero/react@npm:3.15.0":
+  version: 3.15.0
+  resolution: "@junipero/react@npm:3.15.0"
   dependencies:
     "@floating-ui/react": "npm:0.27.20"
     "@junipero/core": "npm:^3.14.1"
@@ -1606,7 +1606,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/77c4974e828db7af3ec78a35637fd06ab0d0187c05e419782a7e96c436f37aaa35a33c59f95ffb5ab6eecc02c800197be04e42cf3a6f37785708d7796f6c5084
+  checksum: 10c0/12e3fdc45388891a6814b325919920aa74557cd26aba77f796a900c59fd3191662b59ceaf4475615212cea3c89b8f2a9df4d7c7bea6378a76bed0718859cf123
   languageName: node
   linkType: hard
 
@@ -4117,9 +4117,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:6.1.0":
-  version: 6.1.0
-  resolution: "@vitejs/plugin-react@npm:6.1.0"
+"@vitejs/plugin-react@npm:6.1.1":
+  version: 6.1.1
+  resolution: "@vitejs/plugin-react@npm:6.1.1"
   dependencies:
     "@rolldown/pluginutils": "npm:^1.0.1"
   peerDependencies:
@@ -4134,7 +4134,7 @@ __metadata:
       optional: true
     oxc-transform-react:
       optional: true
-  checksum: 10c0/e6a955d2aa84fa09d4335fb0a3d3466a71bc31efe8d3e0096d34c5d1c6f97d9c92b3ffe7ec8ad8fd63ceee1323770d6b184b2a32a7fadd82fd2a46a3b444e81a
+  checksum: 10c0/4599b37ee19ebee289782b177642e3002afa9b74cb57a2c0e2a601053c7ebb47f9ef178ab605ff1217de1d23069948a8d366447bfac0d9fb2f17afee5368acd0
   languageName: node
   linkType: hard
 
@@ -6009,7 +6009,7 @@ __metadata:
     "@electron-forge/plugin-fuses": "npm:7.11.2"
     "@electron-forge/plugin-vite": "npm:7.11.2"
     "@electron/fuses": "npm:2.1.3"
-    "@junipero/react": "npm:3.14.2"
+    "@junipero/react": "npm:3.15.0"
     "@junipero/tailwind-plugin": "npm:3.14.1"
     "@junipero/theme": "npm:3.13.1"
     "@poool/oxlint-config": "npm:6.2.1"
@@ -6023,7 +6023,7 @@ __metadata:
     "@types/fs-extra": "npm:11.0.4"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.5"
-    "@vitejs/plugin-react": "npm:6.1.0"
+    "@vitejs/plugin-react": "npm:6.1.1"
     commitlint: "npm:21.2.2"
     debug: "npm:4.4.3"
     dotenv: "npm:17.4.2"

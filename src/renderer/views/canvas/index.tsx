@@ -2,7 +2,6 @@ import {
   type KeyboardEvent,
   type MouseEvent,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -13,6 +12,7 @@ import {
   classNames,
   set,
   useEventListener,
+  useTimeout,
 } from '@junipero/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
@@ -42,8 +42,9 @@ import Sprite from './Sprite';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
-  const { getSize, isCollapsed } = useLocalData();
-  const { project } = useApp();
+  const scenesRefs = useRef<Record<string, HTMLDivElement>>({});
+  const { getSize, isCollapsed, getData } = useLocalData();
+  const { project, eventEmitter } = useApp();
   const { resizingSidebar } = useEditor();
   const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
   const {
@@ -59,9 +60,15 @@ const Canvas = () => {
   } = useCanvas();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
-  useEffect(() => {
-    infiniteCanvasRef.current?.fitIntoView(200);
-  }, []);
+  useTimeout(() => {
+    const storedSelectedScene = getData('canvas.selectedScene');
+
+    if (storedSelectedScene) {
+      infiniteCanvasRef.current?.centerOn(
+        scenesRefs.current[storedSelectedScene],
+      );
+    }
+  }, 100, []);
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === ' ' && tool !== 'pan') {
@@ -79,6 +86,14 @@ const Canvas = () => {
       setTool?.('pan');
     }
   }, [tool, setTool]);
+
+  useEventListener('canvas:center', (e: CustomEvent<GameScene>) => {
+    const target = scenesRefs.current[e.detail?.id || ''] ?? undefined;
+
+    if (target) {
+      infiniteCanvasRef.current?.centerOn(target, 200);
+    }
+  }, [eventEmitter], { target: eventEmitter });
 
   useEventListener('keyup', (e: KeyboardEvent) => {
     if (e.key === ' ' && tool === 'pan') {
@@ -481,6 +496,17 @@ const Canvas = () => {
     selectScene?.();
   }, [selectScene, tool, subTool]);
 
+  // const onZoom = useDelayedCallback((zoom: number) => {
+  //   console.log('zoom changed to', zoom);
+  //   setSize('canvas.zoom', zoom);
+  // }, 500, [setSize]);
+
+  // const onPan = useDelayedCallback((x: number, y: number) => {
+  //   console.log('pan changed to', x, y);
+  //   setSize('canvas.x', x);
+  //   setSize('canvas.y', y);
+  // }, 500, [setSize]);
+
   return (
     <FullscreenView onMouseDown={onClickOutside}>
       <InfiniteCanvas
@@ -497,12 +523,22 @@ const Canvas = () => {
             'cursor-copy': tool === 'add',
           },
         )}
-        center={true}
         fitAbsolute={true}
         onClick={onCanvasClick}
+        // initialZoom={getSize('canvas.zoom') || 1}
+        // initialOffsetX={getSize('canvas.x') || 0}
+        // initialOffsetY={getSize('canvas.y') || 0}
+        padding={{
+          left: !isCollapsed('leftSidebar') ? getSize('leftSidebarWidth') || 300 : 0,
+          bottom: !isCollapsed('bottomBar') ? getSize('bottomBarHeight') || 300 : 0,
+          right: !isCollapsed('rightSidebar') ? getSize('rightSidebarWidth') || 300 : 0,
+        }}
+        // onZoom={onZoom}
+        // onPan={onPan}
       >
         { appPayload.scenes.map(scene => (
           <Scene
+            ref={(r: HTMLDivElement) => { scenesRefs.current[scene.id] = r; }}
             key={scene.name}
             scene={scene}
             onSelect={selectScene?.bind(null, scene)}
