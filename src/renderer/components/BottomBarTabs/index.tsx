@@ -104,8 +104,9 @@ const BottomBarTabs = ({
 
         <ScrollArea
           ref={scrollAreaRef}
+          scrollbars="vertical"
           className={classNames(
-            'bg-onyx',
+            'bg-onyx w-full! [&>div>div]:w-full!',
             {
               'transition-[padding-left] duration-100': !resizingSidebar,
             },

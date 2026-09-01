@@ -1,5 +1,5 @@
 import { type ChangeEvent, type KeyboardEvent, useCallback } from 'react';
-import { Heading, Inset, Separator, Text, TextField } from '@radix-ui/themes';
+import { Heading, Inset, ScrollArea, Separator, Text, TextField } from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene, GameSensor } from '../../../types';
@@ -53,92 +53,94 @@ const SensorForm = ({
   }, [onDelayedChange, sensor, selectedScene]);
 
   return (
-    <div className="p-3 w-full h-full overflow-x-hidden overflow-y-scroll">
-      <Text size="1" className="text-slate">Sensor</Text>
-      <Heading
-        contentEditable
-        as="h2"
-        size="4"
-        className={classNames(
-          'whitespace-nowrap overflow-scroll focus:outline-2',
-          'outline-(--accent-9) rounded-xs editable',
-        )}
-        onKeyDown={onNameKeyDown}
-        onBlur={onNameChange}
-        suppressContentEditableWarning
-      >
-        { sensor.name }
-      </Heading>
-      <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">X</Text>
-            <TextField.Root
-              type="number"
-              min={0}
-              value={sensor.x ?? 0}
-              onChange={onTextChange.bind(null, 'x')}
-            >
-              <TextField.Slot side="right">
-                tiles
-              </TextField.Slot>
-            </TextField.Root>
+    <ScrollArea scrollbars="vertical">
+      <div className="p-3">
+        <Text size="1" className="text-slate">Sensor</Text>
+        <Heading
+          contentEditable
+          as="h2"
+          size="4"
+          className={classNames(
+            'whitespace-nowrap overflow-scroll focus:outline-2',
+            'outline-(--accent-9) rounded-xs editable',
+          )}
+          onKeyDown={onNameKeyDown}
+          onBlur={onNameChange}
+          suppressContentEditableWarning
+        >
+          { sensor.name }
+        </Heading>
+        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">X</Text>
+              <TextField.Root
+                type="number"
+                min={0}
+                value={sensor.x ?? 0}
+                onChange={onTextChange.bind(null, 'x')}
+              >
+                <TextField.Slot side="right">
+                  tiles
+                </TextField.Slot>
+              </TextField.Root>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Y</Text>
+              <TextField.Root
+                type="number"
+                min={0}
+                value={sensor.y ?? 0}
+                onChange={onTextChange.bind(null, 'y')}
+              >
+                <TextField.Slot side="right">
+                  tiles
+                </TextField.Slot>
+              </TextField.Root>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Y</Text>
-            <TextField.Root
-              type="number"
-              min={0}
-              value={sensor.y ?? 0}
-              onChange={onTextChange.bind(null, 'y')}
-            >
-              <TextField.Slot side="right">
-                tiles
-              </TextField.Slot>
-            </TextField.Root>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Width</Text>
+              <TextField.Root
+                type="number"
+                min={1}
+                value={sensor.width ?? 1}
+                onChange={onTextChange.bind(null, 'width')}
+              >
+                <TextField.Slot side="right">
+                  tiles
+                </TextField.Slot>
+              </TextField.Root>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Height</Text>
+              <TextField.Root
+                type="number"
+                min={1}
+                value={sensor.height ?? 2}
+                onChange={onTextChange.bind(null, 'height')}
+              >
+                <TextField.Slot side="right">
+                  tiles
+                </TextField.Slot>
+              </TextField.Root>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Width</Text>
-            <TextField.Root
-              type="number"
-              min={1}
-              value={sensor.width ?? 1}
-              onChange={onTextChange.bind(null, 'width')}
-            >
-              <TextField.Slot side="right">
-                tiles
-              </TextField.Slot>
-            </TextField.Root>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Height</Text>
-            <TextField.Root
-              type="number"
-              min={1}
-              value={sensor.height ?? 2}
-              onChange={onTextChange.bind(null, 'height')}
-            >
-              <TextField.Slot side="right">
-                tiles
-              </TextField.Slot>
-            </TextField.Root>
-          </div>
+        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+        <div className="flex flex-col gap-6">
+          <Text className="block text-slate" size="1">Events</Text>
+          <Inset>
+            <EventsField
+              value={sensor.events ?? []}
+              onValueChange={onValueChange.bind(null, 'events')}
+            />
+          </Inset>
         </div>
       </div>
-      <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-      <div className="flex flex-col gap-6">
-        <Text className="block text-slate" size="1">Events</Text>
-        <Inset>
-          <EventsField
-            value={sensor.events ?? []}
-            onValueChange={onValueChange.bind(null, 'events')}
-          />
-        </Inset>
-      </div>
-    </div>
+    </ScrollArea>
   );
 };
 

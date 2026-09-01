@@ -150,7 +150,7 @@ export const createProjectWindow = async (projectPath: string) => {
       transparent: true,
       vibrancy: 'under-window',
     },
-    ...(process.platform === 'win32' || 'linux') && {
+    ...['win32', 'linux'].includes(process.platform) && {
       autoHideMenuBar: false,
       backgroundColor: nativeTheme.shouldUseDarkColors
         ? '#1A1A1A'

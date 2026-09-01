@@ -74,7 +74,8 @@ const MusicForm = () => {
             as="h2"
             size="4"
             className={classNames(
-              'whitespace-nowrap overflow-scroll focus:outline-2 outline-(--accent-9) rounded-xs',
+              'whitespace-nowrap overflow-scroll focus:outline-2',
+              'outline-(--accent-9) rounded-xs editable',
             )}
             onKeyDown={onNameKeyDown}
             onBlur={onNameChange}

@@ -2,6 +2,7 @@ import { type ChangeEvent, type KeyboardEvent, useCallback, useMemo } from 'reac
 import {
   Heading,
   Inset,
+  ScrollArea,
   Select,
   Separator,
   Tabs,
@@ -109,94 +110,96 @@ const SceneForm = ({
 
   return (
     <SceneFormContext value={getContext()}>
-      <div className="p-3 w-full h-full overflow-x-hidden overflow-y-scroll">
-        <Text size="1" className="text-slate">Scene</Text>
-        <Heading
-          contentEditable
-          as="h2"
-          size="4"
-          className={classNames(
-            'whitespace-nowrap overflow-scroll focus:outline-2',
-            'outline-(--accent-9) rounded-xs editable',
-          )}
-          onKeyDown={onNameKeyDown}
-          onBlur={onNameChange}
-          suppressContentEditableWarning
-        >
-          { scene.name }
-        </Heading>
-        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Scene type</Text>
-            <Select.Root
-              value={scene?.sceneType ?? 'logos'}
-              onValueChange={onTypeChange.bind(null, 'sceneType')}
-            >
-              <Select.Trigger className="w-full" />
-              <Select.Content>
-                <Select.Item value="logos">Logos</Select.Item>
-                <Select.Item value="2d-top-down">Top Down 2D</Select.Item>
-              </Select.Content>
-            </Select.Root>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Background</Text>
-            <BackgroundsListField
-              value={scene?.background || ''}
-              onValueChange={onBackgroundChange}
-            />
-          </div>
-          { scene.sceneType === '2d-top-down' && (
+      <ScrollArea size="1" scrollbars="vertical">
+        <div className="p-3">
+          <Text size="1" className="text-slate">Scene</Text>
+          <Heading
+            contentEditable
+            as="h2"
+            size="4"
+            className={classNames(
+              'whitespace-nowrap overflow-scroll focus:outline-2',
+              'outline-(--accent-9) rounded-xs editable',
+            )}
+            onKeyDown={onNameKeyDown}
+            onBlur={onNameChange}
+            suppressContentEditableWarning
+          >
+            { scene.name }
+          </Heading>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Text className="block text-slate" size="1">Grid size</Text>
-              <EventValueField
-                type="number"
-                value={scene.map?.gridSize ?? 16}
-                onValueChange={onValueChange.bind(null, 'map.gridSize')}
+              <Text className="block text-slate" size="1">Scene type</Text>
+              <Select.Root
+                value={scene?.sceneType ?? 'logos'}
+                onValueChange={onTypeChange.bind(null, 'sceneType')}
               >
-                <TextField.Slot side="right">px</TextField.Slot>
-              </EventValueField>
+                <Select.Trigger className="w-full" />
+                <Select.Content>
+                  <Select.Item value="logos">Logos</Select.Item>
+                  <Select.Item value="2d-top-down">Top Down 2D</Select.Item>
+                </Select.Content>
+              </Select.Root>
             </div>
-          ) }
-        </div>
-        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-        <div className="flex flex-col gap-4 pb-10">
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Events</Text>
-            <Inset className="!rounded-none !overflow-visible">
-              <Tabs.Root defaultValue="init">
-                <Tabs.List size="1" className="px-1">
-                  <Tabs.Trigger value="init">
-                    <div className="inline-flex items-center gap-2">
-                      <Text>On Init</Text>
-                      { !hasFadeInEvent && (
-                        <Tooltip
-                          content={(
-                            <Text>
-                              Scenes should have at-least a fade-in event to avoid a black screen
-                              on start.
-                            </Text>
-                          )}
-                        >
-                          <ExclamationTriangleIcon width={12} color="orange" />
-                        </Tooltip>
-                      ) }
-                    </div>
-                  </Tabs.Trigger>
-                </Tabs.List>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Background</Text>
+              <BackgroundsListField
+                value={scene?.background || ''}
+                onValueChange={onBackgroundChange}
+              />
+            </div>
+            { scene.sceneType === '2d-top-down' && (
+              <div className="flex flex-col gap-2">
+                <Text className="block text-slate" size="1">Grid size</Text>
+                <EventValueField
+                  type="number"
+                  value={scene.map?.gridSize ?? 16}
+                  onValueChange={onValueChange.bind(null, 'map.gridSize')}
+                >
+                  <TextField.Slot side="right">px</TextField.Slot>
+                </EventValueField>
+              </div>
+            ) }
+          </div>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div className="flex flex-col gap-4 pb-10">
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Events</Text>
+              <Inset className="!rounded-none !overflow-visible">
+                <Tabs.Root defaultValue="init">
+                  <Tabs.List size="1" className="px-1">
+                    <Tabs.Trigger value="init">
+                      <div className="inline-flex items-center gap-2">
+                        <Text>On Init</Text>
+                        { !hasFadeInEvent && (
+                          <Tooltip
+                            content={(
+                              <Text>
+                                Scenes should have at-least a fade-in event to avoid a black screen
+                                on start.
+                              </Text>
+                            )}
+                          >
+                            <ExclamationTriangleIcon width={12} color="orange" />
+                          </Tooltip>
+                        ) }
+                      </div>
+                    </Tabs.Trigger>
+                  </Tabs.List>
 
-                <Tabs.Content value="init">
-                  <EventsField
-                    value={scene.events ?? []}
-                    onValueChange={onValueChange.bind(null, 'events')}
-                  />
-                </Tabs.Content>
-              </Tabs.Root>
-            </Inset>
+                  <Tabs.Content value="init">
+                    <EventsField
+                      value={scene.events ?? []}
+                      onValueChange={onValueChange.bind(null, 'events')}
+                    />
+                  </Tabs.Content>
+                </Tabs.Root>
+              </Inset>
+            </div>
           </div>
         </div>
-      </div>
+      </ScrollArea>
     </SceneFormContext>
   );
 };
