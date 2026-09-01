@@ -3,10 +3,11 @@ import {
   type InfiniteCanvasRef,
   InfiniteCanvas,
   classNames,
+  useEventListener,
 } from '@junipero/react';
 
 import type { SpriteAnimation } from '../../../types';
-import { useSprite } from '../../services/hooks';
+import { useApp, useLocalData, useSprite } from '../../services/hooks';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Sprite from '../../components/Sprite';
 import Background from '../../components/Background';
@@ -14,6 +15,9 @@ import Playback from './Playback';
 
 const Images = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { eventEmitter } = useApp();
+  const { isCollapsed, getSize } = useLocalData();
   const {
     selectedSprite,
     selectedBackground,
@@ -23,6 +27,14 @@ const Images = () => {
     selectSprite,
     selectBackground,
   } = useSprite();
+
+  useEventListener('images:center', () => {
+    if (!infiniteCanvasRef.current) {
+      return;
+    }
+
+    infiniteCanvasRef.current?.centerOn(containerRef.current!, 200);
+  }, [eventEmitter], { target: eventEmitter });
 
   const currentState = useMemo(() => (
     selectedAnimation?.animationType === 'fixed'
@@ -53,20 +65,29 @@ const Images = () => {
         )}
         onClick={onCanvasClick}
         cursorMode="pan"
+        center={true}
+        fitAbsolute={true}
+        padding={{
+          left: !isCollapsed('leftSidebar') ? getSize('leftSidebarWidth') || 300 : 0,
+          bottom: !isCollapsed('bottomBar') ? getSize('bottomBarHeight') || 300 : 0,
+          right: !isCollapsed('rightSidebar') ? getSize('rightSidebarWidth') || 300 : 0,
+        }}
       >
-        { selectedSprite ? (
-          <Sprite
-            scale={4}
-            sprite={selectedSprite}
-            frames={frames}
-            className="border-1 border-green-500"
-            animated={true}
-          />
-        ) : selectedBackground && (
-          <Background
-            background={selectedBackground}
-          />
-        )}
+        <div ref={containerRef}>
+          { selectedSprite ? (
+            <Sprite
+              scale={4}
+              sprite={selectedSprite}
+              frames={frames}
+              className="border-1 border-green-500"
+              animated={true}
+            />
+          ) : selectedBackground && (
+            <Background
+              background={selectedBackground}
+            />
+          ) }
+        </div>
       </InfiniteCanvas>
 
       <Playback />

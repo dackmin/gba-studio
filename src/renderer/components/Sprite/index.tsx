@@ -1,5 +1,7 @@
 import {
   type ComponentPropsWithoutRef,
+  type RefCallback,
+  type RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -14,8 +16,10 @@ import type {
 import { loadImage, tileToPixel } from '../../../helpers';
 import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
+import { mergeRefs } from '../../services/helpers';
 
 export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
+  ref?: RefCallback<HTMLCanvasElement> | RefObject<HTMLCanvasElement>;
   sprite?: Partial<GameSpriteFile>;
   gridSize?: number;
   width?: number;
@@ -30,6 +34,7 @@ export interface SpriteProps extends ComponentPropsWithoutRef<'canvas'> {
 }
 
 const Sprite = ({
+  ref,
   style,
   sprite,
   gridSize,
@@ -138,7 +143,7 @@ const Sprite = ({
 
   return (
     <canvas
-      ref={canvasRef}
+      ref={mergeRefs(canvasRef, ref)}
       { ...rest }
       style={{
         ...style,

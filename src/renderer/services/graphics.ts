@@ -1,4 +1,4 @@
-import { FramesDefinition } from '../../types';
+import type { FramesDefinition } from '../../types';
 
 export const SPRITE_HORIZONTAL_FRAMES: FramesDefinition = {
   idle: {

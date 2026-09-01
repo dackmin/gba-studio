@@ -17,7 +17,7 @@ export interface LeftSidebarState {
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const { sprites, backgrounds, onCanvasChange, ...appPayload } = useApp();
+  const { sprites, backgrounds, eventEmitter, onCanvasChange, ...appPayload } = useApp();
   const { collapse, isCollapsed } = useLocalData();
   const { selectedSprite, selectedBackground, selectSprite, selectBackground } = useSprite();
 
@@ -56,6 +56,21 @@ const LeftSidebar = ({
       backgrounds: backgrounds.filter(b => b._file !== selectedBackground._file),
     });
   }, [selectedBackground, onCanvasChange, sprites, appPayload, backgrounds]);
+
+  const onSelectSprite = useCallback((sprite: GameSpriteFile) => {
+    selectSprite?.(sprite);
+
+    setTimeout(() => {
+      eventEmitter?.emit('images:center', sprite);
+    }, 100);
+  }, [selectSprite, eventEmitter]);
+
+  const onSelectBackground = useCallback((background: GameBackgroundFile) => {
+    selectBackground?.(background);
+    setTimeout(() => {
+      eventEmitter?.emit('images:center', background);
+    }, 100);
+  }, [selectBackground, eventEmitter]);
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
@@ -101,7 +116,7 @@ const LeftSidebar = ({
                     { 'bg-(--accent-9)':
                       selectedSprite === sprite },
                   )}
-                  onClick={selectSprite?.bind(null, sprite)}
+                  onClick={onSelectSprite.bind(null, sprite)}
                 >
                   <ImageIcon
                     className={classNames(
@@ -167,7 +182,7 @@ const LeftSidebar = ({
                     { 'bg-(--accent-9)':
                       selectedBackground === background },
                   )}
-                  onClick={selectBackground?.bind(null, background)}
+                  onClick={onSelectBackground.bind(null, background)}
                 >
                   <ImageIcon
                     className={classNames(

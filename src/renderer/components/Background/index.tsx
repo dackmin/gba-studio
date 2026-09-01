@@ -1,14 +1,15 @@
-import { type ComponentPropsWithoutRef, useMemo } from 'react';
+import { type ComponentPropsWithoutRef, type RefCallback, type RefObject, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 
 import type { GameBackgroundFile } from '../../../types';
 
 export interface BackgroundProps extends ComponentPropsWithoutRef<'img'> {
+  ref?: RefCallback<HTMLImageElement> | RefObject<HTMLImageElement>;
   background: Partial<GameBackgroundFile>;
-  className?: string;
 }
 
 const Background = ({
+  ref,
   background,
   className,
   ...rest
@@ -23,10 +24,11 @@ const Background = ({
 
   return (
     <img
-      className={classNames('pixelated', className)}
+      ref={ref}
       src={image}
       alt={background?.name || 'Background'}
-      {...rest}
+      { ...rest }
+      className={classNames('pixelated', className)}
     />
   );
 };
