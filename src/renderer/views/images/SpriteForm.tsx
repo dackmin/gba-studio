@@ -4,6 +4,7 @@ import {
   Button,
   Heading,
   Inset,
+  ScrollArea,
   Separator,
   Text,
   TextField,
@@ -96,95 +97,98 @@ const SpriteForm = () => {
   }
 
   return (
-    <div
-      className={classNames(
-        'p-3 w-full h-full',
-        'flex flex-col gap-4 justify-between',
-      )}
-    >
-      <div>
+    <ScrollArea scrollbars="vertical">
+      <div
+        className={classNames(
+          'p-3 w-full h-full',
+          'flex flex-col gap-4 justify-between',
+        )}
+      >
         <div>
-          <Text size="1" className="text-slate">Sprite</Text>
-          <Heading
-            contentEditable
-            as="h2"
-            size="4"
-            className={classNames(
-              'whitespace-nowrap overflow-scroll focus:outline-2 outline-(--accent-9) rounded-xs',
-            )}
-            onKeyDown={onNameKeyDown}
-            onBlur={onNameChange}
-            suppressContentEditableWarning
-          >
-            { selectedSprite.name || 'Untitled' }
-          </Heading>
-        </div>
-        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-        <div>
-          <Text size="1" className="text-slate">File</Text>
-          <div className="flex items-center gap-2">
-            <Text className="flex-auto truncate">{ selectedSprite.path }</Text>
-            <Button type="button" size="1" className="flex-none" onClick={openParentFolder}>
-              Open
+          <div>
+            <Text size="1" className="text-slate">Sprite</Text>
+            <Heading
+              contentEditable
+              as="h2"
+              size="4"
+              className={classNames(
+                'whitespace-nowrap overflow-scroll focus:outline-2',
+                'outline-(--accent-9) rounded-xs editable',
+              )}
+              onKeyDown={onNameKeyDown}
+              onBlur={onNameChange}
+              suppressContentEditableWarning
+            >
+              { selectedSprite.name || 'Untitled' }
+            </Heading>
+          </div>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div>
+            <Text size="1" className="text-slate">File</Text>
+            <div className="flex items-center gap-2">
+              <Text className="flex-auto truncate">{ selectedSprite.path }</Text>
+              <Button type="button" size="1" className="flex-none" onClick={openParentFolder}>
+                Open
+              </Button>
+            </div>
+          </div>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2 flex-auto">
+                <Text className="block text-slate" size="1">Width</Text>
+                <TextField.Root
+                  type="number"
+                  min={0}
+                  value={selectedSprite?.width ?? 0}
+                  onChange={onTextChange.bind(null, 'width')}
+                >
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
+              <div className="flex flex-col gap-2 flex-auto">
+                <Text className="block text-slate" size="1">Height</Text>
+                <TextField.Root
+                  type="number"
+                  min={0}
+                  value={selectedSprite?.height ?? 0}
+                  onChange={onTextChange.bind(null, 'height')}
+                >
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
+            </div>
+          </div>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Animations</Text>
+              <Inset side="x" className="!rounded-none !overflow-visible">
+                <div className="flex flex-col gap-[1px]">
+                  { selectedSprite?.animations?.map(anim => (
+                    <AnimationsListItem
+                      key={anim.id}
+                      animation={anim}
+                      onValueChange={onAnimationChange}
+                      onDelete={onRemoveAnimation}
+                    />
+                  )) }
+                </div>
+              </Inset>
+            </div>
+
+            <Button className="block !w-full" onClick={onAddAnimation}>
+              <PlusIcon />
+              <Text>Add Animation</Text>
             </Button>
           </div>
         </div>
-        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2 flex-auto">
-              <Text className="block text-slate" size="1">Width</Text>
-              <TextField.Root
-                type="number"
-                min={0}
-                value={selectedSprite?.width ?? 0}
-                onChange={onTextChange.bind(null, 'width')}
-              >
-                <TextField.Slot side="right">
-                  px
-                </TextField.Slot>
-              </TextField.Root>
-            </div>
-            <div className="flex flex-col gap-2 flex-auto">
-              <Text className="block text-slate" size="1">Height</Text>
-              <TextField.Root
-                type="number"
-                min={0}
-                value={selectedSprite?.height ?? 0}
-                onChange={onTextChange.bind(null, 'height')}
-              >
-                <TextField.Slot side="right">
-                  px
-                </TextField.Slot>
-              </TextField.Root>
-            </div>
-          </div>
-        </div>
-        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Text className="block text-slate" size="1">Animations</Text>
-            <Inset side="x" className="!rounded-none !overflow-visible">
-              <div className="flex flex-col gap-[1px]">
-                { selectedSprite?.animations?.map(anim => (
-                  <AnimationsListItem
-                    key={anim.id}
-                    animation={anim}
-                    onValueChange={onAnimationChange}
-                    onDelete={onRemoveAnimation}
-                  />
-                )) }
-              </div>
-            </Inset>
-          </div>
-
-          <Button className="block !w-full" onClick={onAddAnimation}>
-            <PlusIcon />
-            <Text>Add Animation</Text>
-          </Button>
-        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

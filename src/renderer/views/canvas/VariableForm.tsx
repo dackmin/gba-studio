@@ -1,5 +1,5 @@
 import { type ChangeEvent, type KeyboardEvent, useCallback } from 'react';
-import { Heading, Inset, Separator, Text, TextField } from '@radix-ui/themes';
+import { Heading, Inset, ScrollArea, Separator, Text, TextField } from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
 import type { GameVariable } from '../../../types';
@@ -43,32 +43,34 @@ const VariableForm = ({
   }, [onChange, variable]);
 
   return (
-    <div className="p-3 w-full h-full overflow-x-hidden overflow-y-scroll">
-      <Text size="1" className="text-slate">Variable</Text>
-      <Heading
-        contentEditable
-        as="h2"
-        size="4"
-        className={classNames(
-          'whitespace-nowrap overflow-scroll focus:outline-2',
-          'outline-(--accent-9) rounded-xs editable',
-        )}
-        onKeyDown={onNameKeyDown}
-        onBlur={onNameChange}
-        suppressContentEditableWarning
-      >
-        { variable.name }
-      </Heading>
-      <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-      <div className="flex flex-col gap-2">
-        <Text className="block text-slate" size="1">Default value</Text>
-        <TextField.Root
-          type="text"
-          value={'' + (variable.defaultValue ?? '')}
-          onChange={onTextChange.bind(null, 'defaultValue')}
-        />
+    <ScrollArea scrollbars="vertical">
+      <div className="p-3">
+        <Text size="1" className="text-slate">Variable</Text>
+        <Heading
+          contentEditable
+          as="h2"
+          size="4"
+          className={classNames(
+            'whitespace-nowrap overflow-scroll focus:outline-2',
+            'outline-(--accent-9) rounded-xs editable',
+          )}
+          onKeyDown={onNameKeyDown}
+          onBlur={onNameChange}
+          suppressContentEditableWarning
+        >
+          { variable.name }
+        </Heading>
+        <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+        <div className="flex flex-col gap-2">
+          <Text className="block text-slate" size="1">Default value</Text>
+          <TextField.Root
+            type="text"
+            value={'' + (variable.defaultValue ?? '')}
+            onChange={onTextChange.bind(null, 'defaultValue')}
+          />
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

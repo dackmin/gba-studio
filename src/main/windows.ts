@@ -50,6 +50,12 @@ export const createSelectionWindow = async (action?: 'new-project' | 'browse-pro
         ? '#1A1A1A'
         : '#FAFAFA',
     },
+    ...process.platform === 'linux' && {
+      backgroundColor: nativeTheme.shouldUseDarkColors
+        ? '#1A1A1A'
+        : '#FAFAFA',
+      frame: false,
+    },
     show: false,
     webPreferences: {
       preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
@@ -144,7 +150,7 @@ export const createProjectWindow = async (projectPath: string) => {
       transparent: true,
       vibrancy: 'under-window',
     },
-    ...process.platform === 'win32' && {
+    ...['win32', 'linux'].includes(process.platform) && {
       autoHideMenuBar: false,
       backgroundColor: nativeTheme.shouldUseDarkColors
         ? '#1A1A1A'

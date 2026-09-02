@@ -1,5 +1,5 @@
 import { type MouseEvent, useCallback, useEffect, useReducer, useState } from 'react';
-import { Button, Card, ContextMenu, Dialog, Heading, Text } from '@radix-ui/themes';
+import { Button, Card, ContextMenu, Dialog, Flex, Heading, ScrollArea, Text } from '@radix-ui/themes';
 import { classNames, mockState } from '@junipero/react';
 
 import type { RecentProject } from '../../../types';
@@ -151,50 +151,52 @@ const ProjectSelection = () => {
             'after:!rounded-[20px] !p-0',
           )}
         >
-          <div className="flex flex-col gap-2 h-full overflow-y-scroll p-2">
-            { state.recentProjects.length > 0
-              ? state.recentProjects.map(project => (
-                <ContextMenu.Root
-                  key={project.path}
-                  onOpenChange={onSelectProject.bind(null, project, undefined)}
-                >
-                  <ContextMenu.Trigger>
-                    <a
-                      className={classNames(
-                        'block p-3 hover:bg-(--accent-9) rounded-xl select-none',
-                        'cursor-pointer hover:text-seashell',
-                        {
-                          'bg-(--accent-9) text-seashell':
-                            state.selectedProject === project,
-                        },
-                      )}
-                      onClick={onSelectProject.bind(null, project)}
-                    >
-                      <div className="truncate text-ellipsis">{ project.name }</div>
-                      <div className="truncate text-ellipsis">
-                        <Text size="1">{ project.path }</Text>
-                      </div>
-                    </a>
-                  </ContextMenu.Trigger>
-                  <ContextMenu.Content>
-                    <ContextMenu.Item
-                      onClick={window.electron.loadRecentProject.bind(null, project.path)}
-                    >
-                      Open
-                    </ContextMenu.Item>
-                    <ContextMenu.Item
-                      onClick={onRemoveRecentProject.bind(null, project)}
-                    >
-                      Remove from recent projects
-                    </ContextMenu.Item>
-                  </ContextMenu.Content>
-                </ContextMenu.Root>
-              )) : (
-                <div className="flex items-center justify-center w-full h-full">
-                  No recent projects
-                </div>
-              ) }
-          </div>
+          <ScrollArea scrollbars="vertical" className="p-2 [&>div>div]:!w-auto">
+            <Flex direction="column" gap="2">
+              { state.recentProjects.length > 0
+                ? state.recentProjects.map(project => (
+                  <ContextMenu.Root
+                    key={project.path}
+                    onOpenChange={onSelectProject.bind(null, project, undefined)}
+                  >
+                    <ContextMenu.Trigger>
+                      <a
+                        className={classNames(
+                          'block p-3 hover:bg-(--accent-9) rounded-xl select-none',
+                          'cursor-pointer hover:text-seashell',
+                          {
+                            'bg-(--accent-9) text-seashell':
+                              state.selectedProject === project,
+                          },
+                        )}
+                        onClick={onSelectProject.bind(null, project)}
+                      >
+                        <div className="truncate text-ellipsis">{ project.name }</div>
+                        <div className="truncate text-ellipsis">
+                          <Text size="1">{ project.path }</Text>
+                        </div>
+                      </a>
+                    </ContextMenu.Trigger>
+                    <ContextMenu.Content>
+                      <ContextMenu.Item
+                        onClick={window.electron.loadRecentProject.bind(null, project.path)}
+                      >
+                        Open
+                      </ContextMenu.Item>
+                      <ContextMenu.Item
+                        onClick={onRemoveRecentProject.bind(null, project)}
+                      >
+                        Remove from recent projects
+                      </ContextMenu.Item>
+                    </ContextMenu.Content>
+                  </ContextMenu.Root>
+                )) : (
+                  <div className="flex items-center justify-center w-full h-full">
+                    No recent projects
+                  </div>
+                ) }
+            </Flex>
+          </ScrollArea>
         </Card>
       </div>
     </div>

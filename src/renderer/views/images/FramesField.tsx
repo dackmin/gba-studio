@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Card, ContextMenu, IconButton } from '@radix-ui/themes';
+import { Card, ContextMenu, IconButton, ScrollArea } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
@@ -69,65 +69,67 @@ const FramesField = ({
   }, [value, onValueChange]);
 
   return (
-    <div
-      className={classNames(
-        'flex items-center gap-2 overflow-x-auto py-2 px-3 overflow-x-scroll',
-      )}
-    >
-      { value?.map(frame => (
-        <ContextMenu.Root key={frame.id}>
-          <ContextMenu.Trigger>
-            <Card
-              className={classNames(
-                'w-16 h-16 !p-0 cursor-pointer',
-                {
-                  'outline-2 outline-(--accent-9)':
-                    selectedFrame?.id === frame.id,
-                }
-              )}
-              onClick={onSelectFrame.bind(null, frame)}
-            >
-              <Sprite
-                sprite={selectedSprite}
-                frame={frame}
-                animated={false}
-                className="!w-full !h-full"
-              />
-            </Card>
-          </ContextMenu.Trigger>
-          <ContextMenu.Content>
-            <ContextMenu.Item
-              shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+B'}
-              onClick={onAddBefore.bind(null, frame)}
-            >
-              Add Before
-            </ContextMenu.Item>
-            <ContextMenu.Item
-              shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+N'}
-              onClick={onAddFrame.bind(null, frame)}
-            >
-              Add After
-            </ContextMenu.Item>
-            <ContextMenu.Separator />
-            <ContextMenu.Item
-              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
-              onClick={onDeleteFrame.bind(null, frame)}
-            >
-              Delete
-            </ContextMenu.Item>
-          </ContextMenu.Content>
-        </ContextMenu.Root>
-      )) }
-      <Card className="w-16 h-16 aspect-square !p-0">
-        <IconButton
-          variant="ghost"
-          className="!w-full !h-full cursor-pointer"
-          onClick={onAddFrame?.bind(null, undefined)}
-        >
-          <PlusIcon />
-        </IconButton>
-      </Card>
-    </div>
+    <ScrollArea scrollbars="horizontal" className="w-full!">
+      <div
+        className={classNames(
+          'flex flex-nowrap items-center gap-2 py-2 px-3',
+        )}
+      >
+        { value?.map(frame => (
+          <ContextMenu.Root key={frame.id}>
+            <ContextMenu.Trigger>
+              <Card
+                className={classNames(
+                  'w-16 h-16 !p-0 cursor-pointer',
+                  {
+                    'outline-2 outline-(--accent-9)':
+                      selectedFrame?.id === frame.id,
+                  }
+                )}
+                onClick={onSelectFrame.bind(null, frame)}
+              >
+                <Sprite
+                  sprite={selectedSprite}
+                  frame={frame}
+                  animated={false}
+                  className="!w-full !h-full"
+                />
+              </Card>
+            </ContextMenu.Trigger>
+            <ContextMenu.Content>
+              <ContextMenu.Item
+                shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+B'}
+                onClick={onAddBefore.bind(null, frame)}
+              >
+                Add Before
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+N'}
+                onClick={onAddFrame.bind(null, frame)}
+              >
+                Add After
+              </ContextMenu.Item>
+              <ContextMenu.Separator />
+              <ContextMenu.Item
+                shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                onClick={onDeleteFrame.bind(null, frame)}
+              >
+                Delete
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Root>
+        )) }
+        <Card className="w-16 h-16 aspect-square !p-0">
+          <IconButton
+            variant="ghost"
+            className="!w-full !h-full cursor-pointer"
+            onClick={onAddFrame?.bind(null, undefined)}
+          >
+            <PlusIcon />
+          </IconButton>
+        </Card>
+      </div>
+    </ScrollArea>
   );
 };
 
