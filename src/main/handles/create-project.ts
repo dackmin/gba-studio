@@ -42,11 +42,13 @@ export default async (storage: Storage, event: IpcMainInvokeEvent, opts: {
 
   storage.addToRecentProjects(projectPath, project);
 
-  // Close selection window
+  // Hide selection window
   const win = BrowserWindow.fromWebContents(event.sender);
   win?.hide();
-  win?.close();
-  await new Promise(resolve => setTimeout(resolve, 100));
 
   createProjectWindow(projectPath);
+
+  // Close selection window
+  await new Promise(resolve => setTimeout(resolve, 100));
+  win?.close();
 };
