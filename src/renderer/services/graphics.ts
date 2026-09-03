@@ -2,15 +2,30 @@ import type { FramesDefinition } from '../../types';
 
 export const SPRITE_HORIZONTAL_FRAMES: FramesDefinition = {
   idle: {
-    down: 0,
-    up: 1,
-    right: 2,
-    left: 2,
+    down: [{ index: 0 }],
+    up: [{ index: 1 }],
+    right: [{ index: 2 }],
+    left: [{ index: 2, reverse: true }],
   },
-  walk: {
-    down: [4, 5],
-    up: [6, 7],
-    left: [8, 9],
-    right: [8, 9],
+  moving: {
+    down: [
+      { index: 0 }, { index: 4 }, { index: 0 }, { index: 5 },
+    ],
+    up: [
+      { index: 1 }, { index: 6 }, { index: 1 }, { index: 7 },
+    ],
+    left: [
+      { index: 2, reverse: true },
+      { index: 8, reverse: true },
+      { index: 2, reverse: true },
+      { index: 9, reverse: true },
+    ],
+    right: [
+      { index: 2 }, { index: 8 }, { index: 2 }, { index: 9 },
+    ],
   },
+};
+
+export const AUTO_FRAMES_TEMPLATES: Record<string, FramesDefinition> = {
+  '160x16 16x16 movement': SPRITE_HORIZONTAL_FRAMES,
 };

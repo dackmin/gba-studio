@@ -479,11 +479,11 @@ export interface SetBackgroundEvent extends SceneEvent {
   background: string;
 }
 
-export type AnimationType = 'idle' | 'walk';
+export type AnimationType = 'idle' | 'moving';
 
 export type FramesDefinition = {
   [key in AnimationType]: {
-    [key in CharacterDirection]: number | number[];
+    [key in CharacterDirection]: Partial<SpriteAnimationFrame>[];
   };
 };
 

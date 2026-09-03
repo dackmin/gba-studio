@@ -79,7 +79,7 @@ const Sprite = ({
         : `project://${sprite.path}`);
 
     const defaultFrames = ([] as number[])
-      .concat(SPRITE_HORIZONTAL_FRAMES.idle[direction]);
+      .concat(SPRITE_HORIZONTAL_FRAMES.idle[direction].map(f => f.index || 0));
     const availableFrames = frame
       ? [frame]
       : frames?.length ? frames : defaultFrames;

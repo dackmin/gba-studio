@@ -7,14 +7,16 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { classNames } from '@junipero/react';
+import { classNames, cloneDeep } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type {
   SpriteAnimation,
   SpriteAnimationFrame,
+  SpriteAnimationState,
 } from '../../../types';
 import type { BottomBarTab } from '../../components/BottomBarTabs';
+import { AUTO_FRAMES_TEMPLATES } from '../../services/graphics';
 import { useSprite } from '../../services/hooks';
 import FramesField from './FramesField';
 
@@ -116,6 +118,45 @@ const AnimationsTabContent = () => {
     selectedDirection, selectedStateName,
   ]);
 
+  const framesTemplate = useMemo(() => (
+    AUTO_FRAMES_TEMPLATES[
+      `${selectedSprite?._realWidth ?? 0}x${selectedSprite?._realHeight ?? 0} ` +
+      `${selectedSprite?.width}x${selectedSprite?.height} ` +
+      (selectedAnimation?.animationType === 'fixed' ? 'fixed' : 'movement')
+    ]
+  ), [selectedSprite, selectedAnimation]);
+
+  const onAutoGenerateFrames = useCallback(async () => {
+    if (!framesTemplate || !selectedAnimation) {
+      return;
+    }
+
+    onAnimationChange({
+      ...selectedAnimation,
+      states: {
+        ...selectedAnimation?.states,
+        ...cloneDeep(Object.fromEntries(
+          Object.entries(framesTemplate).map(([movementType, directions]) => [
+            movementType,
+            Object.fromEntries(Object.entries(directions).map(([direction, frames]) => [
+              direction,
+              {
+                id: uuid(),
+                type: 'state',
+                frames: frames.map(frame => ({
+                  ...frame,
+                  index: frame.index ?? 0,
+                  type: 'frame',
+                  id: uuid(),
+                } satisfies SpriteAnimationFrame)),
+              } satisfies SpriteAnimationState,
+            ])),
+          ])
+        )),
+      },
+    });
+  }, [framesTemplate, selectedAnimation, onAnimationChange]);
+
   if (!selectedSprite || selectedBackground) {
     return null;
   }
@@ -148,6 +189,11 @@ const AnimationsTabContent = () => {
           <Button onClick={onAddAnimation}>
             <PlusIcon />
             <Text>Add</Text>
+          </Button>
+        ) }
+        { framesTemplate && (
+          <Button size="1" onClick={onAutoGenerateFrames}>
+            Auto-generate frames
           </Button>
         ) }
       </div>
