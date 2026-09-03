@@ -101,7 +101,7 @@ export default async (
 
     if (['sprite'].includes(graphic.type)) {
       const { width, height } = await getGraphicFileSize(path.
-        join(projectDir, 'graphics', file));
+        join(projectDir, graphic.path));
 
       graphic._realWidth = width;
       graphic._realHeight = height;

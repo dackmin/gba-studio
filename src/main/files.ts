@@ -79,24 +79,15 @@ export const getVariableFiles = async (
 };
 
 export const getGraphicFileSize = async (
-  base: string,
-  allowedExtensions: string[] = ['bmp'],
+  filePath: string,
 ) => {
-  const filePath = base.replace('.json', '');
-
-  for (const ext of allowedExtensions) {
-    try {
-      await fs.access(filePath + '.' + ext);
-    } catch {
-      continue;
-    }
-
-    const image = await Jimp.read(filePath + '.' + ext);
+  try {
+    const image = await Jimp.read(filePath);
     const width = image.bitmap.width;
     const height = image.bitmap.height;
 
     return { width, height };
+  } catch {
+    return { width: undefined, height: undefined };
   }
-
-  return { width: undefined, height: undefined };
 };

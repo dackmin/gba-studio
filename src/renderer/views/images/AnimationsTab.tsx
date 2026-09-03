@@ -193,7 +193,7 @@ const AnimationsTabContent = () => {
         ) }
         { framesTemplate && (
           <Button size="1" onClick={onAutoGenerateFrames}>
-            Auto-generate frames
+            Auto-generate
           </Button>
         ) }
       </div>
