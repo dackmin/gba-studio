@@ -92,11 +92,13 @@ contextBridge.exposeInMainWorld('electron', {
   getProjectRelativePath: (projectPath: string, filePath: string): Promise<string> =>
     ipcRenderer.invoke('get-project-relative-path', projectPath, filePath),
   loadImage: (
-    projectPath: string,
     filePath: string,
-    mode: 'sprite' | 'background'
+    mode: 'sprite' | 'background',
+    opts?: {
+      transparencyColor?: string;
+    }
   ): Promise<SpriteBitmap> =>
-    ipcRenderer.invoke('load-image', projectPath, filePath, mode),
+    ipcRenderer.invoke('load-image', filePath, mode, opts),
   importSprite: (
     projectPath: string,
     filePath: string,

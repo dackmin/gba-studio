@@ -123,13 +123,25 @@ const SpriteForm = () => {
             </Heading>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-          <div>
-            <Text size="1" className="text-slate">File</Text>
-            <div className="flex items-center gap-2">
-              <Text className="flex-auto truncate">{ selectedSprite.path }</Text>
-              <Button type="button" size="1" className="flex-none" onClick={openParentFolder}>
-                Open
-              </Button>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Text size="1" className="text-slate">File</Text>
+              <div className="flex items-center gap-2">
+                <Text className="flex-auto truncate">{ selectedSprite.path }</Text>
+                <Button type="button" size="1" className="flex-none" onClick={openParentFolder}>
+                  Open
+                </Button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Transparency Color</Text>
+              <div className="flex items-center gap-2">
+                <div
+                  className="rounded-sm border-1 border-(--gray-5) h-6 w-6"
+                  style={{ backgroundColor: selectedSprite?.transparentColor ?? '#000' }}
+                />
+                <Text className="text-sm">{ selectedSprite?.transparentColor ?? '#000' }</Text>
+              </div>
             </div>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>

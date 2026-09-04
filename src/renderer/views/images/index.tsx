@@ -81,6 +81,7 @@ const Images = () => {
               frames={frames}
               className="border-1 border-green-500"
               animated={true}
+              transparencyColor={selectedSprite?.transparentColor}
             />
           ) : selectedBackground && (
             <Background

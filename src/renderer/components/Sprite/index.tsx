@@ -68,7 +68,7 @@ const Sprite = ({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d', { willReadFrequently: true });
 
-    if (!canvas || !ctx) {
+    if (!canvas || !ctx || !canvas.width || !canvas.height) {
       return;
     }
 
@@ -118,7 +118,7 @@ const Sprite = ({
     // Apply transparency color
     if (transparencyColor) {
       const imageData = ctx
-        .getImageData(0, 0, canvas.width, canvas.height);
+        .getImageData(0, 0, canvas.width ?? 100, canvas.height ?? 100);
       const data = imageData.data;
       const r = parseInt(transparencyColor.slice(1, 3), 16);
       const g = parseInt(transparencyColor.slice(3, 5), 16);

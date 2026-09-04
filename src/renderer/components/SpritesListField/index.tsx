@@ -36,6 +36,7 @@ const SpritesListField = ({
               }}
               className="w-8 h-8"
               keepAspectRatio
+              transparencyColor={selected?.transparentColor}
             />
             <Text>{ selected?.name ?? 'sprite_default' }</Text>
           </div>

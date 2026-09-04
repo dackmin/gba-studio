@@ -33,14 +33,14 @@ const Actor = ({
   const { sprites } = useApp();
   const { tool, selectedItem } = useCanvas();
 
-  const getSprite = useCallback((name: string) => (
-    findSprite(sprites, name)
-  ), [sprites]);
-
   const onSelect_ = useCallback((e?: MouseEvent<HTMLElement>) => {
     e?.stopPropagation();
     onSelect?.(e);
   }, [onSelect]);
+
+  const actorSprite = useMemo(() => (
+    findSprite(sprites, actor.sprite)
+  ), [sprites, actor.sprite]);
 
   const previewPosition = useMemo(() => preview ? {
     x: Math.round((mouseX - offsetX) / zoom),
@@ -65,10 +65,10 @@ const Actor = ({
         top: 0,
         width: actor.width
           ? tileToPixel(actor.width, gridSize)
-          : getSprite(actor.sprite)?.width ?? gridSize,
+          : actorSprite?.width ?? gridSize,
         height: actor.height
           ? tileToPixel(actor.height, gridSize)
-          : getSprite(actor.sprite)?.height ?? gridSize,
+          : actorSprite?.height ?? gridSize,
       }}
     >
       <div className="absolute w-full h-full">
@@ -84,11 +84,12 @@ const Actor = ({
               />
               <Sprite
                 className="absolute z-1 top-0 left-0 pixelated"
-                sprite={getSprite(actor.sprite)}
+                sprite={actorSprite}
                 width={actor.width}
                 height={actor.height}
                 direction={actor.direction}
                 gridSize={gridSize}
+                transparencyColor={actorSprite?.transparentColor}
               />
             </div>
           </ContextMenu.Trigger>

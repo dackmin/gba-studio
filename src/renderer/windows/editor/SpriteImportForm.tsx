@@ -1,5 +1,5 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useReducer } from 'react';
-import { classNames, mockState, rgba2hex, set, useTimeout } from '@junipero/react';
+import { mockState, rgba2hex, set, useTimeout } from '@junipero/react';
 import {
   Badge,
   Button,
@@ -45,7 +45,7 @@ const SpriteImportForm = ({
   const { selectSprite } = useSprite();
   const { close } = useModal();
   const [state, dispatch] = useReducer(mockState<SpriteImportFormState>, {
-    fetching: false,
+    fetching: !!initialPath,
     importing: false,
     preview: undefined,
     // Form
@@ -61,6 +61,40 @@ const SpriteImportForm = ({
     dispatch({ fetching: false });
   }, 400, [state.preview, state.fetching], { enabled: state.fetching === true });
 
+  const loadFile = useCallback(async (file: string, firstInit = true) => {
+    dispatch({ fetching: true });
+
+    const imageContent = await window.electron.loadImage(file, 'sprite');
+
+    const width = imageContent.width > imageContent.height
+      ? imageContent.height : imageContent.width;
+    const height = imageContent.height > imageContent.width
+      ? imageContent.width : imageContent.height;
+
+    dispatch({
+      path: file,
+      ...firstInit && {
+        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
+        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+      },
+      transparentColor: rgba2hex({
+        r: imageContent.transparentColor?.[0] ?? 0,
+        g: imageContent.transparentColor?.[1] ?? 0,
+        b: imageContent.transparentColor?.[2] ?? 0,
+      }),
+      preview: imageContent,
+      width,
+      height,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (initialPath) {
+      loadFile(initialPath);
+    }
+    // eslint-disable-next-line react/exhaustive-deps
+  }, []);
+
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     dispatch(s => {
       set(s, name, e.target.value);
@@ -75,38 +109,6 @@ const SpriteImportForm = ({
 
       return { ...s };
     });
-  }, []);
-
-  const loadFile = useCallback(async (file: string) => {
-    dispatch({ fetching: true });
-
-    const imageContent = await window.electron.loadImage(projectPath, file, 'sprite');
-
-    const width = imageContent.width > imageContent.height
-      ? imageContent.height : imageContent.width;
-    const height = imageContent.height > imageContent.width
-      ? imageContent.width : imageContent.height;
-
-    dispatch({
-      path: file,
-      fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
-      name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
-      transparentColor: rgba2hex({
-        r: imageContent.transparentColor?.[0] ?? 0,
-        g: imageContent.transparentColor?.[1] ?? 0,
-        b: imageContent.transparentColor?.[2] ?? 0,
-      }),
-      preview: imageContent,
-      width,
-      height,
-    });
-  }, [projectPath]);
-
-  useEffect(() => {
-    if (initialPath) {
-      loadFile(initialPath);
-    }
-    // eslint-disable-next-line react/exhaustive-deps
   }, []);
 
   const onBrowse = useCallback(async () => {
@@ -170,6 +172,7 @@ const SpriteImportForm = ({
         width: state.width,
         height: state.height,
         transparentColor: state.transparentColor,
+        _fileName: state.fileName,
       } satisfies Partial<GameSpriteFile>,
     );
 
@@ -187,7 +190,7 @@ const SpriteImportForm = ({
   }, [
     canSubmit, close, onCanvasChange, selectSprite,
     projectPath, sprites, appPayload,
-    state.path, state.width, state.height, state.name, state.transparentColor,
+    state.path, state.width, state.height, state.name, state.transparentColor, state.fileName,
   ]);
 
   const openParentFolder = useCallback(async () => {
@@ -245,11 +248,20 @@ const SpriteImportForm = ({
       { state.path && (
         <>
           <div className="flex flex-col gap-2">
-            <Text size="1" className="text-slate">Name</Text>
+            <Text size="1" className="text-slate">Sprite Name</Text>
             <TextField.Root
               value={state.name}
               onChange={onInputChange.bind(null, 'name')}
               placeholder="My sprite name"
+              disabled={!canEdit()}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">File Name</Text>
+            <TextField.Root
+              value={state.fileName}
+              onChange={onInputChange.bind(null, 'fileName')}
+              placeholder="my-sprite-file.bmp"
               disabled={!canEdit()}
             />
           </div>
@@ -283,6 +295,14 @@ const SpriteImportForm = ({
               </TextField.Root>
             </div>
           </div>
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">Transparency color</Text>
+            <ColorField
+              value={state.transparentColor ?? ''}
+              onValueChange={onValueChange.bind(null, 'transparentColor')}
+              disabled={!canEdit()}
+            />
+          </div>
         </>
       ) }
       { state.fetching ? (
@@ -298,6 +318,7 @@ const SpriteImportForm = ({
               frame={0}
               scale={1}
               className="border border-slate rounded"
+              transparencyColor={transparencyColor}
             />
             <div className="flex flex-col gap-2">
               <Text size="1" className="text-slate">

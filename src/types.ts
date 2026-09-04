@@ -262,6 +262,7 @@ export interface GameSpriteFile {
   _realWidth?: number;
   _realHeight?: number;
   _file?: string;
+  _fileName?: string;
   _animations?: InternalSpriteAnimation[];
   $schema?: string;
 }

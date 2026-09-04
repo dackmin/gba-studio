@@ -5,9 +5,11 @@ import fs from 'node:fs/promises';
 import type { IpcMainInvokeEvent } from 'electron';
 import { pick } from '@junipero/react';
 import fse from 'fs-extra';
+import { Jimp } from 'jimp';
 
-import type { Build } from '../../../types';
+import type { Build, GameSpriteFile } from '../../../types';
 import { getBuildDir, sendLog } from './utils';
+import { toBmp } from '../../images';
 
 export async function getShasum (filePath: string) {
   const hash = createHash('sha256');
@@ -56,6 +58,16 @@ export async function copyAssets (
     );
 
     await fse.copyFile(source, destination);
+
+    // if (sprite.transparentColor) {
+    //   const transparencyColorIsSame = await checkTransparencyColor(destination, sprite);
+
+    //   if (!transparencyColorIsSame) {
+    //     sendLog(event, build.id,
+    //       `Transparency color mismatch for sprite: ${sprite.name}, recreated`);
+    //   }
+    // }
+
     sendLog(event, build.id, `Copied sprite: ${sprite.name} (${fileName}.json)`);
   }
 
@@ -112,4 +124,29 @@ export async function copyAssets (
     await fse.copyFile(source, destination);
     sendLog(event, build.id, `Copied music: ${music.name} (${fileName}.${music.format || 'mod'})`);
   }
+}
+
+export async function checkTransparencyColor (
+  destination: string,
+  sprite: GameSpriteFile
+) {
+  // Get source first palette color
+  // Palette starts at 54 (fileHeader 14 + infoHeader 40)
+  // 1bit per channel (rgb = 3) -> ends at 57
+  const destinationImage = await Jimp.read(destination);
+  const destinationTransparencyColor = '#' + destinationImage.bitmap.data
+    .subarray(54, 57).toString('hex');
+
+  if (sprite.transparentColor !== destinationTransparencyColor) {
+    // @ts-expect-error - jimp is weird
+    const { buffer } = await toBmp(destinationImage, {
+      transparencyColor: sprite.transparentColor,
+    });
+
+    await fs.writeFile(destination, buffer, 'utf-8');
+
+    return false;
+  }
+
+  return true;
 }

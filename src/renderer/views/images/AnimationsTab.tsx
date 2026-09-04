@@ -118,13 +118,15 @@ const AnimationsTabContent = () => {
     selectedDirection, selectedStateName,
   ]);
 
+  const framesTemplateName = useMemo(() => (
+    `${selectedSprite?._realWidth ?? 0}x${selectedSprite?._realHeight ?? 0} ` +
+    `${selectedSprite?.width}x${selectedSprite?.height} ` +
+    (selectedAnimation?.animationType === 'fixed' ? 'fixed' : 'movement')
+  ), [selectedSprite, selectedAnimation?.animationType]);
+
   const framesTemplate = useMemo(() => (
-    AUTO_FRAMES_TEMPLATES[
-      `${selectedSprite?._realWidth ?? 0}x${selectedSprite?._realHeight ?? 0} ` +
-      `${selectedSprite?.width}x${selectedSprite?.height} ` +
-      (selectedAnimation?.animationType === 'fixed' ? 'fixed' : 'movement')
-    ]
-  ), [selectedSprite, selectedAnimation]);
+    AUTO_FRAMES_TEMPLATES[framesTemplateName]
+  ), [framesTemplateName]);
 
   const onAutoGenerateFrames = useCallback(async () => {
     if (!framesTemplate || !selectedAnimation) {

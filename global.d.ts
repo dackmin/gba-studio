@@ -59,9 +59,11 @@ interface AppBridge extends EventTarget {
   openParentFolder(projectPath: string, filePath: string): Promise<void>;
   getProjectRelativePath(projectPath: string, filePath: string): Promise<string>;
   loadImage(
-    projectPath: string,
     filePath: string,
-    mode: 'sprite' | 'background'
+    mode: 'sprite' | 'background',
+    opts?: {
+      transparencyColor?: string;
+    },
   ): Promise<SpriteBitmap>;
   importSprite(
     projectPath: string,
