@@ -279,6 +279,7 @@ export interface GameBackgroundFile {
   _realWidth?: number;
   _realHeight?: number;
   _file?: string;
+  _fileName?: string;
   $schema?: string;
 }
 

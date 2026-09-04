@@ -31,6 +31,7 @@ const SpriteImportModal = ({
   };
 
   const close = useCallback(() => {
+    setFilePath(undefined);
     setIsOpen(false);
   }, []);
 

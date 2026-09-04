@@ -245,7 +245,7 @@ const SpriteImportForm = ({
           </Callout.Root>
         ) }
       </div>
-      { state.path && (
+      { state.path && state.preview && (
         <>
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">Sprite Name</Text>

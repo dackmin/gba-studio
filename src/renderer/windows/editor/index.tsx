@@ -82,6 +82,7 @@ const Editor = () => {
     backgroundModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
+
     const file = await window.electron.browseFile({
       projectPath,
       filters: [
@@ -94,11 +95,21 @@ const Editor = () => {
     }
   }, []);
 
-  useBridgeListener('import-background', () => {
+  useBridgeListener('import-background', async () => {
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
-    backgroundModalRef.current?.open();
+
+    const file = await window.electron.browseFile({
+      projectPath,
+      filters: [
+        { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
+      ],
+    });
+
+    if (file) {
+      backgroundModalRef.current?.open(file);
+    }
   }, []);
 
   useBridgeListener('import-sound', () => {

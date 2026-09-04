@@ -37,20 +37,6 @@ export default async function (
 
   await fsp.writeFile(path.join(graphicsDir, fileName + '.bmp'), bmpBuffer);
 
-  // try {
-  //   await fsp.access(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
-  //   await fsp.copyFile(
-  //     path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'),
-  //     path.join(graphicsDir, fileName + '.bmp'),
-  //   );
-  //   await fsp.rm(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
-  // } catch {
-  //   await fsp.copyFile(
-  //     filePath,
-  //     path.join(graphicsDir, fileName + '.bmp'),
-  //   );
-  // }
-
   // Create content file
   const contentDir = path.join(projectDir, 'content');
   const contentFileName = 'sprite_' + fileName + '.json';
