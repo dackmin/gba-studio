@@ -1,8 +1,8 @@
 import { type ChangeEvent, useCallback } from 'react';
-import { DropdownMenu, IconButton, TextField } from '@radix-ui/themes';
+import { DropdownMenu, TextField } from '@radix-ui/themes';
 import { HexColorPicker } from 'react-colorful';
 import { classNames } from '@junipero/react';
-import { ColorWheelIcon } from '@radix-ui/react-icons';
+// import { ColorWheelIcon } from '@radix-ui/react-icons';
 
 export interface ColorField extends TextField.RootProps {
   onValueChange?: (value: string) => void;
@@ -23,10 +23,10 @@ const ColorField = ({
     onChange?.(e);
   }, [onChange, onValueChange]);
 
-  const onPickColor = useCallback(async () => {
-    const color = await (new window.EyeDropper()).open();
-    onValueChange?.(color.sRGBHex);
-  }, [onValueChange]);
+  // const onPickColor = useCallback(async () => {
+  //   const color = await (new window.EyeDropper()).open();
+  //   onValueChange?.(color.sRGBHex);
+  // }, [onValueChange]);
 
   return (
     <TextField.Root
@@ -56,11 +56,25 @@ const ColorField = ({
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </TextField.Slot>
-      <TextField.Slot side="right">
+      { /*
+        There are multiple bugs in chromium related to a shift in detected colors with EyeDropper
+        https://issues.chromium.org/issues/381372611
+        ----
+        TL;DR Chrome takes a screenshot of the page when you call EyeDropper.open() and passes the
+        color from sRGB to Display Space (p3 for example) back to sRGB, which introduces rounding
+        errors.
+        For example, if my color is #00FF00, the color detected by EyeDropper is #01FF00.
+        ----
+        Using native electron libraries is not an option either as they all use the Screen
+        Video Capture capability that pops-up a weird sub-desktop video capture (and need a system
+        permission).
+        Disabling it for now.
+
+        <TextField.Slot side="right">
         <IconButton size="1" onClick={onPickColor}>
           <ColorWheelIcon />
         </IconButton>
-      </TextField.Slot>
+      </TextField.Slot> */}
     </TextField.Root>
   );
 };
