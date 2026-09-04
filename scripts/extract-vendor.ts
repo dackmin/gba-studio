@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { createHash } from 'node:crypto';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
@@ -26,6 +28,8 @@ const vendorFiles: Record<string, string[]> = {
   devkitPro: [
     `tools/bin/gbafix${executableSuffix}`,
     `tools/bin/grit${executableSuffix}`,
+    `tools/bin/mmutil${executableSuffix}`,
+    `tools/bin/bin2s${executableSuffix}`,
     'devkitARM/base_rules',
     'devkitARM/base_tools',
     'devkitARM/gba_rules',
