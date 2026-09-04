@@ -225,7 +225,7 @@ const SpriteImportForm = ({
             </Tooltip>
           </TextField.Slot>
         </TextField.Root>
-        { state.path.startsWith(projectBase) && (
+        { state.path.startsWith(projectBase + '/graphics') && (
           <Callout.Root>
             <Callout.Icon>
               <InfoCircledIcon />
