@@ -30,6 +30,7 @@ export const serializeSprite = async (
 
   delete sprite._realWidth;
   delete sprite._realHeight;
+  delete sprite._fileName;
 
   return sprite;
 };
@@ -39,6 +40,10 @@ export const serializeBackground = async (
 ): Promise<GameBackgroundFile> => {
   background.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/background.json';
 
+  delete background._realWidth;
+  delete background._realHeight;
+  delete background._fileName;
+
   return background;
 };
 
@@ -47,6 +52,8 @@ export const serializeMusic = async (
 ): Promise<GameMusicFile> => {
   music.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/music.json';
 
+  delete music._fileName;
+
   return music;
 };
 
@@ -54,6 +61,8 @@ export const serializeSound = async (
   sound: GameSoundFile
 ): Promise<GameSoundFile> => {
   sound.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sound.json';
+
+  delete sound._fileName;
 
   return sound;
 };
