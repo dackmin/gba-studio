@@ -20,9 +20,6 @@ jobs:
           - name: macOS Intel
             label: darwin-x64
             os: macos-26
-          - name: Windows 32-bit
-            label: win-ia32
-            os: ubuntu-24.04
           - name: Windows 64-bit
             label: win-x64
             os: ubuntu-24.04
@@ -83,17 +80,6 @@ jobs:
           yarn make:macos-intel
           mv out/make/zip/darwin/x64/*.zip out/keep/gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.zip
 
-      - name: Run build (Windows 32-bit)
-        if: matrix.label == 'win-ia32'
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get -y update
-          sudo apt-get -y install wine wine64 mono-devel
-          export PATH=$PATH:/usr/lib/wine
-          yarn make:win-32bit
-          mv out/make/zip/win32/ia32/*.zip out/keep/gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.zip
-          mv out/make/squirrel.windows/ia32 out/keep/gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}-squirrel
-      
       - name: Run build (Windows 64-bit)
         if: matrix.label == 'win-x64'
         run: |
