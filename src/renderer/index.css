@@ -80,3 +80,7 @@ body {
     z-index: 2;
   }
 }
+
+@custom-variant color-pointer (& .react-colorful__pointer);
+@custom-variant color-hue-pointer (& .react-colorful__hue-pointer);
+@custom-variant color-sat-pointer (& .react-colorful__saturation-pointer);

@@ -18,7 +18,7 @@ export default async function (
   projectPath: string,
   filePath: string,
   mode: 'sprite' | 'background' = 'sprite',
-) {
+): Promise<SpriteBitmap> {
   const projectDir = path.dirname(projectPath);
   const image = await Jimp.read(filePath);
   const originalMime = image.mime;
@@ -89,7 +89,7 @@ export default async function (
   }
 
   // @ts-expect-error - jimp is weird
-  const { buffer: bmpBuffer, tiles } = await toBmp(image);
+  const { buffer: bmpBuffer, tiles, transparentColor } = await toBmp(image);
 
   // Write data to a temp file
   const tempImportPath = path.join(projectDir, '.gbastudio/tmp/import');
@@ -105,5 +105,6 @@ export default async function (
     mime: originalMime,
     isResized: resized,
     tiles,
+    transparentColor,
   } satisfies SpriteBitmap;
 }

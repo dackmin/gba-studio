@@ -254,6 +254,7 @@ export interface GameSpriteFile {
   path: string;
   width?: number;
   height?: number;
+  transparentColor?: string;
   format?: string;
   animations?: SpriteAnimation[];
   // Internals
@@ -515,5 +516,6 @@ export interface SpriteBitmap {
   originalHeight: number;
   isResized: boolean;
   tiles: number;
+  transparentColor: [number, number, number];
   mime?: string;
 }

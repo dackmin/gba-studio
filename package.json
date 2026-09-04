@@ -49,6 +49,7 @@
     "radix-ui": "1.4.3",
     "re-resizable": "6.11.2",
     "react": "19.2.8",
+    "react-colorful": "5.8.1",
     "react-dom": "19.2.8",
     "react-hotkeys-hook": "5.3.3",
     "slugify": "1.6.9",

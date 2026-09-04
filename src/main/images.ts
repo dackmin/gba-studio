@@ -1,4 +1,4 @@
-import { Jimp } from 'jimp';
+import { intToRGBA, Jimp } from 'jimp';
 import { hsva2rgba, parseColor } from '@junipero/core';
 
 export type JimpImage = InstanceType<typeof Jimp>;
@@ -113,6 +113,11 @@ export interface BmpResult {
    * Estimated tile count grit would generate for this image (see countUniqueTiles).
    */
   tiles: number;
+
+  /**
+   * The color treated as transparent when quantizing the image.
+   */
+  transparentColor: [number, number, number];
 }
 
 export async function toBmp<T extends JimpImage> (
@@ -120,7 +125,15 @@ export async function toBmp<T extends JimpImage> (
   opts?: ToBmpOptions,
 ): Promise<BmpResult> {
   const colors = opts?.colors ?? 256;
-  const transparentColor = hexToRgb(opts?.transparentColor ?? '#000');
+  let transparentColor = opts?.transparentColor ? hexToRgb(opts?.transparentColor) : undefined;
+
+  // Transparent color is usually the color of the first pixel
+  if (!transparentColor) {
+    const firstPixel = intToRGBA(image.getPixelColor(0, 0));
+    transparentColor = [firstPixel.r, firstPixel.g, firstPixel.b];
+  }
+
+  transparentColor ??= [0, 0, 0];
 
   const { width, height, indices, palette } = quantizeToPalette(image, colors, transparentColor);
   const tiles = countUniqueTiles(indices, width, height, opts);
@@ -190,7 +203,7 @@ export async function toBmp<T extends JimpImage> (
     }
   }
 
-  return { buffer: bmp, tiles };
+  return { buffer: bmp, tiles, transparentColor };
 }
 
 /**
