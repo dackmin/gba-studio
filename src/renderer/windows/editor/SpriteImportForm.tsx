@@ -19,6 +19,10 @@ import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hoo
 import Sprite from '../../components/Sprite';
 import ChecklistItem from '../../components/ChecklistItem';
 
+export interface SpriteImportFormProps {
+  path?: string;
+}
+
 export interface SpriteImportFormState {
   // Internal
   fetching: boolean;
@@ -31,7 +35,9 @@ export interface SpriteImportFormState {
   height: number;
 }
 
-const SpriteImportForm = () => {
+const SpriteImportForm = ({
+  path: initialPath,
+}: SpriteImportFormProps) => {
   const { projectPath, projectBase, sprites, onCanvasChange, ...appPayload } = useApp();
   const { selectSprite } = useSprite();
   const { close } = useModal();
@@ -40,7 +46,7 @@ const SpriteImportForm = () => {
     importing: false,
     preview: undefined,
     // Form
-    path: '',
+    path: initialPath || '',
     name: '',
     width: 0,
     height: 0,
@@ -52,6 +58,36 @@ const SpriteImportForm = () => {
 
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ [name]: e.target.value });
+  const loadFile = useCallback(async (file: string) => {
+    dispatch({ fetching: true });
+
+    const imageContent = await window.electron.loadImage(projectPath, file, 'sprite');
+
+    const width = imageContent.width > imageContent.height
+      ? imageContent.height : imageContent.width;
+    const height = imageContent.height > imageContent.width
+      ? imageContent.width : imageContent.height;
+
+    dispatch({
+      path: file,
+      fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
+      name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+      transparentColor: rgba2hex({
+        r: imageContent.transparentColor?.[0] ?? 0,
+        g: imageContent.transparentColor?.[1] ?? 0,
+        b: imageContent.transparentColor?.[2] ?? 0,
+      }),
+      preview: imageContent,
+      width,
+      height,
+    });
+  }, [projectPath]);
+
+  useEffect(() => {
+    if (initialPath) {
+      loadFile(initialPath);
+    }
+    // eslint-disable-next-line react/exhaustive-deps
   }, []);
 
   const onBrowse = useCallback(async () => {
@@ -63,24 +99,9 @@ const SpriteImportForm = () => {
     });
 
     if (file) {
-      dispatch({ fetching: true });
-
-      const imageContent = await window.electron.loadImage(projectPath, file, 'sprite');
-
-      const width = imageContent.width > imageContent.height
-        ? imageContent.height : imageContent.width;
-      const height = imageContent.height > imageContent.width
-        ? imageContent.width : imageContent.height;
-
-      dispatch({
-        path: file,
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
-        preview: imageContent,
-        width,
-        height,
-      });
+      await loadFile(file);
     }
-  }, [projectPath]);
+  }, [projectPath, loadFile]);
 
   const canEdit = useCallback(() => (
     !state.fetching && !state.importing
@@ -171,7 +192,6 @@ const SpriteImportForm = () => {
           disabled={!canEdit()}
           readOnly
           className="cursor-default! [&>input]:cursor-default!"
-          onClick={onBrowse}
         >
           <TextField.Slot side="right" className="cursor-default!">
             <Tooltip content="Browse" side="top">

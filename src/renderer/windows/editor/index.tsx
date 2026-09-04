@@ -27,7 +27,7 @@ export interface EditorState {
 }
 
 const Editor = () => {
-  const { project, localData } = useApp();
+  const { project, localData, projectPath } = useApp();
   const spriteModalRef = useRef<SpriteImportModalRef>(null);
   const backgroundModalRef = useRef<BackgroundImportModalRef>(null);
   const soundModalRef = useRef<SoundImportModalRef>(null);
@@ -78,11 +78,20 @@ const Editor = () => {
     }
   }, [project?.settings?.emulatorType]);
 
-  useBridgeListener('import-sprite', () => {
+  useBridgeListener('import-sprite', async () => {
     backgroundModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
-    spriteModalRef.current?.open();
+    const file = await window.electron.browseFile({
+      projectPath,
+      filters: [
+        { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
+      ],
+    });
+
+    if (file) {
+      spriteModalRef.current?.open(file);
+    }
   }, []);
 
   useBridgeListener('import-background', () => {

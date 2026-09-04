@@ -1,12 +1,12 @@
 import { type Ref, useCallback, useImperativeHandle, useState } from 'react';
 import { Dialog } from '@radix-ui/themes';
 
-import { ModalContext, type ModalContextType } from '../../services/contexts';
+import { type ModalContextType, ModalContext } from '../../services/contexts';
 import DialogClose from '../../components/DialogClose';
 import SpriteImportForm from './SpriteImportForm';
 
 export interface SpriteImportModalRef {
-  open: () => void;
+  open: (filePath: string) => void;
   close: () => void;
 }
 
@@ -17,6 +17,7 @@ export interface SpriteImportModalProps {
 const SpriteImportModal = ({
   ref,
 }: SpriteImportModalProps) => {
+  const [filePath, setFilePath] = useState<string | undefined>();
   const [isOpen, setIsOpen] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -24,7 +25,8 @@ const SpriteImportModal = ({
     close,
   }));
 
-  const open = () => {
+  const open = (filePath: string) => {
+    setFilePath(filePath);
     setIsOpen(true);
   };
 
@@ -50,7 +52,7 @@ const SpriteImportModal = ({
           <Dialog.Title align="center" className="pb-4">
             Import Sprite
           </Dialog.Title>
-          <SpriteImportForm />
+          <SpriteImportForm path={filePath} />
         </Dialog.Content>
       </Dialog.Root>
     </ModalContext>
