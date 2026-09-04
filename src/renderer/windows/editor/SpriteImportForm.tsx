@@ -1,5 +1,5 @@
-import { type ChangeEvent, useCallback, useMemo, useReducer } from 'react';
-import { mockState, useTimeout } from '@junipero/react';
+import { type ChangeEvent, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { classNames, mockState, rgba2hex, set, useTimeout } from '@junipero/react';
 import {
   Badge,
   Button,
@@ -18,6 +18,7 @@ import { findSprite, getTilesCount, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 import ChecklistItem from '../../components/ChecklistItem';
+import ColorField from '../../components/ColorField';
 
 export interface SpriteImportFormProps {
   path?: string;
@@ -31,6 +32,8 @@ export interface SpriteImportFormState {
   // Form
   path: string;
   name: string;
+  fileName: string;
+  transparentColor: string;
   width: number;
   height: number;
 }
@@ -48,6 +51,8 @@ const SpriteImportForm = ({
     // Form
     path: initialPath || '',
     name: '',
+    fileName: '',
+    transparentColor: '',
     width: 0,
     height: 0,
   });
@@ -57,7 +62,21 @@ const SpriteImportForm = ({
   }, 400, [state.preview, state.fetching], { enabled: state.fetching === true });
 
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ [name]: e.target.value });
+    dispatch(s => {
+      set(s, name, e.target.value);
+
+      return { ...s };
+    });
+  }, []);
+
+  const onValueChange = useCallback((name: string, value: string) => {
+    dispatch(s => {
+      set(s, name, value);
+
+      return { ...s };
+    });
+  }, []);
+
   const loadFile = useCallback(async (file: string) => {
     dispatch({ fetching: true });
 
@@ -150,7 +169,8 @@ const SpriteImportForm = ({
         name: state.name,
         width: state.width,
         height: state.height,
-      },
+        transparentColor: state.transparentColor,
+      } satisfies Partial<GameSpriteFile>,
     );
 
     const exists = findSprite(sprites, createdSprite.id);
@@ -167,7 +187,7 @@ const SpriteImportForm = ({
   }, [
     canSubmit, close, onCanvasChange, selectSprite,
     projectPath, sprites, appPayload,
-    state.path, state.width, state.height, state.name,
+    state.path, state.width, state.height, state.name, state.transparentColor,
   ]);
 
   const openParentFolder = useCallback(async () => {
@@ -177,6 +197,8 @@ const SpriteImportForm = ({
 
     await window.electron.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
+
+  const transparencyColor = useDelayedValue(state.transparentColor);
 
   return (
     <div className="flex flex-col gap-4">
