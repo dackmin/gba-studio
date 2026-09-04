@@ -3,10 +3,12 @@ import fsp from 'node:fs/promises';
 
 import type { IpcMainInvokeEvent } from 'electron';
 import { omit } from '@junipero/core';
+import { Jimp } from 'jimp';
 
 import type { GameSpriteFile } from '../../types';
 import { sanitizeSprite } from '../sanitize';
 import { toFileSlug } from '../../helpers';
+import { resizeToFit, toBmp } from '../images';
 
 export default async function (
   _: IpcMainInvokeEvent,
@@ -16,25 +18,38 @@ export default async function (
 ) {
   const projectDir = path.dirname(projectPath);
   const fileExt = path.extname(filePath);
-  const fileName = toFileSlug(spriteInfo.name ?? path.basename(filePath, fileExt));
+  const fileName = spriteInfo._fileName
+    ? path.basename(spriteInfo._fileName).split('.')[0]
+    : toFileSlug(spriteInfo.name ?? path.basename(filePath, fileExt));
 
   // Copy sprite into project/graphics
   const graphicsDir = path.join(projectDir, 'graphics');
   await fsp.mkdir(graphicsDir, { recursive: true });
 
-  try {
-    await fsp.access(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
-    await fsp.copyFile(
-      path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'),
-      path.join(graphicsDir, fileName + '.bmp'),
-    );
-    await fsp.rm(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
-  } catch {
-    await fsp.copyFile(
-      filePath,
-      path.join(graphicsDir, fileName + '.bmp'),
-    );
-  }
+  const image = await Jimp.read(filePath);
+  // @ts-expect-error - jimp is weird
+  resizeToFit(image, 'sprite');
+
+  // @ts-expect-error - jimp is weird
+  const { buffer: bmpBuffer } = await toBmp(image, {
+    transparencyColor: spriteInfo?.transparentColor,
+  });
+
+  await fsp.writeFile(path.join(graphicsDir, fileName + '.bmp'), bmpBuffer);
+
+  // try {
+  //   await fsp.access(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
+  //   await fsp.copyFile(
+  //     path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'),
+  //     path.join(graphicsDir, fileName + '.bmp'),
+  //   );
+  //   await fsp.rm(path.join(projectDir, '.gbastudio/tmp/import/temp.bmp'));
+  // } catch {
+  //   await fsp.copyFile(
+  //     filePath,
+  //     path.join(graphicsDir, fileName + '.bmp'),
+  //   );
+  // }
 
   // Create content file
   const contentDir = path.join(projectDir, 'content');
