@@ -1,4 +1,4 @@
-import { type ChangeEvent, useCallback, useReducer } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useReducer } from 'react';
 import { mockState, useTimeout } from '@junipero/react';
 import {
   Badge,
@@ -15,6 +15,11 @@ import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import { findMusic, toFileSlug } from '../../../helpers';
 import { useApp, useAudio, useModal } from '../../services/hooks';
+import { GameMusicFile } from '../../../types';
+
+export interface MusicImportFormProps {
+  path?: string;
+}
 
 export interface MusicImportFormState {
   // Internal
@@ -23,18 +28,22 @@ export interface MusicImportFormState {
   // Form
   path: string;
   name: string;
+  fileName: string;
 }
 
-const MusicImportForm = () => {
+const MusicImportForm = ({
+  path: initialPath,
+}: MusicImportFormProps) => {
   const { projectPath, projectBase, music, onCanvasChange, ...appPayload } = useApp();
   const { selectMusic } = useAudio();
   const { close } = useModal();
   const [state, dispatch] = useReducer(mockState<MusicImportFormState>, {
-    fetching: false,
+    fetching: !!initialPath,
     importing: false,
     // Form
-    path: '',
+    path: initialPath || '',
     name: '',
+    fileName: '',
   });
 
   useTimeout(() => {
@@ -43,6 +52,25 @@ const MusicImportForm = () => {
 
   const onInputChange = useCallback((name: string, e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ [name]: e.target.value });
+  }, []);
+
+  const loadFile = useCallback(async (file: string, firstInit = true) => {
+    dispatch({ fetching: true });
+
+    dispatch({
+      path: file,
+      ...firstInit && {
+        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.mod',
+        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (initialPath) {
+      loadFile(initialPath);
+    }
+    // eslint-disable-next-line react/exhaustive-deps
   }, []);
 
   const onBrowse = useCallback(async () => {
@@ -54,14 +82,9 @@ const MusicImportForm = () => {
     });
 
     if (file) {
-      dispatch({ fetching: true });
-
-      dispatch({
-        path: file,
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
-      });
+      await loadFile(file);
     }
-  }, [projectPath]);
+  }, [projectPath, loadFile]);
 
   const canEdit = useCallback(() => (
     !state.fetching && !state.importing
@@ -84,7 +107,8 @@ const MusicImportForm = () => {
       {
         type: 'music',
         name: state.name,
-      },
+        _fileName: state.fileName,
+      } satisfies Partial<GameMusicFile>,
     );
 
     const exists = findMusic(music, createdMusic.id);
@@ -101,7 +125,7 @@ const MusicImportForm = () => {
   }, [
     canSubmit, close, onCanvasChange, selectMusic,
     projectPath, music, appPayload,
-    state.path, state.name,
+    state.path, state.name, state.fileName,
   ]);
 
   const openParentFolder = useCallback(async () => {
@@ -143,7 +167,7 @@ const MusicImportForm = () => {
             </Callout.Icon>
             <Callout.Text className="flex flex-col items-start gap-2">
               <Text>
-                This sound is already in your project folder, its configuration will be updated
+                This music file is already in your project folder, its configuration will be updated
                 instead of creating a new one.
               </Text>
               <Button type="button" size="1" onClick={openParentFolder}>
@@ -156,11 +180,20 @@ const MusicImportForm = () => {
       { state.path && (
         <>
           <div className="flex flex-col gap-2">
-            <Text size="1" className="text-slate">Name</Text>
+            <Text size="1" className="text-slate">Music Name</Text>
             <TextField.Root
               value={state.name}
               onChange={onInputChange.bind(null, 'name')}
-              placeholder="My sound name"
+              placeholder="My music name"
+              disabled={!canEdit()}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">File Name</Text>
+            <TextField.Root
+              value={state.fileName}
+              onChange={onInputChange.bind(null, 'fileName')}
+              placeholder="my-music-file.mod"
               disabled={!canEdit()}
             />
           </div>

@@ -112,18 +112,38 @@ const Editor = () => {
     }
   }, []);
 
-  useBridgeListener('import-sound', () => {
+  useBridgeListener('import-sound', async () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
     musicModalRef.current?.close();
-    soundModalRef.current?.open();
+
+    const file = await window.electron.browseFile({
+      projectPath,
+      filters: [
+        { name: 'Sounds', extensions: ['wav'] },
+      ],
+    });
+
+    if (file) {
+      soundModalRef.current?.open(file);
+    }
   }, []);
 
-  useBridgeListener('import-music', () => {
+  useBridgeListener('import-music', async () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
-    musicModalRef.current?.open();
+
+    const file = await window.electron.browseFile({
+      projectPath,
+      filters: [
+        { name: 'Music', extensions: ['mod'] },
+      ],
+    });
+
+    if (file) {
+      musicModalRef.current?.open(file);
+    }
   }, []);
 
   const {

@@ -291,6 +291,7 @@ export interface GameSoundFile {
   // Internals
   id?: string;
   _file?: string;
+  _fileName?: string;
   $schema?: string;
 }
 
@@ -302,6 +303,7 @@ export interface GameMusicFile {
   // Internals
   id?: string;
   _file?: string;
+  _fileName?: string;
   $schema?: string;
 }
 

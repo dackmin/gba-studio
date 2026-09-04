@@ -1,7 +1,7 @@
-import { type ComponentPropsWithoutRef, useCallback } from 'react';
+import { type ComponentPropsWithoutRef, type MouseEvent, useCallback } from 'react';
 import { classNames } from '@junipero/react';
-import { ContextMenu, Text } from '@radix-ui/themes';
-import { SpeakerLoudIcon } from '@radix-ui/react-icons';
+import { ContextMenu, IconButton, Text } from '@radix-ui/themes';
+import { PlusCircledIcon, SpeakerLoudIcon } from '@radix-ui/react-icons';
 
 import { useApp, useAudio, useLocalData } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
@@ -14,6 +14,16 @@ const LeftSidebar = ({
   const { collapse, isCollapsed } = useLocalData();
   const { sounds, music, onCanvasChange, ...appPayload } = useApp();
   const { selectedSound, selectedMusic, selectSound, selectMusic } = useAudio();
+
+  const onAddSound = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    window.electron.send('import-sound');
+  }, []);
+
+  const onAddMusic = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    window.electron.send('import-music');
+  }, []);
 
   const onDeleteSound = useCallback(async () => {
     if (!selectedSound) {
@@ -49,7 +59,19 @@ const LeftSidebar = ({
         onOpenChange={collapse.bind(null, 'canvas.sounds')}
       >
         <Collapsible.Trigger>
-          <Text>Sounds</Text>
+          <div className="flex items-center justify-between w-full">
+            <Text>Sounds</Text>
+            <IconButton
+              variant="ghost"
+              radius="full"
+              onClick={onAddSound}
+            >
+              <PlusCircledIcon
+                width={16}
+                height={16}
+              />
+            </IconButton>
+          </div>
         </Collapsible.Trigger>
         <Collapsible.Content>
           { sounds.length === 0 ? (
@@ -101,7 +123,19 @@ const LeftSidebar = ({
         onOpenChange={collapse.bind(null, 'canvas.music')}
       >
         <Collapsible.Trigger>
-          <Text>Music</Text>
+          <div className="flex items-center justify-between w-full">
+            <Text>Music</Text>
+            <IconButton
+              variant="ghost"
+              radius="full"
+              onClick={onAddMusic}
+            >
+              <PlusCircledIcon
+                width={16}
+                height={16}
+              />
+            </IconButton>
+          </div>
         </Collapsible.Trigger>
         <Collapsible.Content>
           { music.length === 0 ? (

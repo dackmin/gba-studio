@@ -6,7 +6,7 @@ import DialogClose from '../../components/DialogClose';
 import MusicImportForm from './MusicImportForm';
 
 export interface MusicImportModalRef {
-  open: () => void;
+  open: (filePath: string) => void;
   close: () => void;
 }
 
@@ -17,6 +17,7 @@ export interface MusicImportModalProps {
 const MusicImportModal = ({
   ref,
 }: MusicImportModalProps) => {
+  const [filePath, setFilePath] = useState<string | undefined>();
   const [isOpen, setIsOpen] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -24,11 +25,13 @@ const MusicImportModal = ({
     close,
   }));
 
-  const open = () => {
+  const open = (filePath: string) => {
+    setFilePath(filePath);
     setIsOpen(true);
   };
 
   const close = useCallback(() => {
+    setFilePath(undefined);
     setIsOpen(false);
   }, []);
 
@@ -50,7 +53,7 @@ const MusicImportModal = ({
           <Dialog.Title align="center" className="pb-4">
             Import Music
           </Dialog.Title>
-          <MusicImportForm />
+          <MusicImportForm path={filePath} />
         </Dialog.Content>
       </Dialog.Root>
     </ModalContext>
