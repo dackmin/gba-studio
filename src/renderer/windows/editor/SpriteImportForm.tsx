@@ -107,18 +107,20 @@ const SpriteImportForm = ({
     !state.fetching && !state.importing
   ), [state.fetching, state.importing]);
 
-  const sprite = useDelayedValue<Partial<GameSpriteFile>>({
+  const sprite_ = useMemo<Partial<GameSpriteFile>>(() => ({
     path: state.preview?.data,
     width: state.width,
     height: state.height,
-  }, { delay: 400 });
+  }), [state.preview?.data, state.width, state.height]);
+  const sprite = useDelayedValue(sprite_, { delay: 400 });
 
-  const tilesCount = useDelayedValue<number>(getTilesCount(
+  const tilesCount_ = useMemo<number>(() => getTilesCount(
     state.preview?.width ?? 0,
     state.preview?.height ?? 0,
     state.width,
     state.height,
-  ), { delay: 400 });
+  ), [state.preview?.width, state.preview?.height, state.width, state.height]);
+  const tilesCount = useDelayedValue(tilesCount_, { delay: 400 });
 
   const checklist = useMemo(() => ([
     (state.preview?.width || 0) > 0 && (state.preview?.height || 0) > 0 &&

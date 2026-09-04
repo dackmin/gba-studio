@@ -86,11 +86,12 @@ const BackgroundImportForm = () => {
     !state.fetching && !state.importing
   ), [state.fetching, state.importing]);
 
-  const background = useDelayedValue<Partial<GameBackgroundFile>>({
+  const background_ = useMemo<Partial<GameBackgroundFile>>(() => ({
     path: state.preview?.data,
     width: state.width,
     height: state.height,
-  }, { delay: 400 });
+  }), [state.preview, state.width, state.height]);
+  const background = useDelayedValue(background_, { delay: 400 });
 
   const checklist = useMemo(() => ([
     (state.preview?.width || 0) > 0 &&
