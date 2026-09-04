@@ -54,7 +54,7 @@ export async function prepareData (build: Build) {
     for (const actor of scene.actors || []) {
       const sprite = findSprite(build.data?.sprites, actor.sprite);
 
-      if (sprite?._animations) {
+      if (sprite?._animations?.length) {
         actor._spriteHasAnimations = true;
       }
     }
@@ -62,7 +62,7 @@ export async function prepareData (build: Build) {
     if (scene.player) {
       const sprite = findSprite(build.data?.sprites, scene.player!.sprite);
 
-      if (sprite?._animations) {
+      if (sprite?._animations?.length) {
         scene.player._spriteHasAnimations = true;
       }
     }
