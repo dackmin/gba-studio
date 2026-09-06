@@ -76,6 +76,7 @@ namespace neo
       return;
     }
 
+    camera.set_position(0, 0);
 
     // Clean up old player just in case
     if (player != nullptr)
@@ -254,6 +255,12 @@ namespace neo
     if (scene_bg.has_value())
     {
       scene_bg->set_visible(false);
+    }
+
+    if (player != nullptr)
+    {
+      delete player;
+      player = nullptr;
     }
   }
 

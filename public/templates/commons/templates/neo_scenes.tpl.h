@@ -99,7 +99,7 @@ namespace neo::scenes
   {{/if}}
 
   // Map collisions
-  {{#if this.map}}
+  {{#if (and (isset this.map) (eq this.sceneType '2d-top-down'))}}
   {{#if (hasItems this.map.collisions)}}
   BN_DATA_EWRAM int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
     {{#each this.map.collisions}}
@@ -298,6 +298,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug this.name) "_player_z") value=(valuedef this.player.z 1)}}
 
   // Player
+  {{#if (and (isset this.player) (neq this.sceneType 'logos'))}}
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_id = "player";
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_name = "player";
   BN_DATA_EWRAM neo::types::actor {{slug this.name}}_player_actor = {
@@ -323,6 +324,7 @@ namespace neo::scenes
     {{/if}}
   };
   {{/if}}
+  {{/if}}
 
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
@@ -341,14 +343,14 @@ namespace neo::scenes
     0,
     nullptr,
     {{/if}}
-    {{#if this.player}}
+    {{#if (and (isset this.player) (neq this.sceneType 'logos')) }}
     true,
     &{{slug this.name}}_player_actor,
     {{else}}
     false,
     nullptr,
     {{/if}}
-    {{#if this.map}}
+    {{#if (and (isset this.map) (eq this.sceneType '2d-top-down'))}}
     &{{slug this.name}}_map_data,
     {{else}}
     nullptr,
