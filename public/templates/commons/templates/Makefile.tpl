@@ -24,5 +24,6 @@ ifndef LIBBUTANOABS
 endif
 
 export DEVKITPRO := {{posix devkitProPath}}
+export DEVKITARM := {{add (posix devkitProPath) "/devkitARM"}}
 
 include $(LIBBUTANOABS)/butano.mak
