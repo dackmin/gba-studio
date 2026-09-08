@@ -10,6 +10,24 @@ import { editorMenu, projectSelectionMenu } from './menus';
 const opened: Map<string, BrowserWindow> = new Map();
 let selectionWindow: BrowserWindow | null = null;
 
+// Windows that are allowed to close without prompting again for unsaved changes
+const confirmedClose = new WeakSet<BrowserWindow>();
+
+// Tracks whether the app is trying to quit (e.g. Cmd+Q), so that once every
+// window has confirmed closing, the quit can be resumed
+let quitting = false;
+
+export const isQuitting = () => quitting;
+
+export const setQuitting = (value: boolean) => {
+  quitting = value;
+};
+
+export const allowWindowClose = (win: BrowserWindow) => {
+  confirmedClose.add(win);
+  win.close();
+};
+
 export const createSelectionWindow = async (action?: 'new-project' | 'browse-project') => {
   // Reuse the existing selection window instead of opening a new one
   if (selectionWindow && !selectionWindow.isDestroyed()) {
@@ -222,7 +240,15 @@ export const createProjectWindow = async (projectPath: string) => {
 
   const abortController = new AbortController();
 
-  win.on('close', () => {
+  win.on('close', e => {
+    // Let the renderer decide whether to save/discard/cancel first
+    if (!confirmedClose.has(win)) {
+      e.preventDefault();
+      win.webContents.send('request-close');
+
+      return;
+    }
+
     ses.protocol.unhandle('project');
     ses.protocol.unhandle('resources');
     ses.protocol.unhandle('app');

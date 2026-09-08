@@ -55,6 +55,29 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
         ...type === 'editor' ? [
           { type: 'separator' },
           {
+            label: 'Save',
+            accelerator: 'CmdOrCtrl+S',
+            click: async () => {
+              const focusedWindow = BrowserWindow.getFocusedWindow();
+
+              if (focusedWindow) {
+                focusedWindow.webContents.send('save');
+              }
+            },
+          },
+          {
+            label: 'Close',
+            accelerator: 'CmdOrCtrl+W',
+            click: async () => {
+              const focusedWindow = BrowserWindow.getFocusedWindow();
+
+              if (focusedWindow) {
+                focusedWindow.close();
+              }
+            },
+          },
+          { type: 'separator' },
+          {
             label: 'Import...',
             submenu: [
               {

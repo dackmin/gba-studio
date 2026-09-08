@@ -7,7 +7,6 @@ import {
 } from 'react';
 import { Theme } from '@radix-ui/themes';
 import { type MoveableState, cloneDeep, mockState, pick } from '@junipero/react';
-import { useHotkeys } from 'react-hotkeys-hook';
 
 import type {
   AppPayload,
@@ -138,11 +137,28 @@ const App = () => {
     projectPath, state,
   ]);
 
-  useHotkeys('mod+s', e => {
-    e.preventDefault();
-
+  useBridgeListener('save', () => {
     if (state.dirty) {
       save();
+    }
+  }, [state.dirty, save]);
+
+  useBridgeListener('request-close', async () => {
+    if (!state.dirty) {
+      window.electron.confirmClose();
+
+      return;
+    }
+
+    const choice = await window.electron.showUnsavedChangesDialog();
+
+    if (choice === 'save') {
+      await save();
+      window.electron.confirmClose();
+    } else if (choice === 'discard') {
+      window.electron.confirmClose();
+    } else {
+      window.electron.cancelClose();
     }
   }, [state.dirty, save]);
 

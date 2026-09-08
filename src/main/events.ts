@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { app, BrowserWindow, globalShortcut } from 'electron';
 
 import type { GameBackgroundFile, GameSpriteFile } from '../types';
-import { createProjectWindow, createSelectionWindow } from './windows';
+import { createProjectWindow, createSelectionWindow, isQuitting, setQuitting } from './windows';
 import { getAudioFiles, getGraphicsFiles } from './files';
 
 export const createBeforeReadyEventListeners = () => {
@@ -22,9 +22,15 @@ export const createEventListeners = () => {
     });
   }
 
-  // Quit when all windows are closed (all but macOS)
+  // Flag so window-all-closed knows to resume quitting once every window
+  // has confirmed closing (e.g. after saving/discarding unsaved changes)
+  app.on('before-quit', () => {
+    setQuitting(true);
+  });
+
+  // Quit when all windows are closed (all but macOS, unless quitting was requested)
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+    if (process.platform !== 'darwin' || isQuitting()) {
       app.quit();
     }
   });

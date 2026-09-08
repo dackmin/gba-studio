@@ -21,5 +21,8 @@ export { default as importSprite } from './import-sprite';
 export { default as importBackground } from './import-background';
 export { default as importSound } from './import-sound';
 export { default as importMusic } from './import-music';
+export { default as showUnsavedChangesDialog } from './show-unsaved-changes-dialog';
+export { default as confirmClose } from './confirm-close';
+export { default as cancelClose } from './cancel-close';
 
 export * from './build-project';

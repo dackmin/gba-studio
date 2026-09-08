@@ -123,6 +123,12 @@ contextBridge.exposeInMainWorld('electron', {
     musicInfo: Partial<GameMusicFile>,
   ): Promise<Partial<GameMusicFile>> =>
     ipcRenderer.invoke('import-music', projectPath, filePath, musicInfo),
+  showUnsavedChangesDialog: (): Promise<'save' | 'discard' | 'cancel'> =>
+    ipcRenderer.invoke('show-unsaved-changes-dialog'),
+  confirmClose: (): Promise<void> =>
+    ipcRenderer.invoke('confirm-close'),
+  cancelClose: (): Promise<void> =>
+    ipcRenderer.invoke('cancel-close'),
 
   // Info
   platform: process.platform,

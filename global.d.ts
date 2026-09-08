@@ -85,6 +85,9 @@ interface AppBridge extends EventTarget {
     filePath: string,
     musicInfo: Partial<GameMusicFile>,
   ): Promise<Partial<GameMusicFile>>;
+  showUnsavedChangesDialog(): Promise<'save' | 'discard' | 'cancel'>;
+  confirmClose(): Promise<void>;
+  cancelClose(): Promise<void>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

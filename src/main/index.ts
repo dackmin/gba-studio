@@ -36,6 +36,9 @@ import {
   importBackground,
   importSound,
   importMusic,
+  showUnsavedChangesDialog,
+  confirmClose,
+  cancelClose,
 } from './handles';
 import Storage from './storage';
 
@@ -112,3 +115,6 @@ ipcMain.handle('import-sprite', importSprite);
 ipcMain.handle('import-background', importBackground);
 ipcMain.handle('import-sound', importSound);
 ipcMain.handle('import-music', importMusic);
+ipcMain.handle('show-unsaved-changes-dialog', showUnsavedChangesDialog);
+ipcMain.handle('confirm-close', confirmClose);
+ipcMain.handle('cancel-close', cancelClose);
