@@ -29,6 +29,20 @@ const Preview = () => {
     }
   }, [volume, emulator]);
 
+  // mGBA's keyboard listener is global, so only accept input while this tab
+  // is mounted, otherwise it steals keys (ex. "a") from text fields elsewhere.
+  useEffect(() => {
+    if (!emulator) {
+      return;
+    }
+
+    emulator.toggleInput(true);
+
+    return () => {
+      emulator.toggleInput(false);
+    };
+  }, [emulator]);
+
   const reload = useCallback((module: mGBAEmulator) => {
     // eslint-disable-next-line new-cap
     module.FSSync();
