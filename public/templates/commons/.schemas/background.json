@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "background.json",
   "definitions": {
     "Background": {
@@ -23,6 +23,12 @@
         },
         "path": {
           "type": "string"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
         },
         "id": {
           "type": "string"

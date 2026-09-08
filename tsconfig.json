@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
+    "types": ["node", "vitest/globals"],
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
@@ -16,5 +17,5 @@
     "isolatedModules": true,
   },
   "include": ["**/*.ts", "**/*.tsx", "./src/types.ts", "globals.d.ts", ".plugins/**/*.ts"],
-  "exclude": ["node_modules", "dist", ".vite", "public", "out"]
+  "exclude": ["node_modules", "dist", ".vite", "public/vendors", "out"]
 }

@@ -5,28 +5,36 @@
     "ConditionOperator": {
       "enum": [
         "==",
-        "!="
+        "!=",
+        "&&",
+        "||"
       ],
       "type": "string"
     },
-    "ConditionValue": {
-      "type": ["string", "boolean", "number"]
-    },
-    "Condition": {
-      "oneOf": [
-        { "$ref": "event.json#/definitions/EventValue" },
-        { "$ref": "#/definitions/ConditionValue" }
-      ]
-    },
-    "If": {
+    "IfEventCondition": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["type", "left", "operator", "right"],
       "properties": {
-        "left": { "$ref": "condition.json" },
-        "operator": { "$ref": "condition.json#/definitions/ConditionOperator" },
-        "right": { "$ref": "condition.json" }
+        "type": {
+          "const": "condition",
+          "type": "string"
+        },
+        "left": {
+          "oneOf": [
+            { "$ref": "event.json#/definitions/EventValue" },
+            { "$ref": "#/definitions/IfEventCondition" }
+          ]
+        },
+        "operator": { "$ref": "#/definitions/ConditionOperator" },
+        "right": {
+          "oneOf": [
+            { "$ref": "event.json#/definitions/EventValue" },
+            { "$ref": "#/definitions/IfEventCondition" }
+          ]
+        }
       }
     }
   },
-  "$ref": "#/definitions/Condition"
+  "$ref": "#/definitions/IfEventCondition"
 }

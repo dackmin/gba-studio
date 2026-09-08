@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/neoframe/gba-studio/main/public/templates/commons/.schemas/scene.json",
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/scene.json",
   "type": "scene",
   "name": "Scene 0",
   "background": "bg_default",

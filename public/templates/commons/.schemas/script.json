@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "variable.json",
+  "$id": "script.json",
   "definitions": {
     "Script": {
       "additionalProperties": false,
@@ -20,7 +20,7 @@
         },
         "events": {
           "items": {
-            "$ref": "scene.json#/definitions/SceneEvent"
+            "$ref": "event.json#/definitions/Event"
           },
           "type": "array"
         }
@@ -28,8 +28,7 @@
       "required": [
         "$schema",
         "type",
-        "name",
-        "events"
+        "name"
       ]
     }
   },

@@ -1,22 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "animation.json",
+  "$id": "sprite.json",
   "definitions": {
     "AnimationFrame": {
       "type": "object",
       "required": ["type", "index"],
       "additionalProperties": false,
       "properties": {
-        "duration": {
-          "oneOf": [
-            { "type": "number" },
-            { "$ref": "event.json#/definitions/EventValue" }
-          ]
-        },
+        "duration": { "$ref": "event.json#/definitions/EventValue" },
         "reverse": {
-          "type": "boolean"
-        },
-        "loop": {
           "type": "boolean"
         },
         "index": {
@@ -128,6 +120,9 @@
           "type": "number"
         },
         "name": {
+          "type": "string"
+        },
+        "transparentColor": {
           "type": "string"
         },
         "format": {

@@ -13,6 +13,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "electron-forge start",
+    "test": "vitest run",
     "package": "electron-forge package",
     "make:macos": "PLATFORM=darwin; ARCH=arm64 electron-forge make --platform=darwin --arch=arm64",
     "make:macos-intel": "PLATFORM=darwin; ARCH=x64 electron-forge make --platform=darwin --arch=x64",
@@ -71,21 +72,24 @@
     "@poool/oxlint-config": "6.3.0",
     "@reforged/maker-appimage": "5.3.1",
     "@tailwindcss/vite": "4.3.3",
+    "@testing-library/react": "16.3.3",
     "@types/debug": "4.1.13",
     "@types/electron-squirrel-startup": "1.0.2",
     "@types/fs-extra": "11.0.4",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.5",
+    "@types/react-dom": "19.2.7",
     "@vitejs/plugin-react": "6.1.1",
+    "ajv": "8.20.0",
     "commitlint": "21.2.2",
     "debug": "4.4.3",
     "dotenv": "17.4.2",
-    "electron": "44.1.1",
-    "eslint": "10.9.1",
-    "oxlint": "1.81.0",
+    "electron": "44.3.0",
+    "eslint": "10.10.0",
+    "oxlint": "1.82.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vite": "8.2.2"
+    "vite": "8.2.2",
+    "vitest": "5.0.0"
   },
   "build": {
     "electronLanguages": [

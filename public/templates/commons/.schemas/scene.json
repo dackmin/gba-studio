@@ -27,6 +27,15 @@
         "y": {
           "type": "number"
         },
+        "z": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
         "direction": {
           "$ref": "#/definitions/CharacterDirection"
         },
@@ -56,12 +65,144 @@
             }
           },
           "type": "object"
+        },
+        "id": {
+          "type": "string"
         }
       },
       "required": [
         "type",
         "name",
+        "x",
+        "y",
         "sprite"
+      ]
+    },
+    "Sensor": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "sensor",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "event.json#/definitions/Event"
+          }
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "x",
+        "y",
+        "width",
+        "height"
+      ]
+    },
+    "Sprite": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "sprite",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sprite": {
+          "type": "string"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        },
+        "events": {
+          "additionalProperties": false,
+          "properties": {
+            "init": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            }
+          },
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sprite",
+        "x",
+        "y"
+      ]
+    },
+    "Player": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "player",
+          "type": "string"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "direction": {
+          "$ref": "#/definitions/CharacterDirection"
+        },
+        "sprite": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "x",
+        "y"
       ]
     },
     "Scene": {
@@ -70,6 +211,7 @@
           "type": "string"
         },
         "sceneType": {
+          "enum": ["logos", "2d-top-down"],
           "type": "string"
         },
         "background": {
@@ -85,40 +227,32 @@
           "type": "string"
         },
         "player": {
-          "additionalProperties": false,
-          "properties": {
-            "x": {
-              "type": "number"
-            },
-            "y": {
-              "type": "number"
-            },
-            "direction": {
-              "$ref": "#/definitions/CharacterDirection"
-            }
-          },
-          "required": [
-            "x",
-            "y"
-          ],
-          "type": "object"
+          "$ref": "#/definitions/Player"
         },
         "actors": {
           "type": "array",
           "items": { "$ref": "#/definitions/Actor" }
         },
+        "sprites": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Sprite" }
+        },
         "map": {
           "$ref": "#/definitions/Map"
         },
         "type": {
+          "const": "scene",
+          "type": "string"
+        },
+        "id": {
           "type": "string"
         }
       },
       "required": [
         "$schema",
         "type",
-        "name",
-        "events"
+        "sceneType",
+        "name"
       ],
       "type": "object"
     },
@@ -149,44 +283,11 @@
         },
         "sensors": {
           "type": "array",
-          "items": {
-            "properties": {
-              "type": {
-                "const": "sensor",
-                "type": "string"
-              },
-              "x": {
-                "type": "number"
-              },
-              "y": {
-                "type": "number"
-              },
-              "width": {
-                "type": "number"
-              },
-              "height": {
-                "type": "number"
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "$ref": "event.json#/definitions/Event"
-                }
-              }
-            },
-            "required": [
-              "type",
-              "x",
-              "y",
-              "events"
-            ],
-            "type": "object"
-          }
+          "items": { "$ref": "#/definitions/Sensor" }
         }
       },
       "required": [
         "type",
-        "scene",
         "gridSize",
         "width",
         "height"
