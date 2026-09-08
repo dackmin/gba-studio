@@ -20,23 +20,31 @@ namespace neo::camera
     bn::string_view direction_priority
   )
   {
-    int min_x, max_x, min_y, max_y, target_x, target_y;
+    int min_x, max_x, min_y, max_y, bg_pixel_width, bg_pixel_height;
 
-    // Scenes without map data (e.g. non top-down scenes) have no bounds to clamp to.
+    // Scenes without map data (e.g. logos scenes) have no tile grid, but still
+    // have a background whose pixel size can be used to derive the same
+    // top-left-relative bounds as the map data branch below.
     if (active_scene.map_data != nullptr)
     {
-      min_x = -(active_scene.map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2);
-      max_x = active_scene.map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2;
-      min_y = -(active_scene.map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2);
-      max_y = active_scene.map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2;
-      target_x = min_x + active_scene.map_data->to_pixel_x(game->variables, x);
-      target_y = min_y + active_scene.map_data->to_pixel_y(game->variables, y);
+      bg_pixel_width = active_scene.map_data->pixel_width(game->variables);
+      bg_pixel_height = active_scene.map_data->pixel_height(game->variables);
     }
     else
     {
-      min_x = max_x = target_x = x;
-      min_y = max_y = target_y = y;
+      // Butano map cells are 8px wide/tall.
+      bg_pixel_width = active_scene.background.map_item().dimensions().width() * 8;
+      bg_pixel_height = active_scene.background.map_item().dimensions().height() * 8;
     }
+
+    min_x = -(bg_pixel_width / 2 - neo::types::SCREEN_WIDTH / 2);
+    max_x = bg_pixel_width / 2 - neo::types::SCREEN_WIDTH / 2;
+    min_y = -(bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2);
+    max_y = bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2;
+
+    // x/y are the target pixel position of the top-left corner of the viewport.
+    int target_x = min_x + x;
+    int target_y = min_y + y;
 
     // 0,0 is camera center
     int start_x = (int)game->camera.x();

@@ -531,8 +531,8 @@ const Scene = ({
                     'border-yellow-500 pointer-events-none',
                   )}
                   style={{
-                    left: tileToPixel(state.cameraPosition[0], gridSize),
-                    top: tileToPixel(state.cameraPosition[1], gridSize),
+                    left: state.cameraPosition[0],
+                    top: state.cameraPosition[1],
                     boxShadow: '0 0 0 10000px rgba(0, 0, 0, 0.25)',
                   }}
                 />
