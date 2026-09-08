@@ -393,6 +393,7 @@ namespace neo
     /**
      * @name show-dialog
      * @param text string — Dialog text
+     * @param speed string — Text reveal speed (slow, normal, fast)
      */
     else if (e->type == "show-dialog")
     {
@@ -401,6 +402,7 @@ namespace neo
       neo::dialog* d = new neo::dialog(this, dialog_evt->lines);
       d->set_direction(dialog_evt->direction);
       d->set_z_order(dialog_evt->z);
+      d->set_speed(dialog_evt->speed);
       d->show();
       delete d;
     }

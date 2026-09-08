@@ -145,6 +145,14 @@
         "text": {
           "type": "string"
         },
+        "speed": {
+          "enum": [
+            "slow",
+            "normal",
+            "fast"
+          ],
+          "type": "string"
+        },
         "type": {
           "const": "show-dialog",
           "type": "string"

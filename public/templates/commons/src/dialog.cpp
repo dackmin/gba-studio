@@ -25,6 +25,7 @@ namespace neo
     game(game_),
     lines(lines_),
     direction(neo::types::direction::DOWN),
+    speed(neo::types::text_speed::NORMAL),
     lines_count(lines_.size()),
     bg_z_order(0),
     text_z_order(1)
@@ -96,11 +97,26 @@ namespace neo
     }
 
     // Then make them appear one by one
+    int reveal_wait_ms = 48;
+    switch (speed)
+    {
+      case neo::types::text_speed::SLOW:
+        reveal_wait_ms = 96;
+        break;
+
+      case neo::types::text_speed::FAST:
+        reveal_wait_ms = 16;
+        break;
+
+      default:
+        break;
+    }
+
     for (bn::sprite_ptr& sprite : text_sprites)
     {
       sprite.set_visible(true);
 
-      neo::utils::wait(16); // 1 frame at 60 FPS
+      neo::utils::wait(reveal_wait_ms);
       bn::core::update();
     }
 
@@ -124,5 +140,10 @@ namespace neo
   {
     bg_z_order = z_order_;
     text_z_order = z_order_ - 1;
+  }
+
+  void dialog::set_speed (neo::types::text_speed speed_)
+  {
+    speed = speed_;
   }
 }

@@ -30,6 +30,13 @@ namespace neo::types
     DOWN_RIGHT
   };
 
+  enum class text_speed
+  {
+    SLOW,
+    NORMAL,
+    FAST
+  };
+
   struct event_value
   {
     bn::string_view type;
@@ -158,9 +165,10 @@ namespace neo::types
   {
     neo::types::direction direction;
     int z;
+    neo::types::text_speed speed;
     bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, const bn::vector<bn::string_view, 5>& lines_):
-      event(type_), direction(direction_), z(z_), lines(lines_) {}
+    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::vector<bn::string_view, 5>& lines_):
+      event(type_), direction(direction_), z(z_), speed(speed_), lines(lines_) {}
   };
 
   struct menu_choice

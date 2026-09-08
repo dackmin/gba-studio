@@ -75,6 +75,7 @@ BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
   {{valuedef this.z 1}},
+  neo::types::text_speed::{{uppercase (valuedef this.speed 'normal')}},
   make_dialog_vector(
     {{#each (truncate this.text 27)}}
     {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}

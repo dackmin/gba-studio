@@ -409,6 +409,7 @@ export interface ShowDialogEvent extends SceneEvent {
   text: string;
   direction?: Direction;
   z?: number;
+  speed?: 'slow' | 'normal' | 'fast';
 }
 
 export interface DisableActorEvent extends SceneEvent {

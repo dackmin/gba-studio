@@ -1,6 +1,6 @@
 import { type ChangeEvent, useCallback, useState } from 'react';
 import { set } from '@junipero/react';
-import { Text, TextArea } from '@radix-ui/themes';
+import { Select, Text, TextArea } from '@radix-ui/themes';
 import { Tooltip } from 'radix-ui';
 
 import type { ShowDialogEvent } from '../../../types';
@@ -52,6 +52,20 @@ const EventShowDialog = ({
             'down_left', 'down_right']}
           onValueChange={onValueChange_.bind(null, 'direction')}
         />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Speed</Text>
+        <Select.Root
+          value={event.speed || 'normal'}
+          onValueChange={onValueChange_.bind(null, 'speed')}
+        >
+          <Select.Trigger placeholder="Select" />
+          <Select.Content>
+            <Select.Item value="slow">Slow</Select.Item>
+            <Select.Item value="normal">Normal</Select.Item>
+            <Select.Item value="fast">Fast</Select.Item>
+          </Select.Content>
+        </Select.Root>
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Text</Text>
