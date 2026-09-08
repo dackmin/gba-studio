@@ -91,6 +91,25 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       y: 0,
       duration: 200,
     }),
+  }, {
+    icon: MoveIcon,
+    name: 'Follow Actor',
+    value: 'follow-actor',
+    keywords: ['camera', 'center', 'focus', 'follow', 'actor'],
+    construct: () => ({
+      type: 'follow-actor',
+      actor: '',
+      duration: 200,
+    }),
+  }, {
+    icon: MoveIcon,
+    name: 'Follow Player',
+    value: 'follow-player',
+    keywords: ['camera', 'center', 'focus', 'follow', 'player'],
+    construct: () => ({
+      type: 'follow-player',
+      duration: 200,
+    }),
   }],
 }, {
   name: 'Scene',

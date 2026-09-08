@@ -45,6 +45,8 @@ namespace neo
       bool is_input_enabled;
 
       neo::actor* player;
+      // Actor the camera currently tracks as it moves (nullptr if none).
+      neo::actor* camera_target;
 
       void set_scene(bn::string_view scene_name);
       void set_background(bn::regular_bg_item background, bool visible = false);

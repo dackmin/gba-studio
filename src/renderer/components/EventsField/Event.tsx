@@ -21,6 +21,8 @@ import type {
   DisableActorEvent,
   EnableActorEvent,
   ExecuteScriptEvent,
+  FollowActorEvent,
+  FollowPlayerEvent,
   GoToSceneEvent,
   IfEvent,
   MoveActorToEvent,
@@ -51,6 +53,8 @@ import EventIf from './EventIf';
 import EventScript from './EventScript';
 import EventPlaySound from './EventPlaySound';
 import EventMoveCameraTo from './EventMoveCameraTo';
+import EventFollowActor from './EventFollowActor';
+import EventFollowPlayer from './EventFollowPlayer';
 import EventShowMenu from './EventShowMenu';
 import EventMoveActorTo from './EventMoveActorTo';
 import EventSetActorDirection from './EventSetActorDirection';
@@ -344,6 +348,18 @@ const Event = ({
             <Switch.Case value="move-camera-to">
               <EventMoveCameraTo
                 event={event as MoveCameraToEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="follow-actor">
+              <EventFollowActor
+                event={event as FollowActorEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="follow-player">
+              <EventFollowPlayer
+                event={event as FollowPlayerEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

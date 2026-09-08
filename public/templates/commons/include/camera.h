@@ -18,6 +18,22 @@ namespace neo::camera
     bool allow_diagonal,
     bn::string_view direction_priority
   );
+
+  void follow(
+    neo::game* game,
+    neo::types::scene& active_scene,
+    neo::actor* target,
+    int duration,
+    bool allow_diagonal,
+    bn::string_view direction_priority
+  );
+
+ // Just like follow, but instant
+  void track(
+    neo::game* game,
+    neo::types::scene& active_scene,
+    neo::actor* target
+  );
 }
 
 #endif

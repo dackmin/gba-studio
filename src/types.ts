@@ -421,13 +421,30 @@ export interface EnableActorEvent extends SceneEvent {
   actor: string;
 }
 
+export type DirectionPriority = 'horizontal' | 'vertical';
+
 export interface MoveCameraToEvent extends SceneEvent {
   type: 'move-camera-to';
   x: EventValue;
   y: EventValue;
   duration?: EventValue;
   allowDiagonal?: boolean;
-  directionPriority?: 'horizontal' | 'vertical';
+  directionPriority?: DirectionPriority;
+}
+
+export interface FollowActorEvent extends SceneEvent {
+  type: 'follow-actor';
+  actor: string;
+  duration?: EventValue;
+  allowDiagonal?: boolean;
+  directionPriority?: DirectionPriority;
+}
+
+export interface FollowPlayerEvent extends SceneEvent {
+  type: 'follow-player';
+  duration?: EventValue;
+  allowDiagonal?: boolean;
+  directionPriority?: DirectionPriority;
 }
 
 export interface MoveActorToEvent extends SceneEvent {
@@ -436,7 +453,7 @@ export interface MoveActorToEvent extends SceneEvent {
   x: EventValue;
   y: EventValue;
   speed?: EventValue;
-  directionPriority?: 'horizontal' | 'vertical';
+  directionPriority?: DirectionPriority;
   animation?: string;
 }
 

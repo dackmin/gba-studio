@@ -9,6 +9,7 @@
 
 #include "actor.h"
 #include "game.h"
+#include "camera.h"
 #include "commons.h"
 
 namespace neo
@@ -102,10 +103,15 @@ namespace neo
 
     sprite.set_x(x);
     sprite.set_y(y);
+
+    if (game->camera_target == this)
+    {
+      neo::camera::track(game, *game->active_scene, this);
+    }
   }
 
   /**
-   * Set position with pixels, following with the camera (main player actor only)
+   * Set position with pixels, following with the camera if this actor is the camera_target
    */
   void actor::set_position (bn::fixed_point pixel_position)
   {
@@ -117,14 +123,10 @@ namespace neo
     sprite.set_x(x + width() / 2);
     sprite.set_y(y + height() / 2);
 
-    game->camera.set_x(bn::min(
-      bn::max(x, -(map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2)),
-      map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2
-    ));
-    game->camera.set_y(bn::min(
-      bn::max(y, -(map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2)),
-      map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2
-    ));
+    if (game->camera_target == this)
+    {
+      neo::camera::track(game, *game->active_scene, this);
+    }
   }
 
   void actor::set_z_order(int z)
@@ -503,6 +505,11 @@ namespace neo
         else
         {
           sprite.set_y(origin_y + moved);
+        }
+
+        if (game->camera_target == this)
+        {
+          neo::camera::track(game, *game->active_scene, this);
         }
 
         // Play one animation frame

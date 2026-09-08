@@ -336,6 +336,43 @@ namespace neo::types
       direction_priority(direction_priority_) {}
   };
 
+  struct follow_actor_event: event
+  {
+    bn::string_view actor;
+    event_value* duration;
+    bool allow_diagonal;
+    bn::string_view direction_priority;
+    follow_actor_event(
+      bn::string_view type_,
+      bn::string_view actor_,
+      event_value* duration_,
+      bool allow_diagonal_,
+      bn::string_view direction_priority_
+    ):
+      event(type_),
+      actor(actor_),
+      duration(duration_),
+      allow_diagonal(allow_diagonal_),
+      direction_priority(direction_priority_) {}
+  };
+
+  struct follow_player_event: event
+  {
+    event_value* duration;
+    bool allow_diagonal;
+    bn::string_view direction_priority;
+    follow_player_event(
+      bn::string_view type_,
+      event_value* duration_,
+      bool allow_diagonal_,
+      bn::string_view direction_priority_
+    ):
+      event(type_),
+      duration(duration_),
+      allow_diagonal(allow_diagonal_),
+      direction_priority(direction_priority_) {}
+  };
+
   struct move_actor_to_event: event
   {
     bn::string_view actor;

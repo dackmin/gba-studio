@@ -36,7 +36,8 @@ namespace neo
     variables(),
     active_scene(nullptr),
     scene_bg(),
-    player(nullptr)
+    player(nullptr),
+    camera_target(nullptr)
   {
     current_scene = neo::scenes::STARTING_SCENE;
     scene_changed = false;
@@ -77,6 +78,9 @@ namespace neo
     }
 
     camera.set_position(0, 0);
+
+    // Reset before deleting actors below, since it may point at one of them.
+    camera_target = nullptr;
 
     // Clean up old player just in case
     if (player != nullptr)
@@ -121,6 +125,9 @@ namespace neo
       BN_LOG("Has player");
 
       player = new neo::actor(this, active_scene->player, true);
+
+      // The player follows the camera by default; other actors opt in via a follow event.
+      camera_target = player;
 
       if (
         last_goto_event != nullptr &&
@@ -645,6 +652,71 @@ namespace neo
         move_camera_evt->allow_diagonal,
         move_camera_evt->direction_priority
       );
+    }
+
+    /**
+     * @name follow-actor
+     * @param actor string — Actor name
+     * @param duration number — Duration in milliseconds
+     * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
+     * @param direction_priority string — Direction priority for movement (default: "horizontal")
+     */
+    else if (e->type == "follow-actor")
+    {
+      const neo::types::follow_actor_event* follow_actor_evt =
+        static_cast<const neo::types::follow_actor_event*>(e);
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        if (
+          actors[i]->definition->name == follow_actor_evt->actor ||
+          actors[i]->definition->_id == follow_actor_evt->actor
+        )
+        {
+          BN_LOG("Following actor: ", actors[i]->definition->name);
+
+          camera_target = actors[i];
+
+          neo::camera::follow(
+            this,
+            *active_scene,
+            actors[i],
+            follow_actor_evt->duration->as_int(variables),
+            follow_actor_evt->allow_diagonal,
+            follow_actor_evt->direction_priority
+          );
+
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name follow-player
+     * @param duration number — Duration in milliseconds
+     * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
+     * @param direction_priority string — Direction priority for movement (default: "horizontal")
+     */
+    else if (e->type == "follow-player")
+    {
+      const neo::types::follow_player_event* follow_player_evt =
+        static_cast<const neo::types::follow_player_event*>(e);
+
+      if (player != nullptr)
+      {
+        BN_LOG("Following player");
+
+        camera_target = player;
+
+        neo::camera::follow(
+          this,
+          *active_scene,
+          player,
+          follow_player_evt->duration->as_int(variables),
+          follow_player_evt->allow_diagonal,
+          follow_player_evt->direction_priority
+        );
+      }
     }
 
     /**

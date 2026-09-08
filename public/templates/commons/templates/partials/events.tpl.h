@@ -240,6 +240,28 @@ BN_DATA_EWRAM neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
   {{valuedef this.allowDiagonal true}},
   {{../prefix}}_{{@index}}_direction_priority
 );
+{{else if (eq this.type "follow-actor")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "follow-actor";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+BN_DATA_EWRAM neo::types::follow_actor_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_actor,
+  &{{../prefix}}_{{@index}}_duration_value,
+  {{valuedef this.allowDiagonal true}},
+  {{../prefix}}_{{@index}}_direction_priority
+);
+{{else if (eq this.type "follow-player")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "follow-player";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+BN_DATA_EWRAM neo::types::follow_player_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  &{{../prefix}}_{{@index}}_duration_value,
+  {{valuedef this.allowDiagonal true}},
+  {{../prefix}}_{{@index}}_direction_priority
+);
 {{else if (eq this.type "move-actor-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
