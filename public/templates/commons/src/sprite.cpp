@@ -1,4 +1,4 @@
-#define BN_CFG_LOG_ENABLED true
+#include <neo_logs.h>
 
 #include <bn_core.h>
 #include <bn_sprite_ptr.h>

@@ -228,6 +228,7 @@ export interface ProjectSettings {
   devkitProPath?: string;
   emulatorType?: 'internal' | 'external';
   emulatorCommand?: string;
+  logsEnabled?: boolean;
 }
 
 export interface ProjectConfiguration {

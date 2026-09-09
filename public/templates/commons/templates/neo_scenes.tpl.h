@@ -1,6 +1,8 @@
 #ifndef NEO_SCENES_H
 #define NEO_SCENES_H
 
+#include <neo_logs.h>
+
 #include <bn_core.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_vector.h>

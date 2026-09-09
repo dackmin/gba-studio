@@ -176,6 +176,8 @@ export const buildTemplates = async (
   await setupHandlebars();
 
   sendLog(event, build.id, 'Building helpers...');
+  await buildSingleTemplate('neo_logs.tpl.h', build);
+  sendSuccessLog(event, build.id, 'neo_logs.h built');
   await buildSingleTemplate('neo_utils.tpl.h', build);
   sendSuccessLog(event, build.id, 'neo_utils.h built');
 

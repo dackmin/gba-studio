@@ -1,3 +1,5 @@
+#include <neo_logs.h>
+
 #include <bn_core.h>
 #include <bn_camera_actions.h>
 

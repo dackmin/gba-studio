@@ -1,5 +1,5 @@
 import type { ChangeEvent } from 'react';
-import { Card, Heading, Select, Text, TextField } from '@radix-ui/themes';
+import { Card, Heading, Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { ProjectSettings } from '../../../types';
 
@@ -8,7 +8,7 @@ export interface ConfigurationFormProps {
   name?: string;
   settings: ProjectSettings;
   onTextChange: (name: string, e: ChangeEvent<HTMLInputElement>) => void;
-  onValueChange: (name: string, value: string) => void;
+  onValueChange: (name: string, value: any) => void;
   onFieldBlur: () => void;
 }
 
@@ -98,6 +98,18 @@ const ConfigurationForm = ({
               />
             </div>
           ) }
+        </Card>
+      </div>
+      <div className="flex flex-col gap-3">
+        <Heading size="3">Debugging</Heading>
+        <Card className="!flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={settings?.logsEnabled ?? true}
+              onCheckedChange={onValueChange.bind(null, 'settings.logsEnabled')}
+            />
+            <Text>Enable logging</Text>
+          </div>
         </Card>
       </div>
     </Card>

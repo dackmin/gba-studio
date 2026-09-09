@@ -1,6 +1,8 @@
 #ifndef NEO_UTILS_H
 #define NEO_UTILS_H
 
+#include <neo_logs.h>
+
 #include <bn_core.h>
 
 namespace neo::utils

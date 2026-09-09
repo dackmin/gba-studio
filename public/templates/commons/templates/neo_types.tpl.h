@@ -1,6 +1,8 @@
 #ifndef NEO_TYPES_H
 #define NEO_TYPES_H
 
+#include <neo_logs.h>
+
 #include <bn_core.h>
 #include <bn_log.h>
 #include <bn_regular_bg_ptr.h>
