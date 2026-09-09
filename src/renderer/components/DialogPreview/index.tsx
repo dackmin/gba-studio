@@ -14,14 +14,13 @@ const DialogPreview = ({
   className,
   ...rest
 }: DialogPreviewProps) => {
-  const text = useMemo(() => (
+  const parts = useMemo(() => (
     textProp
       .split(/\r?\n/)
       .flatMap(line => (
         line.match(new RegExp(`.{1,${maxLineLength}}`, 'g')) || ['']
       ))
       .slice(0, maxLines)
-      .join('\n')
   ), [textProp, maxLineLength, maxLines]);
 
   return (
@@ -32,7 +31,11 @@ const DialogPreview = ({
         className,
       )}
     >
-      <div className="p-[8px]">{ text }</div>
+      <div className="p-[8px]">
+        { parts.map((part, index) => (
+          <div key={index}>{part}</div>
+        ))}
+      </div>
     </div>
   );
 };
