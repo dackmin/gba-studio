@@ -11,6 +11,7 @@ import type { AppPayload, Build, BuildOptions } from '../../../types';
 import { getResourcesDir } from '../../utils';
 import {
   getBuildDir,
+  humanSize,
   runCommand,
   sendAbort,
   sendError,
@@ -145,6 +146,13 @@ async function buildProject (
   sendStep(event, build.id, 'Building project...');
   sendLog(event, build.id, `Building project in ${getBuildDir(build)}...`);
 
+  if (build.data?.project) {
+    build.data.project.settings = {
+      logsEnabled: true,
+      ...getBuildConfiguration(storage, build),
+    };
+  }
+
   const target = path
     .basename(build.projectPath, path.extname(build.projectPath));
 
@@ -183,11 +191,6 @@ async function buildProject (
     finalGamePath,
   );
 
-  sendSuccessLog(event, build.id,
-    `Project built successfully in ` +
-    `${(globalThis.performance.now() - start).toFixed(2)} ms 🎉`
-  );
-
   // Check for built .gba file
   try {
     await fs.access(finalGamePath);
@@ -197,6 +200,14 @@ async function buildProject (
     build.controller?.abort();
     sendAbort(event, build.id);
   }
+
+  const romSize = (await fs.stat(finalGamePath)).size;
+
+  sendSuccessLog(event, build.id,
+    `Project built successfully in ` +
+    `${(globalThis.performance.now() - start).toFixed(2)} ms 🎉 ` +
+    `(ROM size: ${humanSize(romSize)})`
+  );
 
   const projectSettings = getBuildConfiguration(storage, build);
 
