@@ -84,7 +84,7 @@ const SensorForm = ({
                   onChange={onTextChange.bind(null, 'x')}
                 >
                   <TextField.Slot side="right">
-                  tiles
+                    tiles
                   </TextField.Slot>
                 </TextField.Root>
               </div>
@@ -97,7 +97,7 @@ const SensorForm = ({
                   onChange={onTextChange.bind(null, 'y')}
                 >
                   <TextField.Slot side="right">
-                  tiles
+                    tiles
                   </TextField.Slot>
                 </TextField.Root>
               </div>
@@ -112,7 +112,7 @@ const SensorForm = ({
                   onChange={onTextChange.bind(null, 'width')}
                 >
                   <TextField.Slot side="right">
-                  tiles
+                    tiles
                   </TextField.Slot>
                 </TextField.Root>
               </div>
@@ -125,7 +125,7 @@ const SensorForm = ({
                   onChange={onTextChange.bind(null, 'height')}
                 >
                   <TextField.Slot side="right">
-                  tiles
+                    tiles
                   </TextField.Slot>
                 </TextField.Root>
               </div>
