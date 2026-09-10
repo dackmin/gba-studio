@@ -660,6 +660,8 @@ namespace neo::types
     bn::sprite_item sprite;
     int init_events_count;
     event** init_events;
+    int interact_events_count;
+    event** interact_events;
   };
 
   struct script

@@ -20,6 +20,7 @@ namespace neo
       void disable();
       void enable();
       void init();
+      bool collides(int tile_x, int tile_y);
 
       neo::game* game;
       neo::types::sprite* definition;

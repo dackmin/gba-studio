@@ -67,4 +67,15 @@ namespace neo
       game->exec_event(definition->init_events[i], false);
     }
   }
+
+  bool sprite::collides(int tile_x, int tile_y)
+  {
+    if (!inner_sprite.visible())
+    {
+      return false;
+    }
+
+    return (tile_x == position.x().right_shift_integer())
+      && (tile_y == position.y().right_shift_integer());
+  }
 }

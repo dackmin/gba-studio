@@ -146,11 +146,20 @@ const SpriteForm = ({
                   <Tabs.Trigger value="init">
                     On Init
                   </Tabs.Trigger>
+                  <Tabs.Trigger value="interact">
+                    On Interact
+                  </Tabs.Trigger>
                 </Tabs.List>
                 <Tabs.Content value="init">
                   <EventsField
                     value={sprite.events?.init ?? []}
                     onValueChange={onValueChange.bind(null, 'events.init')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="interact">
+                  <EventsField
+                    value={sprite.events?.interact ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.interact')}
                   />
                 </Tabs.Content>
               </Tabs.Root>

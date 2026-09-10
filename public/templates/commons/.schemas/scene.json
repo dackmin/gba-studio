@@ -158,6 +158,12 @@
               "items": {
                 "$ref": "event.json#/definitions/Event"
               }
+            },
+            "interact": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
             }
           },
           "type": "object"

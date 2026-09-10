@@ -265,6 +265,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.events.interact)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_interact_event") events=this.events.interact}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_interact_events[] = {
+    {{#each this.events.interact}}
+    &{{slug ../../this.name}}_sprite_{{@../index}}_interact_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
@@ -280,7 +288,14 @@ namespace neo::scenes
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
-    {{slug ../this.name}}_sprite_{{@index}}_init_events
+    {{slug ../this.name}}_sprite_{{@index}}_init_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.interact)}}
+    {{this.events.interact.length}},
+    {{slug ../this.name}}_sprite_{{@index}}_interact_events
     {{else}}
     0,
     nullptr
@@ -312,6 +327,7 @@ namespace neo::scenes
     &{{slug this.name}}_player_z_value,
     neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
+    false,
     0,
     nullptr,
     0,

@@ -944,4 +944,37 @@ namespace neo
 
     return nullptr;
   }
+
+  neo::sprite* game::get_sprite_at(int tile_x, int tile_y, neo::types::direction direction)
+  {
+    int next_x = tile_x;
+    int next_y = tile_y;
+
+    if (direction == neo::types::direction::UP)
+    {
+      next_y -= 1;
+    }
+    else if (direction == neo::types::direction::DOWN)
+    {
+      next_y += 1;
+    }
+    else if (direction == neo::types::direction::LEFT)
+    {
+      next_x -= 1;
+    }
+    else if (direction == neo::types::direction::RIGHT)
+    {
+      next_x += 1;
+    }
+
+    for (int i = 0; i < sprites_count; ++i)
+    {
+      if (sprites[i]->collides(next_x, next_y))
+      {
+        return sprites[i];
+      }
+    }
+
+    return nullptr;
+  }
 }

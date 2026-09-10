@@ -56,6 +56,7 @@ namespace neo
       void disable_blending();
       bool has_collision(int tile_x, int tile_y);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
+      neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       bool evaluate_condition(neo::types::if_condition* condition);
       bn::string_view get_expression_value(neo::types::if_expression* expression);
   };

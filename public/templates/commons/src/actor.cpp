@@ -218,6 +218,23 @@ namespace neo
         bn::core::update();
         return;
       }
+
+      neo::sprite* other_sprite = game->get_sprite_at(
+        map_data->to_tile_x(game->variables, (int)position.x()),
+        map_data->to_tile_y(game->variables, (int)position.y()),
+        direction
+      );
+
+      if (other_sprite != nullptr && game->active_scene != nullptr && other_sprite->definition->interact_events != nullptr)
+      {
+        for (int i = 0; i < other_sprite->definition->interact_events_count; i++)
+        {
+          game->exec_event(other_sprite->definition->interact_events[i], true);
+        }
+
+        bn::core::update();
+        return;
+      }
     }
 
     if (bn::keypad::left_pressed() || bn::keypad::left_held())

@@ -199,6 +199,7 @@ export interface GameSprite {
   z?: number;
   events?: {
     init?: SceneEvent[];
+    interact?: SceneEvent[];
   };
   // Internals
   id: string;
