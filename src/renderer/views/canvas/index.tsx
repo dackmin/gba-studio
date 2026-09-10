@@ -11,6 +11,7 @@ import {
   InfiniteCanvas,
   classNames,
   set,
+  cloneDeep,
   useEventListener,
   useTimeout,
 } from '@junipero/react';
@@ -332,7 +333,7 @@ const Canvas = () => {
   const onCanvasClick = useCallback(() => {
     if (tool === 'add' && subTool === 'scene') {
       const scene: GameScene = {
-        ...DEFAULT_SCENE,
+        ...cloneDeep(DEFAULT_SCENE),
         id: uuid(),
         player: {
           type: 'player',
@@ -369,7 +370,7 @@ const Canvas = () => {
       ));
 
       const actor = {
-        ...DEFAULT_ACTOR,
+        ...cloneDeep(DEFAULT_ACTOR),
         id: uuid(),
         name: `Actor ${((selectedScene.actors?.length || 0) + 1)}`,
         x: pixelToTile(
@@ -409,7 +410,7 @@ const Canvas = () => {
       ));
 
       const sprite = {
-        ...DEFAULT_SPRITE,
+        ...cloneDeep(DEFAULT_SPRITE),
         id: uuid(),
         name: `Sprite ${((selectedScene.actors?.length || 0) + 1)}`,
         x: pixelToTile(
@@ -449,7 +450,7 @@ const Canvas = () => {
       ));
 
       const sensor = {
-        ...DEFAULT_SENSOR,
+        ...cloneDeep(DEFAULT_SENSOR),
         id: uuid(),
         name: `Sensor ${((selectedScene.map?.sensors?.length || 0) + 1)}`,
         x: pixelToTile(
