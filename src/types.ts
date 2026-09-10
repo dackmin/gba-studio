@@ -449,6 +449,10 @@ export interface FollowPlayerEvent extends SceneEvent {
   directionPriority?: DirectionPriority;
 }
 
+export interface FreezeCameraEvent extends SceneEvent {
+  type: 'freeze-camera';
+}
+
 export interface MoveActorToEvent extends SceneEvent {
   type: 'move-actor-to';
   actor: string;

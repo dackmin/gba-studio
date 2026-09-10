@@ -722,6 +722,17 @@ namespace neo
     }
 
     /**
+     * @name freeze-camera
+     * Stops the camera from following any actor, leaving it at its current position.
+     */
+    else if (e->type == "freeze-camera")
+    {
+      BN_LOG("Freezing camera");
+
+      camera_target = nullptr;
+    }
+
+    /**
      * @name move-actor-to
      * @param actor string — Actor name
      * @param x number — Target X position in tiles

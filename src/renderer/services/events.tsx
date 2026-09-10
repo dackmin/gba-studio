@@ -11,6 +11,7 @@ import {
   LapTimerIcon,
   LayersIcon,
   ListBulletIcon,
+  LockClosedIcon,
   MixIcon,
   MoveIcon,
   Pencil1Icon,
@@ -110,6 +111,12 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'follow-player',
       duration: 200,
     }),
+  }, {
+    icon: LockClosedIcon,
+    name: 'Freeze Camera',
+    value: 'freeze-camera',
+    keywords: ['camera', 'freeze', 'lock', 'stop'],
+    construct: () => ({ type: 'freeze-camera' }),
   }],
 }, {
   name: 'Scene',

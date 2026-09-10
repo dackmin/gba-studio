@@ -398,6 +398,18 @@
       ],
       "type": "object"
     },
+    "FreezeCameraEvent": {
+      "properties": {
+        "type": {
+          "const": "freeze-camera",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "MoveActorToEvent": {
       "properties": {
         "actor": {
@@ -546,6 +558,7 @@
         { "$ref": "#/definitions/MoveCameraToEvent" },
         { "$ref": "#/definitions/FollowActorEvent" },
         { "$ref": "#/definitions/FollowPlayerEvent" },
+        { "$ref": "#/definitions/FreezeCameraEvent" },
         { "$ref": "#/definitions/MoveActorToEvent" },
         { "$ref": "#/definitions/ShowMenuEvent" },
         { "$ref": "#/definitions/IfEvent" },

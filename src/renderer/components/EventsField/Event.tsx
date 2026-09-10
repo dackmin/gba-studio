@@ -376,7 +376,9 @@ const Event = ({
               />
             </Switch.Case>
             <Switch.Case
-              value={['stop-music', 'disable-input', 'enable-input']}
+              value={[
+                'stop-music', 'disable-input', 'enable-input', 'freeze-camera',
+              ]}
             >
               <Text className="text-xs text-slate text-center">
                 This event has no properties
