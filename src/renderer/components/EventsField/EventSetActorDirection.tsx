@@ -6,7 +6,7 @@ import type {
   SetActorDirectionEvent,
 } from '../../../types';
 import DirectionField from '../DirectionField';
-import { useSceneForm } from '../../services/hooks';
+import { useCanvas, useSceneForm } from '../../services/hooks';
 
 export interface EventSetActorDirectionProps {
   event: SetActorDirectionEvent;
@@ -20,6 +20,7 @@ const EventSetActorDirection = ({
   onValueChange,
 }: EventSetActorDirectionProps) => {
   const { scene } = useSceneForm();
+  const { selectedItem } = useCanvas();
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
     onValueChange?.(event);
@@ -38,6 +39,9 @@ const EventSetActorDirection = ({
             { scene?.actors?.map(actor => (
               <Select.Item key={actor.id} value={actor.id}>
                 { actor.name }
+                { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
+                  <Text size="1" className="text-slate"> (this actor)</Text>
+                ) : '' }
               </Select.Item>
             )) }
           </Select.Content>
