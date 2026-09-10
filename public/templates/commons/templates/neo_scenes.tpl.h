@@ -114,14 +114,22 @@ namespace neo::scenes
   {{#if (hasItems this.map.sensors)}}
   {{#each this.map.sensors}}
   // -- Sensor events
-  {{#if (hasItems this.events)}}
-  {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_event") events=this.events}}
-  {{/if}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_events[] = {
-    {{#each this.events}}
-    &{{slug ../../this.name}}_sensor_{{@../index}}_event_{{@index}},
+  {{#if (hasItems this.events.enter)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_enter_event") events=this.events.enter}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_enter_events[] = {
+    {{#each this.events.enter}}
+    &{{slug ../../this.name}}_sensor_{{@../index}}_enter_event_{{@index}},
     {{/each}}
   };
+  {{/if}}
+  {{#if (hasItems this.events.interact)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_interact_event") events=this.events.interact}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_interact_events[] = {
+    {{#each this.events.interact}}
+    &{{slug ../../this.name}}_sensor_{{@../index}}_interact_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
 
   // -- Sensor
   BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
@@ -131,9 +139,15 @@ namespace neo::scenes
     {{this.y}},
     {{valuedef this.width 1}},
     {{valuedef this.height 1}},
-    {{valuedef this.events.length 0}},
-    {{#if (hasItems this.events)}}
-    {{slug ../this.name}}_sensor_{{@index}}_events
+    {{valuedef this.events.enter.length 0}},
+    {{#if (hasItems this.events.enter)}}
+    {{slug ../this.name}}_sensor_{{@index}}_enter_events,
+    {{else}}
+    nullptr,
+    {{/if}}
+    {{valuedef this.events.interact.length 0}},
+    {{#if (hasItems this.events.interact)}}
+    {{slug ../this.name}}_sensor_{{@index}}_interact_events
     {{else}}
     nullptr
     {{/if}}

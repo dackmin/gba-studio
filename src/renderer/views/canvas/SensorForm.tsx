@@ -1,5 +1,5 @@
 import { type ChangeEvent, type KeyboardEvent, useCallback } from 'react';
-import { Heading, Inset, ScrollArea, Separator, Text, TextField } from '@radix-ui/themes';
+import { Heading, Inset, ScrollArea, Separator, Tabs, Text, TextField } from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene, GameSensor } from '../../../types';
@@ -134,11 +134,29 @@ const SensorForm = ({
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
           <div className="flex flex-col gap-6">
             <Text className="block text-slate" size="1">Events</Text>
-            <Inset>
-              <EventsField
-                value={sensor.events ?? []}
-                onValueChange={onValueChange.bind(null, 'events')}
-              />
+            <Inset className="!rounded-none !overflow-visible">
+              <Tabs.Root defaultValue="enter">
+                <Tabs.List size="1" className="px-1">
+                  <Tabs.Trigger value="enter">
+                    On Enter
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="interact">
+                    On Interact
+                  </Tabs.Trigger>
+                </Tabs.List>
+                <Tabs.Content value="enter">
+                  <EventsField
+                    value={sensor.events?.enter ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.enter')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="interact">
+                  <EventsField
+                    value={sensor.events?.interact ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.interact')}
+                  />
+                </Tabs.Content>
+              </Tabs.Root>
             </Inset>
           </div>
         </div>

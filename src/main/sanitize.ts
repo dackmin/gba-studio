@@ -89,7 +89,11 @@ export const sanitizeSensor = async (
   sensor.width = Number(sensor.width ?? 1);
   sensor.height = Number(sensor.height ?? 1);
 
-  for (const event of sensor.events ?? []) {
+  for (const event of sensor.events?.enter ?? []) {
+    await sanitizeEvent(event);
+  }
+
+  for (const event of sensor.events?.interact ?? []) {
     await sanitizeEvent(event);
   }
 

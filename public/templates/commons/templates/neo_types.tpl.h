@@ -447,8 +447,10 @@ namespace neo::types
     int y;
     int width;
     int height;
-    int events_count;
-    event** events;
+    int enter_events_count;
+    event** enter_events;
+    int interact_events_count;
+    event** interact_events;
 
     inline bool is_inside (int tile_x, int tile_y) {
       return tile_x >= x && tile_x < (x + width) && tile_y >= y && tile_y < (y + height);
@@ -507,24 +509,6 @@ namespace neo::types
       }
 
       return collisions[tile_index(tile_x, tile_y)] == 1;
-    }
-
-    inline sensor* get_sensor (int tile_x, int tile_y)
-    {
-      if (sensors == nullptr)
-      {
-        return nullptr;
-      }
-
-      for (int i = 0; i < sensors_count; i++)
-      {
-        if (sensors[i]->is_inside(tile_x, tile_y))
-        {
-          return sensors[i];
-        }
-      }
-
-      return nullptr;
     }
   };
 

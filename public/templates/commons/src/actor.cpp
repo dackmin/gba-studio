@@ -235,6 +235,35 @@ namespace neo
         bn::core::update();
         return;
       }
+
+      int facing_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
+      int facing_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
+
+      switch (direction)
+      {
+        case neo::types::direction::LEFT:
+          facing_tile_x -= 1;
+          break;
+        case neo::types::direction::RIGHT:
+          facing_tile_x += 1;
+          break;
+        case neo::types::direction::UP:
+          facing_tile_y -= 1;
+          break;
+        default:
+          facing_tile_y += 1;
+          break;
+      }
+
+      neo::sensor* other_sensor = game->get_sensor_at(facing_tile_x, facing_tile_y);
+
+      if (other_sensor != nullptr && game->active_scene != nullptr && other_sensor->definition->interact_events != nullptr)
+      {
+        other_sensor->trigger_interact();
+
+        bn::core::update();
+        return;
+      }
     }
 
     if (bn::keypad::left_pressed() || bn::keypad::left_held())
@@ -412,13 +441,10 @@ namespace neo
       bn::core::update();
     }
 
-    neo::types::sensor* sensor = map_data->get_sensor(tile_x, tile_y);
-    if (sensor != nullptr && game->active_scene != nullptr && sensor->events != nullptr)
+    neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);
+    if (sensor != nullptr && game->active_scene != nullptr && sensor->definition->enter_events != nullptr)
     {
-      for (int i = 0; i < sensor->events_count; i++)
-      {
-        game->exec_event(sensor->events[i], true);
-      }
+      sensor->trigger_enter();
 
       if (anim != nullptr)
       {

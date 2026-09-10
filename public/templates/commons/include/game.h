@@ -14,6 +14,7 @@
 #include "commons.h"
 #include "actor.h"
 #include "sprite.h"
+#include "sensor.h"
 
 namespace neo
 {
@@ -42,6 +43,9 @@ namespace neo
       int sprites_count;
       bn::vector<neo::sprite*, 50> sprites;
 
+      int sensors_count;
+      bn::vector<neo::sensor*, 50> sensors;
+
       bool is_input_enabled;
 
       neo::actor* player;
@@ -57,6 +61,7 @@ namespace neo
       bool has_collision(int tile_x, int tile_y);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
+      neo::sensor* get_sensor_at(int tile_x, int tile_y);
       bool evaluate_condition(neo::types::if_condition* condition);
       bn::string_view get_expression_value(neo::types::if_expression* expression);
   };

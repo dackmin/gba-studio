@@ -34,7 +34,10 @@ export const DEFAULT_SENSOR: GameSensor = {
   y: 0,
   width: 1,
   height: 1,
-  events: [],
+  events: {
+    enter: [],
+    interact: [],
+  },
 };
 
 export const DEFAULT_SPRITE: GameSprite = {

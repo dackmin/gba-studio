@@ -34,7 +34,10 @@ const Arrows = ({
       sensor,
       getEventsOfType<
         GoToSceneEvent
-      >('go-to-scene', sensor.events || [], { scripts }),
+      >('go-to-scene', [
+        ...(sensor.events?.enter ?? []),
+        ...(sensor.events?.interact ?? []),
+      ], { scripts }),
     ]).filter(([_, events]) => !!events.length) || []
   ), [scripts, selectedScene]);
 

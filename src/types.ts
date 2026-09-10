@@ -212,7 +212,10 @@ export interface GameSensor {
   y: number;
   width: number;
   height: number;
-  events?: SceneEvent[];
+  events?: {
+    enter?: SceneEvent[];
+    interact?: SceneEvent[];
+  };
   // Internals
   id: string;
 }

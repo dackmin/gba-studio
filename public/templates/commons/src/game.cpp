@@ -24,6 +24,7 @@
 #include "actor.h"
 #include "menu.h"
 #include "sprite.h"
+#include "sensor.h"
 #include "dialog.h"
 #include "camera.h"
 
@@ -45,6 +46,7 @@ namespace neo
     scripted_events_count = 0;
     actors_count = 0;
     sprites_count = 0;
+    sensors_count = 0;
     is_input_enabled = true;
   }
 
@@ -113,6 +115,19 @@ namespace neo
 
       sprites.clear();
       sprites_count = 0;
+    }
+
+    // Clean up old sensors just in case
+    BN_LOG("Cleaning up old sensors, count:", sensors_count);
+    if (sensors_count > 0)
+    {
+      for (int i = 0; i < sensors_count; ++i)
+      {
+        delete sensors[i];
+      }
+
+      sensors.clear();
+      sensors_count = 0;
     }
 
     set_background(active_scene->background, false);
@@ -191,6 +206,27 @@ namespace neo
         sprites.push_back(s);
       }
     }
+
+    // Sensors
+    if (sensors_count > 0)
+    {
+      sensors.clear();
+    }
+
+    sensors_count = 0;
+
+    if (active_scene->map_data != nullptr && active_scene->map_data->sensors != nullptr)
+    {
+      sensors_count = active_scene->map_data->sensors_count;
+
+      for (int i = 0; i < sensors_count; ++i)
+      {
+        neo::sensor* s = new neo::sensor(this, active_scene->map_data->sensors[i]);
+        sensors.push_back(s);
+      }
+    }
+
+    BN_LOG("Sensors count: ", sensors_count);
 
     // Scripts
     BN_LOG("Previous scripted events count: ", scripted_events_count);
@@ -972,6 +1008,19 @@ namespace neo
       if (sprites[i]->collides(next_x, next_y))
       {
         return sprites[i];
+      }
+    }
+
+    return nullptr;
+  }
+
+  neo::sensor* game::get_sensor_at(int tile_x, int tile_y)
+  {
+    for (int i = 0; i < sensors_count; ++i)
+    {
+      if (sensors[i]->is_inside(tile_x, tile_y))
+      {
+        return sensors[i];
       }
     }
 

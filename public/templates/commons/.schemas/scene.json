@@ -104,10 +104,22 @@
           "type": "number"
         },
         "events": {
-          "type": "array",
-          "items": {
-            "$ref": "event.json#/definitions/Event"
-          }
+          "additionalProperties": false,
+          "properties": {
+            "enter": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            },
+            "interact": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            }
+          },
+          "type": "object"
         },
         "id": {
           "type": "string"
