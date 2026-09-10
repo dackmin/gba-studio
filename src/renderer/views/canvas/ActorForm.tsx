@@ -196,18 +196,21 @@ const ActorForm = ({
 
               <Tabs.Content value="interact">
                 <EventsField
+                  key={actor.id}
                   value={actor.events?.interact ?? []}
                   onValueChange={onValueChange.bind(null, 'events.interact')}
                 />
               </Tabs.Content>
               <Tabs.Content value="init">
                 <EventsField
+                  key={actor.id}
                   value={actor.events?.init ?? []}
                   onValueChange={onValueChange.bind(null, 'events.init')}
                 />
               </Tabs.Content>
               <Tabs.Content value="update">
                 <EventsField
+                  key={actor.id}
                   value={actor.events?.update ?? []}
                   onValueChange={onValueChange.bind(null, 'events.update')}
                 />
