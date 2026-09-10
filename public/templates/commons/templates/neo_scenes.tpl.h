@@ -213,6 +213,7 @@ namespace neo::scenes
     &{{slug ../this.name}}_actor_{{@index}}_z_value,
     neo::types::direction::{{uppercase (valuedef this.direction "down")}},
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
+    {{valuedef this.disableDirectionOnInteract false}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},

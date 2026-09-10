@@ -206,7 +206,10 @@ namespace neo
 
       if (other != nullptr && game->active_scene != nullptr && other->definition->interact_events != nullptr)
       {
-        other->set_direction(opposite_direction());
+        if (!other->definition->disable_direction_on_interact)
+        {
+          other->set_direction(opposite_direction());
+        }
         for (int i = 0; i < other->definition->interact_events_count; i++)
         {
           game->exec_event(other->definition->interact_events[i], true);

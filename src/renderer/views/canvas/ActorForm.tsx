@@ -4,6 +4,7 @@ import {
   Inset,
   ScrollArea,
   Separator,
+  Switch,
   Tabs,
   Text,
   TextField,
@@ -170,6 +171,15 @@ const ActorForm = ({
                 value={actor.direction || 'down'}
                 onValueChange={onValueChange.bind(null, 'direction')}
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={!!actor.disableDirectionOnInteract}
+                onCheckedChange={
+                  onValueChange.bind(null, 'disableDirectionOnInteract')
+                }
+              />
+              <Text size="1">Don't turn to face player on interact</Text>
             </div>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>

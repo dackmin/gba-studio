@@ -177,6 +177,7 @@ export interface GameActor {
   width?: number;
   height?: number;
   sprite: string;
+  disableDirectionOnInteract?: boolean;
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];

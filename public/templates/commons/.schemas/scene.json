@@ -42,6 +42,9 @@
         "sprite": {
           "type": "string"
         },
+        "disableDirectionOnInteract": {
+          "type": "boolean"
+        },
         "events": {
           "additionalProperties": false,
           "properties": {

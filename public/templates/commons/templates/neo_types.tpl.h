@@ -639,6 +639,7 @@ namespace neo::types
     event_value* z;
     neo::types::direction direction;
     bn::sprite_item sprite;
+    bool disable_direction_on_interact;
     int init_events_count;
     event** init_events;
     int interact_events_count;
