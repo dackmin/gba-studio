@@ -144,6 +144,8 @@ namespace neo
       // The player follows the camera by default; other actors opt in via a follow event.
       camera_target = player;
 
+      neo::camera::track(this, *active_scene, player);
+
       if (
         last_goto_event != nullptr &&
         active_scene->is(last_goto_event->target) &&
