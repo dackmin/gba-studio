@@ -16,6 +16,8 @@ import { move } from '@dnd-kit/helpers';
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
 import DirectionField from '../../DirectionField';
 import Choice from './Choice';
+import { SceneFormContext } from '../../../services/contexts';
+import { useCanvas } from '../../../services/hooks';
 
 export interface EventShowMenuProps {
   event: ShowMenuEvent;
@@ -26,6 +28,8 @@ const EventShowMenu = ({
   event,
   onValueChange,
 }: EventShowMenuProps) => {
+  const { selectedScene } = useCanvas();
+
   const addChoice = useCallback(() => {
     const newChoice = {
       id: uuid(),
@@ -59,61 +63,67 @@ const EventShowMenu = ({
     onValueChange?.(event);
   }, [onValueChange, event]);
 
-  return (
-    <DragDropProvider
-      onDragEnd={onDragEnd}
-      modifiers={[RestrictToVerticalAxis, RestrictToElement]}
-      sensors={defaults => [
-        ...defaults.filter(sensor => sensor !== PointerSensor),
-        PointerSensor.configure({
-          activationConstraints: [
-            new PointerActivationConstraints.Distance({ value: 8 }),
-            new PointerActivationConstraints.Delay({ value: 200, tolerance: 10 }),
-          ],
-        }),
-      ]}
-    >
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Text size="1" className="text-slate">Disposition</Text>
-          <DirectionField
-            value={event.direction || 'down_right'}
-            exclude={['left', 'right', 'up', 'down']}
-            onValueChange={onValueChange_.bind(null, 'direction')}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Text size="1" className="text-slate">Choices</Text>
-          <Card>
-            <Inset>
-              <div className="flex flex-col gap-[1px]">
-                { event.choices.map((choice, i) => (
-                  <Choice
-                    key={choice.id}
-                    index={i}
-                    choice={choice}
-                    choices={event.choices}
-                    onDelete={onChoiceDelete}
-                    onValueChange={onChoiceChange}
-                  />
-                )) }
-              </div>
+  const getContext = useCallback(() => ({
+    scene: selectedScene,
+  }), [selectedScene]);
 
-              <div className="px-3 my-3">
-                <Button
-                  variant="soft"
-                  className="block !w-full"
-                  onClick={addChoice}
-                >
-                  <PlusIcon />
-                  <Text>Add Choice</Text>
-                </Button>
-              </div>
-            </Inset>
-          </Card>
+  return (
+    <SceneFormContext value={getContext()}>
+      <DragDropProvider
+        onDragEnd={onDragEnd}
+        modifiers={[RestrictToVerticalAxis, RestrictToElement]}
+        sensors={defaults => [
+          ...defaults.filter(sensor => sensor !== PointerSensor),
+          PointerSensor.configure({
+            activationConstraints: [
+              new PointerActivationConstraints.Distance({ value: 8 }),
+              new PointerActivationConstraints.Delay({ value: 200, tolerance: 10 }),
+            ],
+          }),
+        ]}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">Disposition</Text>
+            <DirectionField
+              value={event.direction || 'down_right'}
+              exclude={['left', 'right', 'up', 'down']}
+              onValueChange={onValueChange_.bind(null, 'direction')}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text size="1" className="text-slate">Choices</Text>
+            <Card>
+              <Inset>
+                <div className="flex flex-col gap-[1px]">
+                  { event.choices.map((choice, i) => (
+                    <Choice
+                      key={choice.id}
+                      index={i}
+                      choice={choice}
+                      choices={event.choices}
+                      onDelete={onChoiceDelete}
+                      onValueChange={onChoiceChange}
+                    />
+                  )) }
+                </div>
+
+                <div className="px-3 my-3">
+                  <Button
+                    variant="soft"
+                    className="block !w-full"
+                    onClick={addChoice}
+                  >
+                    <PlusIcon />
+                    <Text>Add Choice</Text>
+                  </Button>
+                </div>
+              </Inset>
+            </Card>
+          </div>
         </div>
-      </div>
-    </DragDropProvider>
+      </DragDropProvider>
+    </SceneFormContext>
   );
 };
 
