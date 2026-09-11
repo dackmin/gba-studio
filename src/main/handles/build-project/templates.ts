@@ -48,8 +48,14 @@ export const setupHandlebars = async () => {
 
     return '';
   });
-  Handlebars.registerHelper('powerOfTwo', (v: number) =>
-    v % 2 === 0 ? v : v + 1);
+  Handlebars.registerHelper('powerOfTwo', (v: number) => {
+    let power = 1;
+    while (power < v) {
+      power *= 2;
+    }
+
+    return power;
+  });
   Handlebars.registerHelper('valuesCount', (arr: any[]) =>
     arr.reduce((c, i) => c + i.values.length, 0));
   Handlebars.registerHelper('size', (obj: any) =>
