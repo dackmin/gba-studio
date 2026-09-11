@@ -75,11 +75,11 @@ namespace neo::scenes
   // Sprite: {{this.name}} //
   //////////////////////////
   {{#if (hasItems this._animations)}}
-  {{>animationsPartial prefix=(concat (slug this.name) "_animation") animations=this._animations}}
-  BN_DATA_EWRAM int {{slug this.name}}_animations_count = {{this._animations.length}};
-  BN_DATA_EWRAM neo::types::sprite_animation* {{slug this.name}}_animations[] = {
+  {{>animationsPartial prefix=(concat (getSpriteName @root/sprites (valuedef this.name "sprite_default")) "_animation") animations=this._animations}}
+  BN_DATA_EWRAM int {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations_count = {{this._animations.length}};
+  BN_DATA_EWRAM neo::types::sprite_animation* {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations[] = {
     {{#each this._animations}}
-    &{{slug ../this.name}}_animation_{{@index}}{{#unless @last}},{{/unless}}
+    &{{getSpriteName @root/sprites (valuedef ../this.name "sprite_default")}}_animation_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
   };
   {{/if}}
