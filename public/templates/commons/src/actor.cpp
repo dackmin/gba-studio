@@ -482,7 +482,7 @@ namespace neo
     }
   }
 
-  void actor::move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation)
+  void actor::move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation, bool backwards)
   {
     if (!sprite.visible())
     {
@@ -520,9 +520,13 @@ namespace neo
         continue;
       }
 
-      set_direction(is_horizontal_pass
-        ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
-        : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
+      // Backwards movement keeps the current facing instead of turning towards the target
+      if (!backwards)
+      {
+        set_direction(is_horizontal_pass
+          ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
+          : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
+      }
 
       // Animation depends on the (possibly just changed) direction, so it's looked up per pass
       neo::types::sprite_animation* anim = animation != "" ? get_animation(animation) : nullptr;

@@ -422,6 +422,9 @@
         "animation": {
           "type": "string"
         },
+        "backwards": {
+          "type": "boolean"
+        },
         "type": {
           "const": "move-actor-to",
           "type": "string"
@@ -443,6 +446,9 @@
         "directionPriority": { "$ref": "#/definitions/DirectionPriority" },
         "animation": {
           "type": "string"
+        },
+        "backwards": {
+          "type": "boolean"
         },
         "type": {
           "const": "move-player-to",

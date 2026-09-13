@@ -778,6 +778,7 @@ namespace neo
      * @param speed number — Movement speed in pixels per frame
      * @param direction_priority string — Direction priority for movement (default: "horizontal")
      * @param animation string — Animation id (none if empty)
+     * @param backwards boolean — Keep current facing direction instead of turning towards the target (default: false)
      */
     else if (e->type == "move-actor-to")
     {
@@ -797,7 +798,8 @@ namespace neo
             move_actor_evt->y->as_int(variables),
             move_actor_evt->speed->as_int(variables),
             move_actor_evt->direction_priority,
-            move_actor_evt->animation
+            move_actor_evt->animation,
+            move_actor_evt->backwards
           );
           break;
         }
@@ -811,6 +813,7 @@ namespace neo
      * @param speed number — Movement speed in pixels per frame
      * @param direction_priority string — Direction priority for movement (default: "horizontal")
      * @param animation string — Animation id (none if empty)
+     * @param backwards boolean — Keep current facing direction instead of turning towards the target (default: false)
      */
     else if (e->type == "move-player-to")
     {
@@ -825,7 +828,8 @@ namespace neo
           move_player_evt->y->as_int(variables),
           move_player_evt->speed->as_int(variables),
           move_player_evt->direction_priority,
-          move_player_evt->animation
+          move_player_evt->animation,
+          move_player_evt->backwards
         );
       }
     }

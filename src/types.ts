@@ -466,6 +466,7 @@ export interface MoveActorToEvent extends SceneEvent {
   speed?: EventValue;
   directionPriority?: DirectionPriority;
   animation?: string;
+  backwards?: boolean;
 }
 
 export interface MovePlayerToEvent extends SceneEvent {
@@ -475,6 +476,7 @@ export interface MovePlayerToEvent extends SceneEvent {
   speed?: EventValue;
   directionPriority?: DirectionPriority;
   animation?: string;
+  backwards?: boolean;
 }
 
 export interface GameMenuChoice {

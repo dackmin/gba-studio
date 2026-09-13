@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { set } from '@junipero/react';
-import { Select, Text, TextField } from '@radix-ui/themes';
+import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MovePlayerToEvent } from '../../../types';
 import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
@@ -113,6 +113,13 @@ const EventMovePlayerTo = ({
           sprite={sprite}
           value={event.animation || ''}
           onValueChange={onValueChange_.bind(null, 'animation')}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Backwards</Text>
+        <Switch
+          checked={!!event.backwards}
+          onCheckedChange={onValueChange_.bind(null, 'backwards')}
         />
       </div>
     </div>

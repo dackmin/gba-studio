@@ -283,7 +283,8 @@ BN_DATA_EWRAM neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_speed_value,
   {{../prefix}}_{{@index}}_direction_priority,
-  {{../prefix}}_{{@index}}_animation
+  {{../prefix}}_{{@index}}_animation,
+  {{valuedef this.backwards false}}
 );
 {{else if (eq this.type "move-player-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
@@ -298,7 +299,8 @@ BN_DATA_EWRAM neo::types::move_player_to_event {{../prefix}}_{{@index}}(
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_speed_value,
   {{../prefix}}_{{@index}}_direction_priority,
-  {{../prefix}}_{{@index}}_animation
+  {{../prefix}}_{{@index}}_animation,
+  {{valuedef this.backwards false}}
 );
 {{else if (eq this.type "set-actor-direction")}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";

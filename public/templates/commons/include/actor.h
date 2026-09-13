@@ -24,7 +24,7 @@ namespace neo
       void set_position(int tile_x, int tile_y);
       void set_position(bn::fixed_point pixel_position);
       void set_z_order(int z);
-      void move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation);
+      void move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation, bool backwards = false);
       bool collides(int tile_x, int tile_y);
       void disable();
       void enable();
