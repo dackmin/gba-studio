@@ -89,9 +89,9 @@ const EventMovePlayerTo = ({
           type="number"
           value={event.speed}
           onValueChange={onValueChange_.bind(null, 'speed')}
-          placeholder="1"
+          placeholder="2"
         >
-          <TextField.Slot side="right">tiles/s</TextField.Slot>
+          <TextField.Slot side="right">px/frame</TextField.Slot>
         </EventValueField>
       </div>
       <div className="flex flex-col gap-2">

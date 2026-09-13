@@ -492,12 +492,11 @@ namespace neo
     moving = true;
 
     neo::types::map* map_data = game->active_scene->map_data;
-    int grid_size = map_data->grid_size->as_int(game->variables);
     int offset_x = -map_data->pixel_width(game->variables) / 2 + sprite.dimensions().width() / 2;
     int offset_y = -map_data->pixel_height(game->variables) / 2 + sprite.dimensions().height() / 2;
 
-    // speed is in tiles/s, running at ~60 FPS
-    int px_per_frame = bn::max(1, (speed * grid_size) / 60);
+    // speed is in pixels per frame, same unit as PLAYER_SPEED
+    int px_per_frame = bn::max(1, speed);
 
     int origin_x = (int)sprite.x();
     int origin_y = (int)sprite.y();
