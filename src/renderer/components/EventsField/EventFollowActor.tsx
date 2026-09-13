@@ -3,7 +3,7 @@ import { set } from '@junipero/react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { FollowActorEvent } from '../../../types';
-import { useSceneForm } from '../../services/hooks';
+import { useCanvas, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
 export interface EventFollowActorProps {
@@ -18,6 +18,7 @@ const EventFollowActor = ({
   onValueChange,
 }: EventFollowActorProps) => {
   const { scene } = useSceneForm();
+  const { selectedItem } = useCanvas();
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
@@ -37,6 +38,9 @@ const EventFollowActor = ({
             { scene?.actors?.map(actor => (
               <Select.Item key={actor.id} value={actor.id}>
                 { actor.name }
+                { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
+                  <Text size="1" className="text-slate"> (this actor)</Text>
+                ) : '' }
               </Select.Item>
             )) }
           </Select.Content>

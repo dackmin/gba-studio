@@ -4,7 +4,7 @@ import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveActorToEvent } from '../../../types';
 import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
-import { useApp, useSceneForm } from '../../services/hooks';
+import { useApp, useCanvas, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
 
@@ -21,6 +21,7 @@ const EventMoveActorTo = ({
 }: EventMoveActorToProps) => {
   const { backgrounds, sprites } = useApp();
   const { scene } = useSceneForm();
+  const { selectedItem } = useCanvas();
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
@@ -74,6 +75,9 @@ const EventMoveActorTo = ({
             { scene?.actors?.map(actor => (
               <Select.Item key={actor.id} value={actor.id}>
                 { actor.name }
+                { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
+                  <Text size="1" className="text-slate"> (this actor)</Text>
+                ) : '' }
               </Select.Item>
             )) }
           </Select.Content>

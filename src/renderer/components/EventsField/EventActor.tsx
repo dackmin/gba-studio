@@ -19,7 +19,7 @@ const EventActor = ({
   event,
   onValueChange,
 }: EventActorProps) => {
-  const { selectedScene } = useCanvas();
+  const { selectedScene, selectedItem } = useCanvas();
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
@@ -38,6 +38,9 @@ const EventActor = ({
           { selectedScene?.actors?.map(actor => (
             <Select.Item key={actor.id} value={actor.id}>
               { actor.name }
+              { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
+                <Text size="1" className="text-slate"> (this actor)</Text>
+              ) : '' }
             </Select.Item>
           )) }
         </Select.Content>
