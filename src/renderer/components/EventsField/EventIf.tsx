@@ -171,7 +171,6 @@ const EventIfCondition = ({
   );
 };
 
-
 export interface EventIfDroppableProps extends CardProps {
   event: IfEvent;
   zone: 'then' | 'else';
