@@ -179,7 +179,7 @@ const ActorForm = ({
                   onValueChange.bind(null, 'disableDirectionOnInteract')
                 }
               />
-              <Text size="1">Don't turn to face player on interact</Text>
+              <Text size="1">Don&apos;t turn to face player on interact</Text>
             </div>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>

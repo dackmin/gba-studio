@@ -50,6 +50,7 @@ export const setupHandlebars = async () => {
   });
   Handlebars.registerHelper('powerOfTwo', (v: number) => {
     let power = 1;
+
     while (power < v) {
       power *= 2;
     }
