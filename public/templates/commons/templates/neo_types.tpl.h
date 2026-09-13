@@ -415,6 +415,29 @@ namespace neo::types
       animation(animation_) {}
   };
 
+  struct move_player_to_event: event
+  {
+    event_value* x;
+    event_value* y;
+    event_value* speed;
+    bn::string_view direction_priority;
+    bn::string_view animation;
+    move_player_to_event(
+      bn::string_view type_,
+      event_value* x_,
+      event_value* y_,
+      event_value* speed_,
+      bn::string_view direction_priority_,
+      bn::string_view animation_
+    ):
+      event(type_),
+      x(x_),
+      y(y_),
+      speed(speed_),
+      direction_priority(direction_priority_),
+      animation(animation_) {}
+  };
+
   struct set_actor_direction_event: event
   {
     bn::string_view actor;
@@ -426,6 +449,17 @@ namespace neo::types
     ):
       event(type_),
       actor(actor_),
+      direction(direction_) {}
+  };
+
+  struct set_player_direction_event: event
+  {
+    neo::types::direction direction;
+    set_player_direction_event(
+      bn::string_view type_,
+      neo::types::direction direction_
+    ):
+      event(type_),
       direction(direction_) {}
   };
 

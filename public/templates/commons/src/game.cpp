@@ -805,6 +805,32 @@ namespace neo
     }
 
     /**
+     * @name move-player-to
+     * @param x number — Target X position in tiles
+     * @param y number — Target Y position in tiles
+     * @param speed number — Movement speed in pixels per frame
+     * @param direction_priority string — Direction priority for movement (default: "horizontal")
+     * @param animation string — Animation id (none if empty)
+     */
+    else if (e->type == "move-player-to")
+    {
+      const neo::types::move_player_to_event* move_player_evt =
+        static_cast<const neo::types::move_player_to_event*>(e);
+
+      if (player != nullptr)
+      {
+        BN_LOG("Moving player to x=", move_player_evt->x->as_int(variables), ", y=", move_player_evt->y->as_int(variables));
+        player->move_to(
+          move_player_evt->x->as_int(variables),
+          move_player_evt->y->as_int(variables),
+          move_player_evt->speed->as_int(variables),
+          move_player_evt->direction_priority,
+          move_player_evt->animation
+        );
+      }
+    }
+
+    /**
      * @name set-actor-direction
      * @param actor string — Actor name
      * @param direction string — Direction to set (up, down, left, right)
@@ -825,6 +851,22 @@ namespace neo
           actors[i]->set_direction(set_actor_direction_evt->direction);
           break;
         }
+      }
+    }
+
+    /**
+     * @name set-player-direction
+     * @param direction string — Direction to set (up, down, left, right)
+     */
+    else if (e->type == "set-player-direction")
+    {
+      const neo::types::set_player_direction_event* set_player_direction_evt =
+        static_cast<const neo::types::set_player_direction_event*>(e);
+
+      if (player != nullptr)
+      {
+        BN_LOG("Setting player direction to direction=", static_cast<int>(set_player_direction_evt->direction));
+        player->set_direction(set_player_direction_evt->direction);
       }
     }
 

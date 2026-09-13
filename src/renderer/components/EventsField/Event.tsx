@@ -27,12 +27,14 @@ import type {
   IfEvent,
   MoveActorToEvent,
   MoveCameraToEvent,
+  MovePlayerToEvent,
   OnButtonPressEvent,
   PlayMusicEvent,
   PlaySoundEvent,
   SceneEvent,
   SetActorDirectionEvent,
   SetBackgroundEvent,
+  SetPlayerDirectionEvent,
   SetVariableEvent,
   ShowDialogEvent,
   ShowMenuEvent,
@@ -57,7 +59,9 @@ import EventFollowActor from './EventFollowActor';
 import EventFollowPlayer from './EventFollowPlayer';
 import EventShowMenu from './EventShowMenu';
 import EventMoveActorTo from './EventMoveActorTo';
+import EventMovePlayerTo from './EventMovePlayerTo';
 import EventSetActorDirection from './EventSetActorDirection';
+import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetBackground from './EventSetBackground';
 
 export interface EventProps {
@@ -369,6 +373,12 @@ const Event = ({
                 onValueChange={onValueChange}
               />
             </Switch.Case>
+            <Switch.Case value="move-player-to">
+              <EventMovePlayerTo
+                event={event as MovePlayerToEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
             <Switch.Case value="show-menu">
               <EventShowMenu
                 event={event as ShowMenuEvent}
@@ -387,6 +397,12 @@ const Event = ({
             <Switch.Case value="set-actor-direction">
               <EventSetActorDirection
                 event={event as SetActorDirectionEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="set-player-direction">
+              <EventSetPlayerDirection
+                event={event as SetPlayerDirectionEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

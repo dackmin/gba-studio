@@ -468,6 +468,15 @@ export interface MoveActorToEvent extends SceneEvent {
   animation?: string;
 }
 
+export interface MovePlayerToEvent extends SceneEvent {
+  type: 'move-player-to';
+  x: EventValue;
+  y: EventValue;
+  speed?: EventValue;
+  directionPriority?: DirectionPriority;
+  animation?: string;
+}
+
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];
@@ -504,6 +513,11 @@ export interface ExecuteScriptEvent extends SceneEvent {
 export interface SetActorDirectionEvent extends SceneEvent {
   type: 'set-actor-direction';
   actor: string;
+  direction: CharacterDirection;
+}
+
+export interface SetPlayerDirectionEvent extends SceneEvent {
+  type: 'set-player-direction';
   direction: CharacterDirection;
 }
 

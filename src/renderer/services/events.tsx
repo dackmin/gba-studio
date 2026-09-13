@@ -193,6 +193,16 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       y: 0,
     }),
   }, {
+    icon: MoveIcon,
+    name: 'Move Player To',
+    value: 'move-player-to',
+    keywords: ['player', 'move', 'to'],
+    construct: () => ({
+      type: 'move-player-to',
+      x: 0,
+      y: 0,
+    }),
+  }, {
     icon: AllSidesIcon,
     name: 'Set Actor Direction',
     value: 'set-actor-direction',
@@ -200,6 +210,15 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'set-actor-direction',
       actor: '',
+      direction: 'down',
+    }),
+  }, {
+    icon: AllSidesIcon,
+    name: 'Set Player Direction',
+    value: 'set-player-direction',
+    keywords: ['player', 'direction', 'facing'],
+    construct: () => ({
+      type: 'set-player-direction',
       direction: 'down',
     }),
   }],

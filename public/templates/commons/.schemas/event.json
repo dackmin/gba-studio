@@ -435,6 +435,27 @@
       ],
       "type": "object"
     },
+    "MovePlayerToEvent": {
+      "properties": {
+        "x": { "$ref": "#/definitions/EventValue" },
+        "y": { "$ref": "#/definitions/EventValue" },
+        "speed": { "$ref": "#/definitions/EventValue" },
+        "directionPriority": { "$ref": "#/definitions/DirectionPriority" },
+        "animation": {
+          "type": "string"
+        },
+        "type": {
+          "const": "move-player-to",
+          "type": "string"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "type"
+      ],
+      "type": "object"
+    },
     "ShowMenuEvent": {
       "properties": {
         "choices": {
@@ -523,6 +544,20 @@
       ],
       "type": "object"
     },
+    "SetPlayerDirectionEvent": {
+      "properties": {
+        "direction": { "$ref": "#/definitions/CharacterDirection" },
+        "type": {
+          "const": "set-player-direction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "direction",
+        "type"
+      ],
+      "type": "object"
+    },
     "SetBackgroundEvent": {
       "properties": {
         "background": {
@@ -560,10 +595,12 @@
         { "$ref": "#/definitions/FollowPlayerEvent" },
         { "$ref": "#/definitions/FreezeCameraEvent" },
         { "$ref": "#/definitions/MoveActorToEvent" },
+        { "$ref": "#/definitions/MovePlayerToEvent" },
         { "$ref": "#/definitions/ShowMenuEvent" },
         { "$ref": "#/definitions/IfEvent" },
         { "$ref": "#/definitions/ExecuteScriptEvent" },
         { "$ref": "#/definitions/SetActorDirectionEvent" },
+        { "$ref": "#/definitions/SetPlayerDirectionEvent" },
         { "$ref": "#/definitions/SetBackgroundEvent" }
       ]
     }

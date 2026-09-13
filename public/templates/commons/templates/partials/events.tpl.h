@@ -285,6 +285,21 @@ BN_DATA_EWRAM neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_direction_priority,
   {{../prefix}}_{{@index}}_animation
 );
+{{else if (eq this.type "move-player-to")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 1)}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "move-player-to";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
+BN_DATA_EWRAM neo::types::move_player_to_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  &{{../prefix}}_{{@index}}_x_value,
+  &{{../prefix}}_{{@index}}_y_value,
+  &{{../prefix}}_{{@index}}_speed_value,
+  {{../prefix}}_{{@index}}_direction_priority,
+  {{../prefix}}_{{@index}}_animation
+);
 {{else if (eq this.type "set-actor-direction")}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
@@ -292,6 +307,13 @@ BN_DATA_EWRAM neo::types::direction {{../prefix}}_{{@index}}_direction = neo::ty
 BN_DATA_EWRAM neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_actor,
+  {{../prefix}}_{{@index}}_direction
+);
+{{else if (eq this.type "set-player-direction")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-player-direction";
+BN_DATA_EWRAM neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
+BN_DATA_EWRAM neo::types::set_player_direction_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_direction
 );
 {{else if (eq this.type "set-background")}}
