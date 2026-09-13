@@ -67,6 +67,10 @@ export const setupHandlebars = async () => {
     ['string', 'number', 'boolean'].includes(typeof obj));
   Handlebars.registerHelper('preserveLineBreaks', (str: string) =>
     str.replace(/\n/g, '\\n'));
+  Handlebars.registerHelper('escapeCpp', (value: unknown) =>
+    typeof value === 'string'
+      ? value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')
+      : value);
   Handlebars.registerHelper('maxLen', (str: string | string[], len: number) =>
     Array.isArray(str) ? str.map(s => s.slice(0, len)) : str.slice(0, len));
   Handlebars.registerHelper('truncate', (str: string, len: number) =>

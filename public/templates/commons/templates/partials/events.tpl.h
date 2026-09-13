@@ -69,7 +69,7 @@ BN_DATA_EWRAM neo::types::scene_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "show-dialog")}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
 {{#each (truncate this.text 27)}}
-BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{this}}";
+BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{escapeCpp this}}";
 {{/each}}
 BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
@@ -93,7 +93,7 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{maxLen this.text 26}}";
+BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{escapeCpp (maxLen this.text 26)}}";
 BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
   {{this.events.length}},
@@ -118,7 +118,7 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "set-variable")}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
-BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_string_value = "{{this.value}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_string_value = "{{escapeCpp this.value}}";
 BN_DATA_EWRAM neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_variable_name,
   {{int this.value}},

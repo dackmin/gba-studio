@@ -15,7 +15,7 @@ BN_DATA_EWRAM neo::types::sprite_animation_frame* {{../prefix}}_{{@index}}_frame
 };
 {{/if}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_id = "{{this.id}}";
-BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_name = "{{this.name}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_name = "{{escapeCpp this.name}}";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "{{valuedef this.animationType 'fixed'}}";
 BN_DATA_EWRAM neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
 BN_DATA_EWRAM neo::types::sprite_animation {{../prefix}}_{{@index}} = {

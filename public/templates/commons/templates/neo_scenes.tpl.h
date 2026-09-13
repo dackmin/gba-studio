@@ -218,7 +218,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
   BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{this.name}}";
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
     {{slug ../this.name}}_actor_{{@index}}_id,
     {{slug ../this.name}}_actor_{{@index}}_name,
@@ -291,7 +291,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
   BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{this.name}}";
+  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
     {{slug ../this.name}}_sprite_{{@index}}_id,
     {{slug ../this.name}}_sprite_{{@index}}_name,
@@ -360,7 +360,7 @@ namespace neo::scenes
   {{/if}}
 
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_name = "{{this.name}}";
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
@@ -444,7 +444,7 @@ namespace neo::scenes
   };
   {{/if}}
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_name = "{{this.name}}";
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::script script_{{slug this.name}} = {
     {{slug this.name}}_script_id,
     {{slug this.name}}_script_name,
