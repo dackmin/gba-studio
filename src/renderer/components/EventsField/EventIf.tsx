@@ -82,53 +82,95 @@ export interface EventIfConditionProps {
   onValueChange?: (condition: IfEventCondition) => void;
 }
 
+const isLogicalOperator = (operator?: string) => operator === '&&' || operator === '||';
+
 const EventIfCondition = ({
   condition,
   onValueChange,
 }: EventIfConditionProps) => {
+  const isLogical = isLogicalOperator(condition.operator);
+
   const onConditionValueChange = (name: string, value: EventValue | string) => {
     set(condition, name, value);
     onValueChange?.(condition);
   };
 
+  const onOperatorChange = (operator: string) => {
+    const wasLogical = isLogicalOperator(condition.operator);
+    const willBeLogical = isLogicalOperator(operator);
+
+    set(condition, 'operator', operator);
+
+    // Switching to/from &&/|| swaps operands between plain values and subconditions
+    if (willBeLogical && !wasLogical) {
+      set(condition, 'left', { type: 'condition', left: '', operator: '==', right: '' });
+      set(condition, 'right', { type: 'condition', left: '', operator: '==', right: '' });
+    } else if (!willBeLogical && wasLogical) {
+      set(condition, 'left', '');
+      set(condition, 'right', '');
+    }
+
+    onValueChange?.(condition);
+  };
+
+  const onSubConditionChange = (name: 'left' | 'right', subCondition: IfEventCondition) => {
+    set(condition, name, subCondition);
+    onValueChange?.(condition);
+  };
+
   return (
-    <div className="flex items-center gap-2">
-      { (condition.left as IfEventCondition).type !== 'condition' && (
-        <EventValueField
-          type="text"
-          className="!flex-auto"
-          value={condition.left as EventValue}
-          onValueChange={onConditionValueChange.bind(null, 'left')}
-        />
-      ) }
-      <Select.Root
-        size="1"
-        value={condition.operator ?? '=='}
-        onValueChange={onConditionValueChange.bind(null, 'operator')}
-      >
-        <Select.Trigger
-          className="flex-none"
-          placeholder="=="
-          variant="ghost"
-        />
-        <Select.Content>
-          <Select.Item value="==">==</Select.Item>
-          <Select.Item value="!=">!=</Select.Item>
-          <Select.Item value="&&">&&</Select.Item>
-          <Select.Item value="||">||</Select.Item>
-        </Select.Content>
-      </Select.Root>
-      { (condition.right as IfEventCondition).type !== 'condition' && (
-        <EventValueField
-          type="text"
-          className="!flex-auto"
-          value={condition.right as EventValue}
-          onValueChange={onConditionValueChange.bind(null, 'right')}
-        />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        { !isLogical && (
+          <EventValueField
+            type="text"
+            className="!flex-auto"
+            value={condition.left as EventValue}
+            onValueChange={onConditionValueChange.bind(null, 'left')}
+          />
+        ) }
+        <Select.Root
+          size="1"
+          value={condition.operator ?? '=='}
+          onValueChange={onOperatorChange}
+        >
+          <Select.Trigger
+            className="flex-none"
+            placeholder="=="
+            variant="ghost"
+          />
+          <Select.Content>
+            <Select.Item value="==">==</Select.Item>
+            <Select.Item value="!=">!=</Select.Item>
+            <Select.Item value="&&">&&</Select.Item>
+            <Select.Item value="||">||</Select.Item>
+          </Select.Content>
+        </Select.Root>
+        { !isLogical && (
+          <EventValueField
+            type="text"
+            className="!flex-auto"
+            value={condition.right as EventValue}
+            onValueChange={onConditionValueChange.bind(null, 'right')}
+          />
+        ) }
+      </div>
+      { isLogical && (
+        <div className="flex flex-col gap-2 pl-4 border-l-2 border-slate-6">
+          <EventIfCondition
+            condition={condition.left as IfEventCondition}
+            onValueChange={onSubConditionChange.bind(null, 'left')}
+          />
+          <EventIfCondition
+            condition={condition.right as IfEventCondition}
+            onValueChange={onSubConditionChange.bind(null, 'right')}
+          />
+        </div>
       ) }
     </div>
   );
 };
+
 
 export interface EventIfDroppableProps extends CardProps {
   event: IfEvent;

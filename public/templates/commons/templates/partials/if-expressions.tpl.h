@@ -1,6 +1,8 @@
 {{#if expression}}
 {{#with expression}}
-{{#if (isRawValue this)}}
+{{#if (eq this.type "condition")}}
+{{>ifConditionPartial prefix=../prefix condition=this}}
+{{else if (isRawValue this)}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "value";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_string_value = "{{this}}";
 BN_DATA_EWRAM neo::types::if_expression_value {{../prefix}}(

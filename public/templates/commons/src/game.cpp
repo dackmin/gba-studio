@@ -896,23 +896,36 @@ namespace neo
     }
   }
 
-  bool game::evaluate_condition (neo::types::if_condition* condition)
+  bool game::evaluate_condition (neo::types::if_expression* node)
   {
-    if (condition->op == "==")
+    // A bare value/variable used directly as a condition is truthy if non-empty
+    if (node->type != "condition")
     {
-      bn::string_view left = get_expression_value(condition->left);
-      bn::string_view right = get_expression_value(condition->right);
-
-      BN_LOG("Evaluating condition: ", left, " == ", right);
-
-      return left == right;
-    }
-    else if (condition->op == "!=")
-    {
-      return get_expression_value(condition->left) != get_expression_value(condition->right);
+      return get_expression_value(node) != "";
     }
 
-    return false;
+    auto* condition = static_cast<neo::types::if_condition*>(node);
+
+    if (condition->op == "&&")
+    {
+      return evaluate_condition(condition->left) && evaluate_condition(condition->right);
+    }
+    else if (condition->op == "||")
+    {
+      return evaluate_condition(condition->left) || evaluate_condition(condition->right);
+    }
+
+    bn::string_view left = get_expression_value(condition->left);
+    bn::string_view right = get_expression_value(condition->right);
+
+    BN_LOG("Evaluating condition: ", left, " ", condition->op, " ", right);
+
+    if (condition->op == "!=")
+    {
+      return left != right;
+    }
+
+    return left == right;
   }
 
   bn::string_view game::get_expression_value (neo::types::if_expression* expression)

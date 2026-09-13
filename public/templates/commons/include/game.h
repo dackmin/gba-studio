@@ -62,7 +62,7 @@ namespace neo
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
-      bool evaluate_condition(neo::types::if_condition* condition);
+      bool evaluate_condition(neo::types::if_expression* condition);
       bn::string_view get_expression_value(neo::types::if_expression* expression);
   };
 }

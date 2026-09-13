@@ -229,17 +229,19 @@ namespace neo::types
       if_expression(type_), value(value_) {}
   };
 
-  struct if_condition
+  struct if_condition: if_expression
   {
     bn::string_view op;
     neo::types::if_expression* left;
     neo::types::if_expression* right;
 
     if_condition(
+      bn::string_view type_,
       bn::string_view op_,
       neo::types::if_expression* left_,
       neo::types::if_expression* right_
-    ): op(op_),
+    ): if_expression(type_),
+       op(op_),
        left(left_),
        right(right_) {}
   };

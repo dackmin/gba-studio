@@ -122,6 +122,14 @@ export const setupHandlebars = async () => {
   );
 
   Handlebars.registerPartial(
+    'ifConditionPartial',
+    (await fse.readFile(path.join(
+      getResourcesDir(),
+      './public/templates/commons/templates/partials/if-condition.tpl.h'
+    ), 'utf-8'))
+  );
+
+  Handlebars.registerPartial(
     'ifExpressionsPartial',
     (await fse.readFile(path.join(
       getResourcesDir(),
