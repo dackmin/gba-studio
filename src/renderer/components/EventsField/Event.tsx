@@ -388,6 +388,7 @@ const Event = ({
             <Switch.Case
               value={[
                 'stop-music', 'disable-input', 'enable-input', 'freeze-camera',
+                'disable-player', 'enable-player',
               ]}
             >
               <Text className="text-xs text-slate text-center">

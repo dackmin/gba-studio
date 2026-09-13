@@ -428,6 +428,14 @@ export interface EnableActorEvent extends SceneEvent {
   actor: string;
 }
 
+export interface DisablePlayerEvent extends SceneEvent {
+  type: 'disable-player';
+}
+
+export interface EnablePlayerEvent extends SceneEvent {
+  type: 'enable-player';
+}
+
 export type DirectionPriority = 'horizontal' | 'vertical';
 
 export interface MoveCameraToEvent extends SceneEvent {

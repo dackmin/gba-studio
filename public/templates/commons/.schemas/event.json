@@ -410,6 +410,30 @@
       ],
       "type": "object"
     },
+    "DisablePlayerEvent": {
+      "properties": {
+        "type": {
+          "const": "disable-player",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "EnablePlayerEvent": {
+      "properties": {
+        "type": {
+          "const": "enable-player",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "MoveActorToEvent": {
       "properties": {
         "actor": {
@@ -596,6 +620,8 @@
         { "$ref": "#/definitions/ShowDialogEvent" },
         { "$ref": "#/definitions/DisableActorEvent" },
         { "$ref": "#/definitions/EnableActorEvent" },
+        { "$ref": "#/definitions/DisablePlayerEvent" },
+        { "$ref": "#/definitions/EnablePlayerEvent" },
         { "$ref": "#/definitions/MoveCameraToEvent" },
         { "$ref": "#/definitions/FollowActorEvent" },
         { "$ref": "#/definitions/FollowPlayerEvent" },

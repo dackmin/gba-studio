@@ -268,6 +268,16 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "freeze-camera";
 BN_DATA_EWRAM neo::types::freeze_camera_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
+{{else if (eq this.type "disable-player")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "disable-player";
+BN_DATA_EWRAM neo::types::player_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
+{{else if (eq this.type "enable-player")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "enable-player";
+BN_DATA_EWRAM neo::types::player_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "move-actor-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}

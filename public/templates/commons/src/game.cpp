@@ -771,6 +771,32 @@ namespace neo
     }
 
     /**
+     * @name disable-player
+     * Disables the player until enabled again with enable-player event.
+     */
+    else if (e->type == "disable-player")
+    {
+      if (player != nullptr)
+      {
+        BN_LOG("Disabling player");
+        player->disable();
+      }
+    }
+
+    /**
+     * @name enable-player
+     * Enables the player if it was disabled with disable-player event.
+     */
+    else if (e->type == "enable-player")
+    {
+      if (player != nullptr)
+      {
+        BN_LOG("Enabling player");
+        player->enable();
+      }
+    }
+
+    /**
      * @name move-actor-to
      * @param actor string — Actor name
      * @param x number — Target X position in tiles

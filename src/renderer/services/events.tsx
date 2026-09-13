@@ -93,6 +93,12 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       duration: 200,
     }),
   }, {
+    icon: LockClosedIcon,
+    name: 'Freeze Camera',
+    value: 'freeze-camera',
+    keywords: ['camera', 'freeze', 'lock', 'stop'],
+    construct: () => ({ type: 'freeze-camera' }),
+  }, {
     icon: MoveIcon,
     name: 'Follow Actor',
     value: 'follow-actor',
@@ -111,12 +117,6 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'follow-player',
       duration: 200,
     }),
-  }, {
-    icon: LockClosedIcon,
-    name: 'Freeze Camera',
-    value: 'freeze-camera',
-    keywords: ['camera', 'freeze', 'lock', 'stop'],
-    construct: () => ({ type: 'freeze-camera' }),
   }],
 }, {
   name: 'Scene',
@@ -162,6 +162,40 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     }),
   }],
 }, {
+  name: 'Player',
+  items: [{
+    icon: EyeClosedIcon,
+    name: 'Disable Player',
+    value: 'disable-player',
+    keywords: ['player', 'disable'],
+    construct: () => ({ type: 'disable-player' }),
+  }, {
+    icon: EyeOpenIcon,
+    name: 'Enable Player',
+    value: 'enable-player',
+    keywords: ['player', 'enable'],
+    construct: () => ({ type: 'enable-player' }),
+  }, {
+    icon: MoveIcon,
+    name: 'Move Player To',
+    value: 'move-player-to',
+    keywords: ['player', 'move', 'to'],
+    construct: () => ({
+      type: 'move-player-to',
+      x: 0,
+      y: 0,
+    }),
+  }, {
+    icon: AllSidesIcon,
+    name: 'Set Player Direction',
+    value: 'set-player-direction',
+    keywords: ['player', 'direction', 'facing'],
+    construct: () => ({
+      type: 'set-player-direction',
+      direction: 'down',
+    }),
+  }],
+}, {
   name: 'Actors',
   items: [{
     icon: EyeClosedIcon,
@@ -193,16 +227,6 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       y: 0,
     }),
   }, {
-    icon: MoveIcon,
-    name: 'Move Player To',
-    value: 'move-player-to',
-    keywords: ['player', 'move', 'to'],
-    construct: () => ({
-      type: 'move-player-to',
-      x: 0,
-      y: 0,
-    }),
-  }, {
     icon: AllSidesIcon,
     name: 'Set Actor Direction',
     value: 'set-actor-direction',
@@ -210,15 +234,6 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'set-actor-direction',
       actor: '',
-      direction: 'down',
-    }),
-  }, {
-    icon: AllSidesIcon,
-    name: 'Set Player Direction',
-    value: 'set-player-direction',
-    keywords: ['player', 'direction', 'facing'],
-    construct: () => ({
-      type: 'set-player-direction',
       direction: 'down',
     }),
   }],
