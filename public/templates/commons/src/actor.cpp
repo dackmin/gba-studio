@@ -499,8 +499,8 @@ namespace neo
     // speed is in tiles/s, running at ~60 FPS
     int px_per_frame = bn::max(1, (speed * grid_size) / 60);
 
-    int origin_x = map_data->to_pixel_x(game->variables, (int)position.x()) + offset_x;
-    int origin_y = map_data->to_pixel_y(game->variables, (int)position.y()) + offset_y;
+    int origin_x = (int)sprite.x();
+    int origin_y = (int)sprite.y();
     int target_x = map_data->to_pixel_x(game->variables, tile_x) + offset_x;
     int target_y = map_data->to_pixel_y(game->variables, tile_y) + offset_y;
 
@@ -579,7 +579,20 @@ namespace neo
 
     moving = false;
     set_direction(direction); // restore the idle tile for the final facing direction
-    set_position(tile_x, tile_y);
+
+    // The player's `position` is tracked in pixels (continuous movement), while
+    // regular actors track it in tiles, so each needs its matching overload here.
+    if (is_player)
+    {
+      set_position(bn::fixed_point(
+        map_data->to_pixel_x(game->variables, tile_x),
+        map_data->to_pixel_y(game->variables, tile_y)
+      ));
+    }
+    else
+    {
+      set_position(tile_x, tile_y);
+    }
   }
 
   neo::types::sprite_animation* actor::get_animation (bn::string_view id)
