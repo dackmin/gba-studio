@@ -1154,6 +1154,18 @@ namespace neo
           pending.push_back(fade_evt);
         }
       }
+      else if (sub_evt->type == "move-camera-to")
+      {
+        neo::types::move_camera_to_event* move_evt =
+          static_cast<neo::types::move_camera_to_event*>(sub_evt);
+
+        move_evt->start(game);
+
+        if (!move_evt->update())
+        {
+          pending.push_back(move_evt);
+        }
+      }
       else
       {
         game->exec_event(sub_evt, is_loop);

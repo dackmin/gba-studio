@@ -137,6 +137,22 @@ namespace neo::camera
     }
   }
 
+  void get_move_to_target(
+    neo::game* game,
+    int x,
+    int y,
+    int& end_x,
+    int& end_y
+  )
+  {
+    int min_x, max_x, min_y, max_y;
+    get_bounds(game, *game->active_scene, min_x, max_x, min_y, max_y);
+
+    // x/y are the target pixel position of the top-left corner of the viewport.
+    end_x = bn::min(bn::max(min_x + x, min_x), max_x);
+    end_y = bn::min(bn::max(min_y + y, min_y), max_y);
+  }
+
   void move_to(
     neo::game* game,
     neo::types::scene& active_scene,
@@ -200,5 +216,136 @@ namespace neo::camera
 
     game->camera.set_position(x, y);
   }
+}
+
+void neo::types::move_camera_to_event::start(neo::game* game_)
+{
+  game_ref = game_;
+  frame = 0;
+  phase = 0;
+
+  int target_x = x->as_int(game_->variables);
+  int target_y = y->as_int(game_->variables);
+
+  neo::camera::get_move_to_target(game_, target_x, target_y, end_x, end_y);
+
+  // 0,0 is camera center
+  start_x = (int)game_->camera.x();
+  start_y = (int)game_->camera.y();
+
+  int duration_ms = duration->as_int(game_->variables);
+
+  if (duration_ms <= 0)
+  {
+    game_->camera.set_position(end_x, end_y);
+    frames = 0;
+
+    return;
+  }
+
+  delta_x = end_x - start_x;
+  delta_y = end_y - start_y;
+  frames = duration_ms / 16; // Assuming 60 FPS, 16ms per frame
+
+  // Nothing to animate (already at target, or duration too short for a frame):
+  // avoid dividing by zero below and just snap to the final position.
+  if (frames <= 0 || (delta_x == 0 && delta_y == 0))
+  {
+    game_->camera.set_position(end_x, end_y);
+    frames = 0;
+
+    return;
+  }
+
+  if (!allow_diagonal)
+  {
+    horizontal_frames = frames * abs(delta_x) / (abs(delta_x) + abs(delta_y));
+    vertical_frames = frames - horizontal_frames;
+  }
+}
+
+bool neo::types::move_camera_to_event::update()
+{
+  if (frames <= 0)
+  {
+    return true;
+  }
+
+  if (allow_diagonal)
+  {
+    frame++;
+
+    float t = static_cast<float>(frame) / frames;
+
+    game_ref->camera.set_position(
+      start_x + static_cast<int>(delta_x * t), start_y + static_cast<int>(delta_y * t));
+
+    if (frame < frames)
+    {
+      return false;
+    }
+
+    game_ref->camera.set_position(end_x, end_y);
+    frames = 0;
+
+    return true;
+  }
+
+  bool horizontal_first = direction_priority == "horizontal";
+  int first_frames = horizontal_first ? horizontal_frames : vertical_frames;
+  int second_frames = horizontal_first ? vertical_frames : horizontal_frames;
+
+  if (phase == 0)
+  {
+    frame++;
+
+    float t = first_frames > 0 ? static_cast<float>(frame) / first_frames : 1.0f;
+
+    if (horizontal_first)
+    {
+      game_ref->camera.set_position(start_x + static_cast<int>(delta_x * t), start_y);
+    }
+    else
+    {
+      game_ref->camera.set_position(start_x, start_y + static_cast<int>(delta_y * t));
+    }
+
+    if (frame < first_frames)
+    {
+      return false;
+    }
+
+    phase = 1;
+    frame = 0;
+
+    if (second_frames > 0)
+    {
+      return false;
+    }
+  }
+
+  // phase == 1
+  frame++;
+
+  float t = second_frames > 0 ? static_cast<float>(frame) / second_frames : 1.0f;
+
+  if (horizontal_first)
+  {
+    game_ref->camera.set_position(end_x, start_y + static_cast<int>(delta_y * t));
+  }
+  else
+  {
+    game_ref->camera.set_position(start_x + static_cast<int>(delta_x * t), end_y);
+  }
+
+  if (frame < second_frames)
+  {
+    return false;
+  }
+
+  game_ref->camera.set_position(end_x, end_y);
+  frames = 0;
+
+  return true;
 }
 

@@ -34,6 +34,16 @@ namespace neo::camera
     neo::types::scene& active_scene,
     neo::actor* target
   );
+
+  // Computes the clamped target position for a move-camera-to command
+  // (used by neo::types::move_camera_to_event::start()).
+  void get_move_to_target(
+    neo::game* game,
+    int x,
+    int y,
+    int& end_x,
+    int& end_y
+  );
 }
 
 #endif

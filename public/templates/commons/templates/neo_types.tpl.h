@@ -411,6 +411,23 @@ namespace neo::types
     event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
+
+    // Runtime-only resumable pan state, set by start()/advanced by update()
+    // when this move runs inside a parallel-events branch instead of
+    // blocking.
+    neo::game* game_ref = nullptr;
+    int start_x = 0;
+    int start_y = 0;
+    int end_x = 0;
+    int end_y = 0;
+    int delta_x = 0;
+    int delta_y = 0;
+    int frames = 0;
+    int horizontal_frames = 0;
+    int vertical_frames = 0;
+    int frame = 0;
+    int phase = 0; // 0: diagonal (or first sequential axis), 1: second sequential axis
+
     move_camera_to_event(
       bn::string_view type_,
       event_value* x_,
@@ -425,6 +442,14 @@ namespace neo::types
       duration(duration_),
       allow_diagonal(allow_diagonal_),
       direction_priority(direction_priority_) {}
+
+    // Prepares a non-blocking camera pan. update() must then be called once
+    // per frame until it returns true. Defined in camera.cpp: needs the
+    // file-local bounds-clamping helper.
+    void start(neo::game* game_);
+
+    // Advances the pan by one frame. Returns true once finished.
+    bool update() override;
   };
 
   struct follow_actor_event: event

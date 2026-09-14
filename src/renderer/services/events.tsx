@@ -96,6 +96,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Move Camera To',
     value: 'move-camera-to',
     keywords: ['camera', 'move', 'pan', 'to'],
+    parallelizable: true,
     construct: () => ({
       type: 'move-camera-to',
       x: 0,
