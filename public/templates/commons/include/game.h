@@ -52,12 +52,18 @@ namespace neo
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
 
+      // Parallel-events nodes with resumable (fade-in/out) sub-events,
+      // ticked once per frame by update_active_parallel_events() until each
+      // of them has no pending sub-events left.
+      bn::vector<neo::types::parallel_event*, 8> active_parallel_events;
+
       void set_scene(bn::string_view scene_name);
       void set_background(bn::regular_bg_item background, bool visible = false);
       void exec_event(const neo::types::event* e, bool is_loop);
       void run();
       void enable_blending();
       void disable_blending();
+      void update_active_parallel_events();
       bool has_collision(int tile_x, int tile_y);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);

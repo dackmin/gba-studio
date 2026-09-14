@@ -5,6 +5,9 @@
 
 #include <bn_core.h>
 #include <bn_log.h>
+#include <bn_blending.h>
+#include <bn_blending_actions.h>
+#include <bn_optional.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
@@ -14,6 +17,11 @@
 
 #include <neo_utils.h>
 #include <neo_variables.h>
+
+namespace neo
+{
+  class game;
+}
 
 namespace neo::types
 {
@@ -108,6 +116,16 @@ namespace neo::types
   struct event
   {
     bn::string_view type;
+
+    event(bn::string_view type_): type(type_) {}
+    virtual ~event() = default;
+
+    // Advances a resumable event by one frame, like bn::core::update().
+    // Instant events don't override this: they're already done immediately.
+    virtual bool update()
+    {
+      return true;
+    }
   };
 
   struct wait_event: event
@@ -120,8 +138,23 @@ namespace neo::types
   struct fade_event: event
   {
     event_value* duration;
+
+    // Set by start(), advanced by update() when this fade runs inside a
+    // parallel-events branch instead of blocking.
+    neo::game* game_ref = nullptr;
+    bn::optional<bn::regular_bg_ptr> bg;
+    bn::optional<bn::blending_fade_alpha_to_action> action;
+
     fade_event(bn::string_view type_, event_value* duration_):
       event(type_), duration(duration_) {}
+
+    // Prepares a non-blocking fade (duration in milliseconds). update() must
+    // then be called once per frame until it returns true. Defined in
+    // game.cpp: needs the full neo::game definition (enable/disable_blending).
+    void start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms);
+
+    // Advances the fade by one frame. Returns true once finished.
+    bool update() override;
   };
 
   struct scene_event: event
@@ -158,14 +191,37 @@ namespace neo::types
   };
 
   // Only instant, self-contained events are allowed here (enforced by the
-  // editor), so they can simply run one after another within the same frame.
+  // editor) except for fade-in/fade-out, which are resumable (see
+  // fade_event::update()): exec() starts them and tracks the still-running
+  // ones in pending, and update() advances pending until it's empty.
   struct parallel_event: event
   {
     int events_count;
     event** events;
+    bn::vector<event*, 8> pending;
 
     parallel_event(bn::string_view type_, int events_count_, event** events_):
       event(type_), events_count(events_count_), events(events_) {}
+
+    // Runs instant sub-events immediately (delegated to game::exec_event)
+    // and starts resumable ones, collecting them into pending. Defined in
+    // game.cpp: needs the full neo::game definition.
+    void exec(neo::game* game, bool is_loop);
+
+    // Advances every pending sub-event by one frame. Returns true once
+    // they've all finished.
+    bool update() override
+    {
+      for (int i = pending.size() - 1; i >= 0; --i)
+      {
+        if (pending[i]->update())
+        {
+          pending.erase(pending.begin() + i);
+        }
+      }
+
+      return pending.empty();
+    }
   };
 
   struct input_event: event

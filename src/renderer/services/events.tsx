@@ -82,12 +82,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Fade In',
     value: 'fade-in',
     keywords: ['camera', 'fade', 'in'],
+    parallelizable: true,
     construct: () => ({ type: 'fade-in', duration: 200 }),
   }, {
     icon: ShadowNoneIcon,
     name: 'Fade Out',
     value: 'fade-out',
     keywords: ['camera', 'fade', 'out'],
+    parallelizable: true,
     construct: () => ({ type: 'fade-out', duration: 200 }),
   }, {
     icon: MoveIcon,

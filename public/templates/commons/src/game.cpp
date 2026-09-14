@@ -238,6 +238,7 @@ namespace neo
     }
 
     scripted_events_count = 0;
+    active_parallel_events.clear();
 
     BN_LOG("Scene events count:", active_scene->event_count);
 
@@ -293,6 +294,8 @@ namespace neo
         // Execute actors update events
         actors[i]->update();
       }
+
+      update_active_parallel_events();
 
       bn::core::update();
     }
@@ -670,16 +673,22 @@ namespace neo
 
     /**
      * @name parallel-events
-     * @param events array of events — Only instant events are allowed here (enforced by the editor), so they simply run one after another, within the same frame.
+     * @param events array of events — Instant events are executed one after
+     * another, within the same frame. fade-in/fade-out don't block the
+     * other events instead: they're started here and advanced by
+     * update_active_parallel_events() until done.
      */
     else if (e->type == "parallel-events")
     {
-      const neo::types::parallel_event* parallel_evt =
-        static_cast<const neo::types::parallel_event*>(e);
+      neo::types::parallel_event* parallel_evt =
+        const_cast<neo::types::parallel_event*>(
+          static_cast<const neo::types::parallel_event*>(e));
 
-      for (int i = 0; i < parallel_evt->events_count; ++i)
+      parallel_evt->exec(this, is_loop);
+
+      if (!parallel_evt->pending.empty())
       {
-        exec_event(parallel_evt->events[i], is_loop);
+        active_parallel_events.push_back(parallel_evt);
       }
     }
 
@@ -1034,6 +1043,121 @@ namespace neo
     for (int i = 0; i < sprites_count; ++i)
     {
       sprites[i]->inner_sprite.set_blending_enabled(false);
+    }
+  }
+
+  void game::update_active_parallel_events()
+  {
+    for (int i = active_parallel_events.size() - 1; i >= 0; --i)
+    {
+      if (active_parallel_events[i]->update())
+      {
+        active_parallel_events.erase(active_parallel_events.begin() + i);
+      }
+    }
+  }
+
+  void neo::types::fade_event::start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms)
+  {
+    game_ref = game_;
+    bg = bg_;
+
+    bool is_fade_in = type == "fade-in";
+    int frames = duration_ms / 16;
+
+    game_ref->enable_blending();
+
+    if (frames <= 0)
+    {
+      bn::blending::set_fade_alpha(is_fade_in ? 0 : 1);
+      bg->set_blending_enabled(false);
+      bg->set_visible(is_fade_in);
+
+      if (is_fade_in)
+      {
+        game_ref->disable_blending();
+      }
+
+      return;
+    }
+
+    bn::blending::set_black_fade_color();
+    bg->set_blending_enabled(true);
+
+    if (is_fade_in)
+    {
+      bg->set_visible(true);
+      bn::blending::set_fade_alpha(1);
+      action = bn::blending_fade_alpha_to_action(frames, 0);
+    }
+    else
+    {
+      bn::blending::set_fade_alpha(0);
+      action = bn::blending_fade_alpha_to_action(frames, 1);
+    }
+  }
+
+  bool neo::types::fade_event::update()
+  {
+    if (!action.has_value())
+    {
+      return true;
+    }
+
+    action->update();
+
+    if (!action->done())
+    {
+      return false;
+    }
+
+    bool is_fade_in = type == "fade-in";
+
+    bn::blending::set_fade_alpha(is_fade_in ? 0 : 1);
+
+    if (!is_fade_in)
+    {
+      bg->set_visible(false);
+    }
+
+    bg->set_blending_enabled(false);
+    action.reset();
+
+    if (is_fade_in)
+    {
+      game_ref->disable_blending();
+    }
+
+    return true;
+  }
+
+  void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
+  {
+    pending.clear();
+
+    for (int i = 0; i < events_count; ++i)
+    {
+      neo::types::event* sub_evt = events[i];
+
+      if (
+        (sub_evt->type == "fade-in" || sub_evt->type == "fade-out") &&
+        game->scene_bg.has_value()
+      )
+      {
+        neo::types::fade_event* fade_evt =
+          static_cast<neo::types::fade_event*>(sub_evt);
+
+        fade_evt->start(game, *game->scene_bg, fade_evt->duration->as_int(game->variables));
+
+        if (!fade_evt->update())
+        {
+          pending.push_back(fade_evt);
+        }
+      }
+      else
+      {
+        game->exec_event(sub_evt, is_loop);
+      }
     }
   }
 
