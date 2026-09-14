@@ -139,8 +139,6 @@ namespace neo::types
   {
     event_value* duration;
 
-    // Set by start(), advanced by update() when this fade runs inside a
-    // parallel-events branch instead of blocking.
     neo::game* game_ref = nullptr;
     bn::optional<bn::regular_bg_ptr> bg;
     bn::optional<bn::blending_fade_alpha_to_action> action;
@@ -148,12 +146,7 @@ namespace neo::types
     fade_event(bn::string_view type_, event_value* duration_):
       event(type_), duration(duration_) {}
 
-    // Prepares a non-blocking fade (duration in milliseconds). update() must
-    // then be called once per frame until it returns true. Defined in
-    // game.cpp: needs the full neo::game definition (enable/disable_blending).
     void start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms);
-
-    // Advances the fade by one frame. Returns true once finished.
     bool update() override;
   };
 
@@ -443,12 +436,7 @@ namespace neo::types
       allow_diagonal(allow_diagonal_),
       direction_priority(direction_priority_) {}
 
-    // Prepares a non-blocking camera pan. update() must then be called once
-    // per frame until it returns true. Defined in camera.cpp: needs the
-    // file-local bounds-clamping helper.
     void start(neo::game* game_);
-
-    // Advances the pan by one frame. Returns true once finished.
     bool update() override;
   };
 
@@ -578,6 +566,38 @@ namespace neo::types
     ):
       event(type_),
       background(background_) {}
+  };
+
+  struct set_palette_effect_event: event
+  {
+    bn::string_view target; // "background" | "sprite" | "both"
+    bn::string_view effect; // "brightness" | "contrast" | "intensity" | "grayscale" | "hue-shift"
+    bn::fixed value; // Target value, in percent (0-100).
+    event_value* duration;
+
+    // Runtime-only resumable interpolation state, set by start()/advanced by
+    // update() when this effect runs inside a parallel-events branch instead
+    // of applying instantly.
+    bn::fixed start_value;
+    bn::fixed end_value;
+    int frames = 0;
+    int frame = 0;
+
+    set_palette_effect_event(
+      bn::string_view type_,
+      bn::string_view target_,
+      bn::string_view effect_,
+      bn::fixed value_,
+      event_value* duration_
+    ):
+      event(type_),
+      target(target_),
+      effect(effect_),
+      value(value_),
+      duration(duration_) {}
+
+    void start(neo::game* game);
+    bool update() override;
   };
 
   struct sensor

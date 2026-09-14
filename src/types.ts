@@ -409,6 +409,23 @@ export interface ParallelEventsEvent extends SceneEvent {
   events: SceneEvent[];
 }
 
+export type PaletteEffectTarget = 'background' | 'sprite' | 'both';
+
+export type PaletteEffectType =
+  | 'brightness'
+  | 'contrast'
+  | 'intensity'
+  | 'grayscale'
+  | 'hue-shift';
+
+export interface SetPaletteEffectEvent extends SceneEvent {
+  type: 'set-palette-effect';
+  target: PaletteEffectTarget;
+  effect: PaletteEffectType;
+  value: number;
+  duration?: EventValue;
+}
+
 export interface SetVariableEvent extends SceneEvent {
   type: 'set-variable';
   name: string;

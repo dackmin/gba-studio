@@ -35,6 +35,7 @@ import type {
   SceneEvent,
   SetActorDirectionEvent,
   SetBackgroundEvent,
+  SetPaletteEffectEvent,
   SetPlayerDirectionEvent,
   SetVariableEvent,
   ShowDialogEvent,
@@ -65,6 +66,7 @@ import EventSetActorDirection from './EventSetActorDirection';
 import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetBackground from './EventSetBackground';
 import EventParallel from './EventParallel';
+import EventSetPaletteEffect from './EventSetPaletteEffect';
 
 export interface EventProps {
   event: SceneEvent;
@@ -294,6 +296,12 @@ const Event = ({
             <Switch.Case value={['wait', 'fade-in', 'fade-out']}>
               <EventDuration
                 event={event as WaitEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="set-palette-effect">
+              <EventSetPaletteEffect
+                event={event as SetPaletteEffectEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

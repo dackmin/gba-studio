@@ -8,6 +8,8 @@
 #include <bn_audio.h>
 #include <bn_music.h>
 #include <bn_sound.h>
+#include <bn_bg_palettes.h>
+#include <bn_sprite_palettes.h>
 
 #include "bn_music_items_info.h"
 #include "bn_sound_items_info.h"
@@ -30,6 +32,75 @@
 
 namespace neo
 {
+  namespace
+  {
+    bn::fixed get_palette_effect(bn::string_view target, bn::string_view effect)
+    {
+      bool use_sprite = target == "sprite";
+
+      if (effect == "brightness")
+      {
+        return use_sprite ? bn::sprite_palettes::brightness() : bn::bg_palettes::brightness();
+      }
+
+      if (effect == "contrast")
+      {
+        return use_sprite ? bn::sprite_palettes::contrast() : bn::bg_palettes::contrast();
+      }
+
+      if (effect == "intensity")
+      {
+        return use_sprite ? bn::sprite_palettes::intensity() : bn::bg_palettes::intensity();
+      }
+
+      if (effect == "grayscale")
+      {
+        return use_sprite ?
+          bn::sprite_palettes::grayscale_intensity() : bn::bg_palettes::grayscale_intensity();
+      }
+
+      if (effect == "hue-shift")
+      {
+        return use_sprite ?
+          bn::sprite_palettes::hue_shift_intensity() : bn::bg_palettes::hue_shift_intensity();
+      }
+
+      return 0;
+    }
+
+    void set_palette_effect(bn::string_view target, bn::string_view effect, bn::fixed value)
+    {
+      bool bg = target == "background" || target == "both";
+      bool sprite = target == "sprite" || target == "both";
+
+      if (effect == "brightness")
+      {
+        if (bg) bn::bg_palettes::set_brightness(value);
+        if (sprite) bn::sprite_palettes::set_brightness(value);
+      }
+      else if (effect == "contrast")
+      {
+        if (bg) bn::bg_palettes::set_contrast(value);
+        if (sprite) bn::sprite_palettes::set_contrast(value);
+      }
+      else if (effect == "intensity")
+      {
+        if (bg) bn::bg_palettes::set_intensity(value);
+        if (sprite) bn::sprite_palettes::set_intensity(value);
+      }
+      else if (effect == "grayscale")
+      {
+        if (bg) bn::bg_palettes::set_grayscale_intensity(value);
+        if (sprite) bn::sprite_palettes::set_grayscale_intensity(value);
+      }
+      else if (effect == "hue-shift")
+      {
+        if (bg) bn::bg_palettes::set_hue_shift_intensity(value);
+        if (sprite) bn::sprite_palettes::set_hue_shift_intensity(value);
+      }
+    }
+  }
+
   game::game(
     bn::camera_ptr& camera_
   ) :
@@ -693,6 +764,40 @@ namespace neo
     }
 
     /**
+     * @name set-palette-effect
+     * @param target string — Which palettes to affect (background, sprite, both)
+     * @param effect string — Which effect to change (brightness, contrast, intensity, grayscale, hue-shift)
+     * @param value number — Target value, in percent (default: 100)
+     * @param duration number — Duration in milliseconds (default: 200)
+     */
+    else if (e->type == "set-palette-effect")
+    {
+      const neo::types::set_palette_effect_event* palette_evt =
+        static_cast<const neo::types::set_palette_effect_event*>(e);
+
+      bn::fixed from_value = get_palette_effect(palette_evt->target, palette_evt->effect);
+      bn::fixed to_value = palette_evt->value / 100;
+      int frames = palette_evt->duration->as_int(variables) / 16;
+
+      if (frames <= 0)
+      {
+        set_palette_effect(palette_evt->target, palette_evt->effect, to_value);
+      }
+      else
+      {
+        for (int frame = 1; frame <= frames; ++frame)
+        {
+          bn::fixed t = bn::fixed(frame) / frames;
+          set_palette_effect(
+            palette_evt->target, palette_evt->effect, from_value + (to_value - from_value) * t);
+          bn::core::update();
+        }
+
+        set_palette_effect(palette_evt->target, palette_evt->effect, to_value);
+      }
+    }
+
+    /**
      * @name move-camera-to
      * @param x number — Target X position in pixels
      * @param y number — Target Y position in pixels
@@ -1166,11 +1271,64 @@ namespace neo
           pending.push_back(move_evt);
         }
       }
+      else if (sub_evt->type == "set-palette-effect")
+      {
+        neo::types::set_palette_effect_event* palette_evt =
+          static_cast<neo::types::set_palette_effect_event*>(sub_evt);
+
+        palette_evt->start(game);
+
+        if (!palette_evt->update())
+        {
+          pending.push_back(palette_evt);
+        }
+      }
       else
       {
         game->exec_event(sub_evt, is_loop);
       }
     }
+  }
+
+  void neo::types::set_palette_effect_event::start(neo::game* game_)
+  {
+    frame = 0;
+    start_value = get_palette_effect(target, effect);
+    end_value = value / 100;
+    frames = duration->as_int(game_->variables) / 16;
+
+    if (frames <= 0)
+    {
+      set_palette_effect(target, effect, end_value);
+      frames = 0;
+
+      return;
+    }
+
+    set_palette_effect(target, effect, start_value);
+  }
+
+  bool neo::types::set_palette_effect_event::update()
+  {
+    if (frames <= 0)
+    {
+      return true;
+    }
+
+    frame++;
+
+    bn::fixed t = bn::fixed(frame) / frames;
+    set_palette_effect(target, effect, start_value + (end_value - start_value) * t);
+
+    if (frame < frames)
+    {
+      return false;
+    }
+
+    set_palette_effect(target, effect, end_value);
+    frames = 0;
+
+    return true;
   }
 
   bool game::has_collision(int tile_x, int tile_y)

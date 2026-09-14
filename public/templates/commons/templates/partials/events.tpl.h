@@ -246,6 +246,18 @@ BN_DATA_EWRAM neo::types::parallel_event {{../prefix}}_{{@index}}(
   nullptr
   {{/if}}
 );
+{{else if (eq this.type "set-palette-effect")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-palette-effect";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_target = "{{valuedef this.target "both"}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_effect = "{{valuedef this.effect "grayscale"}}";
+BN_DATA_EWRAM neo::types::set_palette_effect_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_target,
+  {{../prefix}}_{{@index}}_effect,
+  {{valuedef this.value 100}},
+  &{{../prefix}}_{{@index}}_duration_value
+);
 {{else if (eq this.type "move-camera-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}

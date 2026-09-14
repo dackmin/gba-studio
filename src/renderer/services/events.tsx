@@ -12,6 +12,7 @@ import {
   LayersIcon,
   ListBulletIcon,
   LockClosedIcon,
+  MagicWandIcon,
   MixIcon,
   MoveIcon,
   Pencil1Icon,
@@ -91,6 +92,19 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     keywords: ['camera', 'fade', 'out'],
     parallelizable: true,
     construct: () => ({ type: 'fade-out', duration: 200 }),
+  }, {
+    icon: MagicWandIcon,
+    name: 'Set Palette Effect',
+    value: 'set-palette-effect',
+    keywords: ['palette', 'color', 'grade', 'sepia', 'grayscale', 'hue', 'brightness', 'contrast'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-palette-effect',
+      target: 'both',
+      effect: 'grayscale',
+      value: 100,
+      duration: 200,
+    }),
   }, {
     icon: MoveIcon,
     name: 'Move Camera To',
