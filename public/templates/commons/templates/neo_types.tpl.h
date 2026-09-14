@@ -157,6 +157,17 @@ namespace neo::types
     }
   };
 
+  // Only instant, self-contained events are allowed here (enforced by the
+  // editor), so they can simply run one after another within the same frame.
+  struct parallel_event: event
+  {
+    int events_count;
+    event** events;
+
+    parallel_event(bn::string_view type_, int events_count_, event** events_):
+      event(type_), events_count(events_count_), events(events_) {}
+  };
+
   struct input_event: event
   {
     input_event(bn::string_view type_):

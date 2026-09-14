@@ -404,6 +404,11 @@ export interface OnButtonPressEvent extends SceneEvent {
   events?: SceneEvent[];
 }
 
+export interface ParallelEventsEvent extends SceneEvent {
+  type: 'parallel-events';
+  events: SceneEvent[];
+}
+
 export interface SetVariableEvent extends SceneEvent {
   type: 'set-variable';
   name: string;

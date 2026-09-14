@@ -10,19 +10,22 @@ import { move } from '@dnd-kit/helpers';
 import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers';
 
 import type { SceneEvent } from '../../../types';
-import { getEventDefinition, getEventParent, isChildOfEvent } from '../../services/events';
+import { type EventDefinition, getEventDefinition, getEventParent, isChildOfEvent } from '../../services/events';
 import Event from './Event';
 import Catalogue from './Catalogue';
 
 export interface EventsFieldProps {
   value: SceneEvent[];
   zone?: string;
+  // Restricts which events can be added/pasted/dropped into this list.
+  filter?: (definition: EventDefinition) => boolean;
   onValueChange?: (events: SceneEvent[]) => void;
 }
 
 const EventsField = ({
   value,
   zone,
+  filter,
   onValueChange,
 }: EventsFieldProps) => {
   const addEventButtonRef = useRef<HTMLButtonElement>(null);
@@ -74,6 +77,10 @@ const EventsField = ({
     clipboard: SceneEvent,
     position: 'append' | 'prepend' = 'append',
   ) => {
+    if (filter && !filter(getEventDefinition(clipboard.type))) {
+      return;
+    }
+
     const index = value.indexOf(event);
 
     if (index === -1) {
@@ -94,7 +101,7 @@ const EventsField = ({
       },
       ...value.slice(position === 'prepend' ? index : index + 1),
     ]);
-  }, [onValueChange, value]);
+  }, [onValueChange, value, filter]);
 
   const onPrependClick = useCallback((
     event: SceneEvent,
@@ -134,6 +141,13 @@ const EventsField = ({
       }
 
       if (!sourceData.event || !targetData.event) {
+        return;
+      }
+
+      if (
+        targetData.event.type === 'parallel-events' &&
+        !getEventDefinition(sourceData.event.type).parallelizable
+      ) {
         return;
       }
 
@@ -210,7 +224,7 @@ const EventsField = ({
                   Select an event to add to the list
                 </Dialog.Description>
               </VisuallyHidden>
-              <Catalogue onSelect={onAddEvent} />
+              <Catalogue filter={filter} onSelect={onAddEvent} />
             </Dialog.Content>
           </Dialog.Root>
         </div>

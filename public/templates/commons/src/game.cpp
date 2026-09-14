@@ -669,6 +669,21 @@ namespace neo
     }
 
     /**
+     * @name parallel-events
+     * @param events array of events — Only instant events are allowed here (enforced by the editor), so they simply run one after another, within the same frame.
+     */
+    else if (e->type == "parallel-events")
+    {
+      const neo::types::parallel_event* parallel_evt =
+        static_cast<const neo::types::parallel_event*>(e);
+
+      for (int i = 0; i < parallel_evt->events_count; ++i)
+      {
+        exec_event(parallel_evt->events[i], is_loop);
+      }
+    }
+
+    /**
      * @name move-camera-to
      * @param x number — Target X position in pixels
      * @param y number — Target Y position in pixels

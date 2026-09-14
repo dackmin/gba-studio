@@ -29,6 +29,7 @@ import type {
   MoveCameraToEvent,
   MovePlayerToEvent,
   OnButtonPressEvent,
+  ParallelEventsEvent,
   PlayMusicEvent,
   PlaySoundEvent,
   SceneEvent,
@@ -63,6 +64,7 @@ import EventMovePlayerTo from './EventMovePlayerTo';
 import EventSetActorDirection from './EventSetActorDirection';
 import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetBackground from './EventSetBackground';
+import EventParallel from './EventParallel';
 
 export interface EventProps {
   event: SceneEvent;
@@ -382,6 +384,12 @@ const Event = ({
             <Switch.Case value="show-menu">
               <EventShowMenu
                 event={event as ShowMenuEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="parallel-events">
+              <EventParallel
+                event={event as ParallelEventsEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

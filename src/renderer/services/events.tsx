@@ -17,6 +17,7 @@ import {
   Pencil1Icon,
   PlayIcon,
   RadiobuttonIcon,
+  Share2Icon,
   ShadowIcon,
   ShadowNoneIcon,
   SpeakerLoudIcon,
@@ -36,8 +37,13 @@ import type {
 export interface EventDefinition extends ListItem {
   keywords?: string[];
   containers?: string[];
+  // Whether this event can be added inside a parallel-events event.
+  parallelizable?: boolean;
   construct?: (params?: any) => any;
 }
+
+export const isParallelizable = (type: string): boolean =>
+  !!getEventDefinition(type).parallelizable;
 
 export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   name: 'Input',
@@ -59,12 +65,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Disable input',
     value: 'disable-input',
     keywords: ['input', 'disable'],
+    parallelizable: true,
     construct: () => ({ type: 'disable-input' }),
   }, {
     icon: ComponentInstanceIcon,
     name: 'Enable input',
     value: 'enable-input',
     keywords: ['input', 'enable'],
+    parallelizable: true,
     construct: () => ({ type: 'enable-input' }),
   }],
 }, {
@@ -97,6 +105,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Freeze Camera',
     value: 'freeze-camera',
     keywords: ['camera', 'freeze', 'lock', 'stop'],
+    parallelizable: true,
     construct: () => ({ type: 'freeze-camera' }),
   }, {
     icon: MoveIcon,
@@ -134,6 +143,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Set Background',
     value: 'set-background',
     keywords: ['background', 'scene', 'image', 'set'],
+    parallelizable: true,
     construct: () => ({
       type: 'set-background',
       background: '',
@@ -168,12 +178,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Disable Player',
     value: 'disable-player',
     keywords: ['player', 'disable'],
+    parallelizable: true,
     construct: () => ({ type: 'disable-player' }),
   }, {
     icon: EyeOpenIcon,
     name: 'Enable Player',
     value: 'enable-player',
     keywords: ['player', 'enable'],
+    parallelizable: true,
     construct: () => ({ type: 'enable-player' }),
   }, {
     icon: MoveIcon,
@@ -190,6 +202,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Set Player Direction',
     value: 'set-player-direction',
     keywords: ['player', 'direction', 'facing'],
+    parallelizable: true,
     construct: () => ({
       type: 'set-player-direction',
       direction: 'down',
@@ -202,6 +215,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Disable Actor',
     value: 'disable-actor',
     keywords: ['actor', 'disable'],
+    parallelizable: true,
     construct: () => ({
       type: 'disable-actor',
       actor: '',
@@ -211,6 +225,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Enable Actor',
     value: 'enable-actor',
     keywords: ['actor', 'enable'],
+    parallelizable: true,
     construct: () => ({
       type: 'enable-actor',
       actor: '',
@@ -231,6 +246,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Set Actor Direction',
     value: 'set-actor-direction',
     keywords: ['actor', 'direction', 'facing'],
+    parallelizable: true,
     construct: () => ({
       type: 'set-actor-direction',
       actor: '',
@@ -244,6 +260,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Set Variable',
     value: 'set-variable',
     keywords: ['variable', 'set', 'change', 'value'],
+    parallelizable: true,
     construct: () => ({
       type: 'set-variable',
       name: '',
@@ -257,6 +274,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Play Music',
     value: 'play-music',
     keywords: ['music', 'play', 'sound'],
+    parallelizable: true,
     construct: () => ({
       type: 'play-music',
       music_name: '',
@@ -275,6 +293,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Play Sound',
     value: 'play-sound',
     keywords: ['sound', 'play', 'sfx'],
+    parallelizable: true,
     construct: () => ({
       type: 'play-sound',
     }),
@@ -299,6 +318,13 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       then: [],
       else: [],
     }),
+  }, {
+    icon: Share2Icon,
+    name: 'Parallel Events',
+    value: 'parallel-events',
+    keywords: ['parallel', 'concurrent', 'simultaneous', 'same time'],
+    containers: ['events'],
+    construct: () => ({ type: 'parallel-events', events: [] }),
   }, {
     icon: CodeIcon,
     name: 'Execute Script',

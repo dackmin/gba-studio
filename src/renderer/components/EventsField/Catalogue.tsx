@@ -9,14 +9,16 @@ import {
 } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { AVAILABLE_EVENTS } from '../../services/events';
+import { AVAILABLE_EVENTS, type EventDefinition } from '../../services/events';
 import { useDelayedValue } from '../../services/hooks';
 
 export interface CatalogueProps {
+  filter?: (definition: EventDefinition) => boolean;
   onSelect?: (eventType: string) => void;
 }
 
 const Catalogue = ({
+  filter,
   onSelect,
 }: CatalogueProps) => {
   const [rawSearch, setRawSearch] = useState('');
@@ -35,12 +37,15 @@ const Catalogue = ({
     AVAILABLE_EVENTS.map(c => ({
       ...c,
       items: c.items.filter(i => (
-        i.name.toLowerCase().includes(search.toLowerCase()) ||
-        i.value.toLowerCase().includes(search.toLowerCase()) ||
-        i.keywords?.some(k => k.toLowerCase().includes(search.toLowerCase()))
+        !(filter && !filter(i)) &&
+        (
+          i.name.toLowerCase().includes(search.toLowerCase()) ||
+          i.value.toLowerCase().includes(search.toLowerCase()) ||
+          i.keywords?.some(k => k.toLowerCase().includes(search.toLowerCase()))
+        )
       )),
     }))
-  ), [search]);
+  ), [search, filter]);
 
   const eventsCount = useMemo(() => (
     events.flatMap(c => c.items).length

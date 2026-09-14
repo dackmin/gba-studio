@@ -227,6 +227,25 @@ BN_DATA_EWRAM neo::types::execute_script_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_script_name
 );
+{{else if (eq this.type "parallel-events")}}
+{{#if this.events.length}}
+{{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
+neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "parallel-events";
+BN_DATA_EWRAM neo::types::parallel_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{valuedef this.events.length 0}},
+  {{#if this.events.length}}
+  {{../prefix}}_{{@index}}_events
+  {{else}}
+  nullptr
+  {{/if}}
+);
 {{else if (eq this.type "move-camera-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
