@@ -34,9 +34,11 @@ import type {
   PlaySoundEvent,
   SceneEvent,
   SetActorDirectionEvent,
+  SetActorPositionEvent,
   SetBackgroundEvent,
   SetPaletteEffectEvent,
   SetPlayerDirectionEvent,
+  SetPlayerPositionEvent,
   SetVariableEvent,
   ShowDialogEvent,
   ShowMenuEvent,
@@ -64,7 +66,9 @@ import EventShowMenu from './EventShowMenu';
 import EventMoveActorTo from './EventMoveActorTo';
 import EventMovePlayerTo from './EventMovePlayerTo';
 import EventSetActorDirection from './EventSetActorDirection';
+import EventSetActorPosition from './EventSetActorPosition';
 import EventSetPlayerDirection from './EventSetPlayerDirection';
+import EventSetPlayerPosition from './EventSetPlayerPosition';
 import EventSetBackground from './EventSetBackground';
 import EventParallel from './EventParallel';
 import EventSetPaletteEffect from './EventSetPaletteEffect';
@@ -394,6 +398,18 @@ const Event = ({
             <Switch.Case value="move-player-to">
               <EventMovePlayerTo
                 event={event as MovePlayerToEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="set-actor-position">
+              <EventSetActorPosition
+                event={event as SetActorPositionEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="set-player-position">
+              <EventSetPlayerPosition
+                event={event as SetPlayerPositionEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

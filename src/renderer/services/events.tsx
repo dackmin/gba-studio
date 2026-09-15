@@ -231,6 +231,17 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       y: 0,
     }),
   }, {
+    icon: MoveIcon,
+    name: 'Set Player Position',
+    value: 'set-player-position',
+    keywords: ['player', 'position', 'set', 'teleport'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-player-position',
+      x: 0,
+      y: 0,
+    }),
+  }, {
     icon: AllSidesIcon,
     name: 'Set Player Direction',
     value: 'set-player-direction',
@@ -270,6 +281,18 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     keywords: ['actor', 'move', 'to'],
     construct: () => ({
       type: 'move-actor-to',
+      actor: '',
+      x: 0,
+      y: 0,
+    }),
+  }, {
+    icon: MoveIcon,
+    name: 'Set Actor Position',
+    value: 'set-actor-position',
+    keywords: ['actor', 'position', 'set', 'teleport'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-actor-position',
       actor: '',
       x: 0,
       y: 0,

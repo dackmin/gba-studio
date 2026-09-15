@@ -584,11 +584,17 @@ namespace neo
 
     moving = false;
     set_direction(direction); // restore the idle tile for the final facing direction
+    set_tile_position(tile_x, tile_y);
+  }
 
+  void actor::set_tile_position (int tile_x, int tile_y)
+  {
     // The player's `position` is tracked in pixels (continuous movement), while
     // regular actors track it in tiles, so each needs its matching overload here.
     if (is_player)
     {
+      neo::types::map* map_data = game->active_scene->map_data;
+
       set_position(bn::fixed_point(
         map_data->to_pixel_x(game->variables, tile_x),
         map_data->to_pixel_y(game->variables, tile_y)
@@ -598,6 +604,7 @@ namespace neo
     {
       set_position(tile_x, tile_y);
     }
+  }
   }
 
   neo::types::sprite_animation* actor::get_animation (bn::string_view id)

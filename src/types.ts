@@ -526,6 +526,19 @@ export interface MovePlayerToEvent extends SceneEvent {
   backwards?: boolean;
 }
 
+export interface SetActorPositionEvent extends SceneEvent {
+  type: 'set-actor-position';
+  actor: string;
+  x: EventValue;
+  y: EventValue;
+}
+
+export interface SetPlayerPositionEvent extends SceneEvent {
+  type: 'set-player-position';
+  x: EventValue;
+  y: EventValue;
+}
+
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];

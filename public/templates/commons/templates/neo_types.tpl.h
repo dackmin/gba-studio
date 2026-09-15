@@ -533,6 +533,37 @@ namespace neo::types
       backwards(backwards_) {}
   };
 
+  struct set_actor_position_event: event
+  {
+    bn::string_view actor;
+    event_value* x;
+    event_value* y;
+    set_actor_position_event(
+      bn::string_view type_,
+      bn::string_view actor_,
+      event_value* x_,
+      event_value* y_
+    ):
+      event(type_),
+      actor(actor_),
+      x(x_),
+      y(y_) {}
+  };
+
+  struct set_player_position_event: event
+  {
+    event_value* x;
+    event_value* y;
+    set_player_position_event(
+      bn::string_view type_,
+      event_value* x_,
+      event_value* y_
+    ):
+      event(type_),
+      x(x_),
+      y(y_) {}
+  };
+
   struct set_actor_direction_event: event
   {
     bn::string_view actor;

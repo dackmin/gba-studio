@@ -23,6 +23,10 @@ namespace neo
       void set_direction(neo::types::direction direction);
       void set_position(int tile_x, int tile_y);
       void set_position(bn::fixed_point pixel_position);
+      // Sets the position from tile coordinates, instantly (no animation),
+      // using the overload matching how this actor tracks `position`
+      // (pixels for the player, tiles for regular actors).
+      void set_tile_position(int tile_x, int tile_y);
       void set_z_order(int z);
       void move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation, bool backwards = false);
       bool collides(int tile_x, int tile_y);

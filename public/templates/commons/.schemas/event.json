@@ -486,6 +486,42 @@
       ],
       "type": "object"
     },
+    "SetActorPositionEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "x": { "$ref": "#/definitions/EventValue" },
+        "y": { "$ref": "#/definitions/EventValue" },
+        "type": {
+          "const": "set-actor-position",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "x",
+        "y",
+        "type"
+      ],
+      "type": "object"
+    },
+    "SetPlayerPositionEvent": {
+      "properties": {
+        "x": { "$ref": "#/definitions/EventValue" },
+        "y": { "$ref": "#/definitions/EventValue" },
+        "type": {
+          "const": "set-player-position",
+          "type": "string"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "type"
+      ],
+      "type": "object"
+    },
     "ShowMenuEvent": {
       "properties": {
         "choices": {
@@ -628,6 +664,8 @@
         { "$ref": "#/definitions/FreezeCameraEvent" },
         { "$ref": "#/definitions/MoveActorToEvent" },
         { "$ref": "#/definitions/MovePlayerToEvent" },
+        { "$ref": "#/definitions/SetActorPositionEvent" },
+        { "$ref": "#/definitions/SetPlayerPositionEvent" },
         { "$ref": "#/definitions/ShowMenuEvent" },
         { "$ref": "#/definitions/IfEvent" },
         { "$ref": "#/definitions/ExecuteScriptEvent" },

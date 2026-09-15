@@ -1029,6 +1029,54 @@ namespace neo
     }
 
     /**
+     * @name set-actor-position
+     * @param actor string — Actor name
+     * @param x number — Target X position in tiles
+     * @param y number — Target Y position in tiles
+     */
+    else if (e->type == "set-actor-position")
+    {
+      const neo::types::set_actor_position_event* set_actor_position_evt =
+        static_cast<const neo::types::set_actor_position_event*>(e);
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        if (
+          actors[i]->definition->name == set_actor_position_evt->actor ||
+          actors[i]->definition->_id == set_actor_position_evt->actor
+        )
+        {
+          BN_LOG("Setting actor position: ", actors[i]->definition->name, " to x=", set_actor_position_evt->x->as_int(variables), ", y=", set_actor_position_evt->y->as_int(variables));
+          actors[i]->set_tile_position(
+            set_actor_position_evt->x->as_int(variables),
+            set_actor_position_evt->y->as_int(variables)
+          );
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name set-player-position
+     * @param x number — Target X position in tiles
+     * @param y number — Target Y position in tiles
+     */
+    else if (e->type == "set-player-position")
+    {
+      const neo::types::set_player_position_event* set_player_position_evt =
+        static_cast<const neo::types::set_player_position_event*>(e);
+
+      if (player != nullptr)
+      {
+        BN_LOG("Setting player position to x=", set_player_position_evt->x->as_int(variables), ", y=", set_player_position_evt->y->as_int(variables));
+        player->set_tile_position(
+          set_player_position_evt->x->as_int(variables),
+          set_player_position_evt->y->as_int(variables)
+        );
+      }
+    }
+
+    /**
      * @name set-actor-direction
      * @param actor string — Actor name
      * @param direction string — Direction to set (up, down, left, right)
