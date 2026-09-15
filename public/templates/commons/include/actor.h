@@ -44,6 +44,10 @@ namespace neo
       neo::types::direction direction;
       bool moving;
       bool is_player;
+      // Wave-effect x offset currently baked into sprite's rendered
+      // position (see game::update_wave_effect()), so it can be removed
+      // without drift regardless of how position is set.
+      bn::fixed wave_offset = 0;
 
     private:
       void move(neo::types::sprite_animation* anim);

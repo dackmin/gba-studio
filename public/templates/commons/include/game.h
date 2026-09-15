@@ -4,8 +4,10 @@
 #include <bn_core.h>
 #include <bn_vector.h>
 #include <bn_optional.h>
+#include <bn_span.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
+#include <bn_regular_bg_position_hbe_ptr.h>
 #include <bn_camera_actions.h>
 
 #include <neo_types.h>
@@ -57,6 +59,25 @@ namespace neo
       // of them has no pending sub-events left.
       bn::vector<neo::types::parallel_event*, 8> active_parallel_events;
 
+      // Per-scanline horizontal wave distortion applied to the scene
+      // background and/or actors/sprites, ticked once per frame by
+      // update_wave_effect() while enabled (see the wave-effect event).
+      bool wave_enabled = false;
+      bn::string_view wave_target = "both"; // "background" | "sprite" | "both"
+      bn::string_view wave_envelope = "in"; // "in" (0%->100%) | "in-out" (0%->100%->0%)
+      bn::fixed wave_amplitude = 0; // configured (max) amplitude
+      bn::fixed wave_current_amplitude = 0; // envelope-scaled, actually rendered
+      bn::fixed wave_speed = 0;
+      int wave_frequency = 1;
+      bn::fixed wave_phase = 0;
+      // Frames left before the wave stops on its own (-1 = no limit).
+      int wave_frames_remaining = -1;
+      // Total frames requested at start (0 = no limit), used by the envelope.
+      int wave_total_frames = 0;
+      int wave_elapsed_frames = 0;
+      bn::fixed wave_deltas[160] = {};
+      bn::optional<bn::regular_bg_position_hbe_ptr> wave_hbe;
+
       void set_scene(bn::string_view scene_name);
       void set_background(bn::regular_bg_item background, bool visible = false);
       void exec_event(const neo::types::event* e, bool is_loop);
@@ -64,12 +85,22 @@ namespace neo
       void enable_blending();
       void disable_blending();
       void update_active_parallel_events();
+      void start_wave_effect(
+        bn::string_view target, bn::fixed amplitude, bn::fixed speed, int frequency, int duration_frames,
+        bn::string_view envelope);
+      void update_wave_effect();
       bool has_collision(int tile_x, int tile_y);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
       bool evaluate_condition(neo::types::if_expression* condition);
       bn::string_view get_expression_value(neo::types::if_expression* expression);
+
+    private:
+      void update_wave_deltas();
+      bn::fixed wave_offset_for_y(bn::fixed y);
+      bn::fixed wave_envelope_scale();
+      void stop_wave_effect();
   };
 }
 

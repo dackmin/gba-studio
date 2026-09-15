@@ -42,6 +42,7 @@ import type {
   ShowMenuEvent,
   WaitEvent,
   WaitForButtonEvent,
+  WaveEffectEvent,
 } from '../../../types';
 import { getEventDefinition } from '../../services/events';
 import { useApp, useLocalData } from '../../services/hooks';
@@ -67,6 +68,7 @@ import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetBackground from './EventSetBackground';
 import EventParallel from './EventParallel';
 import EventSetPaletteEffect from './EventSetPaletteEffect';
+import EventWaveEffect from './EventWaveEffect';
 
 export interface EventProps {
   event: SceneEvent;
@@ -302,6 +304,12 @@ const Event = ({
             <Switch.Case value="set-palette-effect">
               <EventSetPaletteEffect
                 event={event as SetPaletteEffectEvent}
+                onValueChange={onValueChange}
+              />
+            </Switch.Case>
+            <Switch.Case value="wave-effect">
+              <EventWaveEffect
+                event={event as WaveEffectEvent}
                 onValueChange={onValueChange}
               />
             </Switch.Case>

@@ -103,6 +103,7 @@ namespace neo
 
     sprite.set_x(x);
     sprite.set_y(y);
+    wave_offset = 0;
 
     if (game->camera_target == this)
     {
@@ -122,6 +123,7 @@ namespace neo
     int y = (int)position.y() - map_data->pixel_height(game->variables) / 2;
     sprite.set_x(x + width() / 2);
     sprite.set_y(y + height() / 2);
+    wave_offset = 0;
 
     if (game->camera_target == this)
     {

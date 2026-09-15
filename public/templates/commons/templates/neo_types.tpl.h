@@ -600,6 +600,37 @@ namespace neo::types
     bool update() override;
   };
 
+  // Instant event: (re)starts a wave distortion of the scene background
+  // and/or actors/sprites. The animation itself, and the duration countdown,
+  // are driven every frame by game::update_wave_effect(), not by this event
+  // (see game.h/game.cpp).
+  struct wave_effect_event: event
+  {
+    bn::string_view target; // "background" | "sprite" | "both"
+    bn::fixed amplitude; // pixels
+    bn::fixed speed; // degrees of phase advanced per frame
+    int frequency; // number of full sine cycles across the 160 screen lines
+    event_value* duration; // milliseconds (0 = runs until the scene changes)
+    bn::string_view envelope; // "in" (0%->100%) | "in-out" (0%->100%->0%)
+
+    wave_effect_event(
+      bn::string_view type_,
+      bn::string_view target_,
+      bn::fixed amplitude_,
+      bn::fixed speed_,
+      int frequency_,
+      event_value* duration_,
+      bn::string_view envelope_
+    ):
+      event(type_),
+      target(target_),
+      amplitude(amplitude_),
+      speed(speed_),
+      frequency(frequency_),
+      duration(duration_),
+      envelope(envelope_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;

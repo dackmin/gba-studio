@@ -48,6 +48,7 @@ namespace neo
 
     inner_sprite.set_x(x);
     inner_sprite.set_y(y);
+    wave_offset = 0;
   }
 
   void sprite::disable()

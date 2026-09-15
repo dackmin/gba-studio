@@ -258,6 +258,20 @@ BN_DATA_EWRAM neo::types::set_palette_effect_event {{../prefix}}_{{@index}}(
   {{valuedef this.value 100}},
   &{{../prefix}}_{{@index}}_duration_value
 );
+{{else if (eq this.type "wave-effect")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 0)}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "wave-effect";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_target = "{{valuedef this.target "both"}}";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_envelope = "{{valuedef this.envelope "in"}}";
+BN_DATA_EWRAM neo::types::wave_effect_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_target,
+  {{valuedef this.amplitude 4}},
+  {{valuedef this.speed 4}},
+  {{valuedef this.frequency 1}},
+  &{{../prefix}}_{{@index}}_duration_value,
+  {{../prefix}}_{{@index}}_envelope
+);
 {{else if (eq this.type "move-camera-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}

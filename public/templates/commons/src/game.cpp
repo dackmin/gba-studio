@@ -6,6 +6,7 @@
 #include <bn_log.h>
 #include <bn_keypad.h>
 #include <bn_audio.h>
+#include <bn_math.h>
 #include <bn_music.h>
 #include <bn_sound.h>
 #include <bn_bg_palettes.h>
@@ -311,6 +312,9 @@ namespace neo
     scripted_events_count = 0;
     active_parallel_events.clear();
 
+    // The old wave_hbe (if any) referenced the previous scene's background.
+    stop_wave_effect();
+
     BN_LOG("Scene events count:", active_scene->event_count);
 
     // Exec normal scene events
@@ -367,6 +371,7 @@ namespace neo
       }
 
       update_active_parallel_events();
+      update_wave_effect();
 
       bn::core::update();
     }
@@ -798,6 +803,26 @@ namespace neo
     }
 
     /**
+     * @name wave-effect
+     * @param target string — Which to distort (background, sprite, both) (default: "both")
+     * @param amplitude number — Wave displacement, in pixels (default: 4)
+     * @param speed number — Degrees of phase advanced per frame (default: 4)
+     * @param frequency number — Number of full sine cycles across the screen (default: 1)
+     * @param duration number — Duration in milliseconds, 0 runs until the scene changes (default: 0)
+     * @param envelope string — Amplitude ramp: "in" (0%->100%) or "in-out" (0%->100%->0%) (default: "in")
+     */
+    else if (e->type == "wave-effect")
+    {
+      const neo::types::wave_effect_event* wave_evt =
+        static_cast<const neo::types::wave_effect_event*>(e);
+
+      start_wave_effect(
+        wave_evt->target, wave_evt->amplitude, wave_evt->speed, wave_evt->frequency,
+        wave_evt->duration->as_int(variables) / 16, wave_evt->envelope
+      );
+    }
+
+    /**
      * @name move-camera-to
      * @param x number — Target X position in pixels
      * @param y number — Target Y position in pixels
@@ -1158,6 +1183,246 @@ namespace neo
       if (active_parallel_events[i]->update())
       {
         active_parallel_events.erase(active_parallel_events.begin() + i);
+      }
+    }
+  }
+
+  void game::update_wave_deltas()
+  {
+    for (int line = 0; line < 160; ++line)
+    {
+      bn::fixed angle = wave_phase + bn::fixed(line * wave_frequency * 360) / 160;
+
+      while (angle >= 360)
+      {
+        angle -= 360;
+      }
+
+      while (angle < 0)
+      {
+        angle += 360;
+      }
+
+      wave_deltas[line] = bn::degrees_lut_sin(angle) * wave_current_amplitude;
+    }
+  }
+
+  bn::fixed game::wave_offset_for_y(bn::fixed y)
+  {
+    bn::fixed line = y + (neo::types::SCREEN_HEIGHT / 2);
+    bn::fixed angle = wave_phase + (line * wave_frequency * 360) / neo::types::SCREEN_HEIGHT;
+
+    while (angle >= 360)
+    {
+      angle -= 360;
+    }
+
+    while (angle < 0)
+    {
+      angle += 360;
+    }
+
+    return bn::degrees_lut_sin(angle) * wave_current_amplitude;
+  }
+
+  bn::fixed game::wave_envelope_scale()
+  {
+    // Ramp length, in frames (~0.5s at 60 FPS).
+    constexpr int max_ramp_frames = 30;
+
+    if (wave_total_frames <= 0)
+    {
+      // No known end.
+      if (wave_envelope == "out")
+      {
+        // Ramp out once, then stay at 0 (a one-shot decaying pulse).
+        if (wave_elapsed_frames >= max_ramp_frames)
+        {
+          return 0;
+        }
+
+        return bn::fixed(1) - bn::fixed(wave_elapsed_frames) / max_ramp_frames;
+      }
+
+      // "in" / "in-out" ("in-out" is meaningless without an end): ramp in, then hold.
+      if (wave_elapsed_frames >= max_ramp_frames)
+      {
+        return 1;
+      }
+
+      return bn::fixed(wave_elapsed_frames) / max_ramp_frames;
+    }
+
+    int ramp_frames = bn::min(max_ramp_frames, wave_total_frames / 2);
+
+    if (ramp_frames <= 0)
+    {
+      return 1;
+    }
+
+    if (wave_envelope == "out")
+    {
+      if (wave_elapsed_frames < ramp_frames)
+      {
+        return bn::fixed(1) - bn::fixed(wave_elapsed_frames) / ramp_frames;
+      }
+
+      return 0;
+    }
+
+    if (wave_elapsed_frames < ramp_frames)
+    {
+      return bn::fixed(wave_elapsed_frames) / ramp_frames;
+    }
+
+    if (wave_envelope != "in-out")
+    {
+      return 1;
+    }
+
+    int frames_left = wave_total_frames - wave_elapsed_frames;
+
+    if (frames_left < ramp_frames)
+    {
+      return bn::max(bn::fixed(0), bn::fixed(frames_left) / ramp_frames);
+    }
+
+    return 1;
+  }
+
+  void game::start_wave_effect(
+    bn::string_view target, bn::fixed amplitude, bn::fixed speed, int frequency, int duration_frames,
+    bn::string_view envelope)
+  {
+    if (!scene_bg.has_value())
+    {
+      return;
+    }
+
+    wave_target = target;
+    wave_envelope = envelope;
+    wave_amplitude = amplitude;
+    wave_current_amplitude = 0;
+    wave_speed = speed;
+    wave_frequency = frequency > 0 ? frequency : 1;
+    wave_total_frames = duration_frames > 0 ? duration_frames : 0;
+    wave_frames_remaining = duration_frames > 0 ? duration_frames : -1;
+    wave_elapsed_frames = 0;
+    wave_enabled = true;
+
+    bool wants_bg = target == "background" || target == "both";
+
+    if (!wants_bg)
+    {
+      wave_hbe.reset();
+    }
+    else if (!wave_hbe.has_value())
+    {
+      wave_phase = 0;
+      update_wave_deltas();
+      wave_hbe = bn::regular_bg_position_hbe_ptr::create_horizontal_optional(
+        *scene_bg, bn::span<const bn::fixed>(wave_deltas, 160));
+
+      if (!wave_hbe.has_value())
+      {
+        BN_LOG("game::start_wave_effect: couldn't allocate the H-Blank effect");
+      }
+    }
+  }
+
+  void game::stop_wave_effect()
+  {
+    wave_hbe.reset();
+
+    // Sprites are faked (see update_wave_effect): undo exactly the offset
+    // that's currently baked into each rendered sprite's x, regardless of
+    // how/when their position was last set.
+    if (wave_enabled && (wave_target == "sprite" || wave_target == "both"))
+    {
+      if (player != nullptr)
+      {
+        player->sprite.set_x(player->sprite.x() - player->wave_offset);
+        player->wave_offset = 0;
+      }
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        actors[i]->sprite.set_x(actors[i]->sprite.x() - actors[i]->wave_offset);
+        actors[i]->wave_offset = 0;
+      }
+
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        sprites[i]->inner_sprite.set_x(sprites[i]->inner_sprite.x() - sprites[i]->wave_offset);
+        sprites[i]->wave_offset = 0;
+      }
+    }
+
+    wave_enabled = false;
+  }
+
+  void game::update_wave_effect()
+  {
+    if (!wave_enabled)
+    {
+      return;
+    }
+
+    if (wave_frames_remaining > 0)
+    {
+      wave_frames_remaining--;
+
+      if (wave_frames_remaining == 0)
+      {
+        stop_wave_effect();
+
+        return;
+      }
+    }
+
+    wave_elapsed_frames++;
+    wave_current_amplitude = wave_amplitude * wave_envelope_scale();
+
+    wave_phase += wave_speed;
+
+    while (wave_phase >= 360)
+    {
+      wave_phase -= 360;
+    }
+
+    while (wave_phase < 0)
+    {
+      wave_phase += 360;
+    }
+
+    if (wave_hbe.has_value())
+    {
+      update_wave_deltas();
+      wave_hbe->reload_deltas_ref();
+    }
+
+    if (wave_target == "sprite" || wave_target == "both")
+    {
+      if (player != nullptr)
+      {
+        bn::fixed new_offset = wave_offset_for_y(player->sprite.y());
+        player->sprite.set_x(player->sprite.x() - player->wave_offset + new_offset);
+        player->wave_offset = new_offset;
+      }
+
+      for (int i = 0; i < actors_count; ++i)
+      {
+        bn::fixed new_offset = wave_offset_for_y(actors[i]->sprite.y());
+        actors[i]->sprite.set_x(actors[i]->sprite.x() - actors[i]->wave_offset + new_offset);
+        actors[i]->wave_offset = new_offset;
+      }
+
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        bn::fixed new_offset = wave_offset_for_y(sprites[i]->inner_sprite.y());
+        sprites[i]->inner_sprite.set_x(
+          sprites[i]->inner_sprite.x() - sprites[i]->wave_offset + new_offset);
+        sprites[i]->wave_offset = new_offset;
       }
     }
   }

@@ -1,4 +1,5 @@
 import {
+  ActivityLogIcon,
   AllSidesIcon,
   ChatBubbleIcon,
   CodeIcon,
@@ -104,6 +105,21 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       effect: 'grayscale',
       value: 100,
       duration: 200,
+    }),
+  }, {
+    icon: ActivityLogIcon,
+    name: 'Wave Effect',
+    value: 'wave-effect',
+    keywords: ['wave', 'distortion', 'water', 'heat', 'haze', 'ripple'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'wave-effect',
+      target: 'both',
+      amplitude: 4,
+      speed: 4,
+      frequency: 1,
+      duration: 0,
+      envelope: 'in',
     }),
   }, {
     icon: MoveIcon,

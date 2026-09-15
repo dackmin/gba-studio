@@ -426,6 +426,23 @@ export interface SetPaletteEffectEvent extends SceneEvent {
   duration?: EventValue;
 }
 
+export type WaveEnvelope = 'in' | 'in-out' | 'out';
+
+export interface WaveEffectEvent extends SceneEvent {
+  type: 'wave-effect';
+  target: PaletteEffectTarget;
+  // In pixels.
+  amplitude?: number;
+  // Degrees of phase advanced per frame.
+  speed?: number;
+  // Number of full sine cycles across the screen.
+  frequency?: number;
+  // In milliseconds (0 = runs until the scene changes).
+  duration?: EventValue;
+  // Amplitude ramp: "in" (0%->100%) or "in-out" (0%->100%->0%).
+  envelope?: WaveEnvelope;
+}
+
 export interface SetVariableEvent extends SceneEvent {
   type: 'set-variable';
   name: string;

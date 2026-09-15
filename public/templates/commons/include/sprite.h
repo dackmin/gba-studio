@@ -26,6 +26,10 @@ namespace neo
       neo::types::sprite* definition;
       bn::sprite_ptr inner_sprite;
       bn::fixed_point position;
+      // Wave-effect x offset currently baked into inner_sprite's rendered
+      // position (see game::update_wave_effect()), so it can be removed
+      // without drift regardless of how position is set.
+      bn::fixed wave_offset = 0;
   };
 }
 
