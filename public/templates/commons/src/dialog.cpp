@@ -11,7 +11,6 @@
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
 
-#include <neo_utils.h>
 #include <neo_types.h>
 
 #include "dialog.h"
@@ -116,13 +115,13 @@ namespace neo
     {
       sprite.set_visible(true);
 
-      neo::utils::wait(reveal_wait_ms);
-      bn::core::update();
+      game->wait(reveal_wait_ms);
+      game->update_frame();
     }
 
     while (!neo::buttons::is_pressed("A"))
     {
-      bn::core::update();
+      game->update_frame();
     }
 
     // Hide dialog

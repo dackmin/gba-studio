@@ -54,9 +54,12 @@ namespace neo
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
 
-      // Parallel-events nodes with resumable (fade-in/out) sub-events,
-      // ticked once per frame by update_active_parallel_events() until each
-      // of them has no pending sub-events left.
+      // Parallel-events nodes with resumable (fade-in/out, move-camera-to,
+      // set-palette-effect, wave-effect) sub-events, ticked once per frame
+      // by update_active_parallel_events() while the "parallel-events"
+      // handler blocks the rest of the script on each node's pending list
+      // (see exec_event()). Sub-events run concurrently with each other,
+      // but the node itself still waits for all of them to finish.
       bn::vector<neo::types::parallel_event*, 8> active_parallel_events;
 
       // Per-scanline horizontal wave distortion applied to the scene
@@ -85,6 +88,15 @@ namespace neo
       void enable_blending();
       void disable_blending();
       void update_active_parallel_events();
+      // Advances one frame, including any active parallel effects. Every
+      // blocking wait loop (dialog/menu, wait/wait-for-button, blocking
+      // fade/pan/actor-move, ...) must tick through this instead of calling
+      // bn::core::update() directly, otherwise a parallel-events node
+      // (e.g. a camera pan + wave running alongside a fade-in) would freeze
+      // for as long as that other event blocks.
+      void update_frame();
+      // Same idea as neo::utils::wait(), but goes through update_frame().
+      void wait(int milliseconds);
       void start_wave_effect(
         bn::string_view target, bn::fixed amplitude, bn::fixed speed, int frequency, int duration_frames,
         bn::string_view envelope);

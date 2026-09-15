@@ -13,7 +13,6 @@
 #include <bn_sprite_items_gbs_mono.h>
 #include <bn_sprite_items_menu_arrow.h>
 
-#include <neo_utils.h>
 #include <neo_types.h>
 
 #include "menu.h"
@@ -132,7 +131,7 @@ namespace neo
 
     // This prevents menu from being instantly closed after being opened with
     // the same shortcut because of polling
-    neo::utils::wait(100);
+    game->wait(100);
 
     while (!neo::buttons::is_pressed("Start") && !neo::buttons::is_pressed("B") && selected_index == -1)
     {
@@ -143,7 +142,7 @@ namespace neo
           choice_index--;
           arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
           BN_LOG("Moved up inside menu to choice index: ", choice_index);
-          bn::core::update();
+          game->update_frame();
         }
       }
       else if (neo::buttons::is_pressed("Down"))
@@ -153,7 +152,7 @@ namespace neo
           choice_index++;
           arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
           BN_LOG("Moved down inside menu to choice index: ", choice_index);
-          bn::core::update();
+          game->update_frame();
         }
       }
       else if (neo::buttons::is_pressed("A"))
@@ -162,7 +161,7 @@ namespace neo
         BN_LOG("Selected menu choice index: ", selected_index);
       }
 
-      bn::core::update();
+      game->update_frame();
     }
 
     BN_LOG("Menu closed with selected index: ", selected_index);

@@ -3,10 +3,12 @@
 
 #include <bn_regular_bg_ptr.h>
 
+#include "game.h"
+
 namespace neo::fade
 {
-  void enter(bn::regular_bg_ptr& bg, int duration);
-  void exit(bn::regular_bg_ptr& bg, int duration);
+  void enter(neo::game* game, bn::regular_bg_ptr& bg, int duration);
+  void exit(neo::game* game, bn::regular_bg_ptr& bg, int duration);
 }
 
 #endif

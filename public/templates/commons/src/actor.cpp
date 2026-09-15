@@ -217,7 +217,7 @@ namespace neo
           game->exec_event(other->definition->interact_events[i], true);
         }
 
-        bn::core::update();
+        game->update_frame();
         return;
       }
 
@@ -234,7 +234,7 @@ namespace neo
           game->exec_event(other_sprite->definition->interact_events[i], true);
         }
 
-        bn::core::update();
+        game->update_frame();
         return;
       }
 
@@ -263,7 +263,7 @@ namespace neo
       {
         other_sensor->trigger_interact();
 
-        bn::core::update();
+        game->update_frame();
         return;
       }
     }
@@ -406,7 +406,7 @@ namespace neo
 
     if (map_data->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
     {
-      bn::core::update();
+      game->update_frame();
 
       return;
     }
@@ -440,7 +440,7 @@ namespace neo
         anim->play(sprite, &tiles_item, game->variables);
       }
 
-      bn::core::update();
+      game->update_frame();
     }
 
     neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);
@@ -453,7 +453,7 @@ namespace neo
         anim->play(sprite, &tiles_item, game->variables);
       }
 
-      bn::core::update();
+      game->update_frame();
 
       return;
     }
@@ -569,7 +569,7 @@ namespace neo
           anim->play(sprite, &tiles_item, game->variables);
         }
 
-        bn::core::update();
+        game->update_frame();
       }
 
       if (is_horizontal_pass)

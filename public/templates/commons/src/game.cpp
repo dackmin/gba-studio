@@ -370,10 +370,7 @@ namespace neo
         actors[i]->update();
       }
 
-      update_active_parallel_events();
-      update_wave_effect();
-
-      bn::core::update();
+      update_frame();
     }
 
     // go-to-scene doesn't wait for anything: if it fires in the same frame
@@ -382,10 +379,7 @@ namespace neo
     // scene would be torn down mid-fade and the transition would just cut.
     while (!active_parallel_events.empty())
     {
-      update_active_parallel_events();
-      update_wave_effect();
-
-      bn::core::update();
+      update_frame();
     }
 
     if (scene_bg.has_value())
@@ -409,7 +403,7 @@ namespace neo
     {
       const neo::types::wait_event* wait_evt =
         static_cast<const neo::types::wait_event*>(e);
-      neo::utils::wait(wait_evt->duration->as_int(variables));
+      wait(wait_evt->duration->as_int(variables));
     }
 
     /**
@@ -425,7 +419,7 @@ namespace neo
       BN_LOG("Fade-in duration: ", duration);
 
       enable_blending();
-      neo::fade::enter(*scene_bg, duration);
+      neo::fade::enter(this, *scene_bg, duration);
       disable_blending();
     }
 
@@ -439,7 +433,7 @@ namespace neo
         static_cast<const neo::types::fade_event*>(e);
 
       enable_blending();
-      neo::fade::exit(*scene_bg, fade_evt->duration->as_int(variables));
+      neo::fade::exit(this, *scene_bg, fade_evt->duration->as_int(variables));
     }
 
     /**
@@ -452,7 +446,7 @@ namespace neo
         static_cast<const neo::types::button_event*>(e);
       while (!neo::buttons::any_pressed(button_evt->buttons))
       {
-        bn::core::update();
+        update_frame();
       }
 
       BN_LOG("Wait-for-button event completed");
@@ -696,8 +690,8 @@ namespace neo
         {
           BN_LOG("Fading out music to: ", i);
           bn::music::set_volume(i / 100.0);
-          neo::utils::wait(10);
-          bn::core::update();
+          wait(10);
+          update_frame();
         }
 
         bn::music::stop();
@@ -764,9 +758,10 @@ namespace neo
      * @param events array of events — Instant events are executed one after
      * another, within the same frame. fade-in/fade-out, move-camera-to,
      * set-palette-effect and wave-effect (unless it has a duration of 0,
-     * which runs until the scene changes) don't block the other events
-     * instead: they're started here and advanced by
-     * update_active_parallel_events() until done.
+     * which runs until the scene changes) run concurrently with each other
+     * instead: they're started here, and this event doesn't return control
+     * to the rest of the script until every one of them is done (i.e. as
+     * long as the longest-running one takes).
      */
     else if (e->type == "parallel-events")
     {
@@ -779,6 +774,11 @@ namespace neo
       if (!parallel_evt->pending.empty())
       {
         active_parallel_events.push_back(parallel_evt);
+      }
+
+      while (!parallel_evt->pending.empty())
+      {
+        update_frame();
       }
     }
 
@@ -809,7 +809,7 @@ namespace neo
           bn::fixed t = bn::fixed(frame) / frames;
           set_palette_effect(
             palette_evt->target, palette_evt->effect, from_value + (to_value - from_value) * t);
-          bn::core::update();
+          update_frame();
         }
 
         set_palette_effect(palette_evt->target, palette_evt->effect, to_value);
@@ -1198,6 +1198,23 @@ namespace neo
       {
         active_parallel_events.erase(active_parallel_events.begin() + i);
       }
+    }
+  }
+
+  void game::update_frame()
+  {
+    update_active_parallel_events();
+    update_wave_effect();
+    bn::core::update();
+  }
+
+  void game::wait(int milliseconds)
+  {
+    int frames = milliseconds / 16; // Assuming 60 FPS, 16ms per frame
+
+    for (int i = 0; i < frames; ++i)
+    {
+      update_frame();
     }
   }
 

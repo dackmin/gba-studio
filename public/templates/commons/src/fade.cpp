@@ -4,9 +4,11 @@
 #include <bn_blending_actions.h>
 #include <bn_regular_bg_ptr.h>
 
+#include "fade.h"
+
 namespace neo::fade
 {
-  void enter(bn::regular_bg_ptr& bg, int duration)
+  void enter(neo::game* game, bn::regular_bg_ptr& bg, int duration)
   {
     if (duration <= 0)
     {
@@ -27,14 +29,14 @@ namespace neo::fade
     while (!action.done())
     {
       action.update();
-      bn::core::update();
+      game->update_frame();
     }
 
     bn::blending::set_fade_alpha(0);
     bg.set_blending_enabled(false);
   }
 
-  void exit(bn::regular_bg_ptr& bg, int duration)
+  void exit(neo::game* game, bn::regular_bg_ptr& bg, int duration)
   {
     if (duration <= 0)
     {
@@ -54,7 +56,7 @@ namespace neo::fade
     while (!action.done())
     {
       action.update();
-      bn::core::update();
+      game->update_frame();
     }
 
     bn::blending::set_fade_alpha(1);

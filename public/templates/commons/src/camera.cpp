@@ -87,7 +87,7 @@ namespace neo::camera
 
           game->camera.set_position(new_x, new_y);
 
-          bn::core::update();
+          game->update_frame();
         }
       }
       else
@@ -103,7 +103,7 @@ namespace neo::camera
             float t = horizontal_frames > 0 ? static_cast<float>(frame) / horizontal_frames : 1.0f;
             int new_x = start_x + static_cast<int>(delta_x * t);
             game->camera.set_position(new_x, start_y);
-            bn::core::update();
+            game->update_frame();
           }
           // Then move vertically
           for (int frame = 0; frame <= vertical_frames; ++frame)
@@ -111,7 +111,7 @@ namespace neo::camera
             float t = vertical_frames > 0 ? static_cast<float>(frame) / vertical_frames : 1.0f;
             int new_y = start_y + static_cast<int>(delta_y * t);
             game->camera.set_position(end_x, new_y);
-            bn::core::update();
+            game->update_frame();
           }
         } else if (direction_priority == "vertical") {
           // Move vertically first
@@ -120,7 +120,7 @@ namespace neo::camera
             float t = vertical_frames > 0 ? static_cast<float>(frame) / vertical_frames : 1.0f;
             int new_y = start_y + static_cast<int>(delta_y * t);
             game->camera.set_position(start_x, new_y);
-            bn::core::update();
+            game->update_frame();
           }
           // Then move horizontally
           for (int frame = 0; frame <= horizontal_frames; ++frame)
@@ -128,7 +128,7 @@ namespace neo::camera
             float t = horizontal_frames > 0 ? static_cast<float>(frame) / horizontal_frames : 1.0f;
             int new_x = start_x + static_cast<int>(delta_x * t);
             game->camera.set_position(new_x, end_y);
-            bn::core::update();
+            game->update_frame();
           }
         }
       }
