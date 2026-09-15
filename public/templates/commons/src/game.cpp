@@ -376,6 +376,18 @@ namespace neo
       bn::core::update();
     }
 
+    // go-to-scene doesn't wait for anything: if it fires in the same frame
+    // as a still-running parallel effect (typically a fade-out started
+    // alongside it), let that effect finish animating first, otherwise the
+    // scene would be torn down mid-fade and the transition would just cut.
+    while (!active_parallel_events.empty())
+    {
+      update_active_parallel_events();
+      update_wave_effect();
+
+      bn::core::update();
+    }
+
     if (scene_bg.has_value())
     {
       scene_bg->set_visible(false);
