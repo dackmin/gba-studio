@@ -184,9 +184,10 @@ namespace neo::types
   };
 
   // Only instant, self-contained events are allowed here (enforced by the
-  // editor) except for fade-in/fade-out, which are resumable (see
-  // fade_event::update()): exec() starts them and tracks the still-running
-  // ones in pending, and update() advances pending until it's empty.
+  // editor) except for a handful that are resumable (fade-in/fade-out,
+  // move-camera-to, set-palette-effect, wave-effect): exec() starts them
+  // and tracks the still-running ones in pending, and update() advances
+  // pending until it's empty.
   struct parallel_event: event
   {
     int events_count;
@@ -600,10 +601,13 @@ namespace neo::types
     bool update() override;
   };
 
-  // Instant event: (re)starts a wave distortion of the scene background
-  // and/or actors/sprites. The animation itself, and the duration countdown,
-  // are driven every frame by game::update_wave_effect(), not by this event
-  // (see game.h/game.cpp).
+  // (Re)starts a wave distortion of the scene background and/or
+  // actors/sprites. The animation itself, and the duration countdown, are
+  // driven every frame by game::update_wave_effect(), not by this event
+  // (see game.h/game.cpp). Only resumable (tracked by a parallel-events
+  // node until it completes) when it has a finite duration: a duration of
+  // 0 runs as an ambient effect until the scene changes, so it's treated
+  // as already-done to avoid blocking the parallel group forever.
   struct wave_effect_event: event
   {
     bn::string_view target; // "background" | "sprite" | "both"
@@ -612,6 +616,11 @@ namespace neo::types
     int frequency; // number of full sine cycles across the 160 screen lines
     event_value* duration; // milliseconds (0 = runs until the scene changes)
     bn::string_view envelope; // "in" (0%->100%) | "in-out" (0%->100%->0%)
+
+    // Runtime-only resumable state, set by start()/advanced by update()
+    // when this effect runs inside a parallel-events branch.
+    neo::game* game_ref = nullptr;
+    int frames = 0;
 
     wave_effect_event(
       bn::string_view type_,
@@ -629,6 +638,9 @@ namespace neo::types
       frequency(frequency_),
       duration(duration_),
       envelope(envelope_) {}
+
+    void start(neo::game* game_);
+    bool update() override;
   };
 
   struct sensor

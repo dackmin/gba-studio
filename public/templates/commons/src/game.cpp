@@ -750,8 +750,10 @@ namespace neo
     /**
      * @name parallel-events
      * @param events array of events — Instant events are executed one after
-     * another, within the same frame. fade-in/fade-out don't block the
-     * other events instead: they're started here and advanced by
+     * another, within the same frame. fade-in/fade-out, move-camera-to,
+     * set-palette-effect and wave-effect (unless it has a duration of 0,
+     * which runs until the scene changes) don't block the other events
+     * instead: they're started here and advanced by
      * update_active_parallel_events() until done.
      */
     else if (e->type == "parallel-events")
@@ -1548,6 +1550,18 @@ namespace neo
           pending.push_back(palette_evt);
         }
       }
+      else if (sub_evt->type == "wave-effect")
+      {
+        neo::types::wave_effect_event* wave_evt =
+          static_cast<neo::types::wave_effect_event*>(sub_evt);
+
+        wave_evt->start(game);
+
+        if (!wave_evt->update())
+        {
+          pending.push_back(wave_evt);
+        }
+      }
       else
       {
         game->exec_event(sub_evt, is_loop);
@@ -1594,6 +1608,26 @@ namespace neo
     frames = 0;
 
     return true;
+  }
+
+  void neo::types::wave_effect_event::start(neo::game* game_)
+  {
+    game_ref = game_;
+
+    int duration_frames = duration->as_int(game_->variables) / 16;
+    frames = duration_frames > 0 ? duration_frames : 0;
+
+    game_->start_wave_effect(target, amplitude, speed, frequency, duration_frames, envelope);
+  }
+
+  bool neo::types::wave_effect_event::update()
+  {
+    // duration=0 runs as an ambient effect until the scene changes: treat it
+    // as already-done so it doesn't block a parallel-events group forever.
+    // Otherwise, the animation itself is advanced every frame by
+    // game::update_wave_effect() (called unconditionally from game::run());
+    // this only reports back once that countdown has stopped the effect.
+    return frames <= 0 || !game_ref->wave_enabled;
   }
 
   bool game::has_collision(int tile_x, int tile_y)
