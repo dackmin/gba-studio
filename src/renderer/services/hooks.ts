@@ -14,6 +14,8 @@ import {
   AudioContext,
   BottomBarTabsContext,
   CanvasContext,
+  DraggableContext,
+  DraggableContextType,
   EditorContext,
   EmulatorContext,
   LocalDataContext,
@@ -70,6 +72,7 @@ export const useEmulator = () => use(EmulatorContext);
 export const useLocalData = () => use(LocalDataContext);
 export const useModal = () => use(ModalContext);
 export const useAudio = () => use(AudioContext);
+export const useDraggable = <T>() => use<DraggableContextType<T>>(DraggableContext);
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,

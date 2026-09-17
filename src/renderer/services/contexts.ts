@@ -268,3 +268,13 @@ export const AudioContext = createContext<AudioContextType>({
   selectSound: () => {},
   selectMusic: () => {},
 });
+
+export type DraggableContextType<T = any> = {
+  data?: T;
+  setData(data?: T): void;
+};
+
+export const DraggableContext = createContext<DraggableContextType>({
+  data: undefined,
+  setData: () => {},
+});

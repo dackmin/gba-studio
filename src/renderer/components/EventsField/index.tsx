@@ -1,13 +1,19 @@
-import { DragEvent, useCallback, useRef, useState } from 'react';
+import { type DragEvent, useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { type DraggingPositionType, cloneDeep, get, omit, set } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type { SceneEvent } from '../../../types';
-import { type EventDefinition, getEventDefinition, removeEventById } from '../../services/events';
+import {
+  type EventDefinition,
+  ALL_EVENT_TYPES,
+  getEventDefinition,
+  removeEventById,
+} from '../../services/events';
 import Event from './Event';
 import Catalogue from './Catalogue';
+import DraggableStore from '../DraggableStore';
 
 export interface EventsFieldProps {
   value: SceneEvent[];
@@ -139,7 +145,7 @@ const EventsField = ({
   ) => {
     e.stopPropagation();
 
-    if (target.id === data.id) {
+    if (!ALL_EVENT_TYPES.includes(data.type) || target.id === data.id) {
       return;
     }
 
@@ -162,47 +168,49 @@ const EventsField = ({
   }, [onValueChange, value]);
 
   return (
-    <div className="flex flex-col gap-[1px]">
+    <DraggableStore>
       <div className="flex flex-col gap-[1px]">
-        { value.length === 0 ? (
-          <Text size="2" className="block p-3 text-center text-slate">
-            No events
-          </Text>
-        ) : value.map((event, index) => (
-          <Event
-            key={event.id}
-            index={index}
-            event={event}
-            zone={zone}
-            onValueChange={onChangeEvent.bind(null, event.id || index)}
-            onDelete={onDeleteEvent}
-            onPrepend={onPrependClick}
-            onAppend={onAppendClick}
-            onDrop={onDrop ?? onDrop_}
-          />
-        )) }
-      </div>
+        <div className="flex flex-col gap-[1px]">
+          { value.length === 0 ? (
+            <Text size="2" className="block p-3 text-center text-slate">
+              No events
+            </Text>
+          ) : value.map((event, index) => (
+            <Event
+              key={event.id}
+              index={index}
+              event={event}
+              zone={zone}
+              onValueChange={onChangeEvent.bind(null, event.id || index)}
+              onDelete={onDeleteEvent}
+              onPrepend={onPrependClick}
+              onAppend={onAppendClick}
+              onDrop={onDrop ?? onDrop_}
+            />
+          )) }
+        </div>
 
-      <div className="px-3 my-3">
-        <Dialog.Root>
-          <Dialog.Trigger>
-            <Button ref={addEventButtonRef} className="block !w-full">
-              <PlusIcon />
-              <Text>Add Event</Text>
-            </Button>
-          </Dialog.Trigger>
-          <Dialog.Content>
-            <VisuallyHidden>
-              <Dialog.Title>Event Palette</Dialog.Title>
-              <Dialog.Description>
-                Select an event to add to the list
-              </Dialog.Description>
-            </VisuallyHidden>
-            <Catalogue filter={filter} onSelect={onAddEvent} />
-          </Dialog.Content>
-        </Dialog.Root>
+        <div className="px-3 my-3">
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <Button ref={addEventButtonRef} className="block !w-full">
+                <PlusIcon />
+                <Text>Add Event</Text>
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <VisuallyHidden>
+                <Dialog.Title>Event Palette</Dialog.Title>
+                <Dialog.Description>
+                  Select an event to add to the list
+                </Dialog.Description>
+              </VisuallyHidden>
+              <Catalogue filter={filter} onSelect={onAddEvent} />
+            </Dialog.Content>
+          </Dialog.Root>
+        </div>
       </div>
-    </div>
+    </DraggableStore>
   );
 };
 

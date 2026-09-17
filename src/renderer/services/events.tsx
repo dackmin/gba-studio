@@ -392,10 +392,11 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   }],
 }];
 
+export const ALL_EVENTS = AVAILABLE_EVENTS.flatMap(c => c.items);
+export const ALL_EVENT_TYPES = ALL_EVENTS.map(e => e.value);
+
 export const getEventDefinition = (type: string): EventDefinition =>
-  AVAILABLE_EVENTS
-    .flatMap(c => c.items)
-    .find(i => i.value === type) ||
+  ALL_EVENTS.find(i => i.value === type) ||
   {
     value: 'unknown',
     name: 'Unknown Event',

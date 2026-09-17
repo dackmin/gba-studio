@@ -4,6 +4,7 @@ import { type DraggingPositionType, Droppable, set, classNames } from '@junipero
 
 import type { ParallelEventsEvent, SceneEvent } from '../../../types';
 import { isParallelizable } from '../../services/events';
+import { useDraggable } from '../../services/hooks';
 import EventsField from '.';
 
 export interface EventParallelProps {
@@ -73,12 +74,14 @@ const EventParallelDroppable = ({
   children,
   onDrop,
 }: EventParallelDroppableProps) => {
+  const { data } = useDraggable<SceneEvent>();
+
   return (
     <Droppable onDrop={onDrop} disabled={event.events?.length > 0}>
       <Card
         className={classNames({
           ['drag-enter:outline-2 drag-enter:outline-dashed drag-enter:outline-blue-500']:
-            event.events?.length === 0,
+            event.events?.length === 0 && isParallelizable(data?.type || ''),
         })}
       >
         { children }

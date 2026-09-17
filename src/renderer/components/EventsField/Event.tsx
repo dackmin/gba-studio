@@ -51,8 +51,8 @@ import type {
   WaitForButtonEvent,
   WaveEffectEvent,
 } from '../../../types';
-import { getEventDefinition } from '../../services/events';
-import { useApp, useLocalData } from '../../services/hooks';
+import { ALL_EVENT_TYPES, getEventDefinition } from '../../services/events';
+import { useApp, useDraggable, useLocalData } from '../../services/hooks';
 import Switch from '../Switch';
 import EventDuration from './EventDuration';
 import EventGoToScene from './EventGoToScene';
@@ -105,6 +105,7 @@ const Event = ({
   onDrop,
 }: EventProps) => {
   const { clipboard, setClipboard } = useApp();
+  const { data, setData } = useDraggable<SceneEvent>();
   const { collapse, isCollapsed } = useLocalData();
   const nameRef = useRef<HTMLDivElement>(null);
   const [renaming, setRenaming] = useState(false);
@@ -204,13 +205,24 @@ const Event = ({
     }, 200);
   };
 
+  const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setData(event);
+  }, [setData, event]);
+
+  const onDragEnd = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setData(undefined);
+  }, [setData]);
+
   return (
     <Droppable onDrop={onDrop?.bind(null, event, undefined)}>
       <Draggable
         data={event}
         // Prevents dragging the parent when event is inside a container (if, parallel-events, ...)
         onDrag={e => e.stopPropagation()}
-        onDragStart={e => e.stopPropagation()}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
       >
         <div
           className={classNames(
@@ -241,8 +253,8 @@ const Event = ({
             'has-[.drag-enter]:drop-bottom:after:hidden!',
             {
               'bg-(--gray-5)': event.enabled === false,
-              // ['drop-top:before:hidden drop-top:after:hidden']:
-              //   (definition.containers?.length || 0) > 0,
+              ['drop-top:before:hidden drop-top:after:hidden']:
+                !ALL_EVENT_TYPES.includes(data?.type || ''),
             }
           )}
         >

@@ -3,6 +3,8 @@ import { type CardProps, Card, Inset, Select, Text } from '@radix-ui/themes';
 import { type DraggingPositionType, Droppable, classNames, set } from '@junipero/react';
 
 import type { EventValue, IfEvent, IfEventCondition, SceneEvent } from '../../../types';
+import { ALL_EVENT_TYPES } from '../../services/events';
+import { useDraggable } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import EventsField from '.';
 
@@ -203,12 +205,14 @@ const EventIfDroppable = ({
   children,
   onDrop,
 }: EventIfDroppableProps) => {
+  const { data } = useDraggable<SceneEvent>();
+
   return (
     <Droppable onDrop={onDrop}>
       <Card
         className={classNames({
           ['drag-enter:outline-2 drag-enter:outline-dashed drag-enter:outline-blue-500']:
-            event[zone]?.length === 0,
+            event[zone]?.length === 0 && ALL_EVENT_TYPES.includes(data?.type || ''),
         })}
       >
         { children }
