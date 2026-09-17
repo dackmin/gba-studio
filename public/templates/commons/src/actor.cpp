@@ -605,7 +605,6 @@ namespace neo
       set_position(tile_x, tile_y);
     }
   }
-  }
 
   neo::types::sprite_animation* actor::get_animation (bn::string_view id)
   {
