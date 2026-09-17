@@ -473,6 +473,36 @@ export const getEventById = (id: string, events: SceneEvent[]): SceneEvent | und
   }
 };
 
+export const removeEventById = (id: string, events: SceneEvent[]): SceneEvent | undefined => {
+  for (let i = 0; i < events.length; i++) {
+    if (events[i].id === id) {
+      return events.splice(i, 1)[0];
+    }
+
+    const definition = getEventDefinition(events[i].type);
+
+    if (definition.containers) {
+      for (const container of definition.containers) {
+        const containerEvents = get(events[i], container, []);
+
+        if (Array.isArray(containerEvents)) {
+          const found = removeEventById(id, containerEvents);
+
+          if (found) {
+            return found;
+          }
+        } else if ((containerEvents as GameMenuChoice)?.events) {
+          const found = removeEventById(id, (containerEvents as GameMenuChoice).events);
+
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+  }
+};
+
 export const getEventParent = (id: string, events: SceneEvent[]): SceneEvent | undefined => {
   for (const event of events) {
     const definition = getEventDefinition(event.type);

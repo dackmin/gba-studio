@@ -84,3 +84,8 @@ body {
 @custom-variant color-pointer (& .react-colorful__pointer);
 @custom-variant color-hue-pointer (& .react-colorful__hue-pointer);
 @custom-variant color-sat-pointer (& .react-colorful__saturation-pointer);
+@custom-variant dragging (&.dragging);
+@custom-variant dragged (&.dragged);
+@custom-variant drag-enter (&.drag-enter);
+@custom-variant drop-top (&.drag-enter.drag-top);
+@custom-variant drop-bottom (&.drag-enter.drag-bottom);

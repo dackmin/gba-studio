@@ -1,16 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { cloneDeep, get, omit, set } from '@junipero/react';
+import { type DraggingPositionType, cloneDeep, get, omit, set } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
-import { type DragEndEvent, DragDropProvider, PointerSensor } from '@dnd-kit/react';
-import { RestrictToElement } from '@dnd-kit/dom/modifiers';
-import { Droppable, PointerActivationConstraints } from '@dnd-kit/dom';
-import { move } from '@dnd-kit/helpers';
-import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers';
 
 import type { SceneEvent } from '../../../types';
-import { type EventDefinition, getEventDefinition, getEventParent, isChildOfEvent } from '../../services/events';
+import { type EventDefinition, getEventDefinition, removeEventById } from '../../services/events';
 import Event from './Event';
 import Catalogue from './Catalogue';
 
@@ -127,109 +122,72 @@ const EventsField = ({
     addEventButtonRef.current?.click();
   }, [onCloneEvent]);
 
-  const onDragEnd = useCallback((event: DragEndEvent) => {
-    if (event.operation.target instanceof Droppable) {
-      const sourceData = event.operation.source?.data as { event: SceneEvent, zone: string };
-      const targetData = event.operation.target?.data as { event: SceneEvent, zone: string };
-      const sourceParent = getEventParent(event.operation.source?.id?.toString() || '', value);
-
-      if (
-        sourceData.event.id === targetData.event.id ||
-        isChildOfEvent(targetData.event.id, sourceData.event.id, value)
-      ) {
-        return;
-      }
-
-      if (!sourceData.event || !targetData.event) {
-        return;
-      }
-
-      if (
-        targetData.event.type === 'parallel-events' &&
-        !getEventDefinition(sourceData.event.type).parallelizable
-      ) {
-        return;
-      }
-
-      let res = value;
-
-      if (!sourceParent) {
-        res = res.filter(e => e.id !== sourceData.event.id);
-      } else {
-        set(sourceParent, sourceData.zone, [
-          ...get<SceneEvent, SceneEvent[]>(sourceParent, sourceData.zone, [])
-            .filter(e => e.id !== sourceData.event.id),
-        ]);
-      }
-
-      set(targetData.event, targetData.zone, [
-        ...get<SceneEvent, SceneEvent[]>(targetData.event, targetData.zone, []),
-        sourceData.event,
-      ]);
-
-      onValueChange?.(res);
-
-      return;
+  const onDrop = useCallback((
+    target: SceneEvent,
+    containerPath: string | undefined,
+    data: SceneEvent,
+    position: DraggingPositionType
+  ) => {
+    if (containerPath && !get(target, containerPath)) {
+      set(target, containerPath, []);
     }
 
-    onValueChange?.(move(value, event));
+    removeEventById(data.id, value);
+
+    const container = containerPath ? get<SceneEvent, SceneEvent[]>(target, containerPath) : value;
+    const targetIndex = container.findIndex(e => e.id === target.id);
+
+    if (targetIndex === -1) {
+      container.push(data);
+    } else {
+      container.splice(position === 'before' ? targetIndex : targetIndex + 1, 0, data);
+    }
+
+    onValueChange?.([...value]);
   }, [onValueChange, value]);
 
   return (
-    <DragDropProvider
-      onDragEnd={onDragEnd}
-      modifiers={[RestrictToVerticalAxis, RestrictToElement]}
-      sensors={defaults => [
-        ...defaults.filter(sensor => sensor !== PointerSensor),
-        PointerSensor.configure({
-          activationConstraints: [
-            new PointerActivationConstraints.Distance({ value: 8 }),
-            new PointerActivationConstraints.Delay({ value: 200, tolerance: 10 }),
-          ],
-        }),
-      ]}
-    >
+    <div className="flex flex-col gap-[1px]">
       <div className="flex flex-col gap-[1px]">
-        <div className="flex flex-col gap-[1px]">
-          { value.length === 0 ? (
-            <Text size="2" className="block p-3 text-center text-slate">
-              No events
-            </Text>
-          ) : value.map((event, index) => (
-            <Event
-              key={event.id}
-              index={index}
-              event={event}
-              zone={zone}
-              onValueChange={onChangeEvent.bind(null, event.id || index)}
-              onDelete={onDeleteEvent}
-              onPrepend={onPrependClick}
-              onAppend={onAppendClick}
-            />
-          )) }
-        </div>
-
-        <div className="px-3 my-3">
-          <Dialog.Root>
-            <Dialog.Trigger>
-              <Button ref={addEventButtonRef} className="block !w-full">
-                <PlusIcon />
-                <Text>Add Event</Text>
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Content>
-              <VisuallyHidden>
-                <Dialog.Title>Event Palette</Dialog.Title>
-                <Dialog.Description>
-                  Select an event to add to the list
-                </Dialog.Description>
-              </VisuallyHidden>
-              <Catalogue filter={filter} onSelect={onAddEvent} />
-            </Dialog.Content>
-          </Dialog.Root>
-        </div>
+        { value.length === 0 ? (
+          <Text size="2" className="block p-3 text-center text-slate">
+            No events
+          </Text>
+        ) : value.map((event, index) => (
+          <Event
+            key={event.id}
+            index={index}
+            event={event}
+            zone={zone}
+            onValueChange={onChangeEvent.bind(null, event.id || index)}
+            onDelete={onDeleteEvent}
+            onPrepend={onPrependClick}
+            onAppend={onAppendClick}
+            onDrop={onDrop}
+          />
+        )) }
       </div>
-    </DragDropProvider>
+
+      <div className="px-3 my-3">
+        <Dialog.Root>
+          <Dialog.Trigger>
+            <Button ref={addEventButtonRef} className="block !w-full">
+              <PlusIcon />
+              <Text>Add Event</Text>
+            </Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <VisuallyHidden>
+              <Dialog.Title>Event Palette</Dialog.Title>
+              <Dialog.Description>
+                Select an event to add to the list
+              </Dialog.Description>
+            </VisuallyHidden>
+            <Catalogue filter={filter} onSelect={onAddEvent} />
+          </Dialog.Content>
+        </Dialog.Root>
+      </div>
+    </div>
   );
 };
 

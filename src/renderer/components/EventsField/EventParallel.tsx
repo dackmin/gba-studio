@@ -1,7 +1,6 @@
-import { Card, type CardProps, Inset } from '@radix-ui/themes';
-import { useDragOperation, useDroppable } from '@dnd-kit/react';
-import { CollisionPriority } from '@dnd-kit/abstract';
-import { set } from '@junipero/react';
+import type { DragEvent } from 'react';
+import { type CardProps, Card, Inset } from '@radix-ui/themes';
+import { type DraggingPositionType, Droppable, set, classNames } from '@junipero/react';
 
 import type { ParallelEventsEvent, SceneEvent } from '../../../types';
 import { isParallelizable } from '../../services/events';
@@ -10,20 +9,40 @@ import EventsField from '.';
 export interface EventParallelProps {
   event: ParallelEventsEvent;
   onValueChange?: (event: ParallelEventsEvent) => void;
+  onDrop?: (
+    containerPath: string | undefined,
+    data: SceneEvent,
+    position: DraggingPositionType,
+  ) => void;
 }
 
 const EventParallel = ({
   event,
   onValueChange,
+  onDrop,
 }: EventParallelProps) => {
   const onValueChange_ = (name: string, value: SceneEvent[]) => {
     set(event, name, value);
     onValueChange?.(event);
   };
 
+  const onDrop_ = (
+    data: SceneEvent,
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>
+  ) => {
+    e.stopPropagation();
+
+    if (!isParallelizable(data.type)) {
+      return;
+    }
+
+    onDrop?.('events', data, position);
+  };
+
   return (
     <div className="flex flex-col gap-2">
-      <EventParallelDroppable event={event}>
+      <EventParallelDroppable event={event} onDrop={onDrop_}>
         <Inset>
           <EventsField
             value={event.events ?? []}
@@ -37,33 +56,31 @@ const EventParallel = ({
   );
 };
 
-export interface EventParallelDroppableProps extends CardProps {
+export interface EventParallelDroppableProps extends Omit<CardProps, 'onDrop'> {
   event: ParallelEventsEvent;
+  onDrop?: (
+    data: SceneEvent,
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>
+  ) => void;
 }
 
 const EventParallelDroppable = ({
   event,
   children,
+  onDrop,
 }: EventParallelDroppableProps) => {
-  const { source } = useDragOperation();
-  const { isDropTarget, ref } = useDroppable({
-    id: event.id + '-events',
-    accept: 'event',
-    collisionPriority: CollisionPriority.Highest,
-    data: { event, zone: 'events' },
-  });
-
-  const isValidTarget = !source ||
-    isParallelizable((source.data as { event: SceneEvent })?.event?.type);
-
   return (
-    <Card
-      ref={ref}
-      className={isDropTarget && source?.data?.event.id !== event.id && isValidTarget
-        ? 'outline-2 outline-dashed outline-blue-500' : ''}
-    >
-      { children }
-    </Card>
+    <Droppable onDrop={onDrop} disabled={event.events?.length > 0}>
+      <Card
+        className={classNames({
+          ['drag-enter:outline-2 drag-enter:outline-dashed drag-enter:outline-blue-500']:
+            event.events?.length === 0,
+        })}
+      >
+        { children }
+      </Card>
+    </Droppable>
   );
 };
 
