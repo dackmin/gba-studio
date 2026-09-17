@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { DragEvent, useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { type DraggingPositionType, cloneDeep, get, omit, set } from '@junipero/react';
@@ -15,6 +15,13 @@ export interface EventsFieldProps {
   // Restricts which events can be added/pasted/dropped into this list.
   filter?: (definition: EventDefinition) => boolean;
   onValueChange?: (events: SceneEvent[]) => void;
+  onDrop?: (
+    target: SceneEvent,
+    containerPath: string | undefined,
+    data: SceneEvent,
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>
+  ) => void;
 }
 
 const EventsField = ({
@@ -22,6 +29,7 @@ const EventsField = ({
   zone,
   filter,
   onValueChange,
+  onDrop,
 }: EventsFieldProps) => {
   const addEventButtonRef = useRef<HTMLButtonElement>(null);
   const [selected, setSelected] = useState<
@@ -122,12 +130,19 @@ const EventsField = ({
     addEventButtonRef.current?.click();
   }, [onCloneEvent]);
 
-  const onDrop = useCallback((
+  const onDrop_ = useCallback((
     target: SceneEvent,
     containerPath: string | undefined,
     data: SceneEvent,
-    position: DraggingPositionType
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>
   ) => {
+    e.stopPropagation();
+
+    if (target.id === data.id) {
+      return;
+    }
+
     if (containerPath && !get(target, containerPath)) {
       set(target, containerPath, []);
     }
@@ -137,7 +152,7 @@ const EventsField = ({
     const container = containerPath ? get<SceneEvent, SceneEvent[]>(target, containerPath) : value;
     const targetIndex = container.findIndex(e => e.id === target.id);
 
-    if (targetIndex === -1) {
+    if (typeof targetIndex === 'undefined' || targetIndex === -1) {
       container.push(data);
     } else {
       container.splice(position === 'before' ? targetIndex : targetIndex + 1, 0, data);
@@ -163,7 +178,7 @@ const EventsField = ({
             onDelete={onDeleteEvent}
             onPrepend={onPrependClick}
             onAppend={onAppendClick}
-            onDrop={onDrop}
+            onDrop={onDrop ?? onDrop_}
           />
         )) }
       </div>

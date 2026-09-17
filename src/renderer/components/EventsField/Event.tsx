@@ -1,4 +1,5 @@
 import {
+  type DragEvent,
   type KeyboardEvent,
   type MouseEvent,
   useCallback,
@@ -90,7 +91,8 @@ export interface EventProps {
     event: SceneEvent,
     containerPath: string | undefined,
     source: SceneEvent,
-    position: DraggingPositionType
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -209,7 +211,6 @@ const Event = ({
         // Prevents dragging the parent when event is inside a container (if, parallel-events, ...)
         onDrag={e => e.stopPropagation()}
         onDragStart={e => e.stopPropagation()}
-        onDragEnd={e => e.stopPropagation()}
       >
         <div
           className={classNames(
@@ -392,7 +393,7 @@ const Event = ({
                   <EventIf
                     event={event as IfEvent}
                     onValueChange={onValueChange}
-                    onDrop={onDrop?.bind(null, event)}
+                    onDrop={onDrop}
                   />
                 </Switch.Case>
                 <Switch.Case value="execute-script">
@@ -459,7 +460,7 @@ const Event = ({
                   <EventParallel
                     event={event as ParallelEventsEvent}
                     onValueChange={onValueChange}
-                    onDrop={onDrop?.bind(null, event)}
+                    onDrop={onDrop}
                   />
                 </Switch.Case>
                 <Switch.Case

@@ -10,9 +10,11 @@ export interface EventParallelProps {
   event: ParallelEventsEvent;
   onValueChange?: (event: ParallelEventsEvent) => void;
   onDrop?: (
+    event: SceneEvent,
     containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -27,28 +29,29 @@ const EventParallel = ({
   };
 
   const onDrop_ = (
+    event: SceneEvent,
+    containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
-    e: DragEvent<HTMLDivElement>
+    e: DragEvent<HTMLDivElement>,
   ) => {
-    e.stopPropagation();
-
     if (!isParallelizable(data.type)) {
       return;
     }
 
-    onDrop?.('events', data, position);
+    onDrop?.(event, containerPath, data, position, e);
   };
 
   return (
     <div className="flex flex-col gap-2">
-      <EventParallelDroppable event={event} onDrop={onDrop_}>
+      <EventParallelDroppable event={event} onDrop={onDrop_.bind(null, event, 'events')}>
         <Inset>
           <EventsField
             value={event.events ?? []}
             zone="events"
             filter={item => !!item.parallelizable}
             onValueChange={onValueChange_.bind(null, 'events')}
+            onDrop={onDrop_}
           />
         </Inset>
       </EventParallelDroppable>

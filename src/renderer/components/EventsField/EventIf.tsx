@@ -10,9 +10,11 @@ export interface EventIfProps {
   event: IfEvent;
   onValueChange?: (event: IfEvent) => void;
   onDrop?: (
+    target: SceneEvent,
     containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -39,16 +41,6 @@ const EventIf = ({
     onValueChange?.(event);
   };
 
-  const onDrop_ = (
-    containerPath: string | undefined,
-    data: SceneEvent,
-    position: DraggingPositionType,
-    e: DragEvent<HTMLDivElement>
-  ) => {
-    onDrop?.(containerPath, data, position);
-    e.stopPropagation();
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -68,13 +60,14 @@ const EventIf = ({
         <EventIfDroppable
           event={event}
           zone="then"
-          onDrop={onDrop_?.bind(null, 'then')}
+          onDrop={onDrop?.bind(null, event, 'then')}
         >
           <Inset>
             <EventsField
               value={event.then ?? []}
               zone="then"
               onValueChange={onValueChange_.bind(null, 'then')}
+              onDrop={onDrop}
             />
           </Inset>
         </EventIfDroppable>
@@ -84,13 +77,14 @@ const EventIf = ({
         <EventIfDroppable
           event={event}
           zone="else"
-          onDrop={onDrop_?.bind(null, 'else')}
+          onDrop={onDrop?.bind(null, event, 'else')}
         >
           <Inset>
             <EventsField
               value={event.else ?? []}
               zone="else"
               onValueChange={onValueChange_.bind(null, 'else')}
+              onDrop={onDrop}
             />
           </Inset>
         </EventIfDroppable>
@@ -210,7 +204,7 @@ const EventIfDroppable = ({
   onDrop,
 }: EventIfDroppableProps) => {
   return (
-    <Droppable onDrop={onDrop} disabled={(event[zone]?.length || 0) > 0}>
+    <Droppable onDrop={onDrop}>
       <Card
         className={classNames({
           ['drag-enter:outline-2 drag-enter:outline-dashed drag-enter:outline-blue-500']:
