@@ -12,7 +12,9 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import removeLocalesPlugin from './.plugins/remove-locales';
 import removeVendorsPlugin from './.plugins/remove-vendors';
 
-process.loadEnvFile();
+try {
+  process.loadEnvFile();
+} catch {}
 
 const config: ForgeConfig = {
   packagerConfig: {
