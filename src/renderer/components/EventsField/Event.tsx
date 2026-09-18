@@ -2,6 +2,7 @@ import {
   type DragEvent,
   type KeyboardEvent,
   type MouseEvent,
+  type PointerEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -108,6 +109,8 @@ const Event = ({
   const { data, setData } = useDraggable<SceneEvent>();
   const { collapse, isCollapsed } = useLocalData();
   const nameRef = useRef<HTMLDivElement>(null);
+  const fieldsRef = useRef<HTMLDivElement>(null);
+  const dragOriginRef = useRef<EventTarget | null>(null);
   const [renaming, setRenaming] = useState(false);
 
   useEffect(() => {
@@ -206,9 +209,24 @@ const Event = ({
   };
 
   const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
+    // the drag source is always this row, regardless of where inside it the
+    // gesture began - veto it here if that origin was the fields body (any
+    // form control's own padding included, not just its focusable input) or
+    // the name label while it's being renamed
+    const origin = dragOriginRef.current as Node | null;
+
+    if (
+      fieldsRef.current?.contains(origin) ||
+      (renaming && nameRef.current?.contains(origin))
+    ) {
+      e.preventDefault();
+
+      return;
+    }
+
     e.stopPropagation();
     setData(event);
-  }, [setData, event]);
+  }, [setData, event, renaming]);
 
   const onDragEnd = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -223,6 +241,9 @@ const Event = ({
         onDrag={e => e.stopPropagation()}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
+        onPointerDownCapture={(e: PointerEvent<HTMLDivElement>) => {
+          dragOriginRef.current = e.target;
+        }}
       >
         <div
           className={classNames(
@@ -345,7 +366,7 @@ const Event = ({
             </div>
           </div>
           { !isCollapsed(event.id) && (
-            <div className="px-3 pb-3">
+            <div className="px-3 pb-3" ref={fieldsRef}>
               <Switch value={event.type}>
                 <Switch.Case value={['wait', 'fade-in', 'fade-out']}>
                   <EventDuration

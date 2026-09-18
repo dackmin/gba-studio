@@ -1,4 +1,11 @@
-import { type ChangeEvent, type DragEvent, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type DragEvent,
+  type PointerEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import {
   Card,
   DropdownMenu,
@@ -38,6 +45,8 @@ const Choice = ({
   onDrop,
 }: ChoiceProps) => {
   const [opened, setOpened] = useState(false);
+  const textFieldRef = useRef<HTMLDivElement>(null);
+  const dragOriginRef = useRef<EventTarget | null>(null);
 
   const onTextChange = useCallback((
     name: string,
@@ -56,13 +65,26 @@ const Choice = ({
     onDelete?.(choice);
   }, [choice, onDelete]);
 
+  const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
+    if (textFieldRef.current?.contains(dragOriginRef.current as Node)) {
+      e.preventDefault();
+
+      return;
+    }
+
+    e.stopPropagation();
+  }, []);
+
   return (
     <Droppable onDrop={onDrop?.bind(null, choice)}>
       <Draggable
         data={choice}
-        onDragStart={e => e.stopPropagation()}
+        onDragStart={onDragStart}
         onDragEnd={e => e.stopPropagation()}
         onDrag={e => e.stopPropagation()}
+        onPointerDownCapture={(e: PointerEvent<HTMLDivElement>) => {
+          dragOriginRef.current = e.target;
+        }}
       >
         <div
           key={choice.id}
@@ -118,7 +140,7 @@ const Choice = ({
               </DropdownMenu.Root>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" ref={textFieldRef}>
             <Text size="1" className="text-slate">Text</Text>
             <Tooltip.Root open={opened} delayDuration={0}>
               <Tooltip.Trigger asChild>
