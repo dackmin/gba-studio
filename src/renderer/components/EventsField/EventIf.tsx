@@ -1,4 +1,4 @@
-import { type DragEvent, useMemo } from 'react';
+import { type DragEvent, useCallback, useMemo } from 'react';
 import { type CardProps, Card, Inset, Select, Text } from '@radix-ui/themes';
 import { type DraggingPositionType, Droppable, classNames, set } from '@junipero/react';
 
@@ -12,8 +12,8 @@ export interface EventIfProps {
   event: IfEvent;
   onValueChange?: (event: IfEvent) => void;
   onDrop?: (
+    container: SceneEvent[] | undefined,
     target: SceneEvent,
-    containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>,
@@ -43,6 +43,19 @@ const EventIf = ({
     onValueChange?.(event);
   };
 
+  const onInnerDrop = useCallback((
+    container: SceneEvent[] | undefined,
+    _innerContainer: SceneEvent[] | undefined,
+    target: SceneEvent,
+    data: SceneEvent,
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>
+  ) => {
+    e.stopPropagation();
+
+    onDrop?.(container, target, data, position, e);
+  }, [onDrop]);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -62,14 +75,14 @@ const EventIf = ({
         <EventIfDroppable
           event={event}
           zone="then"
-          onDrop={onDrop?.bind(null, event, 'then')}
+          onDrop={onDrop?.bind(null, event.then, event)}
         >
           <Inset>
             <EventsField
               value={event.then ?? []}
               zone="then"
               onValueChange={onValueChange_.bind(null, 'then')}
-              onDrop={onDrop}
+              onDrop={onInnerDrop.bind(null, event.then)}
             />
           </Inset>
         </EventIfDroppable>
@@ -79,14 +92,14 @@ const EventIf = ({
         <EventIfDroppable
           event={event}
           zone="else"
-          onDrop={onDrop?.bind(null, event, 'else')}
+          onDrop={onDrop?.bind(null, event.else, event)}
         >
           <Inset>
             <EventsField
               value={event.else ?? []}
               zone="else"
               onValueChange={onValueChange_.bind(null, 'else')}
-              onDrop={onDrop}
+              onDrop={onInnerDrop.bind(null, event.else)}
             />
           </Inset>
         </EventIfDroppable>

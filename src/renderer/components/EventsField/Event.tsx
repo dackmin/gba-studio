@@ -92,9 +92,9 @@ export interface EventProps {
   onPrepend?: (event: SceneEvent, source?: SceneEvent) => void;
   onAppend?: (event: SceneEvent, source?: SceneEvent) => void;
   onDrop?: (
-    event: SceneEvent,
-    containerPath: string | undefined,
-    source: SceneEvent,
+    container: SceneEvent[] | undefined,
+    target: SceneEvent,
+    data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>,
   ) => void;
@@ -212,6 +212,8 @@ const Event = ({
   };
 
   const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
     // the drag source is always this row, regardless of where inside it the
     // gesture began - veto it here if that origin was the fields body (any
     // form control's own padding included, not just its focusable input) or
@@ -227,7 +229,6 @@ const Event = ({
       return;
     }
 
-    e.stopPropagation();
     setData(event);
   }, [setData, event, renaming]);
 
@@ -237,7 +238,7 @@ const Event = ({
   }, [setData]);
 
   return (
-    <Droppable onDrop={onDrop?.bind(null, event, undefined)}>
+    <Droppable onDrop={onDrop?.bind(null, undefined, event)}>
       <Draggable
         data={event}
         // Prevents dragging the parent when event is inside a container (if, parallel-events, ...)

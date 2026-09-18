@@ -1,7 +1,7 @@
 import { type DragEvent, useCallback, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { type DraggingPositionType, cloneDeep, get, omit, set } from '@junipero/react';
+import { type DraggingPositionType, cloneDeep, omit } from '@junipero/react';
 import { v4 as uuid } from 'uuid';
 
 import type { SceneEvent } from '../../../types';
@@ -22,8 +22,8 @@ export interface EventsFieldProps {
   filter?: (definition: EventDefinition) => boolean;
   onValueChange?: (events: SceneEvent[]) => void;
   onDrop?: (
+    container: SceneEvent[] | undefined,
     target: SceneEvent,
-    containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>
@@ -137,8 +137,8 @@ const EventsField = ({
   }, [onCloneEvent]);
 
   const onDrop_ = useCallback((
+    container: SceneEvent[] | undefined,
     target: SceneEvent,
-    containerPath: string | undefined,
     data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>
@@ -149,13 +149,10 @@ const EventsField = ({
       return;
     }
 
-    if (containerPath && !get(target, containerPath)) {
-      set(target, containerPath, []);
-    }
-
     removeEventById(data.id, value);
 
-    const container = containerPath ? get<SceneEvent, SceneEvent[]>(target, containerPath) : value;
+    container = container ?? value;
+
     const targetIndex = container.findIndex(e => e.id === target.id);
 
     if (typeof targetIndex === 'undefined' || targetIndex === -1) {

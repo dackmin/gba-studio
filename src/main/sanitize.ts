@@ -20,7 +20,9 @@ import type {
   GameVariables,
   IfEvent,
   OnButtonPressEvent,
+  ParallelEventsEvent,
   SceneEvent,
+  ShowMenuEvent,
   SpriteAnimation,
   SpriteAnimationFrame,
   SpriteAnimations,
@@ -36,6 +38,9 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
   if (event.type === 'if') {
     const evt = event as IfEvent;
 
+    evt.then = evt.then ?? [];
+    evt.else = evt.else ?? [];
+
     for (const e of evt.then ?? []) {
       await sanitizeEvent(e);
     }
@@ -45,12 +50,29 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
     }
   }
 
+  if (event.type === 'parallel-events') {
+    const evt = event as ParallelEventsEvent;
+    evt.events = evt.events ?? [];
+
+    for (const e of evt.events) {
+      await sanitizeEvent(e);
+    }
+  }
+
   if (event.type === 'on-button-press') {
     const evt = event as OnButtonPressEvent;
+
+    evt.events = evt.events ?? [];
 
     for (const e of evt.events ?? []) {
       await sanitizeEvent(e);
     }
+  }
+
+  if (event.type === 'show-menu') {
+    const evt = event as ShowMenuEvent;
+
+    evt.choices = evt.choices ?? [];
   }
 
   return event;

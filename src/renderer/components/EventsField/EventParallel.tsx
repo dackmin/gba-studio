@@ -1,4 +1,4 @@
-import type { DragEvent } from 'react';
+import { type DragEvent, useCallback } from 'react';
 import { type CardProps, Card, Inset } from '@radix-ui/themes';
 import { type DraggingPositionType, Droppable, set, classNames } from '@junipero/react';
 
@@ -11,8 +11,8 @@ export interface EventParallelProps {
   event: ParallelEventsEvent;
   onValueChange?: (event: ParallelEventsEvent) => void;
   onDrop?: (
-    event: SceneEvent,
-    containerPath: string | undefined,
+    container: SceneEvent[] | undefined,
+    target: SceneEvent,
     data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>,
@@ -29,9 +29,9 @@ const EventParallel = ({
     onValueChange?.(event);
   };
 
-  const onDrop_ = (
-    event: SceneEvent,
-    containerPath: string | undefined,
+  const onDrop_ = useCallback((
+    container: SceneEvent[] | undefined,
+    target: SceneEvent,
     data: SceneEvent,
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>,
@@ -40,19 +40,34 @@ const EventParallel = ({
       return;
     }
 
-    onDrop?.(event, containerPath, data, position, e);
-  };
+    onDrop?.(container, target, data, position, e);
+  }, [onDrop]);
+
+  const onInnerDrop = useCallback((
+    container: SceneEvent[] | undefined,
+    _innerContainer: SceneEvent[] | undefined,
+    target: SceneEvent,
+    data: SceneEvent,
+    position: DraggingPositionType,
+    e: DragEvent<HTMLDivElement>,
+  ) => {
+    if (!isParallelizable(data.type)) {
+      return;
+    }
+
+    onDrop?.(container, target, data, position, e);
+  }, [onDrop]);
 
   return (
     <div className="flex flex-col gap-2">
-      <EventParallelDroppable event={event} onDrop={onDrop_.bind(null, event, 'events')}>
+      <EventParallelDroppable event={event} onDrop={onDrop_.bind(null, event.events, event)}>
         <Inset>
           <EventsField
             value={event.events ?? []}
             zone="events"
             filter={item => !!item.parallelizable}
             onValueChange={onValueChange_.bind(null, 'events')}
-            onDrop={onDrop_}
+            onDrop={onInnerDrop.bind(null, event.events)}
           />
         </Inset>
       </EventParallelDroppable>
