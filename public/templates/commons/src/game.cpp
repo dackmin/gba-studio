@@ -1444,6 +1444,8 @@ namespace neo
   {
     if (!wave_enabled)
     {
+      stop_wave_effect();
+
       return;
     }
 
@@ -1550,6 +1552,8 @@ namespace neo
   {
     if (!action.has_value())
     {
+      // instant (duration<=0) fade already applied by start(): drop our bg copy so it can be freed
+      bg.reset();
       return true;
     }
 
@@ -1571,6 +1575,7 @@ namespace neo
 
     bg->set_blending_enabled(false);
     action.reset();
+    bg.reset();
 
     if (is_fade_in)
     {
