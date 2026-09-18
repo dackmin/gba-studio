@@ -59,7 +59,9 @@ const Settings = () => {
     const newConfig = {
       id: uuid(),
       name: 'New Configuration',
-      settings: {},
+      settings: {
+        logsEnabled: true,
+      },
     };
     state.project.configurations = [
       ...(state.project.configurations || []),
@@ -95,8 +97,9 @@ const Settings = () => {
     if (config) {
       set(config, name, e.target.value);
       dispatch({ project: state.project });
+      onProjectChange?.(state.project);
     }
-  }, [state.project]);
+  }, [state.project, onProjectChange]);
 
   const onConfigurationValueChange = useCallback((
     id: string,
@@ -109,8 +112,9 @@ const Settings = () => {
     if (config) {
       set(config, name, value);
       dispatch({ project: state.project });
+      onProjectChange?.(state.project);
     }
-  }, [state.project]);
+  }, [state.project, onProjectChange]);
 
   return (
     <ConstrainedView>
@@ -202,8 +206,7 @@ const Settings = () => {
                   settings={config.settings || {}}
                   onTextChange={onConfigurationTextChange.bind(null, config.id)}
                   onFieldBlur={onFieldBlur}
-                  onValueChange={onConfigurationValueChange
-                    .bind(null, config.id)}
+                  onValueChange={onConfigurationValueChange.bind(null, config.id)}
                 />
               </Tabs.Content>
             )) }

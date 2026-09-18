@@ -4,6 +4,6 @@
 #ifdef BN_CFG_LOG_ENABLED
 #undef BN_CFG_LOG_ENABLED
 #endif
-#define BN_CFG_LOG_ENABLED {{bool project.settings.logsEnabled}}
+#define BN_CFG_LOG_ENABLED {{bool (valuedef project.settings.logsEnabled true)}}
 
 #endif

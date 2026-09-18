@@ -5,7 +5,7 @@ import fsp from 'node:fs/promises';
 import { IpcMainInvokeEvent } from 'electron';
 import * as tar from 'tar';
 
-import type { Build } from '../../../types';
+import type { Build, ProjectConfiguration } from '../../../types';
 import type Storage from '../../storage';
 import { runCommand, sendStep, sendSuccessLog, sendLog, sendError, sendAbort } from './utils';
 import { getResourcesDir } from '../../utils';
@@ -32,34 +32,34 @@ async function getFileHash (buffer: Buffer) {
 export function getBuildConfiguration (
   storage: Storage,
   build: Build,
-) {
+): Partial<ProjectConfiguration> | undefined {
   const confName = storage.config?.buildConfiguration || 'default';
 
   if (confName === 'default') {
-    return build?.data?.project?.settings;
+    return { settings: build?.data?.project?.settings };
   }
 
   return build?.data?.project?.configurations?.find(conf =>
     conf.id === confName
-  )?.settings;
+  );
 }
 
 export function getCustomPythonPath (
   storage: Storage,
   build: Build,
 ) {
-  const projectSettings = getBuildConfiguration(storage, build);
+  const buildConfig = getBuildConfiguration(storage, build);
 
-  return projectSettings?.pythonPath;
+  return buildConfig?.settings?.pythonPath;
 }
 
 export function getCustomDevkitProPath (
   storage: Storage,
   build: Build,
 ) {
-  const projectSettings = getBuildConfiguration(storage, build);
+  const buildConfig = getBuildConfiguration(storage, build);
 
-  return projectSettings?.devkitProPath;
+  return buildConfig?.settings?.devkitProPath;
 }
 
 async function uncompressFile (filePath: string, destPath: string) {

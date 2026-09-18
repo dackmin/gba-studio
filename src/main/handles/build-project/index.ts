@@ -127,6 +127,16 @@ async function buildProject (
 
   const start = globalThis.performance.now();
 
+  const buildConfig = getBuildConfiguration(storage, build);
+
+  if (buildConfig?.name) {
+    sendLog(event, build.id, `Build configuration: ${buildConfig?.name}`);
+  }
+
+  if (build.data?.project) {
+    build.data.project.settings = buildConfig?.settings;
+  }
+
   if (build.opts?.clean === true) {
     sendStep(event, build.id, 'Cleaning build folder...');
     await fse.remove(getBuildDir(build));
@@ -145,13 +155,6 @@ async function buildProject (
 
   sendStep(event, build.id, 'Building project...');
   sendLog(event, build.id, `Building project in ${getBuildDir(build)}...`);
-
-  if (build.data?.project) {
-    build.data.project.settings = {
-      logsEnabled: true,
-      ...getBuildConfiguration(storage, build),
-    };
-  }
 
   const target = path
     .basename(build.projectPath, path.extname(build.projectPath));
@@ -209,11 +212,9 @@ async function buildProject (
     `(ROM size: ${humanSize(romSize)})`
   );
 
-  const projectSettings = getBuildConfiguration(storage, build);
-
-  if (projectSettings?.emulatorType === 'external') {
+  if (buildConfig?.settings?.emulatorType === 'external') {
     const [command, ...args] = (
-      projectSettings?.emulatorCommand || 'open -a mGBA'
+      buildConfig?.settings?.emulatorCommand || 'open -a mGBA'
     ).split(
       // Take spaces in folders into account
       /\s+(?=(?:[^'"]*['"][^'"]*['"])*[^'"]*$)/gm
