@@ -8,10 +8,11 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
-import 'dotenv/config';
 
 import removeLocalesPlugin from './.plugins/remove-locales';
 import removeVendorsPlugin from './.plugins/remove-vendors';
+
+process.loadEnvFile();
 
 const config: ForgeConfig = {
   packagerConfig: {
