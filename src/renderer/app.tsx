@@ -20,6 +20,7 @@ import {
   useDelayedCallback,
   useQuery,
 } from './services/hooks';
+import { isEditableElementFocused } from './services/helpers';
 import EventEmitter from './services/emitter';
 import ProjectSelection from './windows/project-selection';
 import Editor from './windows/editor';
@@ -180,6 +181,10 @@ const App = () => {
   }, [state.history, state.historyIndex]);
 
   useBridgeListener('undo', () => {
+    if (isEditableElementFocused()) {
+      return;
+    }
+
     undo();
   }, [undo]);
 
@@ -200,6 +205,10 @@ const App = () => {
   }, [state.history, state.historyIndex]);
 
   useBridgeListener('redo', () => {
+    if (isEditableElementFocused()) {
+      return;
+    }
+
     redo();
   }, [redo]);
 

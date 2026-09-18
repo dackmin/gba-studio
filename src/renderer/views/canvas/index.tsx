@@ -32,6 +32,7 @@ import {
   DEFAULT_SENSOR,
   DEFAULT_SPRITE,
 } from '../../services/defaults';
+import { isEditableElementFocused } from '../../services/helpers';
 import { duplicateActor, duplicateSensor, duplicateSprite, pixelToTile } from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
@@ -212,7 +213,10 @@ const Canvas = () => {
   ]);
 
   const onCopy = useCallback((e?: globalThis.KeyboardEvent) => {
-    if (!['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
+    if (
+      isEditableElementFocused() ||
+      !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')
+    ) {
       return;
     }
 
@@ -225,6 +229,10 @@ const Canvas = () => {
   useBridgeListener('copy', onCopy, [onCopy]);
 
   const onPaste = useCallback(async (e?: globalThis.KeyboardEvent) => {
+    if (isEditableElementFocused()) {
+      return;
+    }
+
     const clipboard = await window.electron.getClipboard();
 
     if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(clipboard?.type || '')) {
@@ -295,7 +303,11 @@ const Canvas = () => {
   useBridgeListener('paste', onPaste, [onPaste]);
 
   const onCut = useCallback((e?: globalThis.KeyboardEvent) => {
-    if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
+    if (
+      isEditableElementFocused() ||
+      !selectedScene ||
+      !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')
+    ) {
       return;
     }
 

@@ -137,6 +137,7 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
 
             if (focusedWindow) {
+              focusedWindow.webContents.undo();
               focusedWindow.webContents.send('undo');
             }
           },
@@ -148,6 +149,7 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
 
             if (focusedWindow) {
+              focusedWindow.webContents.redo();
               focusedWindow.webContents.send('redo');
             }
           },
