@@ -25,7 +25,9 @@ import {
 
 import type {
   DisableActorEvent,
+  DisableSpriteEvent,
   EnableActorEvent,
+  EnableSpriteEvent,
   ExecuteScriptEvent,
   FollowActorEvent,
   FollowPlayerEvent,
@@ -62,6 +64,7 @@ import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
 import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
+import EventSprite from './EventSprite';
 import EventIf from './EventIf';
 import EventScript from './EventScript';
 import EventPlaySound from './EventPlaySound';
@@ -419,6 +422,12 @@ const Event = ({
                 <Switch.Case value={['enable-actor', 'disable-actor']}>
                   <EventActor
                     event={event as EnableActorEvent | DisableActorEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value={['enable-sprite', 'disable-sprite']}>
+                  <EventSprite
+                    event={event as EnableSpriteEvent | DisableSpriteEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

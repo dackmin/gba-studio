@@ -353,6 +353,20 @@ namespace neo::types
       event(type_), actor(actor_) {}
   };
 
+  struct disable_sprite_event: event
+  {
+    bn::string_view sprite;
+    disable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+      event(type_), sprite(sprite_) {}
+  };
+
+  struct enable_sprite_event: event
+  {
+    bn::string_view sprite;
+    enable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+      event(type_), sprite(sprite_) {}
+  };
+
   struct play_music_event: event
   {
     bn::string_view music_name;

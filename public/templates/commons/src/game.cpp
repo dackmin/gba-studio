@@ -647,6 +647,51 @@ namespace neo
     }
 
     /**
+     * @name disable-sprite
+     * @param sprite string — Sprite name
+     */
+    else if (e->type == "disable-sprite")
+    {
+      const neo::types::disable_sprite_event* disable_sprite_evt =
+        static_cast<const neo::types::disable_sprite_event*>(e);
+
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        if (
+          sprites[i]->definition->name == disable_sprite_evt->sprite ||
+          sprites[i]->definition->_id == disable_sprite_evt->sprite
+        ) {
+          BN_LOG("Disabling sprite: ", sprites[i]->definition->name);
+          sprites[i]->disable();
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name enable-sprite
+     * @param sprite string — Sprite name
+     */
+    else if (e->type == "enable-sprite")
+    {
+      const neo::types::enable_sprite_event* enable_sprite_evt =
+        static_cast<const neo::types::enable_sprite_event*>(e);
+
+      for (int i = 0; i < sprites_count; ++i)
+      {
+        if (
+          sprites[i]->definition->name == enable_sprite_evt->sprite ||
+          sprites[i]->definition->_id == enable_sprite_evt->sprite
+        )
+        {
+          BN_LOG("Enabling sprite: ", sprites[i]->definition->name);
+          sprites[i]->enable();
+          break;
+        }
+      }
+    }
+
+    /**
      * @name play-music
      * @param name string — Music name from assets/audio
      * @param volume bn::fixed (default: 1.0) / range: [0..1]

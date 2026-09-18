@@ -339,6 +339,38 @@
       ],
       "type": "object"
     },
+    "DisableSpriteEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "type": {
+          "const": "disable-sprite",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
+    "EnableSpriteEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "type": {
+          "const": "enable-sprite",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
     "MoveCameraToEvent": {
       "properties": {
         "x": { "$ref": "#/definitions/EventValue" },
@@ -656,6 +688,8 @@
         { "$ref": "#/definitions/ShowDialogEvent" },
         { "$ref": "#/definitions/DisableActorEvent" },
         { "$ref": "#/definitions/EnableActorEvent" },
+        { "$ref": "#/definitions/DisableSpriteEvent" },
+        { "$ref": "#/definitions/EnableSpriteEvent" },
         { "$ref": "#/definitions/DisablePlayerEvent" },
         { "$ref": "#/definitions/EnablePlayerEvent" },
         { "$ref": "#/definitions/MoveCameraToEvent" },

@@ -195,6 +195,20 @@ BN_DATA_EWRAM neo::types::enable_actor_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_actor
 );
+{{else if (eq this.type "disable-sprite")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "disable-sprite";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
+BN_DATA_EWRAM neo::types::disable_sprite_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sprite
+);
+{{else if (eq this.type "enable-sprite")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "enable-sprite";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
+BN_DATA_EWRAM neo::types::enable_sprite_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sprite
+);
 {{else if (eq this.type "play-music")}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_music_name = "{{getMusicName @root/music this.name}}";

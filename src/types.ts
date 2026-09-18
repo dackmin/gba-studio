@@ -467,6 +467,16 @@ export interface EnableActorEvent extends SceneEvent {
   actor: string;
 }
 
+export interface DisableSpriteEvent extends SceneEvent {
+  type: 'disable-sprite';
+  sprite: string;
+}
+
+export interface EnableSpriteEvent extends SceneEvent {
+  type: 'enable-sprite';
+  sprite: string;
+}
+
 export interface DisablePlayerEvent extends SceneEvent {
   type: 'disable-player';
 }

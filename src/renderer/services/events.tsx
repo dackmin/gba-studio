@@ -310,6 +310,29 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     }),
   }],
 }, {
+  name: 'Sprites',
+  items: [{
+    icon: EyeClosedIcon,
+    name: 'Disable Sprite',
+    value: 'disable-sprite',
+    keywords: ['sprite', 'disable'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'disable-sprite',
+      sprite: '',
+    }),
+  }, {
+    icon: EyeOpenIcon,
+    name: 'Enable Sprite',
+    value: 'enable-sprite',
+    keywords: ['sprite', 'enable'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'enable-sprite',
+      sprite: '',
+    }),
+  }],
+}, {
   name: 'Variables',
   items: [{
     icon: Pencil1Icon,
