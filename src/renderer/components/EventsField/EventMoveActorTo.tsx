@@ -38,7 +38,7 @@ const EventMoveActorTo = ({
 
   const actor = useMemo(() => (
     scene?.actors?.find(actor => actor.id === event?.actor)
-  ), [scene, event]);
+  ), [scene, event?.actor]);
 
   const updateSize = useCallback(async () => {
     try {
