@@ -54,6 +54,8 @@ const EventMoveCameraTo = ({
       eventEmitter?.emit('scene:camera:set', {
         x: typeof event.x === 'number' ? event.x : 0,
         y: typeof event.y === 'number' ? event.y : 0,
+        width: 240,
+        height: 160,
         sceneId: scene?.id,
       });
     }
@@ -65,6 +67,8 @@ const EventMoveCameraTo = ({
     eventEmitter?.emit('scene:camera:set', {
       x: typeof event.x === 'number' ? event.x : 0,
       y: typeof event.y === 'number' ? event.y : 0,
+      width: 240,
+      height: 160,
       sceneId: scene?.id,
     });
   }, [eventEmitter, event.x, event.y, scene?.id]);

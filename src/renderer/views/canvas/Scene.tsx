@@ -60,6 +60,7 @@ export interface SceneState {
   isMouseOver: boolean;
   cameraEnabled: boolean;
   cameraPosition: [number, number];
+  cameraSize: [number, number];
 }
 
 const Scene = ({
@@ -90,6 +91,7 @@ const Scene = ({
     isMouseOver: false,
     cameraEnabled: false,
     cameraPosition: [0, 0],
+    cameraSize: [240, 160],
   });
 
   useEventListener('scene:camera:set', (e: CustomEvent) => {
@@ -100,6 +102,7 @@ const Scene = ({
     dispatch({
       cameraEnabled: true,
       cameraPosition: [e.detail.x, e.detail.y],
+      cameraSize: [e.detail.width, e.detail.height],
     });
   }, [scene], { target: eventEmitter });
 
@@ -111,6 +114,7 @@ const Scene = ({
     dispatch({
       cameraEnabled: false,
       cameraPosition: [0, 0],
+      cameraSize: [240, 160],
     });
   }, [scene, state.cameraEnabled], { target: eventEmitter });
 
@@ -527,12 +531,14 @@ const Scene = ({
               { state.cameraEnabled && (
                 <div
                   className={classNames(
-                    'absolute z-100 w-[240px] h-[160px] border-2',
+                    'absolute z-100 border-2',
                     'border-yellow-500 pointer-events-none',
                   )}
                   style={{
                     left: state.cameraPosition[0],
                     top: state.cameraPosition[1],
+                    width: state.cameraSize[0],
+                    height: state.cameraSize[1],
                     boxShadow: '0 0 0 10000px rgba(0, 0, 0, 0.25)',
                   }}
                 />

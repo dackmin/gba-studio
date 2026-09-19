@@ -3,7 +3,13 @@ import { set } from '@junipero/react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveActorToEvent } from '../../../types';
-import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
+import {
+  findBackground,
+  findSprite,
+  getImageSize,
+  pixelToTile,
+  tileToPixel,
+} from '../../../helpers';
 import { useApp, useCanvas, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
@@ -19,7 +25,7 @@ const EventMoveActorTo = ({
   event,
   onValueChange,
 }: EventMoveActorToProps) => {
-  const { backgrounds, sprites } = useApp();
+  const { eventEmitter, backgrounds, sprites } = useApp();
   const { scene } = useSceneForm();
   const { selectedItem } = useCanvas();
   const [size, setSize] = useState([240, 160]);
@@ -38,7 +44,7 @@ const EventMoveActorTo = ({
 
   const actor = useMemo(() => (
     scene?.actors?.find(actor => actor.id === event?.actor)
-  ), [scene, event?.actor]);
+  ), [scene, event]);
 
   const updateSize = useCallback(async () => {
     try {
@@ -55,15 +61,46 @@ const EventMoveActorTo = ({
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
+
+    if (['x', 'y'].includes(name)) {
+      eventEmitter?.emit('scene:camera:set', {
+        x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
+        y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
+        width: tileToPixel(actor?.width ?? 1, scene?.map?.gridSize || 16),
+        height: tileToPixel(actor?.height ?? 1, scene?.map?.gridSize || 16),
+        sceneId: scene?.id,
+      });
+    }
+
     onValueChange?.(event);
-  }, [event, onValueChange]);
+  }, [event, eventEmitter, scene, actor, onValueChange]);
+
+  const onFocus = useCallback(() => {
+    eventEmitter?.emit('scene:camera:set', {
+      x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
+      y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
+      width: tileToPixel(actor?.width ?? 1, scene?.map?.gridSize || 16),
+      height: tileToPixel(actor?.height ?? 1, scene?.map?.gridSize || 16),
+      sceneId: scene?.id,
+    });
+  }, [eventEmitter, event.x, event.y, scene, actor]);
+
+  const onBlur = useCallback(() => {
+    eventEmitter?.emit('scene:camera:reset', {
+      sceneId: scene?.id,
+    });
+  }, [eventEmitter, scene?.id]);
 
   const sprite = useMemo(() => (
     findSprite(sprites, actor?.sprite)
   ), [sprites, actor?.sprite]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div
+      className="flex flex-col gap-4"
+      onMouseEnter={onFocus}
+      onMouseLeave={onBlur}
+    >
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Actor</Text>
         <Select.Root
