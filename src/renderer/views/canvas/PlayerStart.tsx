@@ -29,9 +29,13 @@ const PlayerStart = ({
   const { sprites } = useApp();
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (tool === 'collisions') {
+      return;
+    }
+
     e.stopPropagation();
     onSelect?.(e);
-  }, [onSelect]);
+  }, [onSelect, tool]);
 
   const getSprite = useCallback((name?: string) => (
     findSprite(sprites, name)
@@ -70,7 +74,10 @@ const PlayerStart = ({
             className={classNames(
               'absolute hover:border-1 border-(--accent-9)',
               'z-2 w-full h-full top-0 left-0',
-              { 'border-1': selectedItem === scene.player }
+              {
+                'border-1': selectedItem === scene.player,
+                'border-0!': tool === 'collisions',
+              }
             )}
           />
           <Sprite

@@ -32,9 +32,13 @@ const Sensor = ({
   const { tool, selectedItem } = useCanvas();
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (tool === 'collisions') {
+      return;
+    }
+
     e.stopPropagation();
     onSelect?.(e);
-  }, [onSelect]);
+  }, [onSelect, tool]);
 
   const previewPosition = useMemo(() => preview ? {
     x: Math.round((mouseX - offsetX) / zoom),
@@ -64,7 +68,10 @@ const Sensor = ({
       <div
         className={classNames(
           'absolute bg-orange-500/50 hover:border-1 border-(--accent-9)',
-          { 'border-1': selectedItem === sensor}
+          {
+            'border-1': selectedItem === sensor,
+            'border-0!': tool === 'collisions',
+          }
         )}
       >
         <ContextMenu.Root>

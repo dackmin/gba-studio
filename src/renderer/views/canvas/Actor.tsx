@@ -34,9 +34,13 @@ const Actor = ({
   const { tool, selectedItem } = useCanvas();
 
   const onSelect_ = useCallback((e?: MouseEvent<HTMLElement>) => {
+    if (tool === 'collisions') {
+      return;
+    }
+
     e?.stopPropagation();
     onSelect?.(e);
-  }, [onSelect]);
+  }, [onSelect, tool]);
 
   const actorSprite = useMemo(() => (
     findSprite(sprites, actor.sprite)
@@ -79,7 +83,10 @@ const Actor = ({
                 className={classNames(
                   'absolute hover:border-1 border-(--accent-9)',
                   'z-2 w-full h-full top-0 left-0',
-                  { 'border-1': selectedItem === actor }
+                  {
+                    'border-1': selectedItem === actor,
+                    'border-0!': tool === 'collisions',
+                  }
                 )}
               />
               <Sprite

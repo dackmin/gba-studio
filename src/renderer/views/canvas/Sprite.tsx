@@ -38,9 +38,13 @@ const Sprite = ({
   ), [sprites]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (tool === 'collisions') {
+      return;
+    }
+
     e.stopPropagation();
     onSelect?.(e);
-  }, [onSelect]);
+  }, [onSelect, tool]);
 
   const previewPosition = useMemo(() => preview ? {
     x: Math.round((mouseX - offsetX) / zoom),
@@ -79,9 +83,11 @@ const Sprite = ({
                 className={classNames(
                   'absolute hover:border-1 border-(--accent-9)',
                   'z-2 w-full h-full top-0 left-0',
-                  { 'border-1': selectedItem === sprite }
+                  {
+                    'border-1': selectedItem === sprite,
+                    'border-0!': tool === 'collisions',
+                  }
                 )}
-                onClick={onSelect}
               />
               <InnerSprite
                 className="absolute z-1 top-0 left-0 pixelated"
