@@ -73,7 +73,7 @@ const Actor = ({
     >
       <div className="absolute w-full h-full">
         <ContextMenu.Root>
-          <ContextMenu.Trigger>
+          <ContextMenu.Trigger disabled={tool === 'collisions'} className="cursor-default!">
             <div className="relative w-full h-full">
               <div
                 className={classNames(

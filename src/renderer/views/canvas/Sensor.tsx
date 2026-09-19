@@ -68,7 +68,7 @@ const Sensor = ({
         )}
       >
         <ContextMenu.Root>
-          <ContextMenu.Trigger>
+          <ContextMenu.Trigger disabled={tool === 'collisions'} className="cursor-default!">
             <div className="w-full h-full" />
           </ContextMenu.Trigger>
           <ContextMenu.Content>

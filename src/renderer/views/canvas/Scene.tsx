@@ -497,7 +497,7 @@ const Scene = ({
           { scene.name }
         </span>
         <ContextMenu.Root>
-          <ContextMenu.Trigger>
+          <ContextMenu.Trigger disabled={tool === 'collisions'} className="cursor-default!">
             <Card
               className={classNames(
                 '!relative bg-cover bg-center transition-[outline-width]',
