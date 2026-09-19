@@ -18,9 +18,10 @@ export default async function (
 ) {
   const projectDir = path.dirname(projectPath);
   const fileExt = path.extname(filePath);
-  const fileName = backgroundInfo._fileName
+  const fileName = toFileSlug(backgroundInfo._fileName
     ? path.basename(backgroundInfo._fileName, path.extname(backgroundInfo._fileName))
-    : toFileSlug(backgroundInfo.name ?? path.basename(filePath, fileExt));
+    : (backgroundInfo.name ?? path.basename(filePath, fileExt))
+  );
 
   // Copy background into project/graphics
   const graphicsDir = path.join(projectDir, 'graphics');

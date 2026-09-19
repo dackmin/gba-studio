@@ -13,6 +13,8 @@ import type {
   GameSpriteFile,
 } from './types';
 
+slugify.extend({ '-': '_' });
+
 export const tileToPixel = (tile: number, gridSize: number) =>
   tile * gridSize;
 

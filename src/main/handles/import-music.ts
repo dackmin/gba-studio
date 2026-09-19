@@ -16,9 +16,10 @@ export default async function (
 ) {
   const projectDir = path.dirname(projectPath);
   const fileExt = path.extname(filePath);
-  const fileName = musicInfo._fileName
+  const fileName = toFileSlug(musicInfo._fileName
     ? path.basename(musicInfo._fileName, path.extname(musicInfo._fileName))
-    : toFileSlug(musicInfo.name ?? path.basename(filePath, fileExt));
+    : (musicInfo.name ?? path.basename(filePath, fileExt))
+  );
 
   // Copy music into project/audio
   const audioDir = path.join(projectDir, 'audio');

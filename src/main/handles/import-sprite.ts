@@ -18,9 +18,10 @@ export default async function (
 ) {
   const projectDir = path.dirname(projectPath);
   const fileExt = path.extname(filePath);
-  const fileName = spriteInfo._fileName
+  const fileName = toFileSlug(spriteInfo._fileName
     ? path.basename(spriteInfo._fileName, path.extname(spriteInfo._fileName))
-    : toFileSlug(spriteInfo.name ?? path.basename(filePath, fileExt));
+    : (spriteInfo.name ?? path.basename(filePath, fileExt))
+  );
 
   // Copy sprite into project/graphics
   const graphicsDir = path.join(projectDir, 'graphics');
