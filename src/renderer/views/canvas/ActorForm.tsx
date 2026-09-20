@@ -162,7 +162,7 @@ const ActorForm = ({
                 min={-32767}
                 max={32767}
                 value={actor.z ?? 2}
-                onChange={onTextChange.bind(null, 'z')}
+                onValueChange={onValueChange.bind(null, 'z')}
               />
             </div>
             <div className="flex flex-col gap-2">
