@@ -802,11 +802,12 @@ namespace neo
      * @name parallel-events
      * @param events array of events — Instant events are executed one after
      * another, within the same frame. fade-in/fade-out, move-camera-to,
-     * move-actor-to, set-palette-effect and wave-effect (unless it has a
-     * duration of 0, which runs until the scene changes) run concurrently
-     * with each other instead: they're started here, and this event doesn't
-     * return control to the rest of the script until every one of them is
-     * done (i.e. as long as the longest-running one takes).
+     * move-actor-to, move-player-to, set-palette-effect and wave-effect
+     * (unless it has a duration of 0, which runs until the scene changes)
+     * run concurrently with each other instead: they're started here, and
+     * this event doesn't return control to the rest of the script until
+     * every one of them is done (i.e. as long as the longest-running one
+     * takes).
      */
     else if (e->type == "parallel-events")
     {
@@ -1665,10 +1666,10 @@ namespace neo
           pending.push_back(move_evt);
         }
       }
-      else if (sub_evt->type == "move-actor-to")
+      else if (sub_evt->type == "move-actor-to" || sub_evt->type == "move-player-to")
       {
-        neo::types::move_actor_to_event* move_evt =
-          static_cast<neo::types::move_actor_to_event*>(sub_evt);
+        neo::types::actor_move_event* move_evt =
+          static_cast<neo::types::actor_move_event*>(sub_evt);
 
         move_evt->start(game);
 
@@ -1708,7 +1709,7 @@ namespace neo
     }
   }
 
-  void neo::types::move_actor_to_event::arm_pass()
+  void neo::types::actor_move_event::arm_pass()
   {
     // Runs when the previous axis is done (or right at the start) to pick
     // the next axis to move along, face it and (re)reset the animation,
@@ -1765,7 +1766,7 @@ namespace neo
     finish();
   }
 
-  void neo::types::move_actor_to_event::finish()
+  void neo::types::actor_move_event::finish()
   {
     target->moving = false;
     target->set_direction(target->direction); // restore the idle tile for the final facing direction
@@ -1776,35 +1777,24 @@ namespace neo
     anim = nullptr;
   }
 
-  void neo::types::move_actor_to_event::start(neo::game* game_)
+  void neo::types::actor_move_event::begin_move(neo::game* game_)
   {
     game_ref = game_;
-    target = nullptr;
     pass = 2;
     armed = false;
     anim = nullptr;
 
-    if (game_->active_scene == nullptr || game_->active_scene->map_data == nullptr)
+    if (target == nullptr || !target->sprite.visible())
     {
+      // Like actor::move_to(): the move is skipped entirely for missing
+      // or invisible (disabled) actors, so the parallel branch shouldn't
+      // animate either.
+      target = nullptr;
+
       return;
     }
 
-    // Like the blocking handler: the move is skipped entirely for invisible
-    // (disabled) actors, so the parallel branch shouldn't animate either.
-    for (int i = 0; i < game_->actors_count; ++i)
-    {
-      if (
-        game_->actors[i]->definition->name == actor ||
-        game_->actors[i]->definition->_id == actor
-      )
-      {
-        target = game_->actors[i];
-
-        break;
-      }
-    }
-
-    if (target == nullptr || !target->sprite.visible())
+    if (game_->active_scene == nullptr || game_->active_scene->map_data == nullptr)
     {
       target = nullptr;
 
@@ -1830,7 +1820,36 @@ namespace neo
     arm_pass();
   }
 
-  bool neo::types::move_actor_to_event::update()
+  void neo::types::move_actor_to_event::start(neo::game* game_)
+  {
+    target = nullptr;
+
+    // Like the blocking handler: resolve the actor by name or id.
+    for (int i = 0; i < game_->actors_count; ++i)
+    {
+      if (
+        game_->actors[i]->definition->name == actor ||
+        game_->actors[i]->definition->_id == actor
+      )
+      {
+        target = game_->actors[i];
+
+        break;
+      }
+    }
+
+    begin_move(game_);
+  }
+
+  void neo::types::move_player_to_event::start(neo::game* game_)
+  {
+    // Like the blocking handler: the move is skipped when there's no player.
+    target = game_->player;
+
+    begin_move(game_);
+  }
+
+  bool neo::types::actor_move_event::update()
   {
     if (pass >= 2)
     {

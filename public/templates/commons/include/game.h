@@ -55,13 +55,13 @@ namespace neo
       neo::actor* camera_target;
 
       // Parallel-events nodes with resumable (fade-in/out, move-camera-to,
-      // move-actor-to, set-palette-effect, wave-effect) sub-events, ticked
-      // once per frame by update_active_parallel_events() while the
-      // "parallel-events" handler blocks the rest of the script on each
-      // node's pending list (see exec_event()). Sub-events run concurrently
-      // with each other, but the node itself still waits for all of them
-      // to finish.
-      bn::vector<neo::types::parallel_event*, 8> active_parallel_events;
+      // move-actor-to, move-player-to, set-palette-effect, wave-effect)
+      // sub-events, ticked once per frame by update_active_parallel_events()
+      // while the "parallel-events" handler blocks the rest of the script
+      // on each node's pending list (see exec_event()). Sub-events run
+      // concurrently with each other, but the node itself still waits for
+      // all of them to finish.
+      bn::vector<neo::types::parallel_event*, 10> active_parallel_events;
 
       // Per-scanline horizontal wave distortion applied to the scene
       // background and/or actors/sprites, ticked once per frame by

@@ -225,6 +225,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Move Player To',
     value: 'move-player-to',
     keywords: ['player', 'move', 'to'],
+    parallelizable: true,
     construct: () => ({
       type: 'move-player-to',
       x: 0,

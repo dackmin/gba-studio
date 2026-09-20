@@ -188,9 +188,9 @@ namespace neo::types
 
   // Only instant, self-contained events are allowed here (enforced by the
   // editor) except for a handful that are resumable (fade-in/fade-out,
-  // move-camera-to, move-actor-to, set-palette-effect, wave-effect): exec()
-  // starts them and tracks the still-running ones in pending, and update()
-  // advances pending until it's empty.
+  // move-camera-to, move-actor-to, move-player-to, set-palette-effect,
+  // wave-effect): exec() starts them and tracks the still-running ones in
+  // pending, and update() advances pending until it's empty.
   struct parallel_event: event
   {
     int events_count;
@@ -495,9 +495,15 @@ namespace neo::types
       direction_priority(direction_priority_) {}
   };
 
-  struct move_actor_to_event: event
+  // Shared resumable state and frame-by-frame stepping for the
+  // move-actor-to and move-player-to events: both are just
+  // actor::move_to() split into start()/update() slices so they can run
+  // inside a parallel-events branch. The concrete events only resolve
+  // which actor to move in their start(); everything after that
+  // (validation, axis-by-axis movement, facing/animation, camera
+  // tracking, finalization) lives here.
+  struct actor_move_event: event
   {
-    bn::string_view actor;
     event_value* x;
     event_value* y;
     event_value* speed;
@@ -526,6 +532,47 @@ namespace neo::types
     int step = 0; // Signed px_per_frame for the current pass
     neo::types::sprite_animation* anim = nullptr;
 
+    actor_move_event(
+      bn::string_view type_,
+      event_value* x_,
+      event_value* y_,
+      event_value* speed_,
+      bn::string_view direction_priority_,
+      bn::string_view animation_,
+      bool backwards_
+    ):
+      event(type_),
+      x(x_),
+      y(y_),
+      speed(speed_),
+      direction_priority(direction_priority_),
+      animation(animation_),
+      backwards(backwards_) {}
+
+    // Resolves the actor to move (by name for move-actor-to, the player
+    // for move-player-to), then delegates to begin_move(). Virtual so
+    // parallel_event::exec can start either event through the base type.
+    virtual void start(neo::game* game_) = 0;
+
+    // Validates the actor resolved by start() (missing or disabled actors
+    // skip the move, like actor::move_to() does) and prepares the resumable
+    // state, arming the first axis.
+    void begin_move(neo::game* game_);
+    bool update() override;
+
+    // Per-pass setup shared by begin_move() and update(): turns the actor
+    // towards the axis being moved (unless moving backwards), then looks
+    // up and resets the animation for the new direction, skipping axes
+    // with nothing to move. Finalizes the event when no axis is left.
+    void arm_pass();
+    // End-of-move cleanup, like the tail of actor::move_to().
+    void finish();
+  };
+
+  struct move_actor_to_event: actor_move_event
+  {
+    bn::string_view actor;
+
     move_actor_to_event(
       bn::string_view type_,
       bn::string_view actor_,
@@ -536,35 +583,15 @@ namespace neo::types
       bn::string_view animation_,
       bool backwards_
     ):
-      event(type_),
-      actor(actor_),
-      x(x_),
-      y(y_),
-      speed(speed_),
-      direction_priority(direction_priority_),
-      animation(animation_),
-      backwards(backwards_) {}
+      actor_move_event(type_, x_, y_, speed_, direction_priority_, animation_, backwards_),
+      actor(actor_) {}
 
-    void start(neo::game* game_);
-    bool update() override;
-
-    // Per-pass setup shared by start() and update(): turns the actor
-    // towards the axis being moved (unless moving backwards), then looks
-    // up and resets the animation for the new direction, skipping axes
-    // with nothing to move. Finalizes the event when no axis is left.
-    void arm_pass();
-    // End-of-move cleanup, like the tail of actor::move_to().
-    void finish();
+    // Resolves the target from the actor name, then delegates to begin_move().
+    void start(neo::game* game_) override;
   };
 
-  struct move_player_to_event: event
+  struct move_player_to_event: actor_move_event
   {
-    event_value* x;
-    event_value* y;
-    event_value* speed;
-    bn::string_view direction_priority;
-    bn::string_view animation;
-    bool backwards;
     move_player_to_event(
       bn::string_view type_,
       event_value* x_,
@@ -574,13 +601,10 @@ namespace neo::types
       bn::string_view animation_,
       bool backwards_
     ):
-      event(type_),
-      x(x_),
-      y(y_),
-      speed(speed_),
-      direction_priority(direction_priority_),
-      animation(animation_),
-      backwards(backwards_) {}
+      actor_move_event(type_, x_, y_, speed_, direction_priority_, animation_, backwards_) {}
+
+    // Resolves the target from the player, then delegates to begin_move().
+    void start(neo::game* game_) override;
   };
 
   struct set_actor_position_event: event
