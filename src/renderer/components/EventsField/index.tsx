@@ -18,6 +18,7 @@ import DraggableStore from '../DraggableStore';
 export interface EventsFieldProps {
   value: SceneEvent[];
   zone?: string;
+  max?: number;
   // Restricts which events can be added/pasted/dropped into this list.
   filter?: (definition: EventDefinition) => boolean;
   onValueChange?: (events: SceneEvent[]) => void;
@@ -33,6 +34,7 @@ export interface EventsFieldProps {
 const EventsField = ({
   value,
   zone,
+  max,
   filter,
   onValueChange,
   onDrop,
@@ -190,7 +192,11 @@ const EventsField = ({
         <div className="px-3 my-3">
           <Dialog.Root>
             <Dialog.Trigger>
-              <Button ref={addEventButtonRef} className="block !w-full">
+              <Button
+                ref={addEventButtonRef}
+                className="block !w-full"
+                disabled={max !== undefined && value.length >= max}
+              >
                 <PlusIcon />
                 <Text>Add Event</Text>
               </Button>

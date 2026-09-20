@@ -51,12 +51,12 @@ const EventParallel = ({
     position: DraggingPositionType,
     e: DragEvent<HTMLDivElement>,
   ) => {
-    if (!isParallelizable(data.type)) {
+    if (!isParallelizable(data.type) || event.events?.length >= 10) {
       return;
     }
 
     onDrop?.(container, target, data, position, e);
-  }, [onDrop]);
+  }, [onDrop, event]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,6 +65,7 @@ const EventParallel = ({
           <EventsField
             value={event.events ?? []}
             zone="events"
+            max={10}
             filter={item => !!item.parallelizable}
             onValueChange={onValueChange_.bind(null, 'events')}
             onDrop={onInnerDrop.bind(null, event.events)}
