@@ -64,14 +64,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({ type: 'on-button-press', buttons: [], events: [] }),
   }, {
     icon: ComponentNoneIcon,
-    name: 'Disable input',
+    name: 'Disable Input',
     value: 'disable-input',
     keywords: ['input', 'disable'],
     parallelizable: true,
     construct: () => ({ type: 'disable-input' }),
   }, {
     icon: ComponentInstanceIcon,
-    name: 'Enable input',
+    name: 'Enable Input',
     value: 'enable-input',
     keywords: ['input', 'enable'],
     parallelizable: true,
@@ -383,7 +383,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   name: 'Miscellaneous',
   items: [{
     icon: LapTimerIcon,
-    name: 'Wait for X milliseconds',
+    name: 'Wait for X Milliseconds',
     keywords: ['wait', 'timer', 'delay'],
     value: 'wait',
     construct: () => ({ type: 'wait', duration: 500 }),

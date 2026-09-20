@@ -26,7 +26,7 @@ namespace neo::fade
     int frames = duration / 16; // Assuming 60 FPS, 16ms per frame
     bn::blending_fade_alpha_to_action action(frames, 0);
 
-    while (!action.done())
+    while (!action.done() && !game->scene_changed)
     {
       action.update();
       game->update_frame();
@@ -53,7 +53,7 @@ namespace neo::fade
     int frames = duration / 16; // Assuming 60 FPS, 16ms per frame
     bn::blending_fade_alpha_to_action action(frames, 1);
 
-    while (!action.done())
+    while (!action.done() && !game->scene_changed)
     {
       action.update();
       game->update_frame();

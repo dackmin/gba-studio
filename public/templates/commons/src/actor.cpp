@@ -511,7 +511,7 @@ namespace neo
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     // Move one axis at a time, one grid step at a time, updating the sprite every frame
-    for (int pass = 0; pass < 2; ++pass)
+    for (int pass = 0; pass < 2 && !game->scene_changed; ++pass)
     {
       bool is_horizontal_pass = (pass == 0) == horizontal_first;
       int delta = is_horizontal_pass ? delta_x : delta_y;
@@ -540,7 +540,7 @@ namespace neo
       int step = delta > 0 ? px_per_frame : -px_per_frame;
       int moved = 0;
 
-      while (abs(moved) < abs(delta))
+      while (abs(moved) < abs(delta) && !game->scene_changed)
       {
         moved += step;
 
@@ -583,6 +583,12 @@ namespace neo
     }
 
     moving = false;
+
+    if (game->scene_changed)
+    {
+      return;
+    }
+
     set_direction(direction); // restore the idle tile for the final facing direction
     set_tile_position(tile_x, tile_y);
   }

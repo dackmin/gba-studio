@@ -318,7 +318,7 @@ namespace neo
     BN_LOG("Scene events count:", active_scene->event_count);
 
     // Exec normal scene events
-    for (int i = 0; i < active_scene->event_count; ++i)
+    for (int i = 0; i < active_scene->event_count && !scene_changed; ++i)
     {
       BN_LOG("Getting scene event ", i);
       neo::types::event* e = active_scene->events[i];
@@ -327,7 +327,7 @@ namespace neo
     }
 
     // Execute sprites init events
-    if (active_scene->sprites != nullptr)
+    if (!scene_changed && active_scene->sprites != nullptr)
     {
       for (int i = 0; i < sprites_count; ++i)
       {
@@ -336,13 +336,13 @@ namespace neo
     }
 
     // Execute player init events
-    if (player != nullptr)
+    if (!scene_changed && player != nullptr)
     {
       player->init();
     }
 
     // Execute actors init events
-    if (active_scene->actors != nullptr)
+    if (!scene_changed && active_scene->actors != nullptr)
     {
       for (int i = 0; i < actors_count; ++i)
       {
@@ -352,12 +352,6 @@ namespace neo
 
     while (!scene_changed)
     {
-      // Exec in-loop scripted events
-      for (int i = 0; i < scripted_events_count; ++i)
-      {
-        neo::types::event* e = scripted_events[i];
-        exec_event(e, true);
-      }
 
       if (active_scene->has_player && player != nullptr)
       {
@@ -444,7 +438,7 @@ namespace neo
     {
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);
-      while (!neo::buttons::any_pressed(button_evt->buttons))
+      while (!neo::buttons::any_pressed(button_evt->buttons) && !scene_changed)
       {
         update_frame();
       }
@@ -731,7 +725,7 @@ namespace neo
 
       if (current_music.has_value())
       {
-        for (int i = (int)(bn::music::volume() * 100); i >= 0; i -= 1)
+        for (int i = (int)(bn::music::volume() * 100); i >= 0 && !scene_changed; i -= 1)
         {
           BN_LOG("Fading out music to: ", i);
           bn::music::set_volume(i / 100.0);
@@ -822,7 +816,7 @@ namespace neo
         active_parallel_events.push_back(parallel_evt);
       }
 
-      while (!parallel_evt->pending.empty())
+      while (!parallel_evt->pending.empty() && !scene_changed)
       {
         update_frame();
       }
@@ -850,7 +844,7 @@ namespace neo
       }
       else
       {
-        for (int frame = 1; frame <= frames; ++frame)
+        for (int frame = 1; frame <= frames && !scene_changed; ++frame)
         {
           bn::fixed t = bn::fixed(frame) / frames;
           set_palette_effect(
@@ -1295,8 +1289,26 @@ namespace neo
     }
   }
 
+  void game::update_scripted_events()
+  {
+    if (polling_scripted_events)
+    {
+      return;
+    }
+
+    polling_scripted_events = true;
+
+    for (int i = 0; i < scripted_events_count && !scene_changed; ++i)
+    {
+      exec_event(scripted_events[i], true);
+    }
+
+    polling_scripted_events = false;
+  }
+
   void game::update_frame()
   {
+    update_scripted_events();
     update_active_parallel_events();
     update_wave_effect();
     bn::core::update();
@@ -1306,7 +1318,7 @@ namespace neo
   {
     int frames = milliseconds / 16; // Assuming 60 FPS, 16ms per frame
 
-    for (int i = 0; i < frames; ++i)
+    for (int i = 0; i < frames && !scene_changed; ++i)
     {
       update_frame();
     }

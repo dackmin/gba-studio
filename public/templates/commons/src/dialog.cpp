@@ -117,9 +117,14 @@ namespace neo
 
       game->wait(reveal_wait_ms);
       game->update_frame();
+
+      if (game->scene_changed)
+      {
+        break;
+      }
     }
 
-    while (!neo::buttons::is_pressed("A"))
+    while (!neo::buttons::is_pressed("A") && !game->scene_changed)
     {
       game->update_frame();
     }

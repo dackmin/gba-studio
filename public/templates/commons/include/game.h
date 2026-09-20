@@ -95,6 +95,7 @@ namespace neo
       // bn::core::update() directly, otherwise a parallel-events node
       // (e.g. a camera pan + wave running alongside a fade-in) would freeze
       // for as long as that other event blocks.
+      void update_scripted_events();
       void update_frame();
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);
@@ -110,6 +111,7 @@ namespace neo
       bn::string_view get_expression_value(neo::types::if_expression* expression);
 
     private:
+      bool polling_scripted_events = false;
       void update_wave_deltas();
       bn::fixed wave_offset_for_y(bn::fixed y);
       bn::fixed wave_envelope_scale();

@@ -133,7 +133,12 @@ namespace neo
     // the same shortcut because of polling
     game->wait(100);
 
-    while (!neo::buttons::is_pressed("Start") && !neo::buttons::is_pressed("B") && selected_index == -1)
+    while (
+      !neo::buttons::is_pressed("Start") &&
+      !neo::buttons::is_pressed("B") &&
+      selected_index == -1 &&
+      !game->scene_changed
+    )
     {
       if (neo::buttons::is_pressed("Up"))
       {

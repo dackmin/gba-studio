@@ -78,7 +78,7 @@ namespace neo::camera
 
       if (allow_diagonal)
       {
-        for (int frame = 0; frame <= frames; ++frame)
+        for (int frame = 0; frame <= frames && !game->scene_changed; ++frame)
         {
           float t = static_cast<float>(frame) / frames;
 
@@ -98,7 +98,7 @@ namespace neo::camera
         if (direction_priority == "horizontal")
         {
           // Move horizontally first
-          for (int frame = 0; frame <= horizontal_frames; ++frame)
+          for (int frame = 0; frame <= horizontal_frames && !game->scene_changed; ++frame)
           {
             float t = horizontal_frames > 0 ? static_cast<float>(frame) / horizontal_frames : 1.0f;
             int new_x = start_x + static_cast<int>(delta_x * t);
@@ -106,7 +106,7 @@ namespace neo::camera
             game->update_frame();
           }
           // Then move vertically
-          for (int frame = 0; frame <= vertical_frames; ++frame)
+          for (int frame = 0; frame <= vertical_frames && !game->scene_changed; ++frame)
           {
             float t = vertical_frames > 0 ? static_cast<float>(frame) / vertical_frames : 1.0f;
             int new_y = start_y + static_cast<int>(delta_y * t);
@@ -115,7 +115,7 @@ namespace neo::camera
           }
         } else if (direction_priority == "vertical") {
           // Move vertically first
-          for (int frame = 0; frame <= vertical_frames; ++frame)
+          for (int frame = 0; frame <= vertical_frames && !game->scene_changed; ++frame)
           {
             float t = vertical_frames > 0 ? static_cast<float>(frame) / vertical_frames : 1.0f;
             int new_y = start_y + static_cast<int>(delta_y * t);
@@ -123,7 +123,7 @@ namespace neo::camera
             game->update_frame();
           }
           // Then move horizontally
-          for (int frame = 0; frame <= horizontal_frames; ++frame)
+          for (int frame = 0; frame <= horizontal_frames && !game->scene_changed; ++frame)
           {
             float t = horizontal_frames > 0 ? static_cast<float>(frame) / horizontal_frames : 1.0f;
             int new_x = start_x + static_cast<int>(delta_x * t);
