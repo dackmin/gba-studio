@@ -111,17 +111,49 @@ namespace neo
         break;
     }
 
+    int reveal_wait_frames = reveal_wait_ms / 16;
+
+    if (reveal_wait_frames < 1)
+    {
+      reveal_wait_frames = 1;
+    }
+    ++reveal_wait_frames;
+    bool skipped = false;
+
     for (bn::sprite_ptr& sprite : text_sprites)
     {
       sprite.set_visible(true);
 
-      game->wait(reveal_wait_ms);
-      game->update_frame();
+      for (int frame = 0; frame < reveal_wait_frames; ++frame)
+      {
+        game->update_frame();
 
-      if (game->scene_changed)
+        if (game->scene_changed)
+        {
+          break;
+        }
+
+        if (neo::buttons::is_pressed("A") || neo::buttons::is_pressed("B"))
+        {
+          skipped = true;
+          break;
+        }
+      }
+
+      if (skipped || game->scene_changed)
       {
         break;
       }
+    }
+
+    if (skipped)
+    {
+      for (bn::sprite_ptr& sprite : text_sprites)
+      {
+        sprite.set_visible(true);
+      }
+
+      game->update_frame();
     }
 
     while (!neo::buttons::is_pressed("A") && !game->scene_changed)
