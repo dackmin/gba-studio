@@ -17,19 +17,14 @@ Download the latest build for your platform from the [build action pipeline](htt
 
 ## Road to v1.0
 
-- [x] File changes detection outside of GBA Studio
-- [x] Copy/paste events
-- [x] Use variables for any value
-- [x] Rename events
-- [x] Foreground sprites
+- [x] Top Down 2D scene type
 - [x] WASM mGBA integration
 - [x] ~~Windows signed installer~~ (I'm too poor for this, enjoy the unsigned version)
 - [x] Portable python & devkitARM
 - [x] Sprite animations editor
-- [ ] Move target point from the target scene
+- [x] Images auto convert on build
 - [ ] Side scroller scene type
 - [ ] Parallax backgrounds
-- [ ] images auto convert on build
 - [ ] Auto updater
 - [ ] Sound editor
 - [ ] Plugins
