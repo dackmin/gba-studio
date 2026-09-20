@@ -434,8 +434,13 @@ namespace neo
      * @name wait-for-button
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "wait-for-button" && is_input_enabled)
+    else if (e->type == "wait-for-button")
     {
+      if (!is_input_enabled)
+      {
+        return;
+      }
+
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);
       while (!neo::buttons::any_pressed(button_evt->buttons) && !scene_changed)
@@ -485,12 +490,17 @@ namespace neo
      * @name on-button-press
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "on-button-press" && is_input_enabled)
+    else if (e->type == "on-button-press")
     {
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);
 
       if (is_loop) {
+        if (!is_input_enabled)
+        {
+          return;
+        }
+
         if (neo::buttons::any_pressed(button_evt->buttons))
         {
           BN_LOG("Button pressed, executing events");
