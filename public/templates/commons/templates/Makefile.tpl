@@ -13,6 +13,7 @@ AUDIOTOOL    :=  {{valuedef audioTool 'mmutil'}}
 DMGAUDIOBACKEND :=  {{valuedef dmgAudioBackend 'default'}}
 ROMTITLE     :=  {{uppercase romTitle}}
 ROMCODE      :=  {{uppercase romCode}}
+USERFLAGS    :=  -DBN_CFG_HBES_MAX_ITEMS=8 -DBN_CFG_BGS_MAX_ITEMS=8
 
 ifneq (,$(wildcard ./.env))
   include ./.env

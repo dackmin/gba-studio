@@ -279,6 +279,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Move Actor To',
     value: 'move-actor-to',
     keywords: ['actor', 'move', 'to'],
+    parallelizable: true,
     construct: () => ({
       type: 'move-actor-to',
       actor: '',

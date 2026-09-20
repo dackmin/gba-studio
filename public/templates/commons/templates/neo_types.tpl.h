@@ -21,12 +21,15 @@
 namespace neo
 {
   class game;
+  class actor;
 }
 
 namespace neo::types
 {
   static constexpr int SCREEN_WIDTH = 240;
   static constexpr int SCREEN_HEIGHT = 160;
+
+  struct sprite_animation;
 
   enum class direction
   {
@@ -185,9 +188,9 @@ namespace neo::types
 
   // Only instant, self-contained events are allowed here (enforced by the
   // editor) except for a handful that are resumable (fade-in/fade-out,
-  // move-camera-to, set-palette-effect, wave-effect): exec() starts them
-  // and tracks the still-running ones in pending, and update() advances
-  // pending until it's empty.
+  // move-camera-to, move-actor-to, set-palette-effect, wave-effect): exec()
+  // starts them and tracks the still-running ones in pending, and update()
+  // advances pending until it's empty.
   struct parallel_event: event
   {
     int events_count;
@@ -501,6 +504,28 @@ namespace neo::types
     bn::string_view direction_priority;
     bn::string_view animation;
     bool backwards;
+
+    // Runtime-only resumable move state, set by start()/advanced by update()
+    // when this move runs inside a parallel-events branch instead of
+    // blocking. Mirrors the axis-by-axis stepping of actor::move_to():
+    // pass 0 moves the first axis (per direction_priority), pass 1 the
+    // other one, px_per_frame pixels per update() call.
+    neo::game* game_ref = nullptr;
+    neo::actor* target = nullptr;
+    int target_tile_x = 0;
+    int target_tile_y = 0;
+    int px_per_frame = 1;
+    int origin_x = 0;
+    int origin_y = 0;
+    int target_px_x = 0;
+    int target_px_y = 0;
+    int pass = 2; // 0: first axis (per direction_priority), 1: second axis, 2: done
+    bool armed = false; // Whether the current pass had its direction/animation set up
+    bool horizontal_pass = false; // Whether the current pass moves along the x axis
+    int moved = 0;
+    int step = 0; // Signed px_per_frame for the current pass
+    neo::types::sprite_animation* anim = nullptr;
+
     move_actor_to_event(
       bn::string_view type_,
       bn::string_view actor_,
@@ -519,6 +544,17 @@ namespace neo::types
       direction_priority(direction_priority_),
       animation(animation_),
       backwards(backwards_) {}
+
+    void start(neo::game* game_);
+    bool update() override;
+
+    // Per-pass setup shared by start() and update(): turns the actor
+    // towards the axis being moved (unless moving backwards), then looks
+    // up and resets the animation for the new direction, skipping axes
+    // with nothing to move. Finalizes the event when no axis is left.
+    void arm_pass();
+    // End-of-move cleanup, like the tail of actor::move_to().
+    void finish();
   };
 
   struct move_player_to_event: event
