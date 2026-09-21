@@ -1,13 +1,12 @@
 import path from 'node:path';
 
-import type { IpcMainInvokeEvent } from 'electron';
 import Handlebars from 'handlebars';
 import fse from 'fs-extra';
 
 import type { Build, GameBackgroundFile, GameMenuChoice, GameVariables } from '../../../types';
-import { getBuildDir, sendLog, sendSuccessLog, toSlug } from './utils';
-import { getResourcesDir } from '../../utils';
 import { findBackground, findSound, findSprite } from '../../../helpers';
+import { getResourcesDir } from '../../utils';
+import { getBuildDir, toSlug } from './utils';
 
 export const setupHandlebars = async () => {
   // Add helpers
@@ -189,26 +188,25 @@ export const buildSingleTemplate = async (
 };
 
 export const buildTemplates = async (
-  event: IpcMainInvokeEvent,
   build: Build,
 ): Promise<void> => {
   await setupHandlebars();
 
-  sendLog(event, build.id, 'Building helpers...');
+  build.events.onLog('Building helpers...');
   await buildSingleTemplate('neo_logs.tpl.h', build);
-  sendSuccessLog(event, build.id, 'neo_logs.h built');
+  build.events.onSuccess('neo_logs.h built');
   await buildSingleTemplate('neo_utils.tpl.h', build);
-  sendSuccessLog(event, build.id, 'neo_utils.h built');
+  build.events.onSuccess('neo_utils.h built');
 
-  sendLog(event, build.id, 'Building types...');
+  build.events.onLog('Building types...');
   await buildSingleTemplate('neo_types.tpl.h', build);
-  sendSuccessLog(event, build.id, 'neo_types.h built');
+  build.events.onSuccess('neo_types.h built');
 
-  sendLog(event, build.id, 'Building variables...');
+  build.events.onLog('Building variables...');
   await buildSingleTemplate('neo_variables.tpl.h', build);
-  sendSuccessLog(event, build.id, 'neo_variables.h built');
+  build.events.onSuccess('neo_variables.h built');
 
-  sendLog(event, build.id, 'Building scenes...');
+  build.events.onLog('Building scenes...');
   await buildSingleTemplate('neo_scenes.tpl.h', build);
-  sendSuccessLog(event, build.id, 'neo_scenes.h built');
+  build.events.onSuccess('neo_scenes.h built');
 };
