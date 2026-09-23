@@ -329,8 +329,15 @@ export interface DynamicVariableValue {
   name?: string;
 }
 
+export interface DynamicSavedGameValue {
+  type: 'saved-game';
+  // Not used, kept for consistency with DynamicVariableValue
+  name?: string;
+}
+
 export type DynamicValue =
-  | DynamicVariableValue;
+  | DynamicVariableValue
+  | DynamicSavedGameValue;
 
 export type EventValue =
   | string
@@ -549,6 +556,14 @@ export interface SetPlayerPositionEvent extends SceneEvent {
   y: EventValue;
 }
 
+export interface SaveGameEvent extends SceneEvent {
+  type: 'save-game';
+}
+
+export interface LoadGameEvent extends SceneEvent {
+  type: 'load-game';
+}
+
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];
@@ -613,9 +628,19 @@ export interface BuildOptions {
 export interface Build {
   id: string;
   projectPath: string;
+  configurationName?: string;
   controller?: AbortController;
   data?: Partial<AppPayload>;
   opts?: BuildOptions;
+  events: {
+    onLog: (...args: any[]) => void;
+    onStep: (...args: any[]) => void;
+    onError: (...args: any[]) => void;
+    onSuccess: (...args: any[]) => void;
+    onAbort: (...args: any[]) => void;
+    onStart: (...args: any[]) => void;
+    onComplete: (...args: any[]) => void;
+  }
 }
 
 export interface LogMessage {

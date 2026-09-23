@@ -2,13 +2,11 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 
-import { IpcMainInvokeEvent } from 'electron';
 import * as tar from 'tar';
 
-import type { Build, ProjectConfiguration } from '../../../types';
-import type Storage from '../../storage';
-import { runCommand, sendStep, sendSuccessLog, sendLog, sendError, sendAbort } from './utils';
-import { getResourcesDir } from '../../utils';
+import type { Build, ProjectConfiguration } from '../types';
+import { runCommand } from './handles/build-project/utils';
+import { getResourcesDir } from './utils';
 
 const packagesShasum: Record<string, Record<string, string>> = {
   devkitPro: {
@@ -30,10 +28,9 @@ async function getFileHash (buffer: Buffer) {
 }
 
 export function getBuildConfiguration (
-  storage: Storage,
   build: Build,
 ): Partial<ProjectConfiguration> | undefined {
-  const confName = storage.config?.buildConfiguration || 'default';
+  const confName = build.configurationName || 'default';
 
   if (confName === 'default') {
     return { settings: build?.data?.project?.settings };
@@ -45,19 +42,17 @@ export function getBuildConfiguration (
 }
 
 export function getCustomPythonPath (
-  storage: Storage,
   build: Build,
 ) {
-  const buildConfig = getBuildConfiguration(storage, build);
+  const buildConfig = getBuildConfiguration(build);
 
   return buildConfig?.settings?.pythonPath;
 }
 
 export function getCustomDevkitProPath (
-  storage: Storage,
   build: Build,
 ) {
-  const buildConfig = getBuildConfiguration(storage, build);
+  const buildConfig = getBuildConfiguration(build);
 
   return buildConfig?.settings?.devkitProPath;
 }
@@ -95,14 +90,13 @@ async function downloadPackagedVendor (vendorName: string, platform: string) {
 
 async function checkPackagedVendor (
   vendorName: string,
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   if (build.controller?.signal.aborted) {
     return;
   }
 
-  sendLog(event, build.id, `Checking ${vendorName}...`);
+  build.events.onLog(`Checking ${vendorName}...`);
 
   const vendorPath = getVendorPath(vendorName);
 
@@ -113,22 +107,22 @@ async function checkPackagedVendor (
     // If that fails, try to use the internal zip file
     try {
       await fsp.access(vendorPath + '.tar.gz');
-      sendLog(event, build.id, `${vendorName} not setup, extracting from archive...`);
+      build.events.onLog(`${vendorName} not setup, extracting from archive...`);
       await uncompressFile(vendorPath + '.tar.gz', vendorPath);
-      sendSuccessLog(event, build.id, `${vendorName} extracted successfully.`);
+      build.events.onSuccess(`${vendorName} extracted successfully.`);
     } catch {
       // If that fails, try to download archive from github
       try {
         await fsp.unlink(vendorPath + '.tar.gz').catch(() => {});
-        sendLog(event, build.id, `${vendorName} package not found, downloading from GitHub...`);
+        build.events.onLog(`${vendorName} package not found, downloading from GitHub...`);
         await downloadPackagedVendor(vendorName, process.platform);
-        sendLog(event, build.id, `extracting ${vendorName} from downloaded archive...`);
+        build.events.onLog(`extracting ${vendorName} from downloaded archive...`);
         await uncompressFile(vendorPath + '.tar.gz', vendorPath);
       } catch (e) {
-        sendError(event, build.id, `${vendorName} not found`);
-        sendError(event, build.id, (e as Error).message);
+        build.events.onError(`${vendorName} not found`);
+        build.events.onError((e as Error).message);
         build.controller?.abort();
-        sendAbort(event, build.id);
+        build.events.onAbort();
       }
     }
   }
@@ -148,79 +142,71 @@ export function getVendorPath (vendorName: string) {
 }
 
 async function checkPython (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   if (build.controller?.signal.aborted) {
     return;
   }
 
-  const command = getCustomPythonPath(storage, build) ||
+  const command = getCustomPythonPath(build) ||
     path.join(getVendorPath('python'), 'bin', 'python3') +
     (process.platform === 'win32' ? '.exe' : '');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
-    event,
     build,
     log: false,
   });
 
-  sendSuccessLog(event, build.id, version.trim() + ' found');
+  build.events.onSuccess(version.trim() + ' found');
 }
 
 async function checkDevkitPro (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   if (build.controller?.signal.aborted) {
     return;
   }
 
-  const command = (getCustomDevkitProPath(storage, build) ||
+  const command = (getCustomDevkitProPath(build) ||
     getVendorPath('devkitPro')) + '/devkitARM/bin/arm-none-eabi-g++' +
     (process.platform === 'win32' ? '.exe' : '');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
-    event,
     build,
     log: false,
   });
 
-  sendSuccessLog(event, build.id, version.trim().split('\n')[0] + ' found');
+  build.events.onSuccess(version.trim().split('\n')[0] + ' found');
 }
 
 export async function checkDependencies (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   if (build.controller?.signal.aborted) {
     return;
   }
 
-  sendStep(event, build.id, 'Checking project dependencies...');
+  build.events.onStep('Checking project dependencies...');
 
-  const customPythonPath = getCustomPythonPath(storage, build);
+  const customPythonPath = getCustomPythonPath(build);
 
   if (!customPythonPath) {
-    await checkPackagedVendor('python', event, build);
+    await checkPackagedVendor('python', build);
   } else {
-    sendLog(event, build.id, 'Checking Python...');
+    build.events.onLog('Checking Python...');
   }
 
-  await checkPython(storage, event, build);
+  await checkPython(build);
 
-  const customDevkitProPath = getCustomDevkitProPath(storage, build);
+  const customDevkitProPath = getCustomDevkitProPath(build);
 
   if (!customDevkitProPath) {
-    await checkPackagedVendor('devkitPro', event, build);
+    await checkPackagedVendor('devkitPro', build);
   } else {
-    sendLog(event, build.id, 'Checking devkitPro...');
+    build.events.onLog('Checking devkitPro...');
   }
 
-  await checkDevkitPro(storage, event, build);
+  await checkDevkitPro(build);
 }

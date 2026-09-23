@@ -92,6 +92,22 @@ namespace neo::variables
       BN_LOG("Setting variable:", key, ", to value:", value->as_string());
       it->second = value;
     }
+
+    inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val)
+    {
+      if (key.empty()) {
+        BN_LOG("Empty variable key set_raw attempted");
+        return;
+      }
+
+      auto it = all.find(key);
+      if (it != all.end() && it->second != nullptr) {
+        BN_LOG("Setting variable raw:", key, ", to value:", str_val);
+        it->second->int_value = int_val;
+        it->second->bool_value = bool_val;
+        it->second->str_value = str_val;
+      }
+    }
   };
 }
 

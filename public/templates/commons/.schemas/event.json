@@ -31,9 +31,21 @@
         }
       }
     },
+    "DynamicSavedGameValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "saved-game"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
-        { "$ref": "#/definitions/DynamicVariableValue" }
+        { "$ref": "#/definitions/DynamicVariableValue" },
+        { "$ref": "#/definitions/DynamicSavedGameValue" }
       ]
     },
     "EventValue": {
@@ -672,6 +684,30 @@
       ],
       "type": "object"
     },
+    "SaveGameEvent": {
+      "properties": {
+        "type": {
+          "const": "save-game",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "LoadGameEvent": {
+      "properties": {
+        "type": {
+          "const": "load-game",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -705,7 +741,9 @@
         { "$ref": "#/definitions/ExecuteScriptEvent" },
         { "$ref": "#/definitions/SetActorDirectionEvent" },
         { "$ref": "#/definitions/SetPlayerDirectionEvent" },
-        { "$ref": "#/definitions/SetBackgroundEvent" }
+        { "$ref": "#/definitions/SetBackgroundEvent" },
+        { "$ref": "#/definitions/SaveGameEvent" },
+        { "$ref": "#/definitions/LoadGameEvent" }
       ]
     }
   },

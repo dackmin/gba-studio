@@ -26,7 +26,7 @@ import {
   getCustomDevkitProPath,
   getCustomPythonPath,
   getVendorPath,
-} from './vendors';
+} from '../../vendors';
 import { prepareData } from './data';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
@@ -36,8 +36,22 @@ import { copyAssets } from './assets';
 const builds = new Map<string, Build>();
 let latestBuildId: string | null = null;
 
+function createHandlers (
+  event: IpcMainInvokeEvent,
+  buildId: string
+): Build['events'] {
+  return {
+    onLog: (...args: any[]) => sendLog(event, buildId, args.join(' ')),
+    onStep: (...args: any[]) => sendStep(event, buildId, args.join(' ')),
+    onError: (...args: any[]) => sendError(event, buildId, args.join(' ')),
+    onSuccess: (...args: any[]) => sendSuccessLog(event, buildId, args.join(' ')),
+    onAbort: () => sendAbort(event, buildId),
+    onStart: () => event.sender.send('build-started', { id: buildId }),
+    onComplete: () => event.sender.send('build-completed', { id: buildId }),
+  };
+}
+
 async function buildMakefile (
-  storage: Storage,
   build: Build,
 ) {
   const target = path
@@ -50,9 +64,9 @@ async function buildMakefile (
     ), 'utf-8'),
     {
       target,
-      pythonPath: getCustomPythonPath(storage, build) ||
+      pythonPath: getCustomPythonPath(build) ||
         path.join(getVendorPath('python'), 'bin', 'python3'),
-      devkitProPath: getCustomDevkitProPath(storage, build) ||
+      devkitProPath: getCustomDevkitProPath(build) ||
         getVendorPath('devkitPro'),
       butanoPath: path.join(
         getResourcesDir(),
@@ -116,9 +130,7 @@ async function isFirstBuild (build: Build): Promise<boolean> {
   }
 }
 
-async function buildProject (
-  storage: Storage,
-  event: IpcMainInvokeEvent,
+export async function buildProject (
   build: Build,
 ) {
   if (build.controller?.signal.aborted) {
@@ -127,10 +139,10 @@ async function buildProject (
 
   const start = globalThis.performance.now();
 
-  const buildConfig = getBuildConfiguration(storage, build);
+  const buildConfig = getBuildConfiguration(build);
 
   if (buildConfig?.name) {
-    sendLog(event, build.id, `Build configuration: ${buildConfig?.name}`);
+    build.events.onLog(`Build configuration: ${buildConfig?.name}`);
   }
 
   if (build.data?.project) {
@@ -138,36 +150,36 @@ async function buildProject (
   }
 
   if (build.opts?.clean === true) {
-    sendStep(event, build.id, 'Cleaning build folder...');
+    build.events.onStep('Cleaning build folder...');
     await fse.remove(getBuildDir(build));
-    sendSuccessLog(event, build.id, 'Build folder cleaned.');
+    build.events.onSuccess('Build folder cleaned.');
   }
 
   const firstBuild = await isFirstBuild(build);
 
-  sendStep(event, build.id, 'Preparing assets...');
-  sendLog(event, build.id, `Copying assets...`);
-  await copyAssets(event, build);
-  sendSuccessLog(event, build.id, 'Assets copied successfully.');
+  build.events.onStep('Preparing assets...');
+  build.events.onLog(`Copying assets...`);
+  await copyAssets(build);
+  build.events.onSuccess('Assets copied successfully.');
 
-  sendStep(event, build.id, 'Pre-building templates...');
-  await buildTemplates(event, await prepareData(build));
+  build.events.onStep('Pre-building templates...');
+  await buildTemplates(await prepareData(build));
 
-  sendStep(event, build.id, 'Building project...');
-  sendLog(event, build.id, `Building project in ${getBuildDir(build)}...`);
+  build.events.onStep('Building project...');
+  build.events.onLog(`Building project in ${getBuildDir(build)}...`);
 
   const target = path
     .basename(build.projectPath, path.extname(build.projectPath));
 
-  await buildMakefile(storage, build);
+  await buildMakefile(build);
 
   const cores = os.cpus()?.length || 1;
 
   if (cores > 1 && !firstBuild) {
-    sendLog(event, build.id,
+    build.events.onLog(
       `🚀 ${cores} CPU cores detected, enabling multi-core build`);
   } else if (cores > 1 && firstBuild) {
-    sendLog(event, build.id,
+    build.events.onLog(
       `ℹ️ Multiple CPU cores detected, but multi-core build disabled for first build ` +
         `(next builds will be faster)`);
   }
@@ -177,7 +189,6 @@ async function buildProject (
     ...cores > 1 && !firstBuild ? [`-j${cores.toString()}`] : [],
   ], {
     cwd: getBuildDir(build),
-    event,
     build,
   });
 
@@ -198,15 +209,15 @@ async function buildProject (
   try {
     await fs.access(finalGamePath);
   } catch (e) {
-    sendError(event, build.id, `Built .gba file not found: ${finalGamePath}`);
-    sendError(event, build.id, (e as Error).message);
+    build.events.onError(`Built .gba file not found: ${finalGamePath}`);
+    build.events.onError((e as Error).message);
     build.controller?.abort();
-    sendAbort(event, build.id);
+    build.events.onAbort();
   }
 
   const romSize = (await fs.stat(finalGamePath)).size;
 
-  sendSuccessLog(event, build.id,
+  build.events.onSuccess(
     `Project built successfully in ` +
     `${(globalThis.performance.now() - start).toFixed(2)} ms 🎉 ` +
     `(ROM size: ${humanSize(romSize)})`
@@ -230,26 +241,24 @@ async function buildProject (
 }
 
 async function startBuild (
-  storage: Storage,
   event: IpcMainInvokeEvent,
   build: Build,
 ) {
   try {
-    await checkDependencies(storage, event, build);
+    await checkDependencies(build);
 
     if (build.controller?.signal.aborted) {
       return;
     }
 
-    await buildProject(storage, event, build);
-
-    event.sender.send('build-completed', build.id);
+    await buildProject(build);
+    build.events.onComplete();
   } catch (e) {
     if (build.controller?.signal.aborted) {
-      sendAbort(event, build.id);
+      build.events.onAbort();
     } else {
-      sendError(event, build.id, (e as Error).message);
-      sendAbort(event, build.id);
+      build.events.onError((e as Error).message);
+      build.events.onAbort();
     }
   }
 }
@@ -264,23 +273,26 @@ export async function startBuildProject (
   const buildId = randomUUID();
   latestBuildId = buildId;
   const controller = new AbortController();
+
   const build: Build = {
     id: buildId,
+    configurationName: storage.config?.buildConfiguration,
     projectPath,
     controller,
     data: await serialize(await sanitize(data, { projectPath })),
     opts,
+    events: createHandlers(event, buildId),
   };
 
   builds.set(buildId, build);
-  event.sender.send('build-started', { id: buildId });
-  startBuild(storage, event, build);
+  build.events.onStart();
+  startBuild(event, build);
 
   return buildId;
 }
 
 export function abortBuildProject (
-  event: IpcMainInvokeEvent,
+  _: IpcMainInvokeEvent,
   buildId?: string
 ) {
   const controller = builds.get(buildId || latestBuildId || '')?.controller;
@@ -289,16 +301,19 @@ export function abortBuildProject (
     controller.abort();
   }
 
-  event.sender.send('build-aborted', { id: buildId });
+  const build = builds.get(buildId || latestBuildId || '');
+  build?.events.onAbort();
 }
 
 export async function cleanBuildFolder (
   event: IpcMainInvokeEvent,
   projectPath: string,
 ) {
+  const buildId = randomUUID();
   const build: Build = {
-    id: randomUUID(),
+    id: buildId,
     projectPath,
+    events: createHandlers(event, buildId),
   };
 
   event.sender.send('clean-started', { id: build.id });

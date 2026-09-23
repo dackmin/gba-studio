@@ -1,7 +1,7 @@
 import { type SpawnOptions, spawn } from 'node:child_process';
 import path from 'node:path';
 
-import type{ IpcMainInvokeEvent } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import slugify from 'slugify';
 import { v4 as uuid } from 'uuid';
 
@@ -81,7 +81,6 @@ export function runCommand (
   args: string[],
   opts?: {
     cwd?: string;
-    event?: IpcMainInvokeEvent;
     build?: Build;
     log?: boolean;
     logErrors?: boolean;
@@ -112,13 +111,12 @@ export function runCommand (
       line += data.toString();
 
       if (
-        opts?.event &&
         opts?.build &&
         line.includes('\n') &&
         opts?.log !== false
       ) {
         for (const l of line.trim().split('\n')) {
-          sendLog(opts.event, opts.build.id, l.trim());
+          opts.build.events.onLog(l.trim());
         }
 
         line = '';
@@ -133,13 +131,12 @@ export function runCommand (
       errLine += data.toString();
 
       if (
-        opts?.event &&
         opts?.build &&
         errLine.includes('\n') &&
         opts?.logErrors !== false
       ) {
-        sendError(opts.event, opts.build.id, data.toString());
-        line = '';
+        opts.build.events.onError(data.toString());
+        errLine = '';
       }
     });
 

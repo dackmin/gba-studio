@@ -5,6 +5,8 @@ import {
   CodeIcon,
   ComponentInstanceIcon,
   ComponentNoneIcon,
+  DiscIcon,
+  DownloadIcon,
   EyeClosedIcon,
   EyeOpenIcon,
   GroupIcon,
@@ -413,6 +415,23 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     keywords: ['script', 'code', 'execute'],
     construct: () => ({
       type: 'execute-script',
+    }),
+  }, {
+    icon: DiscIcon,
+    name: 'Save Game',
+    value: 'save-game',
+    keywords: ['save', 'sram', 'flash', 'game', 'state'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'save-game',
+    }),
+  }, {
+    icon: DownloadIcon,
+    name: 'Load Game',
+    value: 'load-game',
+    keywords: ['load', 'sram', 'flash', 'game', 'state', 'restore'],
+    construct: () => ({
+      type: 'load-game',
     }),
   }],
 }];

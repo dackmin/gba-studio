@@ -30,6 +30,7 @@
 #include "sensor.h"
 #include "dialog.h"
 #include "camera.h"
+#include "save.h"
 
 namespace neo
 {
@@ -315,6 +316,9 @@ namespace neo
     // The old wave_hbe (if any) referenced the previous scene's background.
     stop_wave_effect();
 
+    // Apply any restored state from a loaded save game (player/actor positions & facing)
+    neo::save::apply_loaded_state_to_scene(this);
+
     BN_LOG("Scene events count:", active_scene->event_count);
 
     // Exec normal scene events
@@ -467,6 +471,24 @@ namespace neo
     else if (e->type == "enable-input")
     {
       is_input_enabled = true;
+    }
+
+    /**
+     * @name save-game
+     * Saves variables, current scene id, player position, and actors position to SRAM/Flash.
+     */
+    else if (e->type == "save-game")
+    {
+      neo::save::write(this);
+    }
+
+    /**
+     * @name load-game
+     * Loads variables, last saved scene, player position, and actors position from SRAM/Flash.
+     */
+    else if (e->type == "load-game")
+    {
+      neo::save::load(this);
     }
 
     /**
@@ -1190,6 +1212,13 @@ namespace neo
 
   bool game::evaluate_condition (neo::types::if_expression* node)
   {
+    // A saved-game expression used directly as a condition is truthy if a save exists
+    if (node->type == "saved-game")
+    {
+      BN_LOG("[IF] Checking saved game existence");
+      return neo::save::has_save();
+    }
+
     // A bare value/variable used directly as a condition is truthy if non-empty
     if (node->type != "condition")
     {
@@ -1245,6 +1274,11 @@ namespace neo
       auto* val_expr = static_cast<neo::types::if_expression_value*>(expression);
       BN_LOG("[IF] Getting raw value: ", val_expr->value);
       return val_expr->value;
+    }
+    else if (expression->type == "saved-game")
+    {
+      BN_LOG("[IF] Getting saved game existence");
+      return neo::save::has_save() ? "true" : "false";
     }
 
     return "";

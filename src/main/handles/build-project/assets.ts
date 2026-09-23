@@ -2,14 +2,13 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-import type { IpcMainInvokeEvent } from 'electron';
 import { pick } from '@junipero/react';
 import fse from 'fs-extra';
 import { Jimp } from 'jimp';
 
 import type { Build, GameSpriteFile } from '../../../types';
-import { getBuildDir, sendLog } from './utils';
 import { toBmp } from '../../images';
+import { getBuildDir } from './utils';
 
 export async function getShasum (filePath: string) {
   const hash = createHash('sha256');
@@ -31,7 +30,6 @@ export async function isSame (source: string, destination: string) {
 }
 
 export async function copyAssets (
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   const projectDir = path.dirname(build.projectPath);
@@ -47,7 +45,7 @@ export async function copyAssets (
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
-      sendLog(event, build.id, `Skipping ${sprite.name}, cached`);
+      build.events.onLog(`Skipping ${sprite.name}, cached`);
       continue;
     }
 
@@ -68,7 +66,7 @@ export async function copyAssets (
     //   }
     // }
 
-    sendLog(event, build.id, `Copied sprite: ${sprite.name} (${fileName}.json)`);
+    build.events.onLog(`Copied sprite: ${sprite.name} (${fileName}.json)`);
   }
 
   // Copy backgrounds
@@ -78,7 +76,7 @@ export async function copyAssets (
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
-      sendLog(event, build.id, `Skipping ${background.name}, cached`);
+      build.events.onLog(`Skipping ${background.name}, cached`);
       continue;
     }
 
@@ -89,7 +87,7 @@ export async function copyAssets (
     );
 
     await fse.copyFile(source, destination);
-    sendLog(event, build.id, `Copied background: ${background.name} (${fileName}.json)`);
+    build.events.onLog(`Copied background: ${background.name} (${fileName}.json)`);
   }
 
   const audioOutputDir = path.join(buildDir, 'audio');
@@ -102,12 +100,12 @@ export async function copyAssets (
     const destination = path.join(audioOutputDir, fileName + '.' + (sound.format || 'wav'));
 
     if (await isSame(source, destination)) {
-      sendLog(event, build.id, `Skipping ${sound.name}, cached`);
+      build.events.onLog(`Skipping ${sound.name}, cached`);
       continue;
     }
 
     await fse.copyFile(source, destination);
-    sendLog(event, build.id, `Copied sound: ${sound.name} (${fileName}.${sound.format || 'wav'})`);
+    build.events.onLog(`Copied sound: ${sound.name} (${fileName}.${sound.format || 'wav'})`);
   }
 
   // Copy music
@@ -117,12 +115,12 @@ export async function copyAssets (
     const destination = path.join(audioOutputDir, fileName + '.' + (music.format || 'mod'));
 
     if (await isSame(source, destination)) {
-      sendLog(event, build.id, `Skipping ${music.name}, cached`);
+      build.events.onLog(`Skipping ${music.name}, cached`);
       continue;
     }
 
     await fse.copyFile(source, destination);
-    sendLog(event, build.id, `Copied music: ${music.name} (${fileName}.${music.format || 'mod'})`);
+    build.events.onLog(`Copied music: ${music.name} (${fileName}.${music.format || 'mod'})`);
   }
 }
 
