@@ -239,6 +239,18 @@ namespace neo::types
       event(type_) {}
   };
 
+  struct save_game_event: event
+  {
+    save_game_event(bn::string_view type_):
+      event(type_) {}
+  };
+
+  struct load_game_event: event
+  {
+    load_game_event(bn::string_view type_):
+      event(type_) {}
+  };
+
   struct dialog_event: event
   {
     neo::types::direction direction;
@@ -297,6 +309,12 @@ namespace neo::types
 
     if_expression_value(bn::string_view type_, bn::string_view value_):
       if_expression(type_), value(value_) {}
+  };
+
+  struct if_expression_saved_game: if_expression
+  {
+    if_expression_saved_game(bn::string_view type_):
+      if_expression(type_) {}
   };
 
   struct if_condition: if_expression

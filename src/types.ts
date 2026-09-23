@@ -329,8 +329,15 @@ export interface DynamicVariableValue {
   name?: string;
 }
 
+export interface DynamicSavedGameValue {
+  type: 'saved-game';
+  // Not used, kept for consistency with DynamicVariableValue
+  name?: string;
+}
+
 export type DynamicValue =
-  | DynamicVariableValue;
+  | DynamicVariableValue
+  | DynamicSavedGameValue;
 
 export type EventValue =
   | string
@@ -547,6 +554,14 @@ export interface SetPlayerPositionEvent extends SceneEvent {
   type: 'set-player-position';
   x: EventValue;
   y: EventValue;
+}
+
+export interface SaveGameEvent extends SceneEvent {
+  type: 'save-game';
+}
+
+export interface LoadGameEvent extends SceneEvent {
+  type: 'load-game';
 }
 
 export interface GameMenuChoice {

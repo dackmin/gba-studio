@@ -292,6 +292,7 @@ export async function startBuildProject (
 }
 
 export function abortBuildProject (
+  _: IpcMainInvokeEvent,
   buildId?: string
 ) {
   const controller = builds.get(buildId || latestBuildId || '')?.controller;

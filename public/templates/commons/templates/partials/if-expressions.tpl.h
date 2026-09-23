@@ -16,6 +16,11 @@ BN_DATA_EWRAM neo::types::if_expression_variable {{../prefix}}(
   {{../prefix}}_type,
   {{../prefix}}_name
 );
+{{else if (eq this.type "saved-game")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "saved-game";
+BN_DATA_EWRAM neo::types::if_expression_saved_game {{../prefix}}(
+  {{../prefix}}_type
+);
 {{else}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "{{this.type}}";
 BN_DATA_EWRAM neo::types::if_expression {{../prefix}}(

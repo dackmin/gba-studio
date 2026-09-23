@@ -11,6 +11,7 @@ export interface EventValueFieldProps
   extends Omit<TextField.RootProps, 'value' | 'defaultValue'> {
   value?: EventValue;
   defaultValue?: EventValue;
+  excludeTypes?: string[];
   onValueChange?: (value: EventValue) => void;
 }
 
@@ -20,8 +21,9 @@ const EventValueField = ({
   defaultValue,
   children,
   className,
-  onValueChange,
+  excludeTypes = ['saved-game'],
   min = 0,
+  onValueChange,
   ...rest
 }: EventValueFieldProps) => {
   const { variables } = useApp();
@@ -34,22 +36,25 @@ const EventValueField = ({
     variables.flatMap(v => v.values)
   ), [variables]);
 
-  const onTypeChange = useCallback((type: 'value' & DynamicValue['type']) => {
-    if (!isDynamicValue && type !== 'value') {
-      switch (type) {
-        case 'variable':
-          onValueChange?.({
-            type,
-            name: allVariables[0]?.id || allVariables[0]?.name || '',
-          });
-          break;
-        default:
-          onValueChange?.({ type });
-      }
-    } else if (isDynamicValue && type === 'value') {
-      onValueChange?.('');
+  const onTypeChange = useCallback((type: string) => {
+    const currentType = !isDynamicValue
+      ? 'value' : (val as DynamicValue).type;
+
+    if (type === currentType) {
+      return;
     }
-  }, [onValueChange, isDynamicValue, allVariables]);
+
+    if (type === 'value') {
+      onValueChange?.('');
+    } else if (type === 'variable') {
+      onValueChange?.({
+        type,
+        name: allVariables[0]?.id || allVariables[0]?.name || '',
+      });
+    } else {
+      onValueChange?.({ type } as DynamicValue);
+    }
+  }, [onValueChange, isDynamicValue, val, allVariables]);
 
   const onTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (isDynamicValue) {
@@ -87,7 +92,7 @@ const EventValueField = ({
         className,
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
-            (val as DynamicValue).type === 'variable',
+            ['variable', 'saved-game'].includes((val as DynamicValue).type),
         }
       )}
       onChange={onTextChange}
@@ -98,7 +103,7 @@ const EventValueField = ({
           onValueChange={onTypeChange}
         >
           <SelectPrimitive.Trigger asChild>
-            <Button variant="ghost" size="1">
+            <Button variant="ghost" size="1" className="px-1.5!">
               <SelectPrimitive.Value>
                 <Text size="1" className="font-bold dark:text-seashell">
                   <Switch
@@ -106,6 +111,7 @@ const EventValueField = ({
                       ? 'value' : (val as DynamicValue).type}
                   >
                     <Switch.Case value="variable">$</Switch.Case>
+                    <Switch.Case value="saved-game">↓</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -119,6 +125,11 @@ const EventValueField = ({
             <Select.Item value="variable">
               <Text className="text-slate">$</Text> Variable
             </Select.Item>
+            { !excludeTypes.includes('saved-game') && (
+              <Select.Item value="saved-game">
+                <Text className="text-slate">↓</Text> Has Saved Game
+              </Select.Item>
+            ) }
           </Select.Content>
         </Select.Root>
       </TextField.Slot>
@@ -148,6 +159,13 @@ const EventValueField = ({
               )) }
             </Select.Content>
           </Select.Root>
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'saved-game' && (
+        <TextField.Slot side="left">
+          <Text size="1" className="dark:text-seashell">
+            Has Saved Game
+          </Text>
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }
