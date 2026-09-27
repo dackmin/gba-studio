@@ -628,3 +628,218 @@ namespace neo
   }
 }
 
+void neo::types::actor_move_event::arm_pass()
+{
+  // Runs when the previous axis is done (or right at the start) to pick
+  // the next axis to move along, face it and (re)reset the animation,
+  // exactly like the body of each pass in actor::move_to().
+  while (pass < 2)
+  {
+    bool horizontal_first = direction_priority != "vertical";
+    horizontal_pass = (pass == 0) == horizontal_first;
+    int delta = horizontal_pass ? (target_px_x - origin_x) : (target_px_y - origin_y);
+
+    if (delta == 0)
+    {
+      // Nothing to move on this axis: settle it like the blocking
+      // version does at the end of each pass, and try the other one.
+      if (horizontal_pass)
+      {
+        origin_x = target_px_x;
+      }
+      else
+      {
+        origin_y = target_px_y;
+      }
+
+      ++pass;
+
+      continue;
+    }
+
+    // Backwards movement keeps the current facing instead of turning towards the target
+    if (!backwards)
+    {
+      target->set_direction(horizontal_pass
+        ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
+        : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
+    }
+
+    // Animation depends on the (possibly just changed) direction, so it's looked up per pass
+    anim = animation != "" ? target->get_animation(animation) : nullptr;
+
+    if (anim != nullptr)
+    {
+      bn::sprite_tiles_item tiles_item = target->definition->sprite.tiles_item();
+      anim->reset(target->sprite, &tiles_item);
+    }
+
+    moved = 0;
+    step = delta > 0 ? px_per_frame : -px_per_frame;
+    armed = true;
+
+    return;
+  }
+
+  // No axis left to move: finish like the blocking version's tail.
+  finish();
+}
+
+void neo::types::actor_move_event::finish()
+{
+  target->moving = false;
+  target->set_direction(target->direction); // restore the idle tile for the final facing direction
+  target->set_tile_position(target_tile_x, target_tile_y);
+
+  pass = 2;
+  armed = false;
+  anim = nullptr;
+}
+
+void neo::types::actor_move_event::begin_move(neo::game* game_)
+{
+  game_ref = game_;
+  pass = 2;
+  armed = false;
+  anim = nullptr;
+
+  if (target == nullptr || !target->sprite.visible())
+  {
+    // Like actor::move_to(): the move is skipped entirely for missing
+    // or invisible (disabled) actors, so the parallel branch shouldn't
+    // animate either.
+    target = nullptr;
+
+    return;
+  }
+
+  if (game_->active_scene == nullptr || game_->active_scene->map_data == nullptr)
+  {
+    target = nullptr;
+
+    return;
+  }
+
+  neo::types::map* map_data = game_->active_scene->map_data;
+  int offset_x = -map_data->pixel_width(game_->variables) / 2 + target->sprite.dimensions().width() / 2;
+  int offset_y = -map_data->pixel_height(game_->variables) / 2 + target->sprite.dimensions().height() / 2;
+
+  target_tile_x = x->as_int(game_->variables);
+  target_tile_y = y->as_int(game_->variables);
+  target_px_x = map_data->to_pixel_x(game_->variables, target_tile_x) + offset_x;
+  target_px_y = map_data->to_pixel_y(game_->variables, target_tile_y) + offset_y;
+
+  px_per_frame = bn::max(1, speed->as_int(game_->variables));
+
+  origin_x = (int)target->sprite.x();
+  origin_y = (int)target->sprite.y();
+
+  target->moving = true;
+  pass = 0;
+  arm_pass();
+}
+
+void neo::types::move_actor_to_event::start(neo::game* game_)
+{
+  target = nullptr;
+
+  // Like the blocking handler: resolve the actor by name or id.
+  for (int i = 0; i < game_->actors_count; ++i)
+  {
+    if (
+      game_->actors[i]->definition->name == actor ||
+      game_->actors[i]->definition->_id == actor
+    )
+    {
+      target = game_->actors[i];
+
+      break;
+    }
+  }
+
+  begin_move(game_);
+}
+
+void neo::types::move_player_to_event::start(neo::game* game_)
+{
+  // Like the blocking handler: the move is skipped when there's no player.
+  target = game_->player;
+
+  begin_move(game_);
+}
+
+bool neo::types::actor_move_event::update()
+{
+  if (pass >= 2)
+  {
+    return true;
+  }
+
+  if (!armed)
+  {
+    arm_pass();
+
+    if (pass >= 2)
+    {
+      return true;
+    }
+  }
+
+  int delta = horizontal_pass ? (target_px_x - origin_x) : (target_px_y - origin_y);
+  moved += step;
+
+  if (abs(moved) > abs(delta))
+  {
+    moved = delta;
+  }
+
+  if (horizontal_pass)
+  {
+    target->sprite.set_x(origin_x + moved);
+  }
+  else
+  {
+    target->sprite.set_y(origin_y + moved);
+  }
+
+  if (game_ref->camera_target == target)
+  {
+    neo::camera::track(game_ref, *game_ref->active_scene, target);
+  }
+
+  // Play one animation frame
+  if (anim != nullptr)
+  {
+    bn::sprite_tiles_item tiles_item = target->definition->sprite.tiles_item();
+    anim->play(target->sprite, &tiles_item, game_ref->variables);
+  }
+
+  if (abs(moved) < abs(delta))
+  {
+    return false;
+  }
+
+  // Axis settled: the other one starts on the next update() call.
+  if (horizontal_pass)
+  {
+    origin_x = target_px_x;
+  }
+  else
+  {
+    origin_y = target_px_y;
+  }
+
+  ++pass;
+  armed = false;
+  anim = nullptr;
+
+  if (pass >= 2)
+  {
+    finish();
+
+    return true;
+  }
+
+  return false;
+}
+
