@@ -5,6 +5,7 @@ import { classNames } from '@junipero/react';
 
 import type { DynamicValue, EventValue } from '../../../types';
 import Switch from '../Switch';
+import DirectionField from '../DirectionField';
 import { useApp } from '../../services/hooks';
 
 export interface EventValueFieldProps
@@ -51,10 +52,24 @@ const EventValueField = ({
         type,
         name: allVariables[0]?.id || allVariables[0]?.name || '',
       });
+    } else if (type === 'player-attribute') {
+      onValueChange?.({
+        type,
+        name: 'x',
+      } as DynamicValue);
     } else {
       onValueChange?.({ type } as DynamicValue);
     }
   }, [onValueChange, isDynamicValue, val, allVariables]);
+
+  const onAttributeChange = useCallback((name: string) => {
+    if (isDynamicValue && (val as DynamicValue).type === 'player-attribute') {
+      onValueChange?.({
+        ...(val as DynamicValue),
+        name,
+      });
+    }
+  }, [onValueChange, isDynamicValue, val]);
 
   const onTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (isDynamicValue) {
@@ -92,7 +107,8 @@ const EventValueField = ({
         className,
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
-            ['variable', 'saved-game'].includes((val as DynamicValue).type),
+            ['variable', 'saved-game', 'player-attribute', 'direction']
+              .includes((val as DynamicValue).type),
         }
       )}
       onChange={onTextChange}
@@ -112,6 +128,8 @@ const EventValueField = ({
                   >
                     <Switch.Case value="variable">$</Switch.Case>
                     <Switch.Case value="saved-game">↓</Switch.Case>
+                    <Switch.Case value="player-attribute">P</Switch.Case>
+                    <Switch.Case value="direction">▲</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -128,6 +146,16 @@ const EventValueField = ({
             { !excludeTypes.includes('saved-game') && (
               <Select.Item value="saved-game">
                 <Text className="text-slate">↓</Text> Has Saved Game
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('player-attribute') && (
+              <Select.Item value="player-attribute">
+                <Text className="text-slate">P</Text> Player Attribute
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('direction') && (
+              <Select.Item value="direction">
+                <Text className="text-slate">▲</Text> Direction
               </Select.Item>
             ) }
           </Select.Content>
@@ -166,6 +194,52 @@ const EventValueField = ({
           <Text size="1" className="dark:text-seashell">
             Has Saved Game
           </Text>
+        </TextField.Slot>
+      ) }
+      { isDynamicValue &&
+        (val as DynamicValue).type === 'player-attribute' && (
+        <TextField.Slot side="left">
+          <Select.Root
+            value={(val as DynamicValue).name || 'x'}
+            onValueChange={onAttributeChange}
+          >
+            <SelectPrimitive.Trigger asChild>
+              <Button variant="ghost" size="1">
+                <SelectPrimitive.Value>
+                  <Text size="1" className="dark:text-seashell">
+                    {
+                      {
+                        x: 'X',
+                        y: 'Y',
+                        direction: 'Direction',
+                      }[(val as DynamicValue).name || 'x']
+                    }
+                  </Text>
+                </SelectPrimitive.Value>
+              </Button>
+            </SelectPrimitive.Trigger>
+            <Select.Content>
+              <Select.Item value="x">
+                <Text>X</Text>
+              </Select.Item>
+              <Select.Item value="y">
+                <Text>Y</Text>
+              </Select.Item>
+              <Select.Item value="direction">
+                <Text>Direction</Text>
+              </Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'direction' && (
+        <TextField.Slot side="left">
+          <DirectionField
+            size="1"
+            value={((val as DynamicValue).name as
+              'up' | 'down' | 'left' | 'right') || 'down'}
+            onValueChange={onValueChange_}
+          />
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }

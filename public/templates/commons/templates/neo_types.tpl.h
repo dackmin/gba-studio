@@ -317,6 +317,22 @@ namespace neo::types
       if_expression(type_) {}
   };
 
+  struct if_expression_player_attribute: if_expression
+  {
+    bn::string_view attribute;
+
+    if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
+      if_expression(type_), attribute(attribute_) {}
+  };
+
+  struct if_expression_direction: if_expression
+  {
+    neo::types::direction value;
+
+    if_expression_direction(bn::string_view type_, neo::types::direction value_):
+      if_expression(type_), value(value_) {}
+  };
+
   struct if_condition: if_expression
   {
     bn::string_view op;

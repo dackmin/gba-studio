@@ -21,6 +21,19 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "saved-game";
 BN_DATA_EWRAM neo::types::if_expression_saved_game {{../prefix}}(
   {{../prefix}}_type
 );
+{{else if (eq this.type "player-attribute")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "player-attribute";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_attribute = "{{this.name}}";
+BN_DATA_EWRAM neo::types::if_expression_player_attribute {{../prefix}}(
+  {{../prefix}}_type,
+  {{../prefix}}_attribute
+);
+{{else if (eq this.type "direction")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "direction";
+BN_DATA_EWRAM neo::types::if_expression_direction {{../prefix}}(
+  {{../prefix}}_type,
+  neo::types::direction::{{uppercase (valuedef this.name 'down')}}
+);
 {{else}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "{{this.type}}";
 BN_DATA_EWRAM neo::types::if_expression {{../prefix}}(

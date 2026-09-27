@@ -324,20 +324,32 @@ export declare interface AppPayload {
   scripts: GameScript[];
 };
 
-export interface DynamicVariableValue {
-  type: 'variable';
+export interface AnyDynamic {
+  type: string;
   name?: string;
 }
 
-export interface DynamicSavedGameValue {
+export interface DynamicVariableValue extends AnyDynamic {
+  type: 'variable';
+}
+
+export interface DynamicSavedGameValue extends AnyDynamic {
   type: 'saved-game';
-  // Not used, kept for consistency with DynamicVariableValue
-  name?: string;
+}
+
+export interface DynamicPlayerAttributeValue extends AnyDynamic {
+  type: 'player-attribute';
+}
+
+export interface DynamicDirectionValue extends AnyDynamic {
+  type: 'direction';
 }
 
 export type DynamicValue =
   | DynamicVariableValue
-  | DynamicSavedGameValue;
+  | DynamicSavedGameValue
+  | DynamicPlayerAttributeValue
+  | DynamicDirectionValue;
 
 export type EventValue =
   | string

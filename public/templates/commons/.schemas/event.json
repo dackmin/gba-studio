@@ -42,10 +42,44 @@
         }
       }
     },
+    "PlayerAttribute": {
+      "enum": ["x", "y", "direction"],
+      "type": "string"
+    },
+    "DynamicPlayerAttributeValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "player-attribute"
+        },
+        "name": {
+          "$ref": "#/definitions/PlayerAttribute"
+        }
+      }
+    },
+    "DynamicDirectionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "direction"
+        },
+        "name": {
+          "$ref": "#/definitions/Direction"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
         { "$ref": "#/definitions/DynamicVariableValue" },
-        { "$ref": "#/definitions/DynamicSavedGameValue" }
+        { "$ref": "#/definitions/DynamicSavedGameValue" },
+        { "$ref": "#/definitions/DynamicPlayerAttributeValue" },
+        { "$ref": "#/definitions/DynamicDirectionValue" }
       ]
     },
     "EventValue": {

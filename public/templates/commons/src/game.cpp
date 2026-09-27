@@ -36,6 +36,35 @@ namespace neo
 {
   namespace
   {
+    // Minimal numeric parse for raw values compared against tile coordinates:
+    // stops at the first non-digit, so "12ab" → 12 and "down" → 0
+    int string_to_int(bn::string_view str)
+    {
+      int result = 0;
+      bool negative = false;
+      int i = 0;
+
+      if (!str.empty() && (str[0] == '-' || str[0] == '+'))
+      {
+        negative = str[0] == '-';
+        i = 1;
+      }
+
+      for (; i < str.length(); ++i)
+      {
+        char c = str[i];
+
+        if (c < '0' || c > '9')
+        {
+          break;
+        }
+
+        result = (result * 10) + (c - '0');
+      }
+
+      return negative ? -result : result;
+    }
+
     bn::fixed get_palette_effect(bn::string_view target, bn::string_view effect)
     {
       bool use_sprite = target == "sprite";
@@ -1219,10 +1248,12 @@ namespace neo
       return neo::save::has_save();
     }
 
-    // A bare value/variable used directly as a condition is truthy if non-empty
+    // A bare expression used directly as a condition is truthy if it
+    // resolves to a number or a non-empty string
     if (node->type != "condition")
     {
-      return get_expression_value(node) != "";
+      condition_operand operand = resolve_operand(node);
+      return operand.numeric || !operand.text.empty();
     }
 
     auto* condition = static_cast<neo::types::if_condition*>(node);
@@ -1236,20 +1267,28 @@ namespace neo
       return evaluate_condition(condition->left) || evaluate_condition(condition->right);
     }
 
-    bn::string_view left = get_expression_value(condition->left);
-    bn::string_view right = get_expression_value(condition->right);
+    // Comparisons are equality-only for now
+    // TODO: allow gt/lt/... comparisons
+    condition_operand left = resolve_operand(condition->left);
+    condition_operand right = resolve_operand(condition->right);
 
-    BN_LOG("Evaluating condition: ", left, " ", condition->op, " ", right);
+    // Tile x/y attributes have no string form, so a comparison touching one
+    // is numeric; everything else compares as text
+    bool equal;
 
-    if (condition->op == "!=")
+    if (left.numeric || right.numeric)
     {
-      return left != right;
+      equal = left.number == right.number;
+    }
+    else
+    {
+      equal = left.text == right.text;
     }
 
-    return left == right;
+    return condition->op == "!=" ? !equal : equal;
   }
 
-  bn::string_view game::get_expression_value (neo::types::if_expression* expression)
+  game::condition_operand game::resolve_operand (neo::types::if_expression* expression)
   {
     if (expression->type == "variable")
     {
@@ -1258,30 +1297,119 @@ namespace neo
       if (!variables.has(var_expr->name))
       {
         BN_LOG("Variable not found: ", var_expr->name);
-        return "";
+        return {};
       }
 
-      // if comparison does not care about the type, always compares strings
-      // TODO: allow gt/lt/... comparisons
-      auto var_value = variables.get(var_expr->name);
+      // Variables are dual-natured: they compare as int against tile
+      // coordinates and as text against everything else
+      auto& var_value = variables.get(var_expr->name);
 
-      BN_LOG("[IF] Getting variable value: ", var_expr->name, "with value:", var_value.as_string());
+      BN_LOG("[IF] Getting variable: ", var_expr->name, " = ", var_value.as_string());
 
-      return var_value.as_string();
+      return { false, var_value.as_int(), var_value.as_string() };
     }
     else if (expression->type == "value")
     {
       auto* val_expr = static_cast<neo::types::if_expression_value*>(expression);
+
       BN_LOG("[IF] Getting raw value: ", val_expr->value);
-      return val_expr->value;
+
+      return { false, string_to_int(val_expr->value), val_expr->value };
     }
     else if (expression->type == "saved-game")
     {
       BN_LOG("[IF] Getting saved game existence");
-      return neo::save::has_save() ? "true" : "false";
+
+      return { false, 0, neo::save::has_save() ? "true" : "false" };
+    }
+    else if (expression->type == "player-attribute")
+    {
+      auto* attr_expr = static_cast<neo::types::if_expression_player_attribute*>(expression);
+
+      if (player == nullptr)
+      {
+        BN_LOG("[IF] Player not found");
+        return {};
+      }
+
+      if (attr_expr->attribute == "x")
+      {
+        int tile_x = get_player_tile_x();
+
+        BN_LOG("[IF] Getting player x: ", tile_x);
+
+        // Tile coordinates have no string form: they force numeric comparison
+        return { true, tile_x, "" };
+      }
+      else if (attr_expr->attribute == "y")
+      {
+        int tile_y = get_player_tile_y();
+
+        BN_LOG("[IF] Getting player y: ", tile_y);
+
+        return { true, tile_y, "" };
+      }
+      else if (attr_expr->attribute == "direction")
+      {
+        bn::string_view name = get_direction_string(player->direction);
+
+        BN_LOG("[IF] Getting player direction: ", name);
+
+        return { false, 0, name };
+      }
+
+      BN_LOG("Unknown player attribute: ", attr_expr->attribute);
+      return {};
+    }
+    else if (expression->type == "direction")
+    {
+      auto* dir_expr = static_cast<neo::types::if_expression_direction*>(expression);
+      bn::string_view name = get_direction_string(dir_expr->value);
+
+      BN_LOG("[IF] Getting direction: ", name);
+
+      return { false, 0, name };
     }
 
-    return "";
+    BN_LOG("Unknown expression type: ", expression->type);
+    return {};
+  }
+
+  int game::get_player_tile_x ()
+  {
+    return active_scene != nullptr
+      ? active_scene->map_data->to_tile_x(variables, (int)player->position.x())
+      : (int)player->position.x();
+  }
+
+  int game::get_player_tile_y ()
+  {
+    return active_scene != nullptr
+      ? active_scene->map_data->to_tile_y(variables, (int)player->position.y())
+      : (int)player->position.y();
+  }
+
+  bn::string_view game::get_direction_string (neo::types::direction direction)
+  {
+    switch (direction)
+    {
+      case neo::types::direction::LEFT:
+        return "left";
+      case neo::types::direction::RIGHT:
+        return "right";
+      case neo::types::direction::UP:
+        return "up";
+      case neo::types::direction::UP_LEFT:
+        return "up_left";
+      case neo::types::direction::UP_RIGHT:
+        return "up_right";
+      case neo::types::direction::DOWN_LEFT:
+        return "down_left";
+      case neo::types::direction::DOWN_RIGHT:
+        return "down_right";
+      default:
+        return "down";
+    }
   }
 
   void game::enable_blending ()
