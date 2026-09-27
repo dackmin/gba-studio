@@ -53,6 +53,8 @@ namespace neo
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
 
+      bn::string_view active_collision_side;
+
       // Parallel-events nodes with resumable (fade-in/out, move-camera-to,
       // move-actor-to, move-player-to, set-palette-effect, wave-effect)
       // sub-events, ticked once per frame by update_active_parallel_events()

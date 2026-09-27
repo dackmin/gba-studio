@@ -34,6 +34,11 @@ BN_DATA_EWRAM neo::types::if_expression_direction {{../prefix}}(
   {{../prefix}}_type,
   neo::types::direction::{{uppercase (valuedef this.name 'down')}}
 );
+{{else if (eq this.type "collision-side")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "collision-side";
+BN_DATA_EWRAM neo::types::if_expression_collision_side {{../prefix}}(
+  {{../prefix}}_type
+);
 {{else}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "{{this.type}}";
 BN_DATA_EWRAM neo::types::if_expression {{../prefix}}(

@@ -151,6 +151,12 @@ namespace neo::conditions
 
         return { false, 0, name };
       }
+      else if (expression->type == "collision-side")
+      {
+        BN_LOG("[IF] Getting collision side: ", game->active_collision_side);
+
+        return { false, 0, game->active_collision_side };
+      }
 
       BN_LOG("Unknown expression type: ", expression->type);
       return {};

@@ -78,6 +78,9 @@ namespace neo
       // not-touching -> touching transition. Shared by both movement
       // models (top-down grid steps and side-scroller free movement).
       void check_collisions();
+      static bn::string_view get_collision_side(
+        int player_left, int player_top, int player_width, int player_height,
+        int other_left, int other_top, int other_width, int other_height);
   };
 }
 

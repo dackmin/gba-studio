@@ -74,12 +74,24 @@
         }
       }
     },
+    "DynamicCollisionSideValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "collision-side"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
         { "$ref": "#/definitions/DynamicVariableValue" },
         { "$ref": "#/definitions/DynamicSavedGameValue" },
         { "$ref": "#/definitions/DynamicPlayerAttributeValue" },
-        { "$ref": "#/definitions/DynamicDirectionValue" }
+        { "$ref": "#/definitions/DynamicDirectionValue" },
+        { "$ref": "#/definitions/DynamicCollisionSideValue" }
       ]
     },
     "EventValue": {

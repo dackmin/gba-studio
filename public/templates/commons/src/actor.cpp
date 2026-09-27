@@ -586,22 +586,60 @@ namespace neo
   }
 
   /**
-   * Resolves the actors/sprites the player's footprint overlaps this
-   * frame: solid ones (collision group 1-4, different from the player's)
-   * get their collide events fired on the not-touching -> touching
-   * transition, and anything not overlapped gets its touching state
-   * cleared so touching it again re-fires. Shared by both movement
-   * models (top-down grid steps and side-scroller free movement).
+   * Which side of a collided actor/sprite the player hit, as a direction
+   * name ("up", "down", "left", "right"), so it compares directly with
+   * a direction expression. Uses the two overlapping rects in map pixel
+   * coordinates and picks the axis with the smallest penetration: the
+   * side the player just crossed to enter the other rect. "up" means
+   * the player is above it (stomp).
+   */
+  bn::string_view actor::get_collision_side(
+    int player_left, int player_top, int player_width, int player_height,
+    int other_left, int other_top, int other_width, int other_height)
+  {
+    // How deep the player's rect overlaps the other's on each axis
+    int overlap_left = (player_left + player_width) - other_left;
+    int overlap_right = other_left + other_width - player_left;
+    int overlap_up = (player_top + player_height) - other_top;
+    int overlap_down = other_top + other_height - player_top;
+
+    // The smallest overlap is the axis the player entered through, so
+    // it identifies the side that was hit
+    int smallest = overlap_left;
+    bn::string_view side = "left";
+
+    if (overlap_right < smallest)
+    {
+      smallest = overlap_right;
+      side = "right";
+    }
+
+    if (overlap_up < smallest)
+    {
+      smallest = overlap_up;
+      side = "up";
+    }
+
+    if (overlap_down < smallest)
+    {
+      side = "down";
+    }
+
+    return side;
+  }
+
    */
   void actor::check_collisions()
   {
     neo::types::map* map_data = game->active_scene->map_data;
     int player_group = definition->collision_group;
 
-    int min_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
-    int max_tile_x = map_data->to_tile_x(game->variables, (int)position.x() + width() - 1);
-    int min_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
-    int max_tile_y = map_data->to_tile_y(game->variables, (int)position.y() + height() - 1);
+    // Player rect, in map pixel coordinates (its position is already
+    // tracked in pixels)
+    int player_left = (int)position.x();
+    int player_top = (int)position.y();
+    int player_width = width();
+    int player_height = height();
 
     for (int i = 0; i < game->actors_count; ++i)
     {
@@ -615,24 +653,35 @@ namespace neo
         continue;
       }
 
-      bool touching = false;
+      // The other actor's rect, in the same pixel space (its position is
+      // tracked in tiles)
+      int other_left = map_data->to_pixel_x(
+        game->variables, other->position.x().right_shift_integer());
+      int other_top = map_data->to_pixel_y(
+        game->variables, other->position.y().right_shift_integer());
+      int other_width = other->width();
+      int other_height = other->height();
 
-      for (int tile_y = min_tile_y; tile_y <= max_tile_y && !touching; ++tile_y)
-      {
-        for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
-        {
-          if (other->collides(tile_x, tile_y))
-          {
-            touching = true;
-            break;
-          }
-        }
-      }
+      // Contact includes flush adjacency: solid actors block movement, so
+      // the player often stops right against their surface instead of
+      // overlapping it. The epsilon covers one frame of movement speed.
+      constexpr int contact_epsilon = 4;
+
+      bool touching =
+        player_left < other_left + other_width + contact_epsilon &&
+        player_left + player_width > other_left - contact_epsilon &&
+        player_top < other_top + other_height + contact_epsilon &&
+        player_top + player_height > other_top - contact_epsilon;
 
       if (touching && !other->player_touching)
       {
         other->player_touching = true;
+
+        game->active_collision_side = get_collision_side(
+          player_left, player_top, player_width, player_height,
+          other_left, other_top, other_width, other_height);
         other->trigger_collide();
+        game->active_collision_side = "";
       }
       else if (!touching)
       {
@@ -651,24 +700,30 @@ namespace neo
         continue;
       }
 
-      bool touching = false;
+      int other_left = map_data->to_pixel_x(
+        game->variables, other->position.x().right_shift_integer());
+      int other_top = map_data->to_pixel_y(
+        game->variables, other->position.y().right_shift_integer());
+      int other_width = other->inner_sprite.dimensions().width();
+      int other_height = other->inner_sprite.dimensions().height();
 
-      for (int tile_y = min_tile_y; tile_y <= max_tile_y && !touching; ++tile_y)
-      {
-        for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
-        {
-          if (other->collides(tile_x, tile_y))
-          {
-            touching = true;
-            break;
-          }
-        }
-      }
+      constexpr int contact_epsilon = 4;
+
+      bool touching =
+        player_left < other_left + other_width + contact_epsilon &&
+        player_left + player_width > other_left - contact_epsilon &&
+        player_top < other_top + other_height + contact_epsilon &&
+        player_top + player_height > other_top - contact_epsilon;
 
       if (touching && !other->player_touching)
       {
         other->player_touching = true;
+
+        game->active_collision_side = get_collision_side(
+          player_left, player_top, player_width, player_height,
+          other_left, other_top, other_width, other_height);
         other->trigger_collide();
+        game->active_collision_side = "";
       }
       else if (!touching)
       {

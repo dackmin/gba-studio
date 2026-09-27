@@ -340,6 +340,12 @@ namespace neo::types
       if_expression(type_), value(value_) {}
   };
 
+  struct if_expression_collision_side: if_expression
+  {
+    if_expression_collision_side(bn::string_view type_):
+      if_expression(type_) {}
+  };
+
   struct if_condition: if_expression
   {
     bn::string_view op;

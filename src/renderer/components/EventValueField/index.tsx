@@ -107,7 +107,8 @@ const EventValueField = ({
         className,
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
-            ['variable', 'saved-game', 'player-attribute', 'direction']
+            ['variable', 'saved-game', 'player-attribute', 'direction',
+              'collision-side']
               .includes((val as DynamicValue).type),
         }
       )}
@@ -130,6 +131,7 @@ const EventValueField = ({
                     <Switch.Case value="saved-game">↓</Switch.Case>
                     <Switch.Case value="player-attribute">P</Switch.Case>
                     <Switch.Case value="direction">▲</Switch.Case>
+                    <Switch.Case value="collision-side">✚</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -156,6 +158,11 @@ const EventValueField = ({
             { !excludeTypes.includes('direction') && (
               <Select.Item value="direction">
                 <Text className="text-slate">▲</Text> Direction
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('collision-side') && (
+              <Select.Item value="collision-side">
+                <Text className="text-slate">✚</Text> Collision Side
               </Select.Item>
             ) }
           </Select.Content>
@@ -240,6 +247,13 @@ const EventValueField = ({
               'up' | 'down' | 'left' | 'right') || 'down'}
             onValueChange={onValueChange_}
           />
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'collision-side' && (
+        <TextField.Slot side="left">
+          <Text size="1" className="dark:text-seashell">
+            Collision Side
+          </Text>
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }

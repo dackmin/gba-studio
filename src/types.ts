@@ -359,11 +359,16 @@ export interface DynamicDirectionValue extends AnyDynamic {
   type: 'direction';
 }
 
+export interface DynamicCollisionSideValue extends AnyDynamic {
+  type: 'collision-side';
+}
+
 export type DynamicValue =
   | DynamicVariableValue
   | DynamicSavedGameValue
   | DynamicPlayerAttributeValue
-  | DynamicDirectionValue;
+  | DynamicDirectionValue
+  | DynamicCollisionSideValue;
 
 export type EventValue =
   | string
