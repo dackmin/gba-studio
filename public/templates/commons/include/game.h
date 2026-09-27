@@ -107,26 +107,8 @@ namespace neo
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
-      bool evaluate_condition(neo::types::if_expression* condition);
 
     private:
-      struct condition_operand
-      {
-        bool numeric = false;
-        int number = 0;
-        bn::string_view text;
-      };
-
-      // Resolves an if-expression to its comparable form. Tile x/y attributes
-      // resolve to numbers, variables and raw values expose both their int
-      // and text forms, everything else resolves to text.
-      condition_operand resolve_operand(neo::types::if_expression* expression);
-      // Player position in tile coordinates (derived from pixel position)
-      int get_player_tile_x();
-      int get_player_tile_y();
-      // Converts a neo::types::direction to its name ("up", "down", ...)
-      bn::string_view get_direction_string(neo::types::direction direction);
-
       bool polling_scripted_events = false;
       void update_wave_deltas();
       bn::fixed wave_offset_for_y(bn::fixed y);
