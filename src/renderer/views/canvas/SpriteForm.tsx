@@ -7,6 +7,7 @@ import { useCanvas } from '../../services/hooks';
 import SpritesListField from '../../components/SpritesListField';
 import EventValueField from '../../components/EventValueField';
 import EventsField from '../../components/EventsField';
+import CollisionGroupField from '../../components/CollisionGroupField';
 
 export interface SpriteFormProps {
   sprite: GameSprite;
@@ -138,6 +139,13 @@ const SpriteForm = ({
               onValueChange={onValueChange.bind(null, 'z')}
             />
           </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Collision group</Text>
+            <CollisionGroupField
+              value={sprite.collisionGroup}
+              onValueChange={onValueChange.bind(null, 'collisionGroup')}
+            />
+          </div>
           <div className="flex flex-col gap-4 pb-10">
             <Text className="block text-slate" size="1">Events</Text>
             <Inset className="!rounded-none !overflow-visible">
@@ -148,6 +156,9 @@ const SpriteForm = ({
                   </Tabs.Trigger>
                   <Tabs.Trigger value="interact">
                     On Interact
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="collide">
+                    On Collide
                   </Tabs.Trigger>
                 </Tabs.List>
                 <Tabs.Content value="init">
@@ -160,6 +171,12 @@ const SpriteForm = ({
                   <EventsField
                     value={sprite.events?.interact ?? []}
                     onValueChange={onValueChange.bind(null, 'events.interact')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="collide">
+                  <EventsField
+                    value={sprite.events?.collide ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.collide')}
                   />
                 </Tabs.Content>
               </Tabs.Root>

@@ -20,6 +20,7 @@ import EventsField from '../../components/EventsField';
 import SpritesListField from '../../components/SpritesListField';
 import DirectionField from '../../components/DirectionField';
 import EventValueField from '../../components/EventValueField';
+import CollisionGroupField from '../../components/CollisionGroupField';
 
 export interface ActorFormProps {
   actor: GameActor;
@@ -181,6 +182,13 @@ const ActorForm = ({
               />
               <Text size="1">Don&apos;t turn to face player on interact</Text>
             </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Collision group</Text>
+              <CollisionGroupField
+                value={actor.collisionGroup}
+                onValueChange={onValueChange.bind(null, 'collisionGroup')}
+              />
+            </div>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
           <div className="flex flex-col gap-4 pb-10">
@@ -190,6 +198,9 @@ const ActorForm = ({
                 <Tabs.List size="1" className="px-1">
                   <Tabs.Trigger value="interact">
                     On Interact
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="collide">
+                    On Collide
                   </Tabs.Trigger>
                   <Tabs.Trigger value="init">
                     On Init
@@ -215,6 +226,13 @@ const ActorForm = ({
                     key={actor.id}
                     value={actor.events?.interact ?? []}
                     onValueChange={onValueChange.bind(null, 'events.interact')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="collide">
+                  <EventsField
+                    key={actor.id}
+                    value={actor.events?.collide ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.collide')}
                   />
                 </Tabs.Content>
                 <Tabs.Content value="init">

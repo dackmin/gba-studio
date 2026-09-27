@@ -22,6 +22,10 @@ namespace neo
       void init();
       bool collides(int tile_x, int tile_y);
 
+      // Executes this sprite's collide events (fired when the player,
+      // being in a different collision group, touches this sprite).
+      void trigger_collide();
+
       neo::game* game;
       neo::types::sprite* definition;
       bn::sprite_ptr inner_sprite;
@@ -30,6 +34,10 @@ namespace neo
       // position (see game::update_wave_effect()), so it can be removed
       // without drift regardless of how position is set.
       bn::fixed wave_offset = 0;
+      // Whether the player is currently touching this sprite (different
+      // collision group), so collide events fire once per touch instead
+      // of on every frame of contact.
+      bool player_touching = false;
   };
 }
 

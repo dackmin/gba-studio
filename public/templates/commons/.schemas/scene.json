@@ -45,9 +45,20 @@
         "disableDirectionOnInteract": {
           "type": "boolean"
         },
+        "collisionGroup": {
+          "maximum": 4,
+          "minimum": 0,
+          "type": "number"
+        },
         "events": {
           "additionalProperties": false,
           "properties": {
+            "collide": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            },
             "interact": {
               "type": "array",
               "items": {
@@ -168,9 +179,20 @@
         "z": {
           "type": "number"
         },
+        "collisionGroup": {
+          "maximum": 4,
+          "minimum": 0,
+          "type": "number"
+        },
         "events": {
           "additionalProperties": false,
           "properties": {
+            "collide": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            },
             "init": {
               "type": "array",
               "items": {
@@ -225,6 +247,11 @@
         },
         "sprite": {
           "type": "string"
+        },
+        "collisionGroup": {
+          "maximum": 4,
+          "minimum": 0,
+          "type": "number"
         }
       },
       "required": [

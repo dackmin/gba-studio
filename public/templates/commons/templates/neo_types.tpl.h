@@ -975,10 +975,13 @@ namespace neo::types
     neo::types::direction direction;
     bn::sprite_item sprite;
     bool disable_direction_on_interact;
+    int collision_group;
     int init_events_count;
     event** init_events;
     int interact_events_count;
     event** interact_events;
+    int collide_events_count;
+    event** collide_events;
     int update_events_count;
     event** update_events;
     int animations_count;
@@ -993,10 +996,13 @@ namespace neo::types
     event_value* y;
     event_value* z;
     bn::sprite_item sprite;
+    int collision_group;
     int init_events_count;
     event** init_events;
     int interact_events_count;
     event** interact_events;
+    int collide_events_count;
+    event** collide_events;
   };
 
   struct script

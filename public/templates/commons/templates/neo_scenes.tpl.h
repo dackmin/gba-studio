@@ -219,6 +219,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.events.collide)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_collide_event") events=this.events.collide}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_collide_events[] = {
+    {{#each this.events.collide}}
+    &{{slug ../../this.name}}_actor_{{@../index}}_collide_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{#if (hasItems this.events.update)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_update_event") events=this.events.update}}
   BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_update_events[] = {
@@ -242,6 +250,7 @@ namespace neo::scenes
     neo::types::direction::{{uppercase (valuedef this.direction "down")}},
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
     {{valuedef this.disableDirectionOnInteract false}},
+    {{valuedef this.collisionGroup 0}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -253,6 +262,13 @@ namespace neo::scenes
     {{#if (hasItems this.events.interact)}}
     {{this.events.interact.length}},
     {{slug ../this.name}}_actor_{{@index}}_interact_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.collide)}}
+    {{this.events.collide.length}},
+    {{slug ../this.name}}_actor_{{@index}}_collide_events,
     {{else}}
     0,
     nullptr,
@@ -301,6 +317,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.events.collide)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_collide_event") events=this.events.collide}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_collide_events[] = {
+    {{#each this.events.collide}}
+    &{{slug ../../this.name}}_sprite_{{@../index}}_collide_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
@@ -313,6 +337,7 @@ namespace neo::scenes
     &{{slug ../this.name}}_sprite_{{@index}}_y_value,
     &{{slug ../this.name}}_sprite_{{@index}}_z_value,
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
+    {{valuedef this.collisionGroup 0}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -323,7 +348,14 @@ namespace neo::scenes
     {{/if}}
     {{#if (hasItems this.events.interact)}}
     {{this.events.interact.length}},
-    {{slug ../this.name}}_sprite_{{@index}}_interact_events
+    {{slug ../this.name}}_sprite_{{@index}}_interact_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.collide)}}
+    {{this.events.collide.length}},
+    {{slug ../this.name}}_sprite_{{@index}}_collide_events
     {{else}}
     0,
     nullptr
@@ -356,6 +388,11 @@ namespace neo::scenes
     neo::types::direction::{{uppercase (valuedef this.player.direction 'down')}},
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
     false,
+    {{valuedef this.player.collisionGroup 0}},
+    // Events: the player has no event arrays (its interactions live on the
+    // other actors/sprites/sensors)
+    0,
+    nullptr,
     0,
     nullptr,
     0,

@@ -155,6 +155,14 @@ namespace neo
       && (tile_y == position.y().right_shift_integer());
   }
 
+  void actor::trigger_collide()
+  {
+    for (int i = 0; i < definition->collide_events_count; ++i)
+    {
+      game->exec_event(definition->collide_events[i], true);
+    }
+  }
+
   void actor::disable()
   {
     sprite.set_visible(false);
@@ -495,6 +503,9 @@ namespace neo
       sensor->player_inside = true;
       sensor->trigger_enter();
     }
+
+    // Actor/sprite collide events (different collision group)
+    check_collisions();
   }
 
   void actor::apply_side_scroller_gravity()
@@ -572,6 +583,98 @@ namespace neo
     }
 
     return false;
+  }
+
+  /**
+   * Resolves the actors/sprites the player's footprint overlaps this
+   * frame: solid ones (collision group 1-4, different from the player's)
+   * get their collide events fired on the not-touching -> touching
+   * transition, and anything not overlapped gets its touching state
+   * cleared so touching it again re-fires. Shared by both movement
+   * models (top-down grid steps and side-scroller free movement).
+   */
+  void actor::check_collisions()
+  {
+    neo::types::map* map_data = game->active_scene->map_data;
+    int player_group = definition->collision_group;
+
+    int min_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
+    int max_tile_x = map_data->to_tile_x(game->variables, (int)position.x() + width() - 1);
+    int min_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
+    int max_tile_y = map_data->to_tile_y(game->variables, (int)position.y() + height() - 1);
+
+    for (int i = 0; i < game->actors_count; ++i)
+    {
+      neo::actor* other = game->actors[i];
+      int group = other->definition->collision_group;
+
+      // Solid only when in a group different from the player's
+      if (group <= 0 || group == player_group || !other->sprite.visible())
+      {
+        other->player_touching = false;
+        continue;
+      }
+
+      bool touching = false;
+
+      for (int tile_y = min_tile_y; tile_y <= max_tile_y && !touching; ++tile_y)
+      {
+        for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+        {
+          if (other->collides(tile_x, tile_y))
+          {
+            touching = true;
+            break;
+          }
+        }
+      }
+
+      if (touching && !other->player_touching)
+      {
+        other->player_touching = true;
+        other->trigger_collide();
+      }
+      else if (!touching)
+      {
+        other->player_touching = false;
+      }
+    }
+
+    for (int i = 0; i < game->sprites_count; ++i)
+    {
+      neo::sprite* other = game->sprites[i];
+      int group = other->definition->collision_group;
+
+      if (group <= 0 || group == player_group || !other->inner_sprite.visible())
+      {
+        other->player_touching = false;
+        continue;
+      }
+
+      bool touching = false;
+
+      for (int tile_y = min_tile_y; tile_y <= max_tile_y && !touching; ++tile_y)
+      {
+        for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+        {
+          if (other->collides(tile_x, tile_y))
+          {
+            touching = true;
+            break;
+          }
+        }
+      }
+
+      if (touching && !other->player_touching)
+      {
+        other->player_touching = true;
+        other->trigger_collide();
+      }
+      else if (!touching)
+      {
+        other->player_touching = false;
+      }
+    }
   }
 
   void actor::move(neo::types::sprite_animation* anim)
@@ -683,6 +786,11 @@ namespace neo
 
       return;
     }
+
+    // Actor/sprite collide events (different collision group), like the
+    // side-scroller branch: fired on the not-touching -> touching
+    // transition of each grid step.
+    check_collisions();
   }
 
   int actor::width()

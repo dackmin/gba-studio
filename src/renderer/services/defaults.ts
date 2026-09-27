@@ -19,10 +19,12 @@ export const DEFAULT_ACTOR: GameActor = {
   width: 1,
   height: 1,
   direction: 'down',
+  collisionGroup: 0,
   events: {
     init: [],
     interact: [],
     update: [],
+    collide: [],
   },
 };
 
@@ -51,6 +53,7 @@ export const DEFAULT_SPRITE: GameSprite = {
   sprite: 'sprite_default',
   width: 1,
   height: 1,
+  collisionGroup: 0,
 };
 
 export const DEFAULT_FIXED_ANMATIONS = {

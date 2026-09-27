@@ -387,9 +387,21 @@ namespace neo
 
   bool game::has_collision(int tile_x, int tile_y)
   {
+    // Only actors whose collision group differs from the player's are
+    // solid (group 0 = never solid; same group = pass-through, e.g.
+    // teammates or moving platforms).
+    int player_group = player != nullptr
+      ? player->definition->collision_group : 1;
+
     for (int i = 0; i < actors_count; ++i)
     {
-      if (actors[i]->collides(tile_x, tile_y))
+      neo::actor* actor_ = actors[i];
+
+      if (
+        actor_->definition->collision_group > 0 &&
+        actor_->definition->collision_group != player_group &&
+        actor_->collides(tile_x, tile_y)
+      )
       {
         return true;
       }

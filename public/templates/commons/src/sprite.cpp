@@ -79,4 +79,12 @@ namespace neo
     return (tile_x == position.x().right_shift_integer())
       && (tile_y == position.y().right_shift_integer());
   }
+
+  void sprite::trigger_collide()
+  {
+    for (int i = 0; i < definition->collide_events_count; ++i)
+    {
+      game->exec_event(definition->collide_events[i], true);
+    }
+  }
 }

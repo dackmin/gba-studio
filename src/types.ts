@@ -137,6 +137,9 @@ export interface GamePlayer {
   height?: number;
   direction?: CharacterDirection;
   sprite?: string;
+  // Collision group (1-4, 0 = none): actors/sprites in a different
+  // group are solid and fire their collide events on touch.
+  collisionGroup?: number;
   // Internals
   _spriteHasAnimations?: boolean;
 }
@@ -178,10 +181,15 @@ export interface GameActor {
   height?: number;
   sprite: string;
   disableDirectionOnInteract?: boolean;
+  // Collision group (1-4, 0 = none): actors/sprites in a different
+  // group than the player are solid and fire collide events on touch.
+  collisionGroup?: number;
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];
     update?: SceneEvent[];
+    // Fired when the player touches this actor (different collision group)
+    collide?: SceneEvent[];
   };
   // Internals
   _spriteHasAnimations?: boolean;
@@ -197,9 +205,14 @@ export interface GameSprite {
   x: number;
   y: number;
   z?: number;
+  // Collision group (1-4, 0 = none): actors/sprites in a different
+  // group than the player are solid and fire collide events on touch.
+  collisionGroup?: number;
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];
+    // Fired when the player touches this sprite (different collision group)
+    collide?: SceneEvent[];
   };
   // Internals
   id: string;

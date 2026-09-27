@@ -7,6 +7,7 @@ import { useCanvas } from '../../services/hooks';
 import SpritesListField from '../../components/SpritesListField';
 import EventValueField from '../../components/EventValueField';
 import DirectionField from '../../components/DirectionField';
+import CollisionGroupField from '../../components/CollisionGroupField';
 
 export interface PlayerFormProps {
   player: GamePlayer;
@@ -84,6 +85,13 @@ const PlayerForm = ({
               max={32767}
               value={player?.z ?? 2}
               onValueChange={onValueChange.bind(null, 'z')}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Collision group</Text>
+            <CollisionGroupField
+              value={player.collisionGroup}
+              onValueChange={onValueChange.bind(null, 'collisionGroup')}
             />
           </div>
         </div>

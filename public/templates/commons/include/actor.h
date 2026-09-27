@@ -37,6 +37,10 @@ namespace neo
       void disable();
       void enable();
 
+      // Executes this actor's collide events (fired when the player,
+      // being in a different collision group, touches this actor).
+      void trigger_collide();
+
       neo::types::sprite_animation* get_animation(bn::string_view type);
 
       // Player-only
@@ -59,12 +63,21 @@ namespace neo
       int vertical_velocity = 0;
       bool grounded = false;
       bool was_moving_side_scroller = false;
+      // Whether the player is currently touching this actor (different
+      // collision group), so collide events fire once per touch instead
+      // of on every frame of contact.
+      bool player_touching = false;
 
     private:
       void move(neo::types::sprite_animation* anim);
       void check_input_side_scroller();
       void apply_side_scroller_gravity();
       bool side_scroller_blocked_at(int pixel_x, int pixel_y);
+      // Resolves solid actors/sprites the player's footprint overlaps
+      // (different collision group), firing their collide events on the
+      // not-touching -> touching transition. Shared by both movement
+      // models (top-down grid steps and side-scroller free movement).
+      void check_collisions();
   };
 }
 
