@@ -18,6 +18,7 @@ namespace neo
 
       neo::game* game;
       neo::types::sensor* definition;
+      bool player_inside = false;
   };
 }
 

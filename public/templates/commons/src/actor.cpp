@@ -444,8 +444,25 @@ namespace neo
     }
 
     neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);
-    if (sensor != nullptr && game->active_scene != nullptr && sensor->definition->enter_events != nullptr)
+
+    for (int i = 0; i < game->sensors_count; ++i)
     {
+      neo::sensor* other = game->sensors[i];
+
+      if (other != sensor)
+      {
+        other->player_inside = false;
+      }
+    }
+
+    if (
+      sensor != nullptr &&
+      game->active_scene != nullptr &&
+      sensor->definition->enter_events != nullptr &&
+      !sensor->player_inside
+    )
+    {
+      sensor->player_inside = true;
       sensor->trigger_enter();
 
       if (anim != nullptr)
