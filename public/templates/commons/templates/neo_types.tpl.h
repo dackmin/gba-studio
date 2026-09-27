@@ -202,7 +202,7 @@ namespace neo::types
 
     // Runs instant sub-events immediately (delegated to game::exec_event)
     // and starts resumable ones, collecting them into pending. Defined in
-    // game.cpp: needs the full neo::game definition.
+    // events.cpp: needs the full neo::game definition.
     void exec(neo::game* game, bool is_loop);
 
     // Advances every pending sub-event by one frame. Returns true once

@@ -83,9 +83,6 @@ namespace neo
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
-
-    private:
-      bool polling_scripted_events = false;
   };
 }
 
