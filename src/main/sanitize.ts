@@ -194,8 +194,8 @@ export const sanitizeScene = async (
     await sanitizeSensor(sensor);
   }
 
-  // Ensure player exists for 2d-top-down scenes & has type "player"
-  if (scene.sceneType === '2d-top-down') {
+  // Ensure player exists for map-based scenes & has type "player"
+  if (scene.sceneType === '2d-top-down' || scene.sceneType === 'side-scroller') {
     scene.player = scene.player || { type: 'player', x: 0, y: 0 };
     scene.player.type = 'player';
 

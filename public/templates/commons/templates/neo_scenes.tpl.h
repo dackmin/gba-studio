@@ -101,7 +101,7 @@ namespace neo::scenes
   {{/if}}
 
   // Map collisions
-  {{#if (and (isset this.map) (eq this.sceneType '2d-top-down'))}}
+  {{#if (and (isset this.map) (neq this.sceneType 'logos'))}}
   {{#if (hasItems this.map.collisions)}}
   BN_DATA_EWRAM int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
     {{#each this.map.collisions}}
@@ -378,6 +378,13 @@ namespace neo::scenes
   BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
+    {{#if (eq this.sceneType 'side-scroller')}}
+    neo::types::scene_type::SIDE_SCROLLER,
+    {{else if (eq this.sceneType '2d-top-down')}}
+    neo::types::scene_type::TOP_DOWN,
+    {{else}}
+    neo::types::scene_type::LOGOS,
+    {{/if}}
     {{#if this.background}}
     bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}},
     {{else}}
@@ -397,7 +404,7 @@ namespace neo::scenes
     false,
     nullptr,
     {{/if}}
-    {{#if (and (isset this.map) (eq this.sceneType '2d-top-down'))}}
+    {{#if (and (isset this.map) (neq this.sceneType 'logos'))}}
     &{{slug this.name}}_map_data,
     {{else}}
     nullptr,
@@ -426,6 +433,7 @@ namespace neo::scenes
   BN_DATA_EWRAM neo::types::scene scene_default = {
     default_scene_id,
     default_scene_name,
+    neo::types::scene_type::LOGOS,
     bn::regular_bg_items::bg_default,
     0,
     nullptr,

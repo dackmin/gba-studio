@@ -50,6 +50,13 @@ namespace neo::types
     FAST
   };
 
+  enum class scene_type
+  {
+    LOGOS,
+    TOP_DOWN,
+    SIDE_SCROLLER
+  };
+
   struct event_value
   {
     bn::string_view type;
@@ -1005,6 +1012,7 @@ namespace neo::types
     // Scene
     bn::string_view _id;
     bn::string_view name;
+    neo::types::scene_type scene_type;
     bn::regular_bg_item background;
     int event_count;
     event** events;

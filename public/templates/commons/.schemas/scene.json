@@ -238,7 +238,7 @@
           "type": "string"
         },
         "sceneType": {
-          "enum": ["logos", "2d-top-down"],
+          "enum": ["logos", "2d-top-down", "side-scroller"],
           "type": "string"
         },
         "background": {

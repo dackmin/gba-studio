@@ -203,7 +203,7 @@ const Scene = ({
 
     if (
       (scene.map?.collisions?.length || 0) > 0 &&
-      scene.sceneType === '2d-top-down'
+      scene.sceneType !== 'logos'
     ) {
       ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
 
@@ -577,7 +577,7 @@ const Scene = ({
                 />
               )) }
 
-              { scene.sceneType === '2d-top-down' && (
+              { scene.sceneType !== 'logos' && (
                 <PlayerStart
                   scene={scene}
                   onMouseDown={e => e.stopPropagation()}

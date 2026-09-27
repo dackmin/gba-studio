@@ -198,6 +198,12 @@ namespace neo
     neo::types::map* map_data = game->active_scene->map_data;
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
+    if (game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER)
+    {
+      check_input_side_scroller();
+      return;
+    }
+
     if (bn::keypad::a_pressed())
     {
       neo::actor* other = game->get_actor_at(
@@ -375,6 +381,197 @@ namespace neo
         set_direction(direction);
       }
     }
+  }
+
+  void actor::check_input_side_scroller()
+  {
+    neo::types::map* map_data = game->active_scene->map_data;
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+
+    bool was_grounded = grounded;
+
+    bool walk_left = bn::keypad::left_held();
+    bool walk_right = bn::keypad::right_held();
+    bool walking = walk_left || walk_right;
+
+    if (bn::keypad::left_pressed())
+    {
+      sprite.set_tiles(tiles_item.create_tiles(neo::tileindex::LEFT));
+      sprite.set_horizontal_flip(true);
+    }
+    else if (bn::keypad::right_pressed())
+    {
+      sprite.set_tiles(tiles_item.create_tiles(neo::tileindex::RIGHT));
+      sprite.set_horizontal_flip(false);
+    }
+
+    if (walking)
+    {
+      direction = walk_left
+        ? neo::types::direction::LEFT : neo::types::direction::RIGHT;
+      moving = true;
+    }
+    else
+    {
+      moving = false;
+    }
+
+    if (walking)
+    {
+      int next_x = (int)position.x() +
+        (walk_left ? -SIDE_SCROLL_SPEED : SIDE_SCROLL_SPEED);
+
+      if (!side_scroller_blocked_at(next_x, (int)position.y()))
+      {
+        set_position(bn::fixed_point(next_x, position.y()));
+      }
+    }
+
+    // A jumps when grounded (and doesn't re-trigger mid-air)
+    if (bn::keypad::a_pressed() && grounded)
+    {
+      vertical_velocity = -SIDE_SCROLL_JUMP;
+      grounded = false;
+    }
+
+    apply_side_scroller_gravity();
+
+    if (walking)
+    {
+      neo::types::sprite_animation* anim = definition->animations_count > 0
+        ? get_animation(definition->animations[0]->_id)
+        : nullptr;
+
+      if (grounded)
+      {
+        if ((!was_moving_side_scroller || !was_grounded) && anim != nullptr)
+        {
+          anim->reset(sprite, &tiles_item);
+        }
+        else if (anim != nullptr)
+        {
+          anim->play(sprite, &tiles_item, game->variables);
+        }
+      }
+    }
+    else if (was_moving_side_scroller)
+    {
+      set_direction(direction);
+    }
+
+    was_moving_side_scroller = walking;
+
+    int tile_x = map_data->to_tile_x(game->variables, (int)position.x());
+    int tile_y = map_data->to_tile_y(game->variables, (int)position.y());
+
+    neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);
+
+    for (int i = 0; i < game->sensors_count; ++i)
+    {
+      neo::sensor* other = game->sensors[i];
+
+      if (other == sensor)
+      {
+        continue;
+      }
+
+      if (other->player_inside)
+      {
+        other->player_inside = false;
+
+        if (other->definition->leave_events != nullptr)
+        {
+          other->trigger_leave();
+        }
+      }
+    }
+
+    if (
+      sensor != nullptr &&
+      sensor->definition->enter_events != nullptr &&
+      !sensor->player_inside
+    )
+    {
+      sensor->player_inside = true;
+      sensor->trigger_enter();
+    }
+  }
+
+  void actor::apply_side_scroller_gravity()
+  {
+    int step = vertical_velocity + SIDE_SCROLL_GRAVITY;
+
+    if (step > SIDE_SCROLL_MAX_FALL)
+    {
+      step = SIDE_SCROLL_MAX_FALL;
+    }
+
+    int moved = 0;
+    int goal = step < 0 ? -step : step;
+
+    while (moved < goal)
+    {
+      int next_y = (int)position.y() + (step < 0 ? -1 : 1);
+
+      if (side_scroller_blocked_at((int)position.x(), next_y))
+      {
+        break;
+      }
+
+      set_position(bn::fixed_point(position.x(), next_y));
+      moved++;
+    }
+
+    if (moved < goal)
+    {
+      // Hit a ceiling mid-jump or the ground mid-fall (or never left it)
+      vertical_velocity = 0;
+
+      if (step > 0)
+      {
+        grounded = true;
+      }
+    }
+    else
+    {
+      vertical_velocity = step;
+
+      if (step > 0)
+      {
+        grounded = false;
+      }
+    }
+  }
+
+  bool actor::side_scroller_blocked_at(int pixel_x, int pixel_y)
+  {
+    neo::types::map* map_data = game->active_scene->map_data;
+
+    int sprite_width = width();
+    int sprite_height = height();
+
+    int min_tile_x = map_data->to_tile_x(game->variables, pixel_x);
+    int max_tile_x = map_data->to_tile_x(game->variables, pixel_x + sprite_width - 1);
+    int min_tile_y = map_data->to_tile_y(game->variables, pixel_y);
+    int max_tile_y = map_data->to_tile_y(game->variables, pixel_y + sprite_height - 1);
+
+    for (int tile_y = min_tile_y; tile_y <= max_tile_y; ++tile_y)
+    {
+      for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+      {
+        if (map_data->has_collision(tile_x, tile_y))
+        {
+          return true;
+        }
+
+        if (game->has_collision(tile_x, tile_y))
+        {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   void actor::move(neo::types::sprite_animation* anim)

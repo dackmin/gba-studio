@@ -17,6 +17,10 @@ namespace neo
       ~actor();
 
       inline constexpr static int PLAYER_SPEED = 2; // slow: 1, faster: 2
+      inline constexpr static int SIDE_SCROLL_SPEED = 2;
+      inline constexpr static int SIDE_SCROLL_JUMP = 9;
+      inline constexpr static int SIDE_SCROLL_GRAVITY = 1;
+      inline constexpr static int SIDE_SCROLL_MAX_FALL = 4;
 
       void init();
       void update();
@@ -52,9 +56,15 @@ namespace neo
       // position (see game::update_wave_effect()), so it can be removed
       // without drift regardless of how position is set.
       bn::fixed wave_offset = 0;
+      int vertical_velocity = 0;
+      bool grounded = false;
+      bool was_moving_side_scroller = false;
 
     private:
       void move(neo::types::sprite_animation* anim);
+      void check_input_side_scroller();
+      void apply_side_scroller_gravity();
+      bool side_scroller_blocked_at(int pixel_x, int pixel_y);
   };
 }
 

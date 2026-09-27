@@ -139,6 +139,7 @@ const SceneForm = ({
                 <Select.Content>
                   <Select.Item value="logos">Logos</Select.Item>
                   <Select.Item value="2d-top-down">Top Down 2D</Select.Item>
+                  <Select.Item value="side-scroller">Side Scroller</Select.Item>
                 </Select.Content>
               </Select.Root>
             </div>
@@ -149,7 +150,7 @@ const SceneForm = ({
                 onValueChange={onBackgroundChange}
               />
             </div>
-            { scene.sceneType === '2d-top-down' && (
+            { scene.sceneType !== 'logos' && (
               <div className="flex flex-col gap-2">
                 <Text className="block text-slate" size="1">Grid size</Text>
                 <EventValueField

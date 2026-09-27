@@ -143,7 +143,7 @@ export interface GamePlayer {
 
 export interface GameScene {
   type: 'scene';
-  sceneType: 'logos' | '2d-top-down';
+  sceneType: 'logos' | '2d-top-down' | 'side-scroller';
   name: string;
   background?: string;
   player?: GamePlayer;
