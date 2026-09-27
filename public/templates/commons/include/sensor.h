@@ -14,6 +14,7 @@ namespace neo
 
       bool is_inside(int tile_x, int tile_y);
       void trigger_enter();
+      void trigger_leave();
       void trigger_interact();
 
       neo::game* game;

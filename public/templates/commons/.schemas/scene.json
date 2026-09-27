@@ -117,6 +117,12 @@
               "items": {
                 "$ref": "event.json#/definitions/Event"
               }
+            },
+            "leave": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
             }
           },
           "type": "object"

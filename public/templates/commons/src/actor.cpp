@@ -449,9 +449,21 @@ namespace neo
     {
       neo::sensor* other = game->sensors[i];
 
-      if (other != sensor)
+      if (other == sensor)
+      {
+        continue;
+      }
+
+      // The player just left this sensor (or walked straight into another
+      // one): fire its leave events once.
+      if (other->player_inside)
       {
         other->player_inside = false;
+
+        if (other->definition->leave_events != nullptr)
+        {
+          other->trigger_leave();
+        }
       }
     }
 

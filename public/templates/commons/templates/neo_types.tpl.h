@@ -791,6 +791,8 @@ namespace neo::types
     int height;
     int enter_events_count;
     event** enter_events;
+    int leave_events_count;
+    event** leave_events;
     int interact_events_count;
     event** interact_events;
 

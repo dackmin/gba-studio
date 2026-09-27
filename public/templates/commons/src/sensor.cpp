@@ -25,6 +25,14 @@ namespace neo
     }
   }
 
+  void sensor::trigger_leave()
+  {
+    for (int i = 0; i < definition->leave_events_count; ++i)
+    {
+      game->exec_event(definition->leave_events[i], true);
+    }
+  }
+
   void sensor::trigger_interact()
   {
     for (int i = 0; i < definition->interact_events_count; ++i)

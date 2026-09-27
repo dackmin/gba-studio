@@ -122,6 +122,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.events.leave)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_leave_event") events=this.events.leave}}
+  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_leave_events[] = {
+    {{#each this.events.leave}}
+    &{{slug ../../this.name}}_sensor_{{@../index}}_leave_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{#if (hasItems this.events.interact)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_interact_event") events=this.events.interact}}
   BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_interact_events[] = {
@@ -142,6 +150,12 @@ namespace neo::scenes
     {{valuedef this.events.enter.length 0}},
     {{#if (hasItems this.events.enter)}}
     {{slug ../this.name}}_sensor_{{@index}}_enter_events,
+    {{else}}
+    nullptr,
+    {{/if}}
+    {{valuedef this.events.leave.length 0}},
+    {{#if (hasItems this.events.leave)}}
+    {{slug ../this.name}}_sensor_{{@index}}_leave_events,
     {{else}}
     nullptr,
     {{/if}}

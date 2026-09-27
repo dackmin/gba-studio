@@ -37,6 +37,7 @@ export const DEFAULT_SENSOR: GameSensor = {
   events: {
     enter: [],
     interact: [],
+    leave: [],
   },
 };
 

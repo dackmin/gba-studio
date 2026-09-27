@@ -215,6 +215,7 @@ export interface GameSensor {
   events?: {
     enter?: SceneEvent[];
     interact?: SceneEvent[];
+    leave?: SceneEvent[];
   };
   // Internals
   id: string;

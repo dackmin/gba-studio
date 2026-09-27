@@ -140,6 +140,9 @@ const SensorForm = ({
                   <Tabs.Trigger value="enter">
                     On Enter
                   </Tabs.Trigger>
+                  <Tabs.Trigger value="leave">
+                    On Leave
+                  </Tabs.Trigger>
                   <Tabs.Trigger value="interact">
                     On Interact
                   </Tabs.Trigger>
@@ -148,6 +151,12 @@ const SensorForm = ({
                   <EventsField
                     value={sensor.events?.enter ?? []}
                     onValueChange={onValueChange.bind(null, 'events.enter')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="leave">
+                  <EventsField
+                    value={sensor.events?.leave ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.leave')}
                   />
                 </Tabs.Content>
                 <Tabs.Content value="interact">

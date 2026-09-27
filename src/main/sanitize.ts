@@ -119,6 +119,10 @@ export const sanitizeSensor = async (
     await sanitizeEvent(event);
   }
 
+  for (const event of sensor.events?.leave ?? []) {
+    await sanitizeEvent(event);
+  }
+
   return sensor;
 };
 
