@@ -143,6 +143,7 @@ const SpriteForm = ({
             <Text className="block text-slate" size="1">Collision group</Text>
             <CollisionGroupField
               value={sprite.collisionGroup}
+              sceneType={selectedScene?.sceneType}
               onValueChange={onValueChange.bind(null, 'collisionGroup')}
             />
           </div>

@@ -387,21 +387,29 @@ namespace neo
 
   bool game::has_collision(int tile_x, int tile_y)
   {
-    // Only actors whose collision group differs from the player's are
-    // solid (group 0 = never solid; same group = pass-through, e.g.
-    // teammates or moving platforms).
+    // Solidity depends on the collision group and the scene type:
+    // - top-down: group 0 (the default) is solid like it always was;
+    //   same-group actors are pass-through (e.g. teammates)
+    // - side-scroller: group 0 is pass-through, groups 1-4 are solid
+    //   when different from the player's (opt-in obstacles/enemies)
+    bool top_down = active_scene != nullptr &&
+      active_scene->scene_type == neo::types::scene_type::TOP_DOWN;
     int player_group = player != nullptr
       ? player->definition->collision_group : 1;
 
     for (int i = 0; i < actors_count; ++i)
     {
       neo::actor* actor_ = actors[i];
+      int group = actor_->definition->collision_group;
 
-      if (
-        actor_->definition->collision_group > 0 &&
-        actor_->definition->collision_group != player_group &&
-        actor_->collides(tile_x, tile_y)
-      )
+      // Top-down: solid by default (group 0), unless the actor
+      // explicitly joins the player's group (pass-through teammates).
+      // Side-scroller: groups are opt-in, group 0 is pass-through.
+      bool solid = top_down
+        ? group == 0 || (group > 0 && group != player_group)
+        : group > 0 && group != player_group;
+
+      if (solid && actor_->collides(tile_x, tile_y))
       {
         return true;
       }

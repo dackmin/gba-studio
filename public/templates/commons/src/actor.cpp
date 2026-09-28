@@ -633,6 +633,13 @@ namespace neo
     neo::types::map* map_data = game->active_scene->map_data;
     int player_group = definition->collision_group;
 
+    // Solidity follows the same rule as game::has_collision(): in
+    // top-down scenes group 0 (the default) is solid like it always
+    // was, in side-scroller scenes group 0 is pass-through and groups
+    // 1-4 are solid when different from the player's.
+    bool top_down = game->active_scene->scene_type ==
+      neo::types::scene_type::TOP_DOWN;
+
     // Player rect, in map pixel coordinates (its position is already
     // tracked in pixels)
     int player_left = (int)position.x();
@@ -645,8 +652,11 @@ namespace neo
       neo::actor* other = game->actors[i];
       int group = other->definition->collision_group;
 
-      // Solid only when in a group different from the player's
-      if (group <= 0 || group == player_group || !other->sprite.visible())
+      bool solid = top_down
+        ? group == 0 || (group > 0 && group != player_group)
+        : group > 0 && group != player_group;
+
+      if (!solid || !other->sprite.visible())
       {
         other->player_touching = false;
         continue;
@@ -693,7 +703,11 @@ namespace neo
       neo::sprite* other = game->sprites[i];
       int group = other->definition->collision_group;
 
-      if (group <= 0 || group == player_group || !other->inner_sprite.visible())
+      // Sprites keep the strict rule in both scene types: only groups
+      // 1-4 (opt-in) are solid, matching their decoration-ish role
+      bool solid = group > 0 && group != player_group;
+
+      if (!solid || !other->inner_sprite.visible())
       {
         other->player_touching = false;
         continue;

@@ -186,6 +186,7 @@ const ActorForm = ({
               <Text className="block text-slate" size="1">Collision group</Text>
               <CollisionGroupField
                 value={actor.collisionGroup}
+                sceneType={selectedScene?.sceneType}
                 onValueChange={onValueChange.bind(null, 'collisionGroup')}
               />
             </div>
