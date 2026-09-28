@@ -628,7 +628,6 @@ namespace neo
     return side;
   }
 
-   */
   void actor::check_collisions()
   {
     neo::types::map* map_data = game->active_scene->map_data;
