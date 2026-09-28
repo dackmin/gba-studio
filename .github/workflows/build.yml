@@ -21,7 +21,7 @@ jobs:
             label: darwin-x64
             os: macos-26
           - name: Windows 64-bit
-            label: win-x64
+            label: win32-x64
             os: ubuntu-24.04
           - name: Linux 64-bit
             label: linux-x64
@@ -81,7 +81,7 @@ jobs:
           mv out/make/zip/darwin/x64/*.zip out/keep/gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.zip
 
       - name: Run build (Windows 64-bit)
-        if: matrix.label == 'win-x64'
+        if: matrix.label == 'win32-x64'
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get -y update
