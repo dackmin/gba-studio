@@ -177,7 +177,7 @@ const ProjectSelection = () => {
                         </div>
                       </a>
                     </ContextMenu.Trigger>
-                    <ContextMenu.Content>
+                    <ContextMenu.Content className="!app-no-drag">
                       <ContextMenu.Item
                         onClick={window.electron.loadRecentProject.bind(null, project.path)}
                       >
