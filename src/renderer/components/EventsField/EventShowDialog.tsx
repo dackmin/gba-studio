@@ -49,7 +49,7 @@ const EventShowDialog = ({
         <DirectionField
           value={event.direction || 'down'}
           exclude={['left', 'right', 'up_left', 'up_right',
-            'down_left', 'down_right']}
+            'down_left', 'down_right', 'player']}
           onValueChange={onValueChange_.bind(null, 'direction')}
         />
       </div>

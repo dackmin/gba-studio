@@ -60,7 +60,35 @@ namespace neo
       return;
     }
 
-    direction = direction_;
+    if (direction_ == neo::types::direction::PLAYER)
+    {
+      if (game->player != nullptr)
+      {
+        int delta_x = int(game->player->sprite.x() - sprite.x());
+        int delta_y = int(game->player->sprite.y() - sprite.y());
+
+        if (delta_x == 0 && delta_y == 0)
+        {
+          direction = game->player->opposite_direction();
+        }
+        else if (abs(delta_x) >= abs(delta_y))
+        {
+          direction = delta_x >= 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT;
+        }
+        else
+        {
+          direction = delta_y >= 0 ? neo::types::direction::DOWN : neo::types::direction::UP;
+        }
+      }
+      else
+      {
+        direction = neo::types::direction::DOWN;
+      }
+    }
+    else
+    {
+      direction = direction_;
+    }
 
     if (direction == neo::types::direction::LEFT)
     {

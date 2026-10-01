@@ -5,7 +5,7 @@ import {
   TriangleRightIcon,
   TriangleUpIcon,
 } from '@radix-ui/react-icons';
-import { SegmentedControl } from '@radix-ui/themes';
+import { SegmentedControl, Tooltip } from '@radix-ui/themes';
 
 export interface DirectionFieldProps extends SegmentedControl.RootProps {
   exclude?: string[];
@@ -13,7 +13,7 @@ export interface DirectionFieldProps extends SegmentedControl.RootProps {
 
 const DirectionField = ({
   className,
-  exclude = ['up_left', 'up_right', 'down_left', 'down_right'],
+  exclude = ['up_left', 'up_right', 'down_left', 'down_right', 'player'],
   ...rest
 }: DirectionFieldProps) => {
   return (
@@ -62,6 +62,13 @@ const DirectionField = ({
       { !exclude.includes('down_right') && (
         <SegmentedControl.Item title="Down Right" value="down_right">
           <TriangleDownIcon className="rotate-[-45deg]" />
+        </SegmentedControl.Item>
+      ) }
+      { !exclude.includes('player') && (
+        <SegmentedControl.Item title="Player" value="player">
+          <Tooltip content="Towards Player">
+            <span>P</span>
+          </Tooltip>
         </SegmentedControl.Item>
       ) }
     </SegmentedControl.Root>

@@ -50,6 +50,7 @@ const EventSetActorDirection = ({
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Direction</Text>
         <DirectionField
+          exclude={['up_left', 'up_right', 'down_left', 'down_right']}
           value={event.direction ?? 'down'}
           onValueChange={onValueChange_.bind(null, 'direction')}
         />

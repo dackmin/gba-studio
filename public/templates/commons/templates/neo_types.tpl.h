@@ -40,7 +40,8 @@ namespace neo::types
     UP_LEFT,
     UP_RIGHT,
     DOWN_LEFT,
-    DOWN_RIGHT
+    DOWN_RIGHT,
+    PLAYER
   };
 
   enum class text_speed

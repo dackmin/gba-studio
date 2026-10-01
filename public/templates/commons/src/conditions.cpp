@@ -181,6 +181,8 @@ namespace neo::conditions
         return "down_left";
       case neo::types::direction::DOWN_RIGHT:
         return "down_right";
+      case neo::types::direction::PLAYER:
+        return "player";
       default:
         return "down";
     }

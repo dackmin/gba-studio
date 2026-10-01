@@ -33,6 +33,8 @@ export type SubToolType = AddSubToolType;
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
 
+export type ActorDirection = CharacterDirection | 'player';
+
 export type Direction = 'up' | 'down' | 'left' | 'right' |
   'up_left' | 'up_right' | 'down_left' | 'down_right';
 
@@ -631,7 +633,7 @@ export interface ExecuteScriptEvent extends SceneEvent {
 export interface SetActorDirectionEvent extends SceneEvent {
   type: 'set-actor-direction';
   actor: string;
-  direction: CharacterDirection;
+  direction: ActorDirection;
 }
 
 export interface SetPlayerDirectionEvent extends SceneEvent {

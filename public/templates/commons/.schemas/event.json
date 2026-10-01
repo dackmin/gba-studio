@@ -2,6 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "event.json",
   "definitions": {
+    "ActorDirection": {
+      "enum": ["up", "down", "left", "right", "player"],
+      "type": "string"
+    },
     "CharacterDirection": {
       "enum": ["up", "down", "left", "right"],
       "type": "string"
@@ -687,7 +691,7 @@
         "actor": {
           "type": "string"
         },
-        "direction": { "$ref": "#/definitions/CharacterDirection" },
+        "direction": { "$ref": "#/definitions/ActorDirection" },
         "type": {
           "const": "set-actor-direction",
           "type": "string"
