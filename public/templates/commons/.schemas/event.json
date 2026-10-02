@@ -758,6 +758,30 @@
       ],
       "type": "object"
     },
+    "SaveStateEvent": {
+      "properties": {
+        "type": {
+          "const": "save-state",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "LoadStateEvent": {
+      "properties": {
+        "type": {
+          "const": "load-state",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -793,7 +817,9 @@
         { "$ref": "#/definitions/SetPlayerDirectionEvent" },
         { "$ref": "#/definitions/SetBackgroundEvent" },
         { "$ref": "#/definitions/SaveGameEvent" },
-        { "$ref": "#/definitions/LoadGameEvent" }
+        { "$ref": "#/definitions/LoadGameEvent" },
+        { "$ref": "#/definitions/SaveStateEvent" },
+        { "$ref": "#/definitions/LoadStateEvent" }
       ]
     }
   },

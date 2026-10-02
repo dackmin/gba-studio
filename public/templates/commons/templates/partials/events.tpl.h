@@ -64,6 +64,16 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "load-game";
 BN_DATA_EWRAM neo::types::load_game_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
+{{else if (eq this.type "save-state")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "save-state";
+BN_DATA_EWRAM neo::types::save_state_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
+{{else if (eq this.type "load-state")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "load-state";
+BN_DATA_EWRAM neo::types::load_state_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}

@@ -149,6 +149,24 @@ namespace neo::events
     }
 
     /**
+     * @name save-state
+     * Saves current scene id, player position, and actors position to RAM.
+     */
+    else if (e->type == "save-state")
+    {
+      neo::save::save_state(game);
+    }
+
+    /**
+     * @name load-state
+     * Loads last saved state from RAM (scene, player position, actors position).
+     */
+    else if (e->type == "load-state")
+    {
+      neo::save::load_state(game);
+    }
+
+    /**
      * @name go-to-scene
      * @param target string — Scene name, without scene_ prefix (default: "default")
      * @param start.object object with:

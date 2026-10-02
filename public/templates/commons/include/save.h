@@ -56,6 +56,10 @@ namespace neo::save
   void write(neo::game* game);
   bool load(neo::game* game);
   void apply_loaded_state_to_scene(neo::game* game);
+
+  void save_state(neo::game* game);
+  bool load_state(neo::game* game);
+  bool has_save_state();
 }
 
 #endif

@@ -433,6 +433,23 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'load-game',
     }),
+  }, {
+    icon: DiscIcon,
+    name: 'Save State',
+    value: 'save-state',
+    keywords: ['save', 'state', 'ram', 'memory'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'save-state',
+    }),
+  }, {
+    icon: DownloadIcon,
+    name: 'Load State',
+    value: 'load-state',
+    keywords: ['load', 'state', 'ram', 'memory', 'restore'],
+    construct: () => ({
+      type: 'load-state',
+    }),
   }],
 }];
 

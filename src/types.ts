@@ -597,6 +597,14 @@ export interface LoadGameEvent extends SceneEvent {
   type: 'load-game';
 }
 
+export interface SaveStateEvent extends SceneEvent {
+  type: 'save-state';
+}
+
+export interface LoadStateEvent extends SceneEvent {
+  type: 'load-state';
+}
+
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];
