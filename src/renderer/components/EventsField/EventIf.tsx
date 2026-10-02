@@ -182,6 +182,7 @@ export const EventIfCondition = ({
           <EventValueField
             type="text"
             className="!flex-auto"
+            excludeTypes={[]}
             value={condition.right as EventValue}
             onValueChange={onConditionValueChange.bind(null, 'right')}
           />
