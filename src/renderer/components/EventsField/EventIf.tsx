@@ -115,7 +115,7 @@ export interface EventIfConditionProps {
 
 const isLogicalOperator = (operator?: string) => operator === '&&' || operator === '||';
 
-const EventIfCondition = ({
+export const EventIfCondition = ({
   condition,
   onValueChange,
 }: EventIfConditionProps) => {

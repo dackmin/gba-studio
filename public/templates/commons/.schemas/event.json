@@ -47,7 +47,7 @@
       }
     },
     "PlayerAttribute": {
-      "enum": ["x", "y", "direction"],
+      "enum": ["x", "y", "direction", "scene"],
       "type": "string"
     },
     "DynamicPlayerAttributeValue": {
@@ -89,13 +89,28 @@
         }
       }
     },
+    "DynamicSceneValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "scene"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
         { "$ref": "#/definitions/DynamicVariableValue" },
         { "$ref": "#/definitions/DynamicSavedGameValue" },
         { "$ref": "#/definitions/DynamicPlayerAttributeValue" },
         { "$ref": "#/definitions/DynamicDirectionValue" },
-        { "$ref": "#/definitions/DynamicCollisionSideValue" }
+        { "$ref": "#/definitions/DynamicCollisionSideValue" },
+        { "$ref": "#/definitions/DynamicSceneValue" }
       ]
     },
     "EventValue": {
@@ -115,6 +130,12 @@
         "events": {
           "items": {
             "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "condition.json#/definitions/IfEventCondition"
           },
           "type": "array"
         },

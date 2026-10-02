@@ -365,12 +365,17 @@ export interface DynamicCollisionSideValue extends AnyDynamic {
   type: 'collision-side';
 }
 
+export interface DynamicSceneValue extends AnyDynamic {
+  type: 'scene';
+}
+
 export type DynamicValue =
   | DynamicVariableValue
   | DynamicSavedGameValue
   | DynamicPlayerAttributeValue
   | DynamicDirectionValue
-  | DynamicCollisionSideValue;
+  | DynamicCollisionSideValue
+  | DynamicSceneValue;
 
 export type EventValue =
   | string
@@ -608,6 +613,7 @@ export interface LoadStateEvent extends SceneEvent {
 export interface GameMenuChoice {
   text: string;
   events: SceneEvent[];
+  conditions?: IfEventCondition[];
   // Internals
   id: string;
 }

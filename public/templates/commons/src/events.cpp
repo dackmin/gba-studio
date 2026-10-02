@@ -239,7 +239,37 @@ namespace neo::events
     {
       const neo::types::menu_event* menu_evt =
         static_cast<const neo::types::menu_event*>(e);
-      neo::menu* m = new neo::menu(game, menu_evt->choices);
+
+      // Only choices whose conditions all pass are displayed
+      bn::vector<neo::types::menu_choice, 5> visible_choices;
+      int visible_indices[5] = {};
+      for (int i = 0; i < menu_evt->choices.size(); ++i)
+      {
+        const neo::types::menu_choice& candidate = menu_evt->choices[i];
+        bool visible = true;
+        for (int j = 0; j < candidate.conditions_count; ++j)
+        {
+          if (!neo::conditions::evaluate_condition(game, candidate.conditions[j]))
+          {
+            visible = false;
+            break;
+          }
+        }
+
+        if (visible)
+        {
+          visible_indices[visible_choices.size()] = i;
+          visible_choices.push_back(candidate);
+        }
+      }
+
+      if (visible_choices.empty())
+      {
+        BN_LOG("No visible menu choice, skipping menu");
+        return;
+      }
+
+      neo::menu* m = new neo::menu(game, visible_choices);
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
       BN_LOG("Opening menu");
@@ -247,9 +277,9 @@ namespace neo::events
       delete m;
 
       // Execute selected choice events
-      if (selected >= 0 && selected < menu_evt->choices_count)
+      if (selected >= 0 && selected < visible_choices.size())
       {
-        neo::types::menu_choice choice = menu_evt->choices[selected];
+        neo::types::menu_choice choice = menu_evt->choices[visible_indices[selected]];
         BN_LOG("Executing menu choice events for choice: ", choice.text);
         for (int i = 0; i < choice.events_count; ++i)
         {

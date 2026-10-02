@@ -281,14 +281,18 @@ namespace neo::types
       event(type_), direction(direction_), z(z_), speed(speed_), lines(lines_) {}
   };
 
+  struct if_condition;
+
   struct menu_choice
   {
     bn::string_view text;
     int events_count;
     event** events;
+    int conditions_count;
+    if_condition** conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, event** events_):
-      text(text_), events_count(events_count_), events(events_) {}
+    menu_choice(bn::string_view text_, int events_count_, event** events_, int conditions_count_, if_condition** conditions_):
+      text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
   struct menu_event: event
@@ -357,6 +361,14 @@ namespace neo::types
   {
     if_expression_collision_side(bn::string_view type_):
       if_expression(type_) {}
+  };
+
+  struct if_expression_scene: if_expression
+  {
+    bn::string_view id;
+
+    if_expression_scene(bn::string_view type_, bn::string_view id_):
+      if_expression(type_), id(id_) {}
   };
 
   struct if_condition: if_expression

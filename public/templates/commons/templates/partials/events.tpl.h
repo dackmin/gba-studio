@@ -113,13 +113,28 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
+{{#if this.conditions.length}}
+{{>ifConditionsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_condition") conditions=this.conditions}}
+neo::types::if_condition* {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions[] = {
+  {{#each this.conditions}}
+  &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{escapeCpp (maxLen this.text 26)}}";
 BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
   {{this.events.length}},
   {{#if this.events.length}}
-  {{../../prefix}}_{{@../index}}_option_{{@index}}_events
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_events,
   {{else}}
+  nullptr,
+  {{/if}}
+  {{#if this.conditions.length}}
+  {{this.conditions.length}},
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions
+  {{else}}
+  0,
   nullptr
   {{/if}}
 );

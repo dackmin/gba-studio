@@ -107,6 +107,17 @@ namespace neo::conditions
       {
         auto* attr_expr = static_cast<neo::types::if_expression_player_attribute*>(expression);
 
+        if (attr_expr->attribute == "scene")
+        {
+          bn::string_view scene_id = game->active_scene != nullptr
+            ? game->active_scene->_id
+            : game->current_scene;
+
+          BN_LOG("[IF] Getting current scene: ", scene_id);
+
+          return { false, 0, scene_id };
+        }
+
         if (game->player == nullptr)
         {
           BN_LOG("[IF] Player not found");
@@ -156,6 +167,14 @@ namespace neo::conditions
         BN_LOG("[IF] Getting collision side: ", game->active_collision_side);
 
         return { false, 0, game->active_collision_side };
+      }
+      else if (expression->type == "scene")
+      {
+        auto* scene_expr = static_cast<neo::types::if_expression_scene*>(expression);
+
+        BN_LOG("[IF] Getting scene: ", scene_expr->id);
+
+        return { false, 0, scene_expr->id };
       }
 
       BN_LOG("Unknown expression type: ", expression->type);

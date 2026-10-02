@@ -6,6 +6,7 @@ import { classNames } from '@junipero/react';
 import type { DynamicValue, EventValue } from '../../../types';
 import Switch from '../Switch';
 import DirectionField from '../DirectionField';
+import SceneListField from '../SceneListField';
 import { useApp } from '../../services/hooks';
 
 export interface EventValueFieldProps
@@ -22,12 +23,12 @@ const EventValueField = ({
   defaultValue,
   children,
   className,
-  excludeTypes = ['saved-game'],
+  excludeTypes = ['saved-game', 'scene'],
   min = 0,
   onValueChange,
   ...rest
 }: EventValueFieldProps) => {
-  const { variables } = useApp();
+  const { variables, scenes } = useApp();
   const val = value ?? defaultValue ?? '';
   const isDynamicValue = useMemo(() => (
     typeof val === 'object'
@@ -57,10 +58,15 @@ const EventValueField = ({
         type,
         name: 'x',
       } as DynamicValue);
+    } else if (type === 'scene') {
+      onValueChange?.({
+        type,
+        name: scenes[0]?.id || '',
+      } as DynamicValue);
     } else {
       onValueChange?.({ type } as DynamicValue);
     }
-  }, [onValueChange, isDynamicValue, val, allVariables]);
+  }, [onValueChange, isDynamicValue, val, allVariables, scenes]);
 
   const onAttributeChange = useCallback((name: string) => {
     if (isDynamicValue && (val as DynamicValue).type === 'player-attribute') {
@@ -108,7 +114,7 @@ const EventValueField = ({
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
             ['variable', 'saved-game', 'player-attribute', 'direction',
-              'collision-side']
+              'collision-side', 'scene']
               .includes((val as DynamicValue).type),
         }
       )}
@@ -132,6 +138,7 @@ const EventValueField = ({
                     <Switch.Case value="player-attribute">P</Switch.Case>
                     <Switch.Case value="direction">▲</Switch.Case>
                     <Switch.Case value="collision-side">✚</Switch.Case>
+                    <Switch.Case value="scene">S</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -163,6 +170,11 @@ const EventValueField = ({
             { !excludeTypes.includes('collision-side') && (
               <Select.Item value="collision-side">
                 <Text className="text-slate">✚</Text> Collision Side
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('scene') && (
+              <Select.Item value="scene">
+                <Text className="text-slate">S</Text> Scene
               </Select.Item>
             ) }
           </Select.Content>
@@ -219,6 +231,7 @@ const EventValueField = ({
                         x: 'X',
                         y: 'Y',
                         direction: 'Direction',
+                        scene: 'Current Scene',
                       }[(val as DynamicValue).name || 'x']
                     }
                   </Text>
@@ -234,6 +247,9 @@ const EventValueField = ({
               </Select.Item>
               <Select.Item value="direction">
                 <Text>Direction</Text>
+              </Select.Item>
+              <Select.Item value="scene">
+                <Text>Current Scene</Text>
               </Select.Item>
             </Select.Content>
           </Select.Root>
@@ -254,6 +270,15 @@ const EventValueField = ({
           <Text size="1" className="dark:text-seashell">
             Collision Side
           </Text>
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'scene' && (
+        <TextField.Slot side="left">
+          <SceneListField
+            compact
+            value={(val as DynamicValue).name}
+            onValueChange={onValueChange_}
+          />
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }
