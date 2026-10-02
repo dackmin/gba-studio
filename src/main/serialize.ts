@@ -27,6 +27,7 @@ export const serializeSprite = async (
   sprite: GameSpriteFile
 ): Promise<GameSpriteFile> => {
   sprite.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sprite.json';
+  sprite.path = sprite.path.replace(/\\/g, '/');
 
   delete sprite._realWidth;
   delete sprite._realHeight;
@@ -39,6 +40,7 @@ export const serializeBackground = async (
   background: GameBackgroundFile
 ): Promise<GameBackgroundFile> => {
   background.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/background.json';
+  background.path = background.path.replace(/\\/g, '/');
 
   delete background._realWidth;
   delete background._realHeight;
@@ -51,6 +53,7 @@ export const serializeMusic = async (
   music: GameMusicFile
 ): Promise<GameMusicFile> => {
   music.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/music.json';
+  music.path = music.path.replace(/\\/g, '/');
 
   delete music._fileName;
 
@@ -61,6 +64,7 @@ export const serializeSound = async (
   sound: GameSoundFile
 ): Promise<GameSoundFile> => {
   sound.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/sound.json';
+  sound.path = sound.path.replace(/\\/g, '/');
 
   delete sound._fileName;
 
