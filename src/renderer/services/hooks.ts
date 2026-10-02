@@ -23,6 +23,7 @@ import {
   ModalContext,
   PlaybackContext,
   SceneFormContext,
+  ScriptFormContext,
   SpriteContext,
 } from './contexts';
 
@@ -64,6 +65,7 @@ export const useApp = () => use(AppContext);
 export const useEditor = () => use(EditorContext);
 export const useCanvas = () => use(CanvasContext);
 export const useSceneForm = () => use(SceneFormContext);
+export const useScriptForm = () => use(ScriptFormContext);
 export const useBottomBarTabs = () => use(BottomBarTabsContext);
 export const useLogs = () => use(LogsContext);
 export const useSprite = () => use(SpriteContext);

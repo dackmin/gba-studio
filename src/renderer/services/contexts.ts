@@ -131,6 +131,14 @@ export const SceneFormContext = createContext<SceneFormContextType>({
   scene: undefined,
 });
 
+export interface ScriptFormContextType {
+  script?: GameScript;
+}
+
+export const ScriptFormContext = createContext<ScriptFormContextType>({
+  script: undefined,
+});
+
 export interface BottomBarTabsContextType {
   manualScroll: boolean;
   scrolledToBottom: boolean;

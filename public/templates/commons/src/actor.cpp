@@ -1172,13 +1172,14 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
 void neo::types::move_actor_to_event::start(neo::game* game_)
 {
   target = nullptr;
+  bn::string_view actor_reference = game_->resolve_actor_reference(actor);
 
   // Like the blocking handler: resolve the actor by name or id.
   for (int i = 0; i < game_->actors_count; ++i)
   {
     if (
-      game_->actors[i]->definition->name == actor ||
-      game_->actors[i]->definition->_id == actor
+      game_->actors[i]->definition->name == actor_reference ||
+      game_->actors[i]->definition->_id == actor_reference
     )
     {
       target = game_->actors[i];

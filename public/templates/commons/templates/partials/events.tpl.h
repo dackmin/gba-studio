@@ -270,11 +270,27 @@ BN_DATA_EWRAM neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{this.priority}}
 );
 {{else if (eq this.type "execute-script")}}
+{{#if this.parameters.length}}
+{{#each this.parameters}}
+{{>valuePartial prefix=(concat ../../prefix "_" @../index "_argument_" @index) value=this}}
+{{/each}}
+neo::types::event_value* {{../prefix}}_{{@index}}_arguments[] = {
+  {{#each this.parameters}}
+  &{{../../prefix}}_{{@../index}}_argument_{{@index}}_value{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
 BN_DATA_EWRAM neo::types::execute_script_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
-  {{../prefix}}_{{@index}}_script_name
+  {{../prefix}}_{{@index}}_script_name,
+  {{valuedef this.parameters.length 0}},
+  {{#if this.parameters.length}}
+  {{../prefix}}_{{@index}}_arguments
+  {{else}}
+  nullptr
+  {{/if}}
 );
 {{else if (eq this.type "parallel-events")}}
 {{#if this.events.length}}

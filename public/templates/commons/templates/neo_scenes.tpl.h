@@ -504,6 +504,13 @@ namespace neo::scenes
   {{/if}}
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_name = "{{escapeCpp this.name}}";
+  {{#if this.parameters.length}}
+  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_parameters[] = {
+    {{#each this.parameters}}
+    "{{scriptParamKey this.id}}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
   BN_DATA_EWRAM neo::types::script script_{{slug this.name}} = {
     {{slug this.name}}_script_id,
     {{slug this.name}}_script_name,
@@ -512,6 +519,12 @@ namespace neo::scenes
     {{slug this.name}}_script_events
     {{else}}
     0,
+    nullptr
+    {{/if}},
+    {{valuedef this.parameters.length 0}},
+    {{#if this.parameters.length}}
+    {{slug this.name}}_script_parameters
+    {{else}}
     nullptr
     {{/if}}
   };
@@ -523,6 +536,8 @@ namespace neo::scenes
   BN_DATA_EWRAM neo::types::script script_default = {
     script_default_id,
     script_default_name,
+    0,
+    nullptr,
     0,
     nullptr
   };

@@ -103,6 +103,20 @@
         }
       }
     },
+    "DynamicActorValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "actor"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
         { "$ref": "#/definitions/DynamicVariableValue" },
@@ -110,7 +124,8 @@
         { "$ref": "#/definitions/DynamicPlayerAttributeValue" },
         { "$ref": "#/definitions/DynamicDirectionValue" },
         { "$ref": "#/definitions/DynamicCollisionSideValue" },
-        { "$ref": "#/definitions/DynamicSceneValue" }
+        { "$ref": "#/definitions/DynamicSceneValue" },
+        { "$ref": "#/definitions/DynamicActorValue" }
       ]
     },
     "EventValue": {
@@ -695,6 +710,11 @@
       "properties": {
         "script": {
           "type": "string"
+        },
+        "parameters": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "$ref": "#/definitions/EventValue" }
         },
         "type": {
           "const": "execute-script",

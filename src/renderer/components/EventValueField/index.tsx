@@ -4,10 +4,11 @@ import { Select as SelectPrimitive } from 'radix-ui';
 import { classNames } from '@junipero/react';
 
 import type { DynamicValue, EventValue } from '../../../types';
+import { useApp, useScriptForm } from '../../services/hooks';
 import Switch from '../Switch';
 import DirectionField from '../DirectionField';
 import SceneListField from '../SceneListField';
-import { useApp } from '../../services/hooks';
+import ActorListField from '../ActorListField';
 
 export interface EventValueFieldProps
   extends Omit<TextField.RootProps, 'value' | 'defaultValue'> {
@@ -29,14 +30,21 @@ const EventValueField = ({
   ...rest
 }: EventValueFieldProps) => {
   const { variables, scenes } = useApp();
+  const { script } = useScriptForm();
   const val = value ?? defaultValue ?? '';
   const isDynamicValue = useMemo(() => (
     typeof val === 'object'
   ), [val]);
 
   const allVariables = useMemo(() => (
-    variables.flatMap(v => v.values)
-  ), [variables]);
+    [
+      ...variables.flatMap(v => v.values),
+      ...(script?.parameters ?? []).map(parameter => ({
+        id: `__script_param_${parameter.id}`,
+        name: `${parameter.name} (parameter)`,
+      })),
+    ]
+  ), [variables, script?.parameters]);
 
   const onTypeChange = useCallback((type: string) => {
     const currentType = !isDynamicValue
@@ -63,6 +71,8 @@ const EventValueField = ({
         type,
         name: scenes[0]?.id || '',
       } as DynamicValue);
+    } else if (type === 'actor') {
+      onValueChange?.({ type, name: '' });
     } else {
       onValueChange?.({ type } as DynamicValue);
     }
@@ -114,7 +124,7 @@ const EventValueField = ({
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
             ['variable', 'saved-game', 'player-attribute', 'direction',
-              'collision-side', 'scene']
+              'collision-side', 'scene', 'actor']
               .includes((val as DynamicValue).type),
         }
       )}
@@ -139,6 +149,7 @@ const EventValueField = ({
                     <Switch.Case value="direction">▲</Switch.Case>
                     <Switch.Case value="collision-side">✚</Switch.Case>
                     <Switch.Case value="scene">S</Switch.Case>
+                    <Switch.Case value="actor">A</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -175,6 +186,11 @@ const EventValueField = ({
             { !excludeTypes.includes('scene') && (
               <Select.Item value="scene">
                 <Text className="text-slate">S</Text> Scene
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('actor') && (
+              <Select.Item value="actor">
+                <Text className="text-slate">A</Text> Actor
               </Select.Item>
             ) }
           </Select.Content>
@@ -275,6 +291,15 @@ const EventValueField = ({
       { isDynamicValue && (val as DynamicValue).type === 'scene' && (
         <TextField.Slot side="left">
           <SceneListField
+            compact
+            value={(val as DynamicValue).name}
+            onValueChange={onValueChange_}
+          />
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'actor' && (
+        <TextField.Slot side="left">
+          <ActorListField
             compact
             value={(val as DynamicValue).name}
             onValueChange={onValueChange_}

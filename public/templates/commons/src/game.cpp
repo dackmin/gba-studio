@@ -52,6 +52,40 @@ namespace neo
     scene_changed = true;
   }
 
+  bn::string_view game::resolve_actor_reference(bn::string_view actor_reference)
+  {
+    constexpr char parameter_prefix[] = "__script_param_";
+    constexpr int parameter_prefix_length = static_cast<int>(sizeof(parameter_prefix) - 1);
+
+    for (int depth = 0; depth < 10 && actor_reference.size() >= parameter_prefix_length; ++depth)
+    {
+      bool is_parameter = true;
+      for (int i = 0; i < parameter_prefix_length; ++i)
+      {
+        if (actor_reference[i] != parameter_prefix[i])
+        {
+          is_parameter = false;
+          break;
+        }
+      }
+
+      if (!is_parameter || !variables.has(actor_reference))
+      {
+        break;
+      }
+
+      bn::string_view resolved = variables.get(actor_reference).as_string();
+      if (resolved == actor_reference)
+      {
+        break;
+      }
+
+      actor_reference = resolved;
+    }
+
+    return actor_reference;
+  }
+
   void game::set_background(bn::regular_bg_item background, bool visible)
   {
     // prevent NO MORE VRAM errors by first releasing the previous background pointer

@@ -483,8 +483,10 @@ namespace neo::types
   struct execute_script_event: event
   {
     bn::string_view name;
-    execute_script_event(bn::string_view type_, bn::string_view name_):
-      event(type_), name(name_) {}
+    int arguments_count;
+    event_value** arguments;
+    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, event_value** arguments_):
+      event(type_), name(name_), arguments_count(arguments_count_), arguments(arguments_) {}
   };
 
   struct move_camera_to_event: event
@@ -1042,6 +1044,8 @@ namespace neo::types
     bn::string_view name;
     int events_count;
     event** events;
+    int parameters_count;
+    bn::string_view* parameters;
   };
 
   struct scene

@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { set } from '@junipero/react';
-import { Select, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 
 import type {
   DisableActorEvent,
   EnableActorEvent,
 } from '../../../types';
-import { useCanvas } from '../../services/hooks';
+import ActorListField from '../ActorListField';
 
 export interface EventActorProps {
   event: EnableActorEvent | DisableActorEvent;
@@ -19,8 +19,6 @@ const EventActor = ({
   event,
   onValueChange,
 }: EventActorProps) => {
-  const { selectedScene, selectedItem } = useCanvas();
-
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
     onValueChange?.(event);
@@ -29,22 +27,10 @@ const EventActor = ({
   return (
     <div className="flex flex-col gap-2">
       <Text size="1" className="text-slate">Actor</Text>
-      <Select.Root
+      <ActorListField
         value={event.actor || ''}
         onValueChange={onValueChange_.bind(null, 'actor')}
-      >
-        <Select.Trigger placeholder="Select" />
-        <Select.Content>
-          { selectedScene?.actors?.map(actor => (
-            <Select.Item key={actor.id} value={actor.id}>
-              { actor.name }
-              { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
-                <Text size="1" className="text-slate"> (this actor)</Text>
-              ) : '' }
-            </Select.Item>
-          )) }
-        </Select.Content>
-      </Select.Root>
+      />
     </div>
   );
 };

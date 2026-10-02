@@ -165,11 +165,18 @@ export interface GameScene {
 export interface GameScript {
   type: 'script';
   name: string;
+  parameters?: GameScriptParameter[];
   events?: SceneEvent[];
   // Internals
   id: string;
   _file?: string;
   $schema?: string;
+}
+
+export interface GameScriptParameter {
+  id: string;
+  name: string;
+  type: 'value' | 'variable' | 'actor';
 }
 
 export interface GameActor {
@@ -369,13 +376,18 @@ export interface DynamicSceneValue extends AnyDynamic {
   type: 'scene';
 }
 
+export interface DynamicActorValue extends AnyDynamic {
+  type: 'actor';
+}
+
 export type DynamicValue =
   | DynamicVariableValue
   | DynamicSavedGameValue
   | DynamicPlayerAttributeValue
   | DynamicDirectionValue
   | DynamicCollisionSideValue
-  | DynamicSceneValue;
+  | DynamicSceneValue
+  | DynamicActorValue;
 
 export type EventValue =
   | string
@@ -643,6 +655,7 @@ export interface IfEvent extends SceneEvent {
 export interface ExecuteScriptEvent extends SceneEvent {
   type: 'execute-script';
   script: string;
+  parameters?: EventValue[];
 }
 
 export interface SetActorDirectionEvent extends SceneEvent {
