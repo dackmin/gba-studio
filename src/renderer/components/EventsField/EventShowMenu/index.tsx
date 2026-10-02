@@ -22,7 +22,8 @@ const EventShowMenu = ({
   const { selectedScene } = useCanvas();
 
   const addChoice = useCallback(() => {
-    const newChoice = {
+    const newChoice: GameMenuChoice = {
+      type: 'menu-choice',
       id: uuid(),
       text: 'New Choice',
       events: [],
