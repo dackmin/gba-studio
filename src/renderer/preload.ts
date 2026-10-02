@@ -6,6 +6,8 @@ import type {
   BuildOptions,
   GameBackgroundFile,
   GameMusicFile,
+  GameScene,
+  GameScript,
   GameSoundFile,
   GameSpriteFile,
   ProjectTemplate,
@@ -123,6 +125,18 @@ contextBridge.exposeInMainWorld('electron', {
     musicInfo: Partial<GameMusicFile>,
   ): Promise<Partial<GameMusicFile>> =>
     ipcRenderer.invoke('import-music', projectPath, filePath, musicInfo),
+  renameSceneFile: (
+    projectPath: string,
+    currentFileName: string,
+    sceneData?: Partial<GameScene>,
+  ): Promise<string | null> =>
+    ipcRenderer.invoke('rename-scene-file', projectPath, currentFileName, sceneData),
+  renameScriptFile: (
+    projectPath: string,
+    currentFileName: string,
+    scriptData?: Partial<GameScript>,
+  ): Promise<string | null> =>
+    ipcRenderer.invoke('rename-script-file', projectPath, currentFileName, scriptData),
   showUnsavedChangesDialog: (): Promise<'save' | 'discard' | 'cancel'> =>
     ipcRenderer.invoke('show-unsaved-changes-dialog'),
   confirmClose: (): Promise<void> =>

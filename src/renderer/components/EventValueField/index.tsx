@@ -4,9 +4,11 @@ import { Select as SelectPrimitive } from 'radix-ui';
 import { classNames } from '@junipero/react';
 
 import type { DynamicValue, EventValue } from '../../../types';
+import { useApp, useScriptForm } from '../../services/hooks';
 import Switch from '../Switch';
 import DirectionField from '../DirectionField';
-import { useApp } from '../../services/hooks';
+import SceneListField from '../SceneListField';
+import ActorListField from '../ActorListField';
 
 export interface EventValueFieldProps
   extends Omit<TextField.RootProps, 'value' | 'defaultValue'> {
@@ -22,20 +24,27 @@ const EventValueField = ({
   defaultValue,
   children,
   className,
-  excludeTypes = ['saved-game'],
+  excludeTypes = ['saved-game', 'scene'],
   min = 0,
   onValueChange,
   ...rest
 }: EventValueFieldProps) => {
-  const { variables } = useApp();
+  const { variables, scenes } = useApp();
+  const { script } = useScriptForm();
   const val = value ?? defaultValue ?? '';
   const isDynamicValue = useMemo(() => (
     typeof val === 'object'
   ), [val]);
 
   const allVariables = useMemo(() => (
-    variables.flatMap(v => v.values)
-  ), [variables]);
+    [
+      ...variables.flatMap(v => v.values),
+      ...(script?.parameters ?? []).map(parameter => ({
+        id: `__script_param_${parameter.id}`,
+        name: `${parameter.name} (parameter)`,
+      })),
+    ]
+  ), [variables, script?.parameters]);
 
   const onTypeChange = useCallback((type: string) => {
     const currentType = !isDynamicValue
@@ -57,10 +66,17 @@ const EventValueField = ({
         type,
         name: 'x',
       } as DynamicValue);
+    } else if (type === 'scene') {
+      onValueChange?.({
+        type,
+        name: scenes[0]?.id || '',
+      } as DynamicValue);
+    } else if (type === 'actor') {
+      onValueChange?.({ type, name: '' });
     } else {
       onValueChange?.({ type } as DynamicValue);
     }
-  }, [onValueChange, isDynamicValue, val, allVariables]);
+  }, [onValueChange, isDynamicValue, val, allVariables, scenes]);
 
   const onAttributeChange = useCallback((name: string) => {
     if (isDynamicValue && (val as DynamicValue).type === 'player-attribute') {
@@ -108,7 +124,7 @@ const EventValueField = ({
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
             ['variable', 'saved-game', 'player-attribute', 'direction',
-              'collision-side']
+              'collision-side', 'scene', 'actor']
               .includes((val as DynamicValue).type),
         }
       )}
@@ -132,6 +148,8 @@ const EventValueField = ({
                     <Switch.Case value="player-attribute">P</Switch.Case>
                     <Switch.Case value="direction">▲</Switch.Case>
                     <Switch.Case value="collision-side">✚</Switch.Case>
+                    <Switch.Case value="scene">S</Switch.Case>
+                    <Switch.Case value="actor">A</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -163,6 +181,16 @@ const EventValueField = ({
             { !excludeTypes.includes('collision-side') && (
               <Select.Item value="collision-side">
                 <Text className="text-slate">✚</Text> Collision Side
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('scene') && (
+              <Select.Item value="scene">
+                <Text className="text-slate">S</Text> Scene
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('actor') && (
+              <Select.Item value="actor">
+                <Text className="text-slate">A</Text> Actor
               </Select.Item>
             ) }
           </Select.Content>
@@ -219,6 +247,7 @@ const EventValueField = ({
                         x: 'X',
                         y: 'Y',
                         direction: 'Direction',
+                        scene: 'Current Scene',
                       }[(val as DynamicValue).name || 'x']
                     }
                   </Text>
@@ -234,6 +263,9 @@ const EventValueField = ({
               </Select.Item>
               <Select.Item value="direction">
                 <Text>Direction</Text>
+              </Select.Item>
+              <Select.Item value="scene">
+                <Text>Current Scene</Text>
               </Select.Item>
             </Select.Content>
           </Select.Root>
@@ -254,6 +286,24 @@ const EventValueField = ({
           <Text size="1" className="dark:text-seashell">
             Collision Side
           </Text>
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'scene' && (
+        <TextField.Slot side="left">
+          <SceneListField
+            compact
+            value={(val as DynamicValue).name}
+            onValueChange={onValueChange_}
+          />
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'actor' && (
+        <TextField.Slot side="left">
+          <ActorListField
+            compact
+            value={(val as DynamicValue).name}
+            onValueChange={onValueChange_}
+          />
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }

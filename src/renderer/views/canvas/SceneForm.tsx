@@ -1,5 +1,6 @@
 import { type ChangeEvent, type KeyboardEvent, useCallback, useMemo } from 'react';
 import {
+  Button,
   Heading,
   Inset,
   ScrollArea,
@@ -35,7 +36,7 @@ const SceneForm = ({
   scene,
   onChange,
 }: SceneFormProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds, projectPath, onCanvasChange, ...appPayload } = useApp();
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -48,6 +49,52 @@ const SceneForm = ({
       ...scene, name,
     });
   }, [onChange, scene]);
+
+  const onRenameFile = useCallback(async () => {
+    if (!scene) {
+      return;
+    }
+
+    const newFileName = await window.electron.renameSceneFile(
+      projectPath,
+      scene._file || 'scene_1.json',
+      scene,
+    );
+
+    if (!newFileName || newFileName === scene._file) {
+      return;
+    }
+
+    const updatedScene = { ...scene, _file: newFileName };
+    onChange?.(updatedScene);
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes?.map(s => (
+        s.id === scene.id || s._file === scene._file
+          ? updatedScene
+          : s
+      )),
+      project: appPayload.project ? {
+        ...appPayload.project,
+        scenes: appPayload.project.scenes?.map(s => (
+          s.id === scene.id || s._file === scene._file
+            ? { ...s, _file: newFileName }
+            : s
+        )),
+      } : appPayload.project,
+    });
+  }, [scene, projectPath, onChange, onCanvasChange, appPayload]);
+
+  const openParentFolder = useCallback(async () => {
+    if (!scene?._file) {
+      return;
+    }
+
+    await window.electron.openParentFolder(
+      projectPath,
+      `project://content/${scene._file}`
+    );
+  }, [scene?._file, projectPath]);
 
   const onValueChange = useCallback((name: string, value: any) => {
     set(scene, name, value);
@@ -127,6 +174,31 @@ const SceneForm = ({
           >
             { scene.name }
           </Heading>
+          <Inset side="x"><Separator className="!w-full my-4" /></Inset>
+          <div>
+            <Text size="1" className="text-slate">File</Text>
+            <div className="flex items-center gap-2">
+              <Text className="flex-auto truncate">
+                { scene._file ? `content/${scene._file}` : 'Not saved' }
+              </Text>
+              <Button
+                type="button"
+                size="1"
+                className="flex-none"
+                onClick={onRenameFile}
+              >
+                Rename
+              </Button>
+              <Button
+                type="button"
+                size="1"
+                className="flex-none"
+                onClick={openParentFolder}
+              >
+                Open
+              </Button>
+            </div>
+          </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">

@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { set } from '@junipero/react';
-import { Select, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 
 import type {
   SetActorDirectionEvent,
 } from '../../../types';
 import DirectionField from '../DirectionField';
-import { useCanvas, useSceneForm } from '../../services/hooks';
+import ActorListField from '../ActorListField';
 
 export interface EventSetActorDirectionProps {
   event: SetActorDirectionEvent;
@@ -19,8 +19,6 @@ const EventSetActorDirection = ({
   event,
   onValueChange,
 }: EventSetActorDirectionProps) => {
-  const { scene } = useSceneForm();
-  const { selectedItem } = useCanvas();
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
     onValueChange?.(event);
@@ -30,26 +28,15 @@ const EventSetActorDirection = ({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Actor</Text>
-        <Select.Root
+        <ActorListField
           value={event.actor || ''}
           onValueChange={onValueChange_.bind(null, 'actor')}
-        >
-          <Select.Trigger placeholder="Select" />
-          <Select.Content>
-            { scene?.actors?.map(actor => (
-              <Select.Item key={actor.id} value={actor.id}>
-                { actor.name }
-                { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
-                  <Text size="1" className="text-slate"> (this actor)</Text>
-                ) : '' }
-              </Select.Item>
-            )) }
-          </Select.Content>
-        </Select.Root>
+        />
       </div>
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Direction</Text>
         <DirectionField
+          exclude={['up_left', 'up_right', 'down_left', 'down_right']}
           value={event.direction ?? 'down'}
           onValueChange={onValueChange_.bind(null, 'direction')}
         />

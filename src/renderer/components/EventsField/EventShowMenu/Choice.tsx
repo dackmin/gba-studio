@@ -3,6 +3,7 @@ import {
   type DragEvent,
   type PointerEvent,
   useCallback,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -18,9 +19,10 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { type DraggingPositionType, Draggable, Droppable, set, classNames } from '@junipero/react';
 import { Tooltip } from 'radix-ui';
 
-import type { GameMenuChoice, SceneEvent } from '../../../../types';
-import EventsField from '..';
+import type { GameMenuChoice, IfEventCondition, SceneEvent } from '../../../../types';
+import { EventIfCondition } from '../EventIf';
 import DialogMenuPreview from '../../DialogMenuPreview';
+import EventsField from '..';
 
 export interface ChoiceProps {
   index: number;
@@ -46,6 +48,7 @@ const Choice = ({
 }: ChoiceProps) => {
   const [opened, setOpened] = useState(false);
   const textFieldRef = useRef<HTMLDivElement>(null);
+  const conditionsRef = useRef<HTMLDivElement>(null);
   const dragOriginRef = useRef<EventTarget | null>(null);
 
   const onTextChange = useCallback((
@@ -65,8 +68,27 @@ const Choice = ({
     onDelete?.(choice);
   }, [choice, onDelete]);
 
+  const conditions = useMemo(() => (
+    choice.conditions?.length ? choice.conditions : [{
+      type: 'condition', left: '', operator: '==', right: '',
+    } as IfEventCondition]
+  ), [choice.conditions]);
+
+  const onConditionChange = useCallback((condition: IfEventCondition) => {
+    set(choice, 'conditions', conditions.map(c => c === condition ? condition : c));
+    onValueChange?.(choice);
+  }, [choice, conditions, onValueChange]);
+
+  const onClearConditions = useCallback(() => {
+    set(choice, 'conditions', []);
+    onValueChange?.(choice);
+  }, [choice, onValueChange]);
+
   const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
-    if (textFieldRef.current?.contains(dragOriginRef.current as Node)) {
+    if (
+      textFieldRef.current?.contains(dragOriginRef.current as Node) ||
+      conditionsRef.current?.contains(dragOriginRef.current as Node)
+    ) {
       e.preventDefault();
 
       return;
@@ -133,6 +155,12 @@ const Choice = ({
                   </IconButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item
+                    disabled={!choice.conditions?.length}
+                    onClick={onClearConditions}
+                  >
+                    Clear Condition
+                  </DropdownMenu.Item>
                   <DropdownMenu.Item onClick={onDeleteClick}>
                     Delete Choice
                   </DropdownMenu.Item>
@@ -160,6 +188,18 @@ const Choice = ({
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
+          </div>
+          <div className="flex flex-col gap-2" ref={conditionsRef}>
+            <Text size="1" className="text-slate">Condition</Text>
+            <Card className="!flex flex-col gap-1">
+              { conditions.map((condition, i) => (
+                <EventIfCondition
+                  key={i}
+                  condition={condition}
+                  onValueChange={onConditionChange}
+                />
+              )) }
+            </Card>
           </div>
           <div className="flex flex-col gap-2">
             <Text size="1" className="text-slate">On Select</Text>

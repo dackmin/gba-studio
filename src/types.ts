@@ -33,6 +33,8 @@ export type SubToolType = AddSubToolType;
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
 
+export type ActorDirection = CharacterDirection | 'player';
+
 export type Direction = 'up' | 'down' | 'left' | 'right' |
   'up_left' | 'up_right' | 'down_left' | 'down_right';
 
@@ -163,11 +165,18 @@ export interface GameScene {
 export interface GameScript {
   type: 'script';
   name: string;
+  parameters?: GameScriptParameter[];
   events?: SceneEvent[];
   // Internals
   id: string;
   _file?: string;
   $schema?: string;
+}
+
+export interface GameScriptParameter {
+  id: string;
+  name: string;
+  type: 'value' | 'variable' | 'actor';
 }
 
 export interface GameActor {
@@ -363,12 +372,22 @@ export interface DynamicCollisionSideValue extends AnyDynamic {
   type: 'collision-side';
 }
 
+export interface DynamicSceneValue extends AnyDynamic {
+  type: 'scene';
+}
+
+export interface DynamicActorValue extends AnyDynamic {
+  type: 'actor';
+}
+
 export type DynamicValue =
   | DynamicVariableValue
   | DynamicSavedGameValue
   | DynamicPlayerAttributeValue
   | DynamicDirectionValue
-  | DynamicCollisionSideValue;
+  | DynamicCollisionSideValue
+  | DynamicSceneValue
+  | DynamicActorValue;
 
 export type EventValue =
   | string
@@ -595,9 +614,19 @@ export interface LoadGameEvent extends SceneEvent {
   type: 'load-game';
 }
 
+export interface SaveStateEvent extends SceneEvent {
+  type: 'save-state';
+}
+
+export interface LoadStateEvent extends SceneEvent {
+  type: 'load-state';
+}
+
 export interface GameMenuChoice {
+  type: 'menu-choice';
   text: string;
   events: SceneEvent[];
+  conditions?: IfEventCondition[];
   // Internals
   id: string;
 }
@@ -626,12 +655,13 @@ export interface IfEvent extends SceneEvent {
 export interface ExecuteScriptEvent extends SceneEvent {
   type: 'execute-script';
   script: string;
+  parameters?: EventValue[];
 }
 
 export interface SetActorDirectionEvent extends SceneEvent {
   type: 'set-actor-direction';
   actor: string;
-  direction: CharacterDirection;
+  direction: ActorDirection;
 }
 
 export interface SetPlayerDirectionEvent extends SceneEvent {
@@ -692,4 +722,12 @@ export interface SpriteBitmap {
   tiles: number;
   transparentColor: [number, number, number];
   mime?: string;
+}
+
+export interface VariableUpdate {
+  event: SetVariableEvent;
+  trigger: string;
+  scene?: GameScene;
+  script?: GameScript;
+  owner?: GameActor | GameSprite | GameSensor;
 }

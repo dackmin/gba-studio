@@ -2,6 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "event.json",
   "definitions": {
+    "ActorDirection": {
+      "enum": ["up", "down", "left", "right", "player"],
+      "type": "string"
+    },
     "CharacterDirection": {
       "enum": ["up", "down", "left", "right"],
       "type": "string"
@@ -43,7 +47,7 @@
       }
     },
     "PlayerAttribute": {
-      "enum": ["x", "y", "direction"],
+      "enum": ["x", "y", "direction", "scene"],
       "type": "string"
     },
     "DynamicPlayerAttributeValue": {
@@ -85,13 +89,43 @@
         }
       }
     },
+    "DynamicSceneValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "scene"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "DynamicActorValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "actor"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "DynamicValue": {
       "oneOf": [
         { "$ref": "#/definitions/DynamicVariableValue" },
         { "$ref": "#/definitions/DynamicSavedGameValue" },
         { "$ref": "#/definitions/DynamicPlayerAttributeValue" },
         { "$ref": "#/definitions/DynamicDirectionValue" },
-        { "$ref": "#/definitions/DynamicCollisionSideValue" }
+        { "$ref": "#/definitions/DynamicCollisionSideValue" },
+        { "$ref": "#/definitions/DynamicSceneValue" },
+        { "$ref": "#/definitions/DynamicActorValue" }
       ]
     },
     "EventValue": {
@@ -111,6 +145,12 @@
         "events": {
           "items": {
             "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "condition.json#/definitions/IfEventCondition"
           },
           "type": "array"
         },
@@ -671,6 +711,11 @@
         "script": {
           "type": "string"
         },
+        "parameters": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "$ref": "#/definitions/EventValue" }
+        },
         "type": {
           "const": "execute-script",
           "type": "string"
@@ -687,7 +732,7 @@
         "actor": {
           "type": "string"
         },
-        "direction": { "$ref": "#/definitions/CharacterDirection" },
+        "direction": { "$ref": "#/definitions/ActorDirection" },
         "type": {
           "const": "set-actor-direction",
           "type": "string"
@@ -754,6 +799,30 @@
       ],
       "type": "object"
     },
+    "SaveStateEvent": {
+      "properties": {
+        "type": {
+          "const": "save-state",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "LoadStateEvent": {
+      "properties": {
+        "type": {
+          "const": "load-state",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -789,7 +858,9 @@
         { "$ref": "#/definitions/SetPlayerDirectionEvent" },
         { "$ref": "#/definitions/SetBackgroundEvent" },
         { "$ref": "#/definitions/SaveGameEvent" },
-        { "$ref": "#/definitions/LoadGameEvent" }
+        { "$ref": "#/definitions/LoadGameEvent" },
+        { "$ref": "#/definitions/SaveStateEvent" },
+        { "$ref": "#/definitions/LoadStateEvent" }
       ]
     }
   },

@@ -1,6 +1,8 @@
 BN_DATA_EWRAM bn::string_view {{prefix}}_name = "";
 {{#if (eq value.type "variable")}}
-BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{/with}};
+BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{else}}"{{escapeCpp value.name}}"{{/with}};
+{{else if (eq value.type "actor")}}
+BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = "{{escapeCpp value.name}}";
 {{else if (not (isInt value.value))}}
 BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = "{{escapeCpp (valuedef value.value value)}}";
 {{/if}}

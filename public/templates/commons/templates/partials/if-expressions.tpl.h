@@ -39,6 +39,20 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "collision-side";
 BN_DATA_EWRAM neo::types::if_expression_collision_side {{../prefix}}(
   {{../prefix}}_type
 );
+{{else if (eq this.type "scene")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "scene";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_id = "{{escapeCpp this.name}}";
+BN_DATA_EWRAM neo::types::if_expression_scene {{../prefix}}(
+  {{../prefix}}_type,
+  {{../prefix}}_id
+);
+{{else if (eq this.type "actor")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "value";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_value = "{{escapeCpp this.name}}";
+BN_DATA_EWRAM neo::types::if_expression_value {{../prefix}}(
+  {{../prefix}}_type,
+  {{../prefix}}_value
+);
 {{else}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_type = "{{this.type}}";
 BN_DATA_EWRAM neo::types::if_expression {{../prefix}}(

@@ -58,6 +58,9 @@ export const setupHandlebars = async () => {
   });
   Handlebars.registerHelper('valuesCount', (arr: any[]) =>
     arr.reduce((c, i) => c + i.values.length, 0));
+  Handlebars.registerHelper('scriptParamsCount', (scripts: any[]) =>
+    scripts.reduce((count, script) => count + (script.parameters?.length || 0), 0));
+  Handlebars.registerHelper('scriptParamKey', (id: string) => `__script_param_${id}`);
   Handlebars.registerHelper('size', (obj: any) =>
     Array.isArray(obj) ? obj.length : Object.keys(obj).length);
   Handlebars.registerHelper('posix', (p: string) =>

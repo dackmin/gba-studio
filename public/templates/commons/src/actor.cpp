@@ -60,7 +60,35 @@ namespace neo
       return;
     }
 
-    direction = direction_;
+    if (direction_ == neo::types::direction::PLAYER)
+    {
+      if (game->player != nullptr)
+      {
+        int delta_x = int(game->player->sprite.x() - sprite.x());
+        int delta_y = int(game->player->sprite.y() - sprite.y());
+
+        if (delta_x == 0 && delta_y == 0)
+        {
+          direction = game->player->opposite_direction();
+        }
+        else if (abs(delta_x) >= abs(delta_y))
+        {
+          direction = delta_x >= 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT;
+        }
+        else
+        {
+          direction = delta_y >= 0 ? neo::types::direction::DOWN : neo::types::direction::UP;
+        }
+      }
+      else
+      {
+        direction = neo::types::direction::DOWN;
+      }
+    }
+    else
+    {
+      direction = direction_;
+    }
 
     if (direction == neo::types::direction::LEFT)
     {
@@ -1144,13 +1172,14 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
 void neo::types::move_actor_to_event::start(neo::game* game_)
 {
   target = nullptr;
+  bn::string_view actor_reference = game_->resolve_actor_reference(actor);
 
   // Like the blocking handler: resolve the actor by name or id.
   for (int i = 0; i < game_->actors_count; ++i)
   {
     if (
-      game_->actors[i]->definition->name == actor ||
-      game_->actors[i]->definition->_id == actor
+      game_->actors[i]->definition->name == actor_reference ||
+      game_->actors[i]->definition->_id == actor_reference
     )
     {
       target = game_->actors[i];

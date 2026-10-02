@@ -49,30 +49,29 @@ function getElectronLanguageFolderPath (buildPath: string, platform: string) {
   }
 }
 
-export default function removeLocalesPlugin (
+export default function removeLocalesPlugin (opts: {
   buildPath: string,
   electronVersion: string,
   platform: string,
   arch: string,
-  next: (err: Error | null) => void
-) {
+}) {
   if (
     pkg.build?.electronLanguages &&
     pkg.build.electronLanguages.length > 0 &&
-    !['win32'].includes(platform)
+    !['win32'].includes(opts.platform)
   ) {
     // Remove from app
-    const localesPath = getLanguageFolderPath(buildPath, platform);
+    const localesPath = getLanguageFolderPath(opts.buildPath, opts.platform);
     let removed = 0;
 
     if (fse.existsSync(localesPath)) {
       const localeDirs = fse
         .readdirSync(localesPath)
-        .filter(f => f.endsWith(`.${getLanguageFileExtension(platform)}`));
+        .filter(f => f.endsWith(`.${getLanguageFileExtension(opts.platform)}`));
 
       localeDirs.forEach(localeDir => {
         const fileName = path
-          .basename(localeDir, `.${getLanguageFileExtension(platform)}`);
+          .basename(localeDir, `.${getLanguageFileExtension(opts.platform)}`);
 
         if (!pkg.build.electronLanguages!.includes(fileName)) {
           const fullPath = path.join(localesPath, localeDir);
@@ -85,19 +84,19 @@ export default function removeLocalesPlugin (
     }
 
     const frameworkLocalesPath = getElectronLanguageFolderPath(
-      buildPath,
-      platform
+      opts.buildPath,
+      opts.platform
     );
     let frameworkRemoved = 0;
 
     if (fse.existsSync(frameworkLocalesPath)) {
       const frameworkLocaleDirs = fse
         .readdirSync(frameworkLocalesPath)
-        .filter(f => f.endsWith(`.${getLanguageFileExtension(platform)}`));
+        .filter(f => f.endsWith(`.${getLanguageFileExtension(opts.platform)}`));
 
       frameworkLocaleDirs.forEach(localeDir => {
         const fileName = path
-          .basename(localeDir, `.${getLanguageFileExtension(platform)}`);
+          .basename(localeDir, `.${getLanguageFileExtension(opts.platform)}`);
 
         if (!pkg.build.electronLanguages!.includes(fileName)) {
           const fullPath = path.join(frameworkLocalesPath, localeDir);
@@ -110,6 +109,4 @@ export default function removeLocalesPlugin (
         `locale directories from Electron Framework.`);
     }
   }
-
-  next(null);
 }

@@ -124,7 +124,7 @@ const Scene = ({
         x: Math.round((mouseX - offsetX) / zoom),
         y: Math.round((mouseY - offsetY) / zoom),
       }
-      : project?.scenes?.find(s => s._file === scene._file)
+      : project?.scenes?.find(s => s._file === scene._file || s.id === scene.id)
   ), [project, mouseX, mouseY, offsetX, offsetY, zoom, scene, preview]);
 
   const background = useMemo(() => (

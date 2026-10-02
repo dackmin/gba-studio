@@ -39,6 +39,8 @@ import {
   showUnsavedChangesDialog,
   confirmClose,
   cancelClose,
+  renameSceneFile,
+  renameScriptFile,
 } from './handles';
 import Storage from './storage';
 
@@ -118,3 +120,5 @@ ipcMain.handle('import-music', importMusic);
 ipcMain.handle('show-unsaved-changes-dialog', showUnsavedChangesDialog);
 ipcMain.handle('confirm-close', confirmClose);
 ipcMain.handle('cancel-close', cancelClose);
+ipcMain.handle('rename-scene-file', renameSceneFile);
+ipcMain.handle('rename-script-file', renameScriptFile);

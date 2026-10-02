@@ -41,7 +41,7 @@ namespace neo::variables
 
   struct registry
   {
-    bn::unordered_map<bn::string_view, neo::variables::value*, {{max (powerOfTwo (valuesCount variables)) 1}}> all;
+    bn::unordered_map<bn::string_view, neo::variables::value*, {{max (powerOfTwo (add (valuesCount variables) (scriptParamsCount scripts))) 1}}> all;
 
     registry(): all()
     {
@@ -57,6 +57,14 @@ namespace neo::variables
         "{{this.name}}",
         value_{{@../index}}_{{slug this.name}}_{{@index}}
       );
+      {{/each}}
+      {{/each}}
+      {{#each scripts}}
+      {{#each this.parameters}}
+      neo::variables::value* script_parameter_{{@../index}}_{{@index}} = new neo::variables::value(
+        "{{scriptParamKey this.id}}", 0, false, ""
+      );
+      all.insert_or_assign("{{scriptParamKey this.id}}", script_parameter_{{@../index}}_{{@index}});
       {{/each}}
       {{/each}}
     }

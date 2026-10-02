@@ -433,6 +433,23 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'load-game',
     }),
+  }, {
+    icon: DiscIcon,
+    name: 'Save State',
+    value: 'save-state',
+    keywords: ['save', 'state', 'ram', 'memory'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'save-state',
+    }),
+  }, {
+    icon: DownloadIcon,
+    name: 'Load State',
+    value: 'load-state',
+    keywords: ['load', 'state', 'ram', 'memory', 'restore'],
+    construct: () => ({
+      type: 'load-state',
+    }),
   }],
 }];
 
@@ -474,10 +491,14 @@ export const getEventsOfType = <T extends SceneEvent>(
 
     if (definition.containers) {
       for (const container of definition.containers) {
-        const containerEvents = get(event, container, []);
+        const containerEvents = get<
+          SceneEvent, (SceneEvent | GameMenuChoice)[]
+        >(event, container, []);
 
         if (Array.isArray(containerEvents)) {
-          acc.push(...getEventsOfType<T>(type, containerEvents, opts));
+          acc.push(...getEventsOfType<T>(type, containerEvents.flatMap<SceneEvent>(c => (
+            typeof c?.type === 'string' ? [c] : (c as GameMenuChoice)?.events ?? []
+          )), opts));
         } else if ((containerEvents as GameMenuChoice)?.events) {
           acc.push(...getEventsOfType<T>(type, (containerEvents as GameMenuChoice).events, opts));
         }

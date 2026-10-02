@@ -8,6 +8,7 @@
 #include <bn_regular_bg_ptr.h>
 #include <bn_music.h>
 #include <bn_sound.h>
+#include <bn_vector.h>
 
 #include "bn_music_items_info.h"
 #include "bn_sound_items_info.h"
@@ -149,6 +150,24 @@ namespace neo::events
     }
 
     /**
+     * @name save-state
+     * Saves current scene id, player position, and actors position to RAM.
+     */
+    else if (e->type == "save-state")
+    {
+      neo::save::save_state(game);
+    }
+
+    /**
+     * @name load-state
+     * Loads last saved state from RAM (scene, player position, actors position).
+     */
+    else if (e->type == "load-state")
+    {
+      neo::save::load_state(game);
+    }
+
+    /**
      * @name go-to-scene
      * @param target string — Scene name, without scene_ prefix (default: "default")
      * @param start.object object with:
@@ -221,7 +240,37 @@ namespace neo::events
     {
       const neo::types::menu_event* menu_evt =
         static_cast<const neo::types::menu_event*>(e);
-      neo::menu* m = new neo::menu(game, menu_evt->choices);
+
+      // Only choices whose conditions all pass are displayed
+      bn::vector<neo::types::menu_choice, 5> visible_choices;
+      int visible_indices[5] = {};
+      for (int i = 0; i < menu_evt->choices.size(); ++i)
+      {
+        const neo::types::menu_choice& candidate = menu_evt->choices[i];
+        bool visible = true;
+        for (int j = 0; j < candidate.conditions_count; ++j)
+        {
+          if (!neo::conditions::evaluate_condition(game, candidate.conditions[j]))
+          {
+            visible = false;
+            break;
+          }
+        }
+
+        if (visible)
+        {
+          visible_indices[visible_choices.size()] = i;
+          visible_choices.push_back(candidate);
+        }
+      }
+
+      if (visible_choices.empty())
+      {
+        BN_LOG("No visible menu choice, skipping menu");
+        return;
+      }
+
+      neo::menu* m = new neo::menu(game, visible_choices);
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
       BN_LOG("Opening menu");
@@ -229,9 +278,9 @@ namespace neo::events
       delete m;
 
       // Execute selected choice events
-      if (selected >= 0 && selected < menu_evt->choices_count)
+      if (selected >= 0 && selected < visible_choices.size())
       {
-        neo::types::menu_choice choice = menu_evt->choices[selected];
+        neo::types::menu_choice choice = menu_evt->choices[visible_indices[selected]];
         BN_LOG("Executing menu choice events for choice: ", choice.text);
         for (int i = 0; i < choice.events_count; ++i)
         {
@@ -292,12 +341,13 @@ namespace neo::events
     {
       const neo::types::disable_actor_event* disable_actor_evt =
         static_cast<const neo::types::disable_actor_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(disable_actor_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == disable_actor_evt->actor ||
-          game->actors[i]->definition->_id == disable_actor_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         ) {
           BN_LOG("Disabling actor: ", game->actors[i]->definition->name);
           game->actors[i]->disable();
@@ -314,12 +364,13 @@ namespace neo::events
     {
       const neo::types::enable_actor_event* enable_actor_evt =
         static_cast<const neo::types::enable_actor_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(enable_actor_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == enable_actor_evt->actor ||
-          game->actors[i]->definition->_id == enable_actor_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         )
         {
           BN_LOG("Enabling actor: ", game->actors[i]->definition->name);
@@ -466,6 +517,24 @@ namespace neo::events
       const neo::types::execute_script_event* script_evt =
         static_cast<const neo::types::execute_script_event*>(e);
       neo::types::script script = neo::scenes::get_script(script_evt->name);
+      bn::vector<neo::variables::value, 10> previous_parameters;
+
+      for (int i = 0; i < script.parameters_count; ++i)
+      {
+        const bn::string_view parameter_name = script.parameters[i];
+        previous_parameters.push_back(game->variables.get(parameter_name));
+
+        if (i < script_evt->arguments_count && script_evt->arguments != nullptr)
+        {
+          const neo::types::event_value* argument = script_evt->arguments[i];
+          game->variables.set_raw(
+            parameter_name,
+            argument->as_int(game->variables),
+            argument->as_bool(game->variables),
+            argument->as_string(game->variables)
+          );
+        }
+      }
 
       if (script.events_count > 0 && script.events != nullptr)
       {
@@ -478,6 +547,17 @@ namespace neo::events
           BN_LOG("Executing script event: ", ev->type);
           exec_event(game, ev, is_loop);
         }
+      }
+
+      for (int i = 0; i < script.parameters_count; ++i)
+      {
+        const neo::variables::value& previous = previous_parameters[i];
+        game->variables.set_raw(
+          script.parameters[i],
+          previous.as_int(),
+          previous.as_bool(),
+          previous.as_string()
+        );
       }
     }
 
@@ -603,12 +683,13 @@ namespace neo::events
     {
       const neo::types::follow_actor_event* follow_actor_evt =
         static_cast<const neo::types::follow_actor_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(follow_actor_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == follow_actor_evt->actor ||
-          game->actors[i]->definition->_id == follow_actor_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         )
         {
           BN_LOG("Following actor: ", game->actors[i]->definition->name);
@@ -708,12 +789,13 @@ namespace neo::events
     {
       const neo::types::move_actor_to_event* move_actor_evt =
         static_cast<const neo::types::move_actor_to_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(move_actor_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == move_actor_evt->actor ||
-          game->actors[i]->definition->_id == move_actor_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         )
         {
           BN_LOG("Moving actor: ", game->actors[i]->definition->name, " to x=", move_actor_evt->x->as_int(game->variables), ", y=", move_actor_evt->y->as_int(game->variables));
@@ -768,12 +850,13 @@ namespace neo::events
     {
       const neo::types::set_actor_position_event* set_actor_position_evt =
         static_cast<const neo::types::set_actor_position_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(set_actor_position_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == set_actor_position_evt->actor ||
-          game->actors[i]->definition->_id == set_actor_position_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         )
         {
           BN_LOG("Setting actor position: ", game->actors[i]->definition->name, " to x=", set_actor_position_evt->x->as_int(game->variables), ", y=", set_actor_position_evt->y->as_int(game->variables));
@@ -815,12 +898,13 @@ namespace neo::events
     {
       const neo::types::set_actor_direction_event* set_actor_direction_evt =
         static_cast<const neo::types::set_actor_direction_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(set_actor_direction_evt->actor);
 
       for (int i = 0; i < game->actors_count; ++i)
       {
         if (
-          game->actors[i]->definition->name == set_actor_direction_evt->actor ||
-          game->actors[i]->definition->_id == set_actor_direction_evt->actor
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
         )
         {
           BN_LOG("Setting actor direction: ", game->actors[i]->definition->name, " to direction=", static_cast<int>(set_actor_direction_evt->direction));

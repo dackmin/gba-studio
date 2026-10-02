@@ -40,7 +40,8 @@ namespace neo::types
     UP_LEFT,
     UP_RIGHT,
     DOWN_LEFT,
-    DOWN_RIGHT
+    DOWN_RIGHT,
+    PLAYER
   };
 
   enum class text_speed
@@ -258,6 +259,18 @@ namespace neo::types
       event(type_) {}
   };
 
+  struct save_state_event: event
+  {
+    save_state_event(bn::string_view type_):
+      event(type_) {}
+  };
+
+  struct load_state_event: event
+  {
+    load_state_event(bn::string_view type_):
+      event(type_) {}
+  };
+
   struct dialog_event: event
   {
     neo::types::direction direction;
@@ -268,14 +281,18 @@ namespace neo::types
       event(type_), direction(direction_), z(z_), speed(speed_), lines(lines_) {}
   };
 
+  struct if_condition;
+
   struct menu_choice
   {
     bn::string_view text;
     int events_count;
     event** events;
+    int conditions_count;
+    if_condition** conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, event** events_):
-      text(text_), events_count(events_count_), events(events_) {}
+    menu_choice(bn::string_view text_, int events_count_, event** events_, int conditions_count_, if_condition** conditions_):
+      text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
   struct menu_event: event
@@ -344,6 +361,14 @@ namespace neo::types
   {
     if_expression_collision_side(bn::string_view type_):
       if_expression(type_) {}
+  };
+
+  struct if_expression_scene: if_expression
+  {
+    bn::string_view id;
+
+    if_expression_scene(bn::string_view type_, bn::string_view id_):
+      if_expression(type_), id(id_) {}
   };
 
   struct if_condition: if_expression
@@ -458,8 +483,10 @@ namespace neo::types
   struct execute_script_event: event
   {
     bn::string_view name;
-    execute_script_event(bn::string_view type_, bn::string_view name_):
-      event(type_), name(name_) {}
+    int arguments_count;
+    event_value** arguments;
+    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, event_value** arguments_):
+      event(type_), name(name_), arguments_count(arguments_count_), arguments(arguments_) {}
   };
 
   struct move_camera_to_event: event
@@ -1017,6 +1044,8 @@ namespace neo::types
     bn::string_view name;
     int events_count;
     event** events;
+    int parameters_count;
+    bn::string_view* parameters;
   };
 
   struct scene

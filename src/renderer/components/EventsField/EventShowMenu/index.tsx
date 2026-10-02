@@ -22,7 +22,8 @@ const EventShowMenu = ({
   const { selectedScene } = useCanvas();
 
   const addChoice = useCallback(() => {
-    const newChoice = {
+    const newChoice: GameMenuChoice = {
+      type: 'menu-choice',
       id: uuid(),
       text: 'New Choice',
       events: [],
@@ -84,7 +85,7 @@ const EventShowMenu = ({
           <Text size="1" className="text-slate">Disposition</Text>
           <DirectionField
             value={event.direction || 'down_right'}
-            exclude={['left', 'right', 'up', 'down']}
+            exclude={['left', 'right', 'up', 'down', 'player']}
             onValueChange={onValueChange_.bind(null, 'direction')}
           />
         </div>

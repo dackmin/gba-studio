@@ -12,6 +12,7 @@ import type {
   GameProject,
   GameScene,
   GameScript,
+  GameScriptParameter,
   GameSensor,
   GameSoundFile,
   GameSprite,
@@ -73,6 +74,15 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
     const evt = event as ShowMenuEvent;
 
     evt.choices = evt.choices ?? [];
+
+    for (const choice of evt.choices) {
+      choice.type = 'menu-choice';
+      choice.id = choice.id ?? randomUUID();
+
+      for (const e of choice.events ?? []) {
+        await sanitizeEvent(e);
+      }
+    }
   }
 
   return event;
@@ -226,11 +236,33 @@ export const sanitizeScene = async (
   return scene;
 };
 
+export const sanitizeScriptParameter = async (
+  parameter: GameScriptParameter
+): Promise<GameScriptParameter> => {
+  if (!parameter.id) {
+    parameter.id = randomUUID();
+  }
+
+  if (!parameter.name) {
+    parameter.name = 'parameter';
+  }
+
+  if (!['variable', 'actor'].includes(parameter.type)) {
+    parameter.type = 'value';
+  }
+
+  return parameter;
+};
+
 export const sanitizeScript = async (
   script: GameScript
 ): Promise<GameScript> => {
   if (!script.id) {
     script.id = randomUUID();
+  }
+
+  for (const parameter of script.parameters ?? []) {
+    await sanitizeScriptParameter(parameter);
   }
 
   for (const event of script.events ?? []) {

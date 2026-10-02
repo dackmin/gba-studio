@@ -10,9 +10,10 @@ import {
   pixelToTile,
   tileToPixel,
 } from '../../../helpers';
-import { useApp, useCanvas, useSceneForm } from '../../services/hooks';
+import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
+import ActorListField from '../ActorListField';
 
 export interface EventMoveActorToProps {
   event: MoveActorToEvent;
@@ -27,7 +28,6 @@ const EventMoveActorTo = ({
 }: EventMoveActorToProps) => {
   const { eventEmitter, backgrounds, sprites } = useApp();
   const { scene } = useSceneForm();
-  const { selectedItem } = useCanvas();
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
@@ -103,22 +103,10 @@ const EventMoveActorTo = ({
     >
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Actor</Text>
-        <Select.Root
+        <ActorListField
           value={event.actor || ''}
           onValueChange={onValueChange_.bind(null, 'actor')}
-        >
-          <Select.Trigger placeholder="Select" />
-          <Select.Content>
-            { scene?.actors?.map(actor => (
-              <Select.Item key={actor.id} value={actor.id}>
-                { actor.name }
-                { selectedItem?.type === 'actor' && selectedItem?.id === actor.id ? (
-                  <Text size="1" className="text-slate"> (this actor)</Text>
-                ) : '' }
-              </Select.Item>
-            )) }
-          </Select.Content>
-        </Select.Root>
+        />
       </div>
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-2 gap-2">

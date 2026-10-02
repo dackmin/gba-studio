@@ -64,6 +64,16 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "load-game";
 BN_DATA_EWRAM neo::types::load_game_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
+{{else if (eq this.type "save-state")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "save-state";
+BN_DATA_EWRAM neo::types::save_state_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
+{{else if (eq this.type "load-state")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "load-state";
+BN_DATA_EWRAM neo::types::load_state_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
@@ -103,13 +113,28 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
+{{#if this.conditions.length}}
+{{>ifConditionsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_condition") conditions=this.conditions}}
+neo::types::if_condition* {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions[] = {
+  {{#each this.conditions}}
+  &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 BN_DATA_EWRAM bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{escapeCpp (maxLen this.text 26)}}";
 BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
   {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
   {{this.events.length}},
   {{#if this.events.length}}
-  {{../../prefix}}_{{@../index}}_option_{{@index}}_events
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_events,
   {{else}}
+  nullptr,
+  {{/if}}
+  {{#if this.conditions.length}}
+  {{this.conditions.length}},
+  {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions
+  {{else}}
+  0,
   nullptr
   {{/if}}
 );
@@ -245,11 +270,27 @@ BN_DATA_EWRAM neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{this.priority}}
 );
 {{else if (eq this.type "execute-script")}}
+{{#if this.parameters.length}}
+{{#each this.parameters}}
+{{>valuePartial prefix=(concat ../../prefix "_" @../index "_argument_" @index) value=this}}
+{{/each}}
+neo::types::event_value* {{../prefix}}_{{@index}}_arguments[] = {
+  {{#each this.parameters}}
+  &{{../../prefix}}_{{@../index}}_argument_{{@index}}_value{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
 BN_DATA_EWRAM neo::types::execute_script_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
-  {{../prefix}}_{{@index}}_script_name
+  {{../prefix}}_{{@index}}_script_name,
+  {{valuedef this.parameters.length 0}},
+  {{#if this.parameters.length}}
+  {{../prefix}}_{{@index}}_arguments
+  {{else}}
+  nullptr
+  {{/if}}
 );
 {{else if (eq this.type "parallel-events")}}
 {{#if this.events.length}}

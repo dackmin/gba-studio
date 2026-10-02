@@ -61,19 +61,16 @@ const removePackagedVendor = async (vendorPath: string) => {
   }
 };
 
-export default async function removeVendorsPlugin (
+export default async function removeVendorsPlugin (opts: {
   buildPath: string,
-  _electronVersion: string,
+  electronVersion: string,
   platform: string,
-  _arch: string,
-  next: (err: Error | null) => void
-) {
-  const vendorsPath = getVendorsPath(buildPath, platform);
+  arch: string,
+}) {
+  const vendorsPath = getVendorsPath(opts.buildPath, opts.platform);
 
   // Butano
   await removeButano(vendorsPath);
   await removePackagedVendor(path.join(vendorsPath, 'devkitPro'));
   await removePackagedVendor(path.join(vendorsPath, 'python'));
-
-  next(null);
 }

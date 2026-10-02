@@ -18,6 +18,20 @@
         "name": {
           "type": "string"
         },
+        "parameters": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "type"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "enum": ["value", "variable", "actor"], "type": "string" }
+            }
+          }
+        },
         "events": {
           "items": {
             "$ref": "event.json#/definitions/Event"

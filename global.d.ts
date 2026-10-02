@@ -85,6 +85,16 @@ interface AppBridge extends EventTarget {
     filePath: string,
     musicInfo: Partial<GameMusicFile>,
   ): Promise<Partial<GameMusicFile>>;
+  renameSceneFile(
+    projectPath: string,
+    currentFileName: string,
+    sceneData?: Partial<GameScene>,
+  ): Promise<string | null>;
+  renameScriptFile(
+    projectPath: string,
+    currentFileName: string,
+    scriptData?: Partial<GameScript>,
+  ): Promise<string | null>;
   showUnsavedChangesDialog(): Promise<'save' | 'discard' | 'cancel'>;
   confirmClose(): Promise<void>;
   cancelClose(): Promise<void>;

@@ -23,6 +23,57 @@ namespace neo::save
       }
       dest[len] = '\0';
     }
+
+    void capture_scene_state(neo::game* game, save_data& data)
+    {
+      // Current scene id / name
+      copy_string(data.scene_id, game->current_scene, sizeof(data.scene_id));
+
+      // Player position & state
+      if (game->player != nullptr && game->active_scene != nullptr)
+      {
+        data.has_player = true;
+        data.player_pixel_x = int(game->player->position.x());
+        data.player_pixel_y = int(game->player->position.y());
+
+        if (game->active_scene->map_data != nullptr)
+        {
+          data.player_tile_x = game->active_scene->map_data->to_tile_x(
+            game->variables, int(game->player->position.x())
+          );
+          data.player_tile_y = game->active_scene->map_data->to_tile_y(
+            game->variables, int(game->player->position.y())
+          );
+        }
+        else
+        {
+          data.player_tile_x = data.player_pixel_x;
+          data.player_tile_y = data.player_pixel_y;
+        }
+
+        data.player_direction = static_cast<int>(game->player->direction);
+      }
+      else
+      {
+        data.has_player = false;
+      }
+
+      // Actors position & state
+      data.actors_count = bn::min(game->actors_count, 20);
+      for (int i = 0; i < data.actors_count; ++i)
+      {
+        neo::actor* actor = game->actors[i];
+        if (actor != nullptr && actor->definition != nullptr)
+        {
+          copy_string(data.actors[i].id, actor->definition->_id, sizeof(data.actors[i].id));
+          copy_string(data.actors[i].name, actor->definition->name, sizeof(data.actors[i].name));
+          data.actors[i].tile_x = actor->position.x().right_shift_integer();
+          data.actors[i].tile_y = actor->position.y().right_shift_integer();
+          data.actors[i].direction = static_cast<int>(actor->direction);
+          data.actors[i].visible = actor->sprite.visible();
+        }
+      }
+    }
   }
 
   void write(neo::game* game)
@@ -32,53 +83,7 @@ namespace neo::save
     // Format tag
     copy_string(data.format_tag, "GBASAV1", sizeof(data.format_tag));
 
-    // Current scene id / name
-    copy_string(data.scene_id, game->current_scene, sizeof(data.scene_id));
-
-    // Player position & state
-    if (game->player != nullptr && game->active_scene != nullptr)
-    {
-      data.has_player = true;
-      data.player_pixel_x = int(game->player->position.x());
-      data.player_pixel_y = int(game->player->position.y());
-
-      if (game->active_scene->map_data != nullptr)
-      {
-        data.player_tile_x = game->active_scene->map_data->to_tile_x(
-          game->variables, int(game->player->position.x())
-        );
-        data.player_tile_y = game->active_scene->map_data->to_tile_y(
-          game->variables, int(game->player->position.y())
-        );
-      }
-      else
-      {
-        data.player_tile_x = data.player_pixel_x;
-        data.player_tile_y = data.player_pixel_y;
-      }
-
-      data.player_direction = static_cast<int>(game->player->direction);
-    }
-    else
-    {
-      data.has_player = false;
-    }
-
-    // Actors position & state
-    data.actors_count = bn::min(game->actors_count, 20);
-    for (int i = 0; i < data.actors_count; ++i)
-    {
-      neo::actor* actor = game->actors[i];
-      if (actor != nullptr && actor->definition != nullptr)
-      {
-        copy_string(data.actors[i].id, actor->definition->_id, sizeof(data.actors[i].id));
-        copy_string(data.actors[i].name, actor->definition->name, sizeof(data.actors[i].name));
-        data.actors[i].tile_x = actor->position.x().right_shift_integer();
-        data.actors[i].tile_y = actor->position.y().right_shift_integer();
-        data.actors[i].direction = static_cast<int>(actor->direction);
-        data.actors[i].visible = actor->sprite.visible();
-      }
-    }
+    capture_scene_state(game, data);
 
     // Variables
     data.variables_count = 0;
@@ -105,6 +110,39 @@ namespace neo::save
 
   BN_DATA_EWRAM static save_data pending_save_data;
   BN_DATA_EWRAM static bool pending_load = false;
+  BN_DATA_EWRAM static save_data ram_saved_state;
+  BN_DATA_EWRAM static bool has_ram_save = false;
+
+  void save_state(neo::game* game)
+  {
+    copy_string(ram_saved_state.format_tag, "GBASAV1", sizeof(ram_saved_state.format_tag));
+    capture_scene_state(game, ram_saved_state);
+    has_ram_save = true;
+    BN_LOG("Game state saved to RAM: scene=", ram_saved_state.scene_id, ", actors=", ram_saved_state.actors_count);
+  }
+
+  bool has_save_state()
+  {
+    return has_ram_save;
+  }
+
+  bool load_state(neo::game* game)
+  {
+    if (!has_ram_save)
+    {
+      BN_LOG("No saved state found in RAM");
+      return false;
+    }
+
+    pending_save_data = ram_saved_state;
+    pending_load = true;
+
+    BN_LOG("Loading saved state from RAM: scene=", pending_save_data.scene_id);
+
+    // Transition to saved scene
+    game->set_scene(pending_save_data.scene_id);
+    return true;
+  }
 
   bool has_save()
   {
