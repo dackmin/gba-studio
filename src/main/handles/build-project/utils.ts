@@ -1,5 +1,6 @@
 import { type SpawnOptions, spawn } from 'node:child_process';
 import path from 'node:path';
+import { platform } from 'node:process';
 
 import type { IpcMainInvokeEvent } from 'electron';
 import slugify from 'slugify';
@@ -88,6 +89,14 @@ export function runCommand (
   spawnOpts?: SpawnOptions,
 ) {
   return new Promise<string>((resolve, reject) => {
+    const signal = opts?.build?.controller?.signal;
+
+    if (signal?.aborted) {
+      reject(new Error(`${command} process aborted`));
+
+      return;
+    }
+
     const process = spawn(command, args, {
       cwd: opts?.cwd,
       stdio: 'pipe',
@@ -98,10 +107,27 @@ export function runCommand (
       reject(err);
     });
 
-    opts?.build?.controller?.signal.addEventListener('abort', () => {
-      process.kill();
+    signal?.addEventListener('abort', () => {
+      if (platform === 'win32' && process.pid) {
+        const killer = spawn('taskkill', [
+          '/pid', process.pid.toString(), '/T', '/F',
+        ], {
+          stdio: 'ignore',
+          windowsHide: true,
+        });
+
+        killer.on('error', () => process.kill());
+        killer.on('close', code => {
+          if (code !== 0) {
+            process.kill();
+          }
+        });
+      } else {
+        process.kill();
+      }
+
       reject(new Error(`${command} process aborted`));
-    });
+    }, { once: true });
 
     let res = '';
     let line = '';

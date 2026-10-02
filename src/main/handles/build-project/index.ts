@@ -34,7 +34,6 @@ import Storage from '../../storage';
 import { copyAssets } from './assets';
 
 const builds = new Map<string, Build>();
-let latestBuildId: string | null = null;
 
 function createHandlers (
   event: IpcMainInvokeEvent,
@@ -260,6 +259,8 @@ async function startBuild (
       build.events.onError((e as Error).message);
       build.events.onAbort();
     }
+  } finally {
+    builds.delete(build.id);
   }
 }
 
@@ -271,7 +272,6 @@ export async function startBuildProject (
   opts?: BuildOptions,
 ) {
   const buildId = randomUUID();
-  latestBuildId = buildId;
   const controller = new AbortController();
 
   const build: Build = {
@@ -292,17 +292,14 @@ export async function startBuildProject (
 }
 
 export function abortBuildProject (
-  _: IpcMainInvokeEvent,
-  buildId?: string
+  _: IpcMainInvokeEvent
 ) {
-  const controller = builds.get(buildId || latestBuildId || '')?.controller;
-
-  if (controller) {
-    controller.abort();
+  for (const build of builds.values()) {
+    if (!build.controller?.signal.aborted) {
+      build.controller?.abort();
+      build.events.onAbort();
+    }
   }
-
-  const build = builds.get(buildId || latestBuildId || '');
-  build?.events.onAbort();
 }
 
 export async function cleanBuildFolder (
