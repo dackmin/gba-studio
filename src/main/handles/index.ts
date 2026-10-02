@@ -25,5 +25,6 @@ export { default as showUnsavedChangesDialog } from './show-unsaved-changes-dial
 export { default as confirmClose } from './confirm-close';
 export { default as cancelClose } from './cancel-close';
 export { default as renameSceneFile } from './rename-scene-file';
+export { default as renameScriptFile } from './rename-script-file';
 
 export * from './build-project';

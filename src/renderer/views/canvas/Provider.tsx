@@ -141,7 +141,7 @@ const Provider = ({
     onCanvasChange?.({
       ...appPayload,
       scripts: appPayload.scripts
-        .map(s => s._file === script._file ? script : s),
+        .map(s => (s.id === script.id || s._file === script._file) ? script : s),
     });
     dispatch({ selectedItem: script });
   }, [onCanvasChange, appPayload]);
