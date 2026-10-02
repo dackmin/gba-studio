@@ -88,6 +88,7 @@ const config: ForgeConfig = {
         icon: './images/icon.png',
       },
     }),
+    // @ts-expect-error - TODO: Waiting for a @reforged/maker-appimage fix (still works)
     new MakerAppImage({}),
   ],
   plugins: [

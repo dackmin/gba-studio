@@ -76,7 +76,7 @@ export const createSelectionWindow = async (action?: 'new-project' | 'browse-pro
     },
     show: false,
     webPreferences: {
-      preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
+      preload: path.join(app.getAppPath(), './.vite/build/preload.cjs'),
       contextIsolation: true,
       devTools: false,
       ...MAIN_WINDOW_VITE_DEV_SERVER_URL && {
@@ -175,7 +175,7 @@ export const createProjectWindow = async (projectPath: string) => {
         : '#FAFAFA',
     },
     webPreferences: {
-      preload: path.join(app.getAppPath(), './.vite/build/preload.js'),
+      preload: path.join(app.getAppPath(), './.vite/build/preload.cjs'),
       contextIsolation: true,
       partition: projectName,
       devTools: false,
