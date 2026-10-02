@@ -24,5 +24,6 @@ export { default as importMusic } from './import-music';
 export { default as showUnsavedChangesDialog } from './show-unsaved-changes-dialog';
 export { default as confirmClose } from './confirm-close';
 export { default as cancelClose } from './cancel-close';
+export { default as renameSceneFile } from './rename-scene-file';
 
 export * from './build-project';
