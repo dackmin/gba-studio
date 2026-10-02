@@ -1,7 +1,7 @@
 import { Button, Select, Text } from '@radix-ui/themes';
 import { Select as SelectPrimitive } from 'radix-ui';
 
-import { useCanvas, useSceneForm } from '../../services/hooks';
+import { useCanvas, useSceneForm, useScriptForm } from '../../services/hooks';
 
 export interface ActorListFieldProps extends Select.RootProps {
   compact?: boolean;
@@ -12,7 +12,8 @@ const ActorListField = ({
   value,
   ...rest
 }: ActorListFieldProps) => {
-  const { scene, script } = useSceneForm();
+  const { scene } = useSceneForm();
+  const { script } = useScriptForm();
   const { selectedScene, selectedItem } = useCanvas();
   const actors = (scene ?? selectedScene)?.actors ?? [];
   const selectedParameter = (script?.parameters ?? []).find(parameter => (
