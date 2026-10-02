@@ -73,6 +73,15 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
     const evt = event as ShowMenuEvent;
 
     evt.choices = evt.choices ?? [];
+
+    for (const choice of evt.choices) {
+      choice.type = 'menu-choice';
+      choice.id = choice.id ?? randomUUID();
+
+      for (const e of choice.events ?? []) {
+        await sanitizeEvent(e);
+      }
+    }
   }
 
   return event;

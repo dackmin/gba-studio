@@ -611,6 +611,7 @@ export interface LoadStateEvent extends SceneEvent {
 }
 
 export interface GameMenuChoice {
+  type: 'menu-choice';
   text: string;
   events: SceneEvent[];
   conditions?: IfEventCondition[];
@@ -708,4 +709,12 @@ export interface SpriteBitmap {
   tiles: number;
   transparentColor: [number, number, number];
   mime?: string;
+}
+
+export interface VariableUpdate {
+  event: SetVariableEvent;
+  trigger: string;
+  scene?: GameScene;
+  script?: GameScript;
+  owner?: GameActor | GameSprite | GameSensor;
 }
