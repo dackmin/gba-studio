@@ -44,6 +44,7 @@ import type {
   SetActorDirectionEvent,
   SetActorPositionEvent,
   SetBackgroundEvent,
+  SetSpriteEvent,
   SetPaletteEffectEvent,
   SetPlayerDirectionEvent,
   SetPlayerPositionEvent,
@@ -79,6 +80,7 @@ import EventSetActorPosition from './EventSetActorPosition';
 import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetPlayerPosition from './EventSetPlayerPosition';
 import EventSetBackground from './EventSetBackground';
+import EventSetSprite from './EventSetSprite';
 import EventParallel from './EventParallel';
 import EventSetPaletteEffect from './EventSetPaletteEffect';
 import EventWaveEffect from './EventWaveEffect';
@@ -532,6 +534,12 @@ const Event = ({
                 <Switch.Case value="set-background">
                   <EventSetBackground
                     event={event as SetBackgroundEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="set-sprite">
+                  <EventSetSprite
+                    event={event as SetSpriteEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

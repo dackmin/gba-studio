@@ -12,6 +12,10 @@
 
 // Assets
 #include <bn_regular_bg_items_bg_default.h>
+#include <bn_sprite_items_sprite_default.h>
+{{#each sprites}}
+#include <bn_sprite_items_{{getSpriteName @root/sprites this.id}}.h>
+{{/each}}
 {{#each scenes}}
 #include <bn_regular_bg_items_{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}.h>
 {{#if this.player.sprite}}

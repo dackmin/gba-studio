@@ -51,6 +51,13 @@ namespace neo
     wave_offset = 0;
   }
 
+  void sprite::set_item(const bn::sprite_item& item)
+  {
+    inner_sprite.set_item(item);
+    // Dimensions may differ, so re-anchor on the same tile.
+    set_position(position.x().right_shift_integer(), position.y().right_shift_integer());
+  }
+
   void sprite::disable()
   {
     inner_sprite.set_visible(false);

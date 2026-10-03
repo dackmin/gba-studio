@@ -775,6 +775,26 @@
       ],
       "type": "object"
     },
+    "SetSpriteEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "type": {
+          "const": "set-sprite",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "asset",
+        "type"
+      ],
+      "type": "object"
+    },
     "SaveGameEvent": {
       "properties": {
         "type": {
@@ -857,6 +877,7 @@
         { "$ref": "#/definitions/SetActorDirectionEvent" },
         { "$ref": "#/definitions/SetPlayerDirectionEvent" },
         { "$ref": "#/definitions/SetBackgroundEvent" },
+        { "$ref": "#/definitions/SetSpriteEvent" },
         { "$ref": "#/definitions/SaveGameEvent" },
         { "$ref": "#/definitions/LoadGameEvent" },
         { "$ref": "#/definitions/SaveStateEvent" },

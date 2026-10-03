@@ -3,6 +3,7 @@
 
 #include <bn_core.h>
 #include <bn_sprite_ptr.h>
+#include <bn_sprite_item.h>
 
 #include <neo_types.h>
 
@@ -17,6 +18,7 @@ namespace neo
       ~sprite(); // Destructor - called automatically when delete is used
 
       void set_position(int tile_x, int tile_y);
+      void set_item(const bn::sprite_item& item);
       void disable();
       void enable();
       void init();

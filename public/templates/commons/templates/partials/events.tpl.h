@@ -464,6 +464,14 @@ BN_DATA_EWRAM neo::types::set_background_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}
 );
+{{else if (eq this.type "set-sprite")}}
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-sprite";
+BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
+BN_DATA_EWRAM neo::types::set_sprite_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sprite,
+  bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.asset "sprite_default")}}
+);
 {{else}}
 BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 BN_DATA_EWRAM neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);

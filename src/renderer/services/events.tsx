@@ -335,6 +335,17 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'enable-sprite',
       sprite: '',
     }),
+  }, {
+    icon: ImageIcon,
+    name: 'Set Sprite',
+    value: 'set-sprite',
+    keywords: ['sprite', 'image', 'change', 'set', 'graphic'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-sprite',
+      sprite: '',
+      asset: '',
+    }),
   }],
 }, {
   name: 'Variables',

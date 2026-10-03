@@ -674,6 +674,12 @@ export interface SetBackgroundEvent extends SceneEvent {
   background: string;
 }
 
+export interface SetSpriteEvent extends SceneEvent {
+  type: 'set-sprite';
+  sprite: string;
+  asset: string;
+}
+
 export type AnimationType = 'idle' | 'moving';
 
 export type FramesDefinition = {

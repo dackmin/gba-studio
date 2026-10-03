@@ -944,6 +944,29 @@ namespace neo::events
     }
 
     /**
+     * @name set-sprite
+     * @param sprite string — Sprite name or id
+     * @param item bn::sprite_item — Sprite item to display
+     */
+    else if (e->type == "set-sprite")
+    {
+      const neo::types::set_sprite_event* set_sprite_evt =
+        static_cast<const neo::types::set_sprite_event*>(e);
+
+      for (int i = 0; i < game->sprites_count; ++i)
+      {
+        if (
+          game->sprites[i]->definition->name == set_sprite_evt->sprite ||
+          game->sprites[i]->definition->_id == set_sprite_evt->sprite
+        ) {
+          BN_LOG("Setting sprite: ", game->sprites[i]->definition->name);
+          game->sprites[i]->set_item(set_sprite_evt->item);
+          break;
+        }
+      }
+    }
+
+    /**
      * Unknown events are ignored
      */
     else

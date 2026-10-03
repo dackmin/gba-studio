@@ -748,6 +748,20 @@ namespace neo::types
       background(background_) {}
   };
 
+  struct set_sprite_event: event
+  {
+    bn::string_view sprite;
+    bn::sprite_item item;
+    set_sprite_event(
+      bn::string_view type_,
+      bn::string_view sprite_,
+      bn::sprite_item item_
+    ):
+      event(type_),
+      sprite(sprite_),
+      item(item_) {}
+  };
+
   struct set_palette_effect_event: event
   {
     bn::string_view target; // "background" | "sprite" | "both"
