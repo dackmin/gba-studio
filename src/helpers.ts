@@ -170,6 +170,21 @@ export const duplicateSprite = (scene: GameScene, sprite: GameSprite): GameSprit
   return newSprite;
 };
 
+export const duplicateScene = (scenes: GameScene[], scene: GameScene): GameScene => {
+  let index = scenes.length + 1;
+
+  while (scenes.some(s => s._file === `scene_${index}.json`)) {
+    index++;
+  }
+
+  return {
+    ...cloneDeep(omit(scene, ['id', '_file'])),
+    id: uuid(),
+    _file: `scene_${index}.json`,
+    name: `${scene.name} copy`,
+  } as GameScene;
+};
+
 export const duplicateSensor = (scene: GameScene, sensor: GameSensor): GameSensor => {
   const sceneSensor = (scene.map?.sensors || []).find(s => s.id === sensor.id);
   const isSamePosition = sceneSensor?.x === sensor.x && sceneSensor?.y === sensor.y;

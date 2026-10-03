@@ -33,7 +33,13 @@ import {
   DEFAULT_SPRITE,
 } from '../../services/defaults';
 import { isEditableElementFocused } from '../../services/helpers';
-import { duplicateActor, duplicateSensor, duplicateSprite, pixelToTile } from '../../../helpers';
+import {
+  duplicateActor,
+  duplicateScene,
+  duplicateSensor,
+  duplicateSprite,
+  pixelToTile,
+} from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
@@ -213,10 +219,20 @@ const Canvas = () => {
   ]);
 
   const onCopy = useCallback((e?: globalThis.KeyboardEvent) => {
-    if (
-      isEditableElementFocused() ||
-      !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')
-    ) {
+    if (isEditableElementFocused()) {
+      return;
+    }
+
+    if (!selectedItem && selectedScene) {
+      e?.preventDefault();
+      e?.stopPropagation();
+
+      window.electron.registerClipboard(selectedScene);
+
+      return;
+    }
+
+    if (!['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
       return;
     }
 
@@ -224,9 +240,28 @@ const Canvas = () => {
     e?.stopPropagation();
 
     window.electron.registerClipboard(selectedItem);
-  }, [selectedItem]);
+  }, [selectedItem, selectedScene]);
 
   useBridgeListener('copy', onCopy, [onCopy]);
+
+  const onPasteScene = useCallback((clipboardScene: GameScene) => {
+    const scene = duplicateScene(appPayload.scenes, clipboardScene);
+    const original = project?.scenes?.find(s => (
+      s.id === clipboardScene.id || s._file === clipboardScene._file
+    ));
+
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: [...appPayload.scenes, scene],
+    });
+
+    onMoveScene?.(scene, {
+      deltaX: (original?.x || 0) + 40,
+      deltaY: (original?.y || 0) + 40,
+    });
+
+    selectScene?.(scene);
+  }, [appPayload, project, onCanvasChange, onMoveScene, selectScene]);
 
   const onPaste = useCallback(async (e?: globalThis.KeyboardEvent) => {
     if (isEditableElementFocused()) {
@@ -234,6 +269,14 @@ const Canvas = () => {
     }
 
     const clipboard = await window.electron.getClipboard();
+
+    if (clipboard?.type === 'scene') {
+      e?.preventDefault();
+      e?.stopPropagation();
+      onPasteScene(clipboard as GameScene);
+
+      return;
+    }
 
     if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(clipboard?.type || '')) {
       return;
@@ -298,7 +341,7 @@ const Canvas = () => {
     });
 
     selectItem?.(selectedScene, newItem);
-  }, [selectedScene, appPayload, onCanvasChange, selectItem]);
+  }, [selectedScene, appPayload, onCanvasChange, selectItem, onPasteScene]);
 
   useBridgeListener('paste', onPaste, [onPaste]);
 
