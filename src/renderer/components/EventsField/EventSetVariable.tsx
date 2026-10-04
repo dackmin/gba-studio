@@ -1,6 +1,6 @@
-import { useCallback, useState, type ChangeEvent } from 'react';
+import { useCallback, useReducer, useState, type ChangeEvent } from 'react';
 import { set } from '@junipero/react';
-import { Text, TextField } from '@radix-ui/themes';
+import { Select, Text, TextField } from '@radix-ui/themes';
 
 import type {
   SetVariableEvent,
@@ -48,9 +48,26 @@ const EventSetVariable = ({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Value</Text>
+        <Text size="1" className="text-slate">Operation</Text>
+        <Select.Root
+          value={event.operation || 'set'}
+          onValueChange={onValueChange_.bind(null, 'operation')}
+        >
+          <Select.Trigger />
+          <Select.Content>
+            <Select.Item value="set">Set</Select.Item>
+            <Select.Item value="increment">Increment</Select.Item>
+            <Select.Item value="decrement">Decrement</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">
+          { (event.operation || 'set') === 'set' ? 'Value' : 'Amount' }
+        </Text>
         <TextField.Root
-          type="text"
+          type={(event.operation || 'set') === 'set' ? 'text' : 'number'}
+          placeholder={(event.operation || 'set') === 'set' ? undefined : '1'}
           // TODO: handle dynamic EventValue, in the future, one day
           value={event.value as string}
           onChange={onChange.bind(null, 'value')}

@@ -353,12 +353,13 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: Pencil1Icon,
     name: 'Set Variable',
     value: 'set-variable',
-    keywords: ['variable', 'set', 'change', 'value'],
+    keywords: ['variable', 'set', 'change', 'value', 'increment', 'decrement', 'add', 'subtract'],
     parallelizable: true,
     construct: () => ({
       type: 'set-variable',
       name: '',
       value: '',
+      operation: 'set',
     }),
   }],
 }, {

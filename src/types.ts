@@ -506,6 +506,7 @@ export interface SetVariableEvent extends SceneEvent {
   type: 'set-variable';
   name: string;
   value: EventValue;
+  operation?: 'set' | 'increment' | 'decrement';
 }
 
 export interface ShowDialogEvent extends SceneEvent {
@@ -643,7 +644,7 @@ export interface ShowMenuEvent extends SceneEvent {
 export interface IfEventCondition {
   type: 'condition';
   left: EventValue | IfEventCondition;
-  operator: '==' | '!=' | '&&' | '||';
+  operator: '==' | '!=' | '>' | '<' | '>=' | '<=' | '&&' | '||';
   right: EventValue | IfEventCondition;
 }
 

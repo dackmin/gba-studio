@@ -164,7 +164,8 @@ BN_DATA_EWRAM bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
 BN_DATA_EWRAM neo::types::set_variable_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_variable_name,
-  &{{../prefix}}_{{@index}}_value
+  &{{../prefix}}_{{@index}}_value,
+  neo::types::variable_operation::{{uppercase (valuedef this.operation 'set')}}
 );
 {{else if (eq this.type "if")}}
 {{#if this.then.length}}

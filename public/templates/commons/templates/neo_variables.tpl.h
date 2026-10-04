@@ -6,6 +6,8 @@
 #include <bn_core.h>
 #include <bn_log.h>
 #include <bn_assert.h>
+#include <bn_algorithm.h>
+#include <bn_string.h>
 #include <bn_unordered_map.h>
 
 namespace neo::variables
@@ -16,6 +18,9 @@ namespace neo::variables
     int int_value;
     bool bool_value;
     bn::string_view str_value;
+    // 6 chars fit -99999..999999, which set_int() clamps to.
+    bn::string<6> computed_str;
+    bool has_computed_str = false;
 
     value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
       name(name_),
@@ -35,7 +40,25 @@ namespace neo::variables
 
     inline bn::string_view as_string () const
     {
-      return str_value;
+      return has_computed_str ? bn::string_view(computed_str) : str_value;
+    }
+
+    inline void set_int (int val)
+    {
+      val = bn::clamp(val, -99999, 999999);
+      int_value = val;
+      bool_value = val != 0;
+      computed_str = bn::to_string<6>(val);
+      has_computed_str = true;
+    }
+
+    inline void assign (const value& other)
+    {
+      int_value = other.int_value;
+      bool_value = other.bool_value;
+      str_value = other.str_value;
+      computed_str = other.computed_str;
+      has_computed_str = other.has_computed_str;
     }
   };
 
@@ -98,7 +121,8 @@ namespace neo::variables
       BN_ASSERT(it != all.end(), "Variable not found: ", key);
 
       BN_LOG("Setting variable:", key, ", to value:", value->as_string());
-      it->second = value;
+      // Copy into the variable's own storage so later increments don't alter the event's value
+      it->second->assign(*value);
     }
 
     inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val)
@@ -114,6 +138,7 @@ namespace neo::variables
         it->second->int_value = int_val;
         it->second->bool_value = bool_val;
         it->second->str_value = str_val;
+        it->second->has_computed_str = false;
       }
     }
   };

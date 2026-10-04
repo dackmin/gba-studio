@@ -58,6 +58,13 @@ namespace neo::types
     SIDE_SCROLLER
   };
 
+  enum class variable_operation
+  {
+    SET,
+    INCREMENT,
+    DECREMENT
+  };
+
   struct event_value
   {
     bn::string_view type;
@@ -310,8 +317,9 @@ namespace neo::types
   {
     bn::string_view key;
     neo::variables::value* value;
-    set_variable_event(bn::string_view type_, bn::string_view key_, neo::variables::value* value_):
-      event(type_), key(key_), value(value_) {}
+    neo::types::variable_operation operation;
+    set_variable_event(bn::string_view type_, bn::string_view key_, neo::variables::value* value_, neo::types::variable_operation operation_):
+      event(type_), key(key_), value(value_), operation(operation_) {}
   };
 
   struct if_expression

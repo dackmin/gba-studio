@@ -293,13 +293,32 @@ namespace neo::events
     /**
      * @name set-variable
      * @param name string — Variable name
-     * @param value string — Variable value
+     * @param value string — Variable value (amount for increment/decrement)
+     * @param operation string — set (default), increment or decrement
      */
     else if (e->type == "set-variable")
     {
       const neo::types::set_variable_event* set_var_evt =
         static_cast<const neo::types::set_variable_event*>(e);
-      game->variables.set(set_var_evt->key, set_var_evt->value);
+
+      if (
+        set_var_evt->operation == neo::types::variable_operation::INCREMENT ||
+        set_var_evt->operation == neo::types::variable_operation::DECREMENT
+      )
+      {
+        if (game->variables.has(set_var_evt->key))
+        {
+          neo::variables::value& var = game->variables.get(set_var_evt->key);
+          int amount = set_var_evt->value->as_int();
+          var.set_int(var.as_int() + (
+            set_var_evt->operation == neo::types::variable_operation::INCREMENT ? amount : -amount
+          ));
+        }
+      }
+      else
+      {
+        game->variables.set(set_var_evt->key, set_var_evt->value);
+      }
     }
 
     else if (e->type == "if")

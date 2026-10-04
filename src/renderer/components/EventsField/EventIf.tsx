@@ -174,6 +174,10 @@ export const EventIfCondition = ({
           <Select.Content>
             <Select.Item value="==">==</Select.Item>
             <Select.Item value="!=">!=</Select.Item>
+            <Select.Item value=">">{ '>' }</Select.Item>
+            <Select.Item value="<">{ '<' }</Select.Item>
+            <Select.Item value=">=">{ '>=' }</Select.Item>
+            <Select.Item value="<=">{ '<=' }</Select.Item>
             <Select.Item value="&&">&&</Select.Item>
             <Select.Item value="||">||</Select.Item>
           </Select.Content>

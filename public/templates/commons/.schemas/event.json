@@ -365,6 +365,10 @@
           "type": "string"
         },
         "value": { "$ref": "#/definitions/EventValue" },
+        "operation": {
+          "enum": ["set", "increment", "decrement"],
+          "type": "string"
+        },
         "type": {
           "const": "set-variable",
           "type": "string"

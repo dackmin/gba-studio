@@ -235,10 +235,25 @@ namespace neo::conditions
       return evaluate_condition(game, condition->left) || evaluate_condition(game, condition->right);
     }
 
-    // Comparisons are equality-only for now
-    // TODO: allow gt/lt/... comparisons
     condition_operand left = resolve_operand(game, condition->left);
     condition_operand right = resolve_operand(game, condition->right);
+
+    if (condition->op == ">")
+    {
+      return left.number > right.number;
+    }
+    else if (condition->op == "<")
+    {
+      return left.number < right.number;
+    }
+    else if (condition->op == ">=")
+    {
+      return left.number >= right.number;
+    }
+    else if (condition->op == "<=")
+    {
+      return left.number <= right.number;
+    }
 
     // Tile x/y attributes have no string form, so a comparison touching one
     // is numeric; everything else compares as text
