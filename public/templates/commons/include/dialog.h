@@ -21,6 +21,7 @@ namespace neo
     static constexpr int PADDING_TOP = 8;
     static constexpr int PADDING_BOTTOM = 8;
     static constexpr int MARGIN = 4;
+    static constexpr int PORTRAIT_GAP = 8;
 
     public:
       dialog(neo::game* game, const bn::vector<bn::string_view, MAX_LINES>& lines);
@@ -29,11 +30,14 @@ namespace neo
       void set_direction(neo::types::direction direction_);
       void set_z_order(int z_order_);
       void set_speed(neo::types::text_speed speed_);
+      void set_portrait(const bn::sprite_item* portrait_, neo::types::dialog_portrait_position position_);
 
       neo::game* game;
       bn::vector<bn::string_view, MAX_LINES> lines;
       neo::types::direction direction;
       neo::types::text_speed speed;
+      const bn::sprite_item* portrait = nullptr;
+      neo::types::dialog_portrait_position portrait_position = neo::types::dialog_portrait_position::LEFT;
       int lines_count;
       int bg_z_order;
       int text_z_order;

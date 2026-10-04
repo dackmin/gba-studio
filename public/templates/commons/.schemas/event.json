@@ -398,6 +398,16 @@
           ],
           "type": "string"
         },
+        "portrait": {
+          "type": "string"
+        },
+        "portraitPosition": {
+          "enum": [
+            "left",
+            "right"
+          ],
+          "type": "string"
+        },
         "type": {
           "const": "show-dialog",
           "type": "string"

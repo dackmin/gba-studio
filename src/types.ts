@@ -515,6 +515,8 @@ export interface ShowDialogEvent extends SceneEvent {
   direction?: Direction;
   z?: number;
   speed?: 'slow' | 'normal' | 'fast';
+  portrait?: string;
+  portraitPosition?: 'left' | 'right';
 }
 
 export interface DisableActorEvent extends SceneEvent {

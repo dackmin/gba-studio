@@ -88,7 +88,7 @@ BN_DATA_EWRAM neo::types::scene_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "show-dialog")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
-{{#each (truncate this.text 27)}}
+{{#each (truncate this.text (dialogLineLength this.portrait))}}
 constexpr bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{escapeCpp this}}";
 {{/each}}
 BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
@@ -96,8 +96,14 @@ BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
   {{valuedef this.z 1}},
   neo::types::text_speed::{{uppercase (valuedef this.speed 'normal')}},
+  {{#if this.portrait}}
+  &bn::sprite_items::{{getSpriteName @root/sprites this.portrait}},
+  {{else}}
+  nullptr,
+  {{/if}}
+  neo::types::dialog_portrait_position::{{uppercase (valuedef this.portraitPosition 'left')}},
   make_dialog_vector(
-    {{#each (truncate this.text 27)}}
+    {{#each (truncate this.text (dialogLineLength this.portrait))}}
     {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
   )

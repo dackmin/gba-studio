@@ -7,6 +7,8 @@
 #include <bn_sprite_item.h>
 #include <bn_sprite_text_generator.h>
 #include <bn_unique_ptr.h>
+#include <bn_optional.h>
+#include <bn_algorithm.h>
 
 #include <bn_sprite_items_textbox.h>
 #include <bn_sprite_items_gbs_mono.h>
@@ -34,7 +36,14 @@ namespace neo
   {
     BN_LOG("Showing dialog");
     int total_width = bn::display::width() - MARGIN * 2;
-    int total_height = LINE_HEIGHT * lines_count + PADDING_TOP + PADDING_BOTTOM;
+    int portrait_width = portrait != nullptr ? portrait->shape_size().width() : 0;
+    int portrait_height = portrait != nullptr ? portrait->shape_size().height() : 0;
+    bool portrait_left = portrait_position == neo::types::dialog_portrait_position::LEFT;
+    int text_offset = portrait != nullptr && portrait_left ? portrait_width + PORTRAIT_GAP : 0;
+    int total_height = bn::max(
+      LINE_HEIGHT * lines_count,
+      portrait_height
+    ) + PADDING_TOP + PADDING_BOTTOM;
     int x = 0;
     int y = 0;
 
@@ -64,6 +73,21 @@ namespace neo
     );
     neo::dialog_bg& bg = *bg_storage;
 
+    bn::optional<bn::sprite_ptr> portrait_sprite;
+
+    if (portrait != nullptr)
+    {
+      portrait_sprite = portrait->create_sprite(0, 0);
+      portrait_sprite->set_bg_priority(0);
+      portrait_sprite->set_z_order(text_z_order);
+      portrait_sprite->set_top_left_position(
+        portrait_left
+          ? x + PADDING_LEFT
+          : x + total_width - PADDING_RIGHT - portrait_width,
+        y + PADDING_TOP
+      );
+    }
+
     // Create font
     bn::unique_ptr<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>> text_sprites_storage =
       bn::make_unique<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>>();
@@ -78,7 +102,7 @@ namespace neo
     for (int i = 0; i < lines_count; ++i)
     {
       bn::string_view line = lines.at(i);
-      bn::fixed text_x = x + PADDING_LEFT;
+      bn::fixed text_x = x + PADDING_LEFT + text_offset;
       bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
 
       text_generator.generate_top_left(
@@ -164,6 +188,7 @@ namespace neo
     // Hide dialog
     BN_LOG("Hiding dialog");
     text_sprites.clear();
+    portrait_sprite.reset();
     bg.set_visible(false);
   }
 
@@ -181,5 +206,11 @@ namespace neo
   void dialog::set_speed (neo::types::text_speed speed_)
   {
     speed = speed_;
+  }
+
+  void dialog::set_portrait (const bn::sprite_item* portrait_, neo::types::dialog_portrait_position position_)
+  {
+    portrait = portrait_;
+    portrait_position = position_;
   }
 }

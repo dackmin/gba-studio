@@ -80,6 +80,8 @@ export const setupHandlebars = async () => {
       .split(/\r?\n/)
       .flatMap(line => line.match(new RegExp(`.{1,${len}}`, 'g')) || [''])
   );
+  Handlebars.registerHelper('dialogLineLength', (portrait?: string) =>
+    portrait ? 24 : 27);
   Handlebars.registerHelper('valuedef', (trueValue, falseValue) =>
     typeof trueValue !== 'undefined' && trueValue !== null && trueValue !== ''
       ? trueValue : falseValue);

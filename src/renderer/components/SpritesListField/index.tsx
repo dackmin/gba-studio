@@ -8,12 +8,14 @@ import Sprite from '../Sprite';
 export interface SpritesListFieldProps {
   value?: string;
   defaultValue?: string;
+  nullable?: boolean;
   onValueChange?: (value: string) => void;
 }
 
 const SpritesListField = ({
   value,
   defaultValue,
+  nullable = false,
   onValueChange,
 }: SpritesListFieldProps) => {
   const { sprites } = useApp();
@@ -28,17 +30,23 @@ const SpritesListField = ({
       <DropdownMenu.Trigger>
         <Card className="!cursor-pointer select-none">
           <div className="flex items-center gap-2">
-            <Sprite
-              sprite={selected ?? {
-                path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
-                width: 16,
-                height: 16,
-              }}
-              className="w-8 h-8"
-              keepAspectRatio
-              transparencyColor={selected?.transparentColor}
-            />
-            <Text>{ selected?.name ?? 'sprite_default' }</Text>
+            { nullable && !val ? (
+              <Text className="text-slate">None</Text>
+            ) : (
+              <>
+                <Sprite
+                  sprite={selected ?? {
+                    path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+                    width: 16,
+                    height: 16,
+                  }}
+                  className="w-8 h-8"
+                  keepAspectRatio
+                  transparencyColor={selected?.transparentColor}
+                />
+                <Text>{ selected?.name ?? 'sprite_default' }</Text>
+              </>
+            ) }
           </div>
         </Card>
       </DropdownMenu.Trigger>
@@ -46,16 +54,22 @@ const SpritesListField = ({
         <DropdownMenu.Item
           onClick={() => onValueChange?.('')}
         >
-          <Sprite
-            sprite={{
-              path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
-              width: 16,
-              height: 16,
-            }}
-            className="w-6 h-6"
-            keepAspectRatio
-          />
-          <Text>Default sprite</Text>
+          { nullable ? (
+            <Text>None</Text>
+          ) : (
+            <>
+              <Sprite
+                sprite={{
+                  path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+                  width: 16,
+                  height: 16,
+                }}
+                className="w-6 h-6"
+                keepAspectRatio
+              />
+              <Text>Default sprite</Text>
+            </>
+          ) }
         </DropdownMenu.Item>
         { sprites.map(sprite => (
           <DropdownMenu.Item

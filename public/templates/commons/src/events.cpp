@@ -228,6 +228,7 @@ namespace neo::events
       d->set_direction(dialog_evt->direction);
       d->set_z_order(dialog_evt->z);
       d->set_speed(dialog_evt->speed);
+      d->set_portrait(dialog_evt->portrait, dialog_evt->portrait_position);
       d->show();
       delete d;
     }

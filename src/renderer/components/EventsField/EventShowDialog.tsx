@@ -1,12 +1,14 @@
-import { type ChangeEvent, useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { set } from '@junipero/react';
 import { Select, Text, TextArea } from '@radix-ui/themes';
 import { Tooltip } from 'radix-ui';
 
 import type { ShowDialogEvent } from '../../../types';
-import { useDelayedCallback } from '../../services/hooks';
+import { findSprite } from '../../../helpers';
+import { useApp, useDelayedCallback } from '../../services/hooks';
 import DialogPreview from '../DialogPreview';
 import DirectionField from '../DirectionField';
+import SpritesListField from '../SpritesListField';
 
 export interface EventShowDialogProps {
   event: ShowDialogEvent;
@@ -21,6 +23,12 @@ const EventShowDialog = ({
 }: EventShowDialogProps) => {
   const [event, setEvent] = useState(eventProp);
   const [opened, setOpened] = useState(false);
+  const { sprites } = useApp();
+
+  const portrait = useMemo(() => (
+    event.portrait ? findSprite(sprites, event.portrait) : undefined
+  ), [sprites, event.portrait]);
+
   // Performance optimizations
   const onDelayedValueChange = useDelayedCallback(onValueChange, 300);
 
@@ -53,6 +61,29 @@ const EventShowDialog = ({
           onValueChange={onValueChange_.bind(null, 'direction')}
         />
       </div>
+      <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Portrait</Text>
+        <SpritesListField
+          nullable
+          value={event.portrait || ''}
+          onValueChange={onValueChange_.bind(null, 'portrait')}
+        />
+      </div>
+      { event.portrait && (
+        <div className="flex flex-col gap-2">
+          <Text size="1" className="text-slate">Portrait position</Text>
+          <Select.Root
+            value={event.portraitPosition || 'left'}
+            onValueChange={onValueChange_.bind(null, 'portraitPosition')}
+          >
+            <Select.Trigger placeholder="Select" />
+            <Select.Content>
+              <Select.Item value="left">Left</Select.Item>
+              <Select.Item value="right">Right</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
+      ) }
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Speed</Text>
         <Select.Root
@@ -88,6 +119,8 @@ const EventShowDialog = ({
                 <DialogPreview
                   className="absolute top-1/2 right-full -translate-y-1/2 ml-4"
                   text={event.text}
+                  portrait={portrait}
+                  portraitPosition={event.portraitPosition}
                 />
               </Tooltip.Content>
             </Tooltip.Portal>
