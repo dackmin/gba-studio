@@ -6,18 +6,18 @@ constexpr bn::string_view {{prefix}}_string_value = "{{escapeCpp value.name}}";
 {{else if (not (isInt value.value))}}
 constexpr bn::string_view {{prefix}}_string_value = "{{escapeCpp (valuedef value.value value)}}";
 {{/if}}
-BN_DATA_EWRAM neo::variables::value {{prefix}}_raw_value(
+constexpr neo::variables::value {{prefix}}_raw_value(
   {{prefix}}_name,
   {{int (valuedef value.value value)}},
   {{bool (valuedef value.value value)}},
   {{#if (not (isInt value.value))}}
   {{prefix}}_string_value
   {{else}}
-  nullptr
+  bn::string_view()
   {{/if}}
 );
 constexpr bn::string_view {{prefix}}_type = "{{valuedef value.type 'value'}}";
-BN_DATA_EWRAM neo::types::event_value {{prefix}}_value(
+constexpr neo::types::event_value {{prefix}}_value(
   {{prefix}}_type,
   &{{prefix}}_raw_value
 );

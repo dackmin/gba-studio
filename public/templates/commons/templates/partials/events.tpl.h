@@ -154,7 +154,7 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "set-variable")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_string_value = "{{escapeCpp this.value}}";
-BN_DATA_EWRAM neo::variables::value {{../prefix}}_{{@index}}_value(
+constexpr neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_variable_name,
   {{int this.value}},
   {{bool this.value}},
@@ -275,7 +275,7 @@ BN_DATA_EWRAM neo::types::play_sound_event {{../prefix}}_{{@index}}(
 {{#each this.parameters}}
 {{>valuePartial prefix=(concat ../../prefix "_" @../index "_argument_" @index) value=this}}
 {{/each}}
-neo::types::event_value* {{../prefix}}_{{@index}}_arguments[] = {
+constexpr const neo::types::event_value* {{../prefix}}_{{@index}}_arguments[] = {
   {{#each this.parameters}}
   &{{../../prefix}}_{{@../index}}_argument_{{@index}}_value{{#unless @last}},{{/unless}}
   {{/each}}

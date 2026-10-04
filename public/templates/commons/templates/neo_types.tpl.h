@@ -68,9 +68,9 @@ namespace neo::types
   struct event_value
   {
     bn::string_view type;
-    neo::variables::value* value;
+    const neo::variables::value* value;
 
-    event_value(bn::string_view type_, neo::variables::value* value_):
+    constexpr event_value(bn::string_view type_, const neo::variables::value* value_):
       type(type_), value(value_) {}
 
     inline int as_int(neo::variables::registry& variables) const
@@ -148,20 +148,20 @@ namespace neo::types
 
   struct wait_event: event
   {
-    event_value* duration;
-    wait_event(bn::string_view type_, event_value* duration_):
+    const event_value* duration;
+    wait_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
   };
 
   struct fade_event: event
   {
-    event_value* duration;
+    const event_value* duration;
 
     neo::game* game_ref = nullptr;
     bn::optional<bn::regular_bg_ptr> bg;
     bn::optional<bn::blending_fade_alpha_to_action> action;
 
-    fade_event(bn::string_view type_, event_value* duration_):
+    fade_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
 
     void start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms);
@@ -171,10 +171,10 @@ namespace neo::types
   struct scene_event: event
   {
     bn::string_view target;
-    event_value* start_x;
-    event_value* start_y;
+    const event_value* start_x;
+    const event_value* start_y;
     neo::types::direction start_direction;
-    scene_event(bn::string_view type_, bn::string_view target_, event_value* start_x_, event_value* start_y_, neo::types::direction start_direction_):
+    scene_event(bn::string_view type_, bn::string_view target_, const event_value* start_x_, const event_value* start_y_, neo::types::direction start_direction_):
       event(type_), target(target_), start_x(start_x_), start_y(start_y_), start_direction(start_direction_) {}
   };
 
@@ -316,9 +316,9 @@ namespace neo::types
   struct set_variable_event: event
   {
     bn::string_view key;
-    neo::variables::value* value;
+    const neo::variables::value* value;
     neo::types::variable_operation operation;
-    set_variable_event(bn::string_view type_, bn::string_view key_, neo::variables::value* value_, neo::types::variable_operation operation_):
+    set_variable_event(bn::string_view type_, bn::string_view key_, const neo::variables::value* value_, neo::types::variable_operation operation_):
       event(type_), key(key_), value(value_), operation(operation_) {}
   };
 
@@ -492,16 +492,16 @@ namespace neo::types
   {
     bn::string_view name;
     int arguments_count;
-    event_value** arguments;
-    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, event_value** arguments_):
+    const event_value* const* arguments;
+    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, const event_value* const* arguments_):
       event(type_), name(name_), arguments_count(arguments_count_), arguments(arguments_) {}
   };
 
   struct move_camera_to_event: event
   {
-    event_value* x;
-    event_value* y;
-    event_value* duration;
+    const event_value* x;
+    const event_value* y;
+    const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
 
@@ -523,9 +523,9 @@ namespace neo::types
 
     move_camera_to_event(
       bn::string_view type_,
-      event_value* x_,
-      event_value* y_,
-      event_value* duration_,
+      const event_value* x_,
+      const event_value* y_,
+      const event_value* duration_,
       bool allow_diagonal_,
       bn::string_view direction_priority_
     ):
@@ -543,13 +543,13 @@ namespace neo::types
   struct follow_actor_event: event
   {
     bn::string_view actor;
-    event_value* duration;
+    const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
     follow_actor_event(
       bn::string_view type_,
       bn::string_view actor_,
-      event_value* duration_,
+      const event_value* duration_,
       bool allow_diagonal_,
       bn::string_view direction_priority_
     ):
@@ -562,12 +562,12 @@ namespace neo::types
 
   struct follow_player_event: event
   {
-    event_value* duration;
+    const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
     follow_player_event(
       bn::string_view type_,
-      event_value* duration_,
+      const event_value* duration_,
       bool allow_diagonal_,
       bn::string_view direction_priority_
     ):
@@ -586,9 +586,9 @@ namespace neo::types
   // tracking, finalization) lives here.
   struct actor_move_event: event
   {
-    event_value* x;
-    event_value* y;
-    event_value* speed;
+    const event_value* x;
+    const event_value* y;
+    const event_value* speed;
     bn::string_view direction_priority;
     bn::string_view animation;
     bool backwards;
@@ -616,9 +616,9 @@ namespace neo::types
 
     actor_move_event(
       bn::string_view type_,
-      event_value* x_,
-      event_value* y_,
-      event_value* speed_,
+      const event_value* x_,
+      const event_value* y_,
+      const event_value* speed_,
       bn::string_view direction_priority_,
       bn::string_view animation_,
       bool backwards_
@@ -658,9 +658,9 @@ namespace neo::types
     move_actor_to_event(
       bn::string_view type_,
       bn::string_view actor_,
-      event_value* x_,
-      event_value* y_,
-      event_value* speed_,
+      const event_value* x_,
+      const event_value* y_,
+      const event_value* speed_,
       bn::string_view direction_priority_,
       bn::string_view animation_,
       bool backwards_
@@ -676,9 +676,9 @@ namespace neo::types
   {
     move_player_to_event(
       bn::string_view type_,
-      event_value* x_,
-      event_value* y_,
-      event_value* speed_,
+      const event_value* x_,
+      const event_value* y_,
+      const event_value* speed_,
       bn::string_view direction_priority_,
       bn::string_view animation_,
       bool backwards_
@@ -692,13 +692,13 @@ namespace neo::types
   struct set_actor_position_event: event
   {
     bn::string_view actor;
-    event_value* x;
-    event_value* y;
+    const event_value* x;
+    const event_value* y;
     set_actor_position_event(
       bn::string_view type_,
       bn::string_view actor_,
-      event_value* x_,
-      event_value* y_
+      const event_value* x_,
+      const event_value* y_
     ):
       event(type_),
       actor(actor_),
@@ -708,12 +708,12 @@ namespace neo::types
 
   struct set_player_position_event: event
   {
-    event_value* x;
-    event_value* y;
+    const event_value* x;
+    const event_value* y;
     set_player_position_event(
       bn::string_view type_,
-      event_value* x_,
-      event_value* y_
+      const event_value* x_,
+      const event_value* y_
     ):
       event(type_),
       x(x_),
@@ -775,7 +775,7 @@ namespace neo::types
     bn::string_view target; // "background" | "sprite" | "both"
     bn::string_view effect; // "brightness" | "contrast" | "intensity" | "grayscale" | "hue-shift"
     bn::fixed value; // Target value, in percent (0-100).
-    event_value* duration;
+    const event_value* duration;
 
     // Runtime-only resumable interpolation state, set by start()/advanced by
     // update() when this effect runs inside a parallel-events branch instead
@@ -790,7 +790,7 @@ namespace neo::types
       bn::string_view target_,
       bn::string_view effect_,
       bn::fixed value_,
-      event_value* duration_
+      const event_value* duration_
     ):
       event(type_),
       target(target_),
@@ -815,7 +815,7 @@ namespace neo::types
     bn::fixed amplitude; // pixels
     bn::fixed speed; // degrees of phase advanced per frame
     int frequency; // number of full sine cycles across the 160 screen lines
-    event_value* duration; // milliseconds (0 = runs until the scene changes)
+    const event_value* duration; // milliseconds (0 = runs until the scene changes)
     bn::string_view envelope; // "in" (0%->100%) | "in-out" (0%->100%->0%)
 
     // Runtime-only resumable state, set by start()/advanced by update()
@@ -829,7 +829,7 @@ namespace neo::types
       bn::fixed amplitude_,
       bn::fixed speed_,
       int frequency_,
-      event_value* duration_,
+      const event_value* duration_,
       bn::string_view envelope_
     ):
       event(type_),
@@ -867,7 +867,7 @@ namespace neo::types
   {
     int width;
     int height;
-    event_value* grid_size;
+    const event_value* grid_size;
     const int* collisions;
     int sensors_count;
     sensor** sensors;
@@ -921,7 +921,7 @@ namespace neo::types
   struct sprite_animation_frame
   {
     int frame_index;
-    event_value* duration;
+    const event_value* duration;
     bool reversed;
   };
 
@@ -1024,9 +1024,9 @@ namespace neo::types
   {
     bn::string_view _id;
     bn::string_view name;
-    event_value* x;
-    event_value* y;
-    event_value* z;
+    const event_value* x;
+    const event_value* y;
+    const event_value* z;
     neo::types::direction direction;
     bn::sprite_item sprite;
     bool disable_direction_on_interact;
@@ -1047,9 +1047,9 @@ namespace neo::types
   {
     bn::string_view _id;
     bn::string_view name;
-    event_value* x;
-    event_value* y;
-    event_value* z;
+    const event_value* x;
+    const event_value* y;
+    const event_value* z;
     bn::sprite_item sprite;
     int collision_group;
     int init_events_count;
