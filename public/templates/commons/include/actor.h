@@ -13,7 +13,7 @@ namespace neo
   class actor
   {
     public:
-      actor(neo::game* game, neo::types::actor* actor_definition, bool is_player = false);
+      actor(neo::game* game, const neo::types::actor* actor_definition, bool is_player = false);
       ~actor();
 
       inline constexpr static int PLAYER_SPEED = 2; // slow: 1, faster: 2
@@ -51,7 +51,7 @@ namespace neo
       int height();
 
       neo::game* game;
-      neo::types::actor* definition;
+      const neo::types::actor* definition;
       bn::sprite_ptr sprite;
       bn::fixed_point position;
       neo::types::direction direction;

@@ -16,7 +16,7 @@ namespace neo
 {
   actor::actor(
     neo::game* game_,
-    neo::types::actor* actor_definition_,
+    const neo::types::actor* actor_definition_,
     bool is_player_
   ) : game(game_),
       definition(actor_definition_),
@@ -34,7 +34,7 @@ namespace neo
 
     if (is_player)
     {
-      neo::types::map* map_data = game->active_scene->map_data;
+      const neo::types::map* map_data = game->active_scene->map_data;
       int grid_size = map_data->grid_size->as_int(game->variables);
       int tile_x = definition->x->as_int(game->variables);
       int tile_y = definition->y->as_int(game->variables);
@@ -151,7 +151,7 @@ namespace neo
   {
     position = pixel_position;
 
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     int x = (int)position.x() - map_data->pixel_width(game->variables) / 2;
     int y = (int)position.y() - map_data->pixel_height(game->variables) / 2;
     sprite.set_x(x + width() / 2);
@@ -176,7 +176,7 @@ namespace neo
       return false;
     }
 
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     int grid_size = map_data->grid_size->as_int(game->variables);
 
     // Position is the top-left tile; the actor covers as many tiles as its sprite spans.
@@ -241,7 +241,7 @@ namespace neo
 
   void actor::check_input()
   {
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     if (game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER)
@@ -431,7 +431,7 @@ namespace neo
 
   void actor::check_input_side_scroller()
   {
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     bool was_grounded = grounded;
@@ -594,7 +594,7 @@ namespace neo
 
   bool actor::side_scroller_blocked_at(int pixel_x, int pixel_y)
   {
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
 
     int sprite_width = width();
     int sprite_height = height();
@@ -668,7 +668,7 @@ namespace neo
 
   void actor::check_collisions()
   {
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     int player_group = definition->collision_group;
 
     // Solidity follows the same rule as game::has_collision(): in
@@ -785,7 +785,7 @@ namespace neo
 
   void actor::move(neo::types::sprite_animation* anim)
   {
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     int next_x = (int)position.x();
@@ -933,7 +933,7 @@ namespace neo
 
     moving = true;
 
-    neo::types::map* map_data = game->active_scene->map_data;
+    const neo::types::map* map_data = game->active_scene->map_data;
     int offset_x = -map_data->pixel_width(game->variables) / 2 + sprite.dimensions().width() / 2;
     int offset_y = -map_data->pixel_height(game->variables) / 2 + sprite.dimensions().height() / 2;
 
@@ -1039,7 +1039,7 @@ namespace neo
     // regular actors track it in tiles, so each needs its matching overload here.
     if (is_player)
     {
-      neo::types::map* map_data = game->active_scene->map_data;
+      const neo::types::map* map_data = game->active_scene->map_data;
 
       set_position(bn::fixed_point(
         map_data->to_pixel_x(game->variables, tile_x),
@@ -1160,7 +1160,7 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
     return;
   }
 
-  neo::types::map* map_data = game_->active_scene->map_data;
+  const neo::types::map* map_data = game_->active_scene->map_data;
   int offset_x = -map_data->pixel_width(game_->variables) / 2 + target->sprite.dimensions().width() / 2;
   int offset_y = -map_data->pixel_height(game_->variables) / 2 + target->sprite.dimensions().height() / 2;
 

@@ -13,7 +13,7 @@ namespace neo
 {
   sprite::sprite(
     neo::game* game_,
-    neo::types::sprite* sprite_definition_
+    const neo::types::sprite* sprite_definition_
   ): game(game_),
       definition(sprite_definition_),
       inner_sprite(definition->sprite.create_sprite(0, 0))

@@ -2,13 +2,13 @@
 {{#if (hasItems this.frames)}}
 {{#each this.frames}}
 {{>valuePartial prefix=(concat ../../prefix "_" @../index "_frame_" @index "_duration") value=(valuedef this.duration 100)}}
-BN_DATA_EWRAM neo::types::sprite_animation_frame {{../../prefix}}_{{@../index}}_frame_{{@index}} = {
+constexpr neo::types::sprite_animation_frame {{../../prefix}}_{{@../index}}_frame_{{@index}} = {
   {{valuedef this.index 0}},
   &{{../../prefix}}_{{@../index}}_frame_{{@index}}_duration_value,
   {{valuedef this.reversed false}}
 };
 {{/each}}
-BN_DATA_EWRAM neo::types::sprite_animation_frame* {{../prefix}}_{{@index}}_frames[] = {
+constexpr const neo::types::sprite_animation_frame* {{../prefix}}_{{@index}}_frames[] = {
   {{#each this.frames}}
   &{{../../prefix}}_{{@../index}}_frame_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -17,7 +17,7 @@ BN_DATA_EWRAM neo::types::sprite_animation_frame* {{../prefix}}_{{@index}}_frame
 constexpr bn::string_view {{../prefix}}_{{@index}}_id = "{{this.id}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_name = "{{escapeCpp this.name}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "{{valuedef this.animationType 'fixed'}}";
-BN_DATA_EWRAM neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
+constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
 BN_DATA_EWRAM neo::types::sprite_animation {{../prefix}}_{{@index}} = {
   {{../prefix}}_{{@index}}_id,
   {{../prefix}}_{{@index}}_name,

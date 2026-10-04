@@ -18,7 +18,7 @@ BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@i
 {{#if this.events}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
 {{/if}}
-neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+constexpr neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{#each this.events}}
   &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -107,7 +107,7 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
 {{#each this.choices}}
 {{#if this.events.length}}
 {{>eventsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_event") events=this.events}}
-neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
+constexpr neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
   {{#each this.events}}
   &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -115,7 +115,7 @@ neo::types::event* {{../../prefix}}_{{@../index}}_option_{{@index}}_events[] = {
 {{/if}}
 {{#if this.conditions.length}}
 {{>ifConditionsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_condition") conditions=this.conditions}}
-neo::types::if_condition* {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions[] = {
+constexpr neo::types::if_condition* {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions[] = {
   {{#each this.conditions}}
   &{{../../../prefix}}_{{@../../index}}_option_{{@../index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -170,7 +170,7 @@ BN_DATA_EWRAM neo::types::set_variable_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "if")}}
 {{#if this.then.length}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_then") events=this.then}}
-neo::types::event* {{../prefix}}_{{@index}}_then[] = {
+constexpr neo::types::event* {{../prefix}}_{{@index}}_then[] = {
   {{#each this.then}}
   &{{../../prefix}}_{{@../index}}_then_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -178,7 +178,7 @@ neo::types::event* {{../prefix}}_{{@index}}_then[] = {
 {{/if}}
 {{#if this.else.length}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_else") events=this.else}}
-neo::types::event* {{../prefix}}_{{@index}}_else[] = {
+constexpr neo::types::event* {{../prefix}}_{{@index}}_else[] = {
   {{#each this.else}}
   &{{../../prefix}}_{{@../index}}_else_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -186,7 +186,7 @@ neo::types::event* {{../prefix}}_{{@index}}_else[] = {
 {{/if}}
 {{#if this.conditions.length}}
 {{>ifConditionsPartial prefix=(concat ../prefix "_" @index "_condition") conditions=this.conditions}}
-neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] = {
+constexpr neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] = {
   {{#each this.conditions}}
   &{{../../prefix}}_{{@../index}}_condition_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}
@@ -296,7 +296,7 @@ BN_DATA_EWRAM neo::types::execute_script_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "parallel-events")}}
 {{#if this.events.length}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
-neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+constexpr neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{#each this.events}}
   &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
   {{/each}}

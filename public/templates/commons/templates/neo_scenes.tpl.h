@@ -80,8 +80,8 @@ namespace neo::scenes
   //////////////////////////
   {{#if (hasItems this._animations)}}
   {{>animationsPartial prefix=(concat (getSpriteName @root/sprites (valuedef this.name "sprite_default")) "_animation") animations=this._animations}}
-  BN_DATA_EWRAM int {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations_count = {{this._animations.length}};
-  BN_DATA_EWRAM neo::types::sprite_animation* {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations[] = {
+  constexpr int {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations_count = {{this._animations.length}};
+  constexpr neo::types::sprite_animation* {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations[] = {
     {{#each this._animations}}
     &{{getSpriteName @root/sprites (valuedef ../this.name "sprite_default")}}_animation_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -97,7 +97,7 @@ namespace neo::scenes
   // Scene Events
   {{#if (hasItems this.events)}}
   {{>eventsPartial prefix=(concat (slug this.name) "_event") events=this.events}}
-  BN_DATA_EWRAM neo::types::event* {{slug this.name}}_events[] = {
+  constexpr neo::types::event* {{slug this.name}}_events[] = {
     {{#each this.events}}
     &{{slug ../this.name}}_event_{{@index}},
     {{/each}}
@@ -120,7 +120,7 @@ namespace neo::scenes
   // -- Sensor events
   {{#if (hasItems this.events.enter)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_enter_event") events=this.events.enter}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_enter_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_enter_events[] = {
     {{#each this.events.enter}}
     &{{slug ../../this.name}}_sensor_{{@../index}}_enter_event_{{@index}},
     {{/each}}
@@ -128,7 +128,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.leave)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_leave_event") events=this.events.leave}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_leave_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_leave_events[] = {
     {{#each this.events.leave}}
     &{{slug ../../this.name}}_sensor_{{@../index}}_leave_event_{{@index}},
     {{/each}}
@@ -136,7 +136,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.interact)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sensor_" @index "_interact_event") events=this.events.interact}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_interact_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sensor_{{@index}}_interact_events[] = {
     {{#each this.events.interact}}
     &{{slug ../../this.name}}_sensor_{{@../index}}_interact_event_{{@index}},
     {{/each}}
@@ -145,7 +145,7 @@ namespace neo::scenes
 
   // -- Sensor
   constexpr bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
-  BN_DATA_EWRAM neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
+  constexpr neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
     {{slug ../this.name}}_sensor_{{@index}}_id,
     {{this.x}},
     {{this.y}},
@@ -172,7 +172,7 @@ namespace neo::scenes
   };
   {{/each}}
 
-  neo::types::sensor* {{slug this.name}}_map_sensors[] = {
+  constexpr const neo::types::sensor* {{slug this.name}}_map_sensors[] = {
     {{#each this.map.sensors}}
     &{{slug ../this.name}}_sensor_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -181,7 +181,7 @@ namespace neo::scenes
 
   // Map
   {{>valuePartial prefix=(concat (slug this.name) "_map_grid_size") value=(valuedef this.map.gridSize 16)}}
-  BN_DATA_EWRAM neo::types::map {{slug this.name}}_map_data = {
+  constexpr neo::types::map {{slug this.name}}_map_data = {
     {{#if this.map}}
     {{valuedef this.map.width 0}},
     {{valuedef this.map.height 0}},
@@ -209,7 +209,7 @@ namespace neo::scenes
   // -- Actor events
   {{#if (hasItems this.events.init)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_init_event") events=this.events.init}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_init_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_init_events[] = {
     {{#each this.events.init}}
     &{{slug ../../this.name}}_actor_{{@../index}}_init_event_{{@index}},
     {{/each}}
@@ -217,7 +217,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.interact)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_interact_event") events=this.events.interact}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_interact_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_interact_events[] = {
     {{#each this.events.interact}}
     &{{slug ../../this.name}}_actor_{{@../index}}_interact_event_{{@index}},
     {{/each}}
@@ -225,7 +225,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.collide)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_collide_event") events=this.events.collide}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_collide_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_collide_events[] = {
     {{#each this.events.collide}}
     &{{slug ../../this.name}}_actor_{{@../index}}_collide_event_{{@index}},
     {{/each}}
@@ -233,7 +233,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.update)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_update_event") events=this.events.update}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_actor_{{@index}}_update_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_update_events[] = {
     {{#each this.events.update}}
     &{{slug ../../this.name}}_actor_{{@../index}}_update_event_{{@index}},
     {{/each}}
@@ -245,7 +245,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
   constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
   constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{escapeCpp this.name}}";
-  BN_DATA_EWRAM neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
+  constexpr neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
     {{slug ../this.name}}_actor_{{@index}}_id,
     {{slug ../this.name}}_actor_{{@index}}_name,
     &{{slug ../this.name}}_actor_{{@index}}_x_value,
@@ -294,7 +294,7 @@ namespace neo::scenes
     {{/if}}
   };
   {{/each}}
-  BN_DATA_EWRAM neo::types::actor* {{slug this.name}}_actors[] = {
+  constexpr const neo::types::actor* {{slug this.name}}_actors[] = {
     {{#each this.actors}}
     &{{slug ../this.name}}_actor_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -307,7 +307,7 @@ namespace neo::scenes
   // -- Sprite events
   {{#if (hasItems this.events.init)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_init_event") events=this.events.init}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_init_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_init_events[] = {
     {{#each this.events.init}}
     &{{slug ../../this.name}}_sprite_{{@../index}}_init_event_{{@index}},
     {{/each}}
@@ -315,7 +315,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.interact)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_interact_event") events=this.events.interact}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_interact_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_interact_events[] = {
     {{#each this.events.interact}}
     &{{slug ../../this.name}}_sprite_{{@../index}}_interact_event_{{@index}},
     {{/each}}
@@ -323,7 +323,7 @@ namespace neo::scenes
   {{/if}}
   {{#if (hasItems this.events.collide)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_sprite_" @index "_collide_event") events=this.events.collide}}
-  BN_DATA_EWRAM neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_collide_events[] = {
+  constexpr neo::types::event* {{slug ../this.name}}_sprite_{{@index}}_collide_events[] = {
     {{#each this.events.collide}}
     &{{slug ../../this.name}}_sprite_{{@../index}}_collide_event_{{@index}},
     {{/each}}
@@ -334,7 +334,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
   constexpr bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
   constexpr bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{escapeCpp this.name}}";
-  BN_DATA_EWRAM neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
+  constexpr neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
     {{slug ../this.name}}_sprite_{{@index}}_id,
     {{slug ../this.name}}_sprite_{{@index}}_name,
     &{{slug ../this.name}}_sprite_{{@index}}_x_value,
@@ -366,7 +366,7 @@ namespace neo::scenes
     {{/if}}
   };
   {{/each}}
-  BN_DATA_EWRAM neo::types::sprite* {{slug this.name}}_sprites[] = {
+  constexpr const neo::types::sprite* {{slug this.name}}_sprites[] = {
     {{#each this.sprites}}
     &{{slug ../this.name}}_sprite_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -383,7 +383,7 @@ namespace neo::scenes
   {{#if (and (isset this.player) (neq this.sceneType 'logos'))}}
   constexpr bn::string_view {{slug this.name}}_player_id = "player";
   constexpr bn::string_view {{slug this.name}}_player_name = "player";
-  BN_DATA_EWRAM neo::types::actor {{slug this.name}}_player_actor = {
+  constexpr neo::types::actor {{slug this.name}}_player_actor = {
     {{slug this.name}}_player_id,
     {{slug this.name}}_player_name,
     &{{slug this.name}}_player_x_value,
@@ -500,7 +500,7 @@ namespace neo::scenes
   {{#each scripts}}
   {{#if (hasItems this.events)}}
   {{>eventsPartial prefix=(concat (slug this.name) "_script_event") events=this.events}}
-  BN_DATA_EWRAM neo::types::event* {{slug this.name}}_script_events[] = {
+  constexpr neo::types::event* {{slug this.name}}_script_events[] = {
     {{#each this.events}}
     &{{slug ../this.name}}_script_event_{{@index}},
     {{/each}}
@@ -509,7 +509,7 @@ namespace neo::scenes
   constexpr bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
   constexpr bn::string_view {{slug this.name}}_script_name = "{{escapeCpp this.name}}";
   {{#if this.parameters.length}}
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_parameters[] = {
+  constexpr bn::string_view {{slug this.name}}_script_parameters[] = {
     {{#each this.parameters}}
     "{{scriptParamKey this.id}}"{{#unless @last}},{{/unless}}
     {{/each}}

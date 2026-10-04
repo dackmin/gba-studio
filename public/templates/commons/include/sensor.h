@@ -10,7 +10,7 @@ namespace neo
   class sensor
   {
     public:
-      sensor(neo::game* game, neo::types::sensor* sensor_definition);
+      sensor(neo::game* game, const neo::types::sensor* sensor_definition);
 
       bool is_inside(int tile_x, int tile_y);
       void trigger_enter();
@@ -18,7 +18,7 @@ namespace neo
       void trigger_interact();
 
       neo::game* game;
-      neo::types::sensor* definition;
+      const neo::types::sensor* definition;
       bool player_inside = false;
   };
 }

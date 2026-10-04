@@ -7,7 +7,7 @@ namespace neo
 {
   sensor::sensor(
     neo::game* game_,
-    neo::types::sensor* sensor_definition_
+    const neo::types::sensor* sensor_definition_
   ): game(game_),
       definition(sensor_definition_)
   {}

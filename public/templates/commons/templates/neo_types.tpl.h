@@ -183,18 +183,18 @@ namespace neo::types
     bool every;
     bn::vector<bn::string_view, 10> buttons;
     int events_count;
-    event** events;
+    event* const* events;
 
     button_event(
       bn::string_view type_,
       bool every_,
       bn::vector<bn::string_view, 10> buttons_,
       int events_count_,
-      event** events_
+      event* const* events_
     ): event(type_), every(every_), buttons(buttons_), events_count(events_count_), events(events_) {}
 
     // Helper constructor for single button
-    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, event** events_):
+    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, event* const* events_):
       event(type_), every(false), buttons(), events_count(events_count_), events(events_)
     {
       buttons.push_back(single_button);
@@ -209,10 +209,10 @@ namespace neo::types
   struct parallel_event: event
   {
     int events_count;
-    event** events;
+    event* const* events;
     bn::vector<event*, 8> pending;
 
-    parallel_event(bn::string_view type_, int events_count_, event** events_):
+    parallel_event(bn::string_view type_, int events_count_, event* const* events_):
       event(type_), events_count(events_count_), events(events_) {}
 
     // Runs instant sub-events immediately (delegated to game::exec_event)
@@ -294,11 +294,11 @@ namespace neo::types
   {
     bn::string_view text;
     int events_count;
-    event** events;
+    event* const* events;
     int conditions_count;
-    if_condition** conditions;
+    if_condition* const* conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, event** events_, int conditions_count_, if_condition** conditions_):
+    menu_choice(bn::string_view text_, int events_count_, event* const* events_, int conditions_count_, if_condition* const* conditions_):
       text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
@@ -399,20 +399,20 @@ namespace neo::types
   struct if_event: event
   {
     int conditions_count;
-    if_condition** conditions;
+    if_condition* const* conditions;
     int then_events_count;
-    event** then_events;
+    event* const* then_events;
     int else_events_count;
-    event** else_events;
+    event* const* else_events;
 
     if_event(
       bn::string_view type_,
       int conditions_count_,
-      if_condition** conditions_,
+      if_condition* const* conditions_,
       int then_events_count_,
-      event** then_events_,
+      event* const* then_events_,
       int else_events_count_,
-      event** else_events_
+      event* const* else_events_
     ): event(type_),
        conditions_count(conditions_count_),
        conditions(conditions_),
@@ -852,13 +852,13 @@ namespace neo::types
     int width;
     int height;
     int enter_events_count;
-    event** enter_events;
+    event* const* enter_events;
     int leave_events_count;
-    event** leave_events;
+    event* const* leave_events;
     int interact_events_count;
-    event** interact_events;
+    event* const* interact_events;
 
-    inline bool is_inside (int tile_x, int tile_y) {
+    inline bool is_inside (int tile_x, int tile_y) const {
       return tile_x >= x && tile_x < (x + width) && tile_y >= y && tile_y < (y + height);
     }
   };
@@ -870,24 +870,24 @@ namespace neo::types
     const event_value* grid_size;
     const int* collisions;
     int sensors_count;
-    sensor** sensors;
+    const sensor* const* sensors;
 
-    inline int to_pixel_x (neo::variables::registry& variables, int tile_x)
+    inline int to_pixel_x (neo::variables::registry& variables, int tile_x) const
     {
       return tile_x * grid_size->as_int(variables);
     }
 
-    inline int to_tile_x (neo::variables::registry& variables, int pixel_x)
+    inline int to_tile_x (neo::variables::registry& variables, int pixel_x) const
     {
       return pixel_x / grid_size->as_int(variables);
     }
 
-    inline int to_pixel_y (neo::variables::registry& variables, int tile_y)
+    inline int to_pixel_y (neo::variables::registry& variables, int tile_y) const
     {
       return tile_y * grid_size->as_int(variables);
     }
 
-    inline int to_tile_y (neo::variables::registry& variables, int pixel_y)
+    inline int to_tile_y (neo::variables::registry& variables, int pixel_y) const
     {
       return pixel_y / grid_size->as_int(variables);
     }
@@ -902,12 +902,12 @@ namespace neo::types
       return height * grid_size->as_int(variables);
     }
 
-    inline int tile_index (int tile_x, int tile_y)
+    inline int tile_index (int tile_x, int tile_y) const
     {
       return tile_y * width + tile_x;
     }
 
-    inline bool has_collision (int tile_x, int tile_y)
+    inline bool has_collision (int tile_x, int tile_y) const
     {
       if (tile_x < 0 || tile_x >= width || tile_y < 0 || tile_y >= height)
       {
@@ -934,7 +934,7 @@ namespace neo::types
     bool moving;
     bool loop;
     int frames_count;
-    sprite_animation_frame** frames;
+    const sprite_animation_frame* const* frames;
     bool _playing = false;
     int _current_index = 0;
     int _elapsed_frames = 0;
@@ -947,7 +947,7 @@ namespace neo::types
       bool moving_,
       bool loop_,
       int frames_count_,
-      sprite_animation_frame** frames_
+      const sprite_animation_frame* const* frames_
     ):
       _id(_id_),
       name(name_),
@@ -1032,15 +1032,15 @@ namespace neo::types
     bool disable_direction_on_interact;
     int collision_group;
     int init_events_count;
-    event** init_events;
+    event* const* init_events;
     int interact_events_count;
-    event** interact_events;
+    event* const* interact_events;
     int collide_events_count;
-    event** collide_events;
+    event* const* collide_events;
     int update_events_count;
-    event** update_events;
+    event* const* update_events;
     int animations_count;
-    sprite_animation** animations;
+    sprite_animation* const* animations;
   };
 
   struct sprite
@@ -1053,11 +1053,11 @@ namespace neo::types
     bn::sprite_item sprite;
     int collision_group;
     int init_events_count;
-    event** init_events;
+    event* const* init_events;
     int interact_events_count;
-    event** interact_events;
+    event* const* interact_events;
     int collide_events_count;
-    event** collide_events;
+    event* const* collide_events;
   };
 
   struct script
@@ -1065,9 +1065,9 @@ namespace neo::types
     bn::string_view _id;
     bn::string_view name;
     int events_count;
-    event** events;
+    event* const* events;
     int parameters_count;
-    bn::string_view* parameters;
+    const bn::string_view* parameters;
   };
 
   struct scene
@@ -1078,20 +1078,20 @@ namespace neo::types
     neo::types::scene_type scene_type;
     bn::regular_bg_item background;
     int event_count;
-    event** events;
+    event* const* events;
     // Player
     bool has_player;
-    actor* player;
+    const actor* player;
     // Map data
-    map* map_data;
+    const map* map_data;
     // Actors
     int actors_count;
-    actor** actors;
+    const actor* const* actors;
     // Sprites
     int sprites_count;
-    sprite** sprites;
+    const sprite* const* sprites;
 
-    inline bool is (bn::string_view name_)
+    inline bool is (bn::string_view name_) const
     {
       return _id == name_ || name == name_;
     }
