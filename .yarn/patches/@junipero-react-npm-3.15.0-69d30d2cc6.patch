@@ -1,0 +1,164 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 7fa22b8cea21a3f2b4af91833e3b67a0969d7f13..41b4e07be41c6c4d0da280855a19972d022bff86 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -2056,30 +2056,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		e.stopPropagation();
+ 		if (e.ctrlKey || e.metaKey) {
+ 			const zoomFactor = Math.exp(-e.deltaY * .01);
+-			const newZoom = Math.max(minZoom, Math.min(maxZoom, state.zoom * zoomFactor));
+ 			const rect = innerRef.current?.getBoundingClientRect();
+ 			const mouseX = e.clientX - (rect?.left ?? 0);
+ 			const mouseY = e.clientY - (rect?.top ?? 0);
+-			const contentX = (mouseX - state.offsetX) / state.zoom;
+-			const contentY = (mouseY - state.offsetY) / state.zoom;
+-			const newOffsetX = mouseX - contentX * newZoom;
+-			const newOffsetY = mouseY - contentY * newZoom;
+-			dispatch({
+-				zoom: newZoom,
+-				offsetX: newOffsetX,
+-				offsetY: newOffsetY
++			dispatch((s) => {
++				const newZoom = Math.max(minZoom, Math.min(maxZoom, s.zoom * zoomFactor));
++				const contentX = (mouseX - s.offsetX) / s.zoom;
++				const contentY = (mouseY - s.offsetY) / s.zoom;
++				return {
++					...s,
++					zoom: newZoom,
++					offsetX: mouseX - contentX * newZoom,
++					offsetY: mouseY - contentY * newZoom
++				};
+ 			});
+-		} else dispatch({
+-			offsetX: state.offsetX - e.deltaX,
+-			offsetY: state.offsetY - e.deltaY
+-		});
+-	}, [
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY,
+-		minZoom,
+-		maxZoom
+-	]);
++		} else dispatch((s) => ({
++			...s,
++			offsetX: s.offsetX - e.deltaX,
++			offsetY: s.offsetY - e.deltaY
++		}));
++	}, [minZoom, maxZoom]);
+ 	(0, react.useEffect)(() => {
+ 		const ref = innerRef.current;
+ 		ref?.addEventListener("wheel", onWheel, { passive: false });
+diff --git a/dist/index.js b/dist/index.js
+index bbf440d8211496dd40c3ae93a88f9570228c1c7a..f49d3479a65d5d311899ef9ffefa3b37352dfc3c 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -2055,30 +2055,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		e.stopPropagation();
+ 		if (e.ctrlKey || e.metaKey) {
+ 			const zoomFactor = Math.exp(-e.deltaY * .01);
+-			const newZoom = Math.max(minZoom, Math.min(maxZoom, state.zoom * zoomFactor));
+ 			const rect = innerRef.current?.getBoundingClientRect();
+ 			const mouseX = e.clientX - (rect?.left ?? 0);
+ 			const mouseY = e.clientY - (rect?.top ?? 0);
+-			const contentX = (mouseX - state.offsetX) / state.zoom;
+-			const contentY = (mouseY - state.offsetY) / state.zoom;
+-			const newOffsetX = mouseX - contentX * newZoom;
+-			const newOffsetY = mouseY - contentY * newZoom;
+-			dispatch({
+-				zoom: newZoom,
+-				offsetX: newOffsetX,
+-				offsetY: newOffsetY
++			dispatch((s) => {
++				const newZoom = Math.max(minZoom, Math.min(maxZoom, s.zoom * zoomFactor));
++				const contentX = (mouseX - s.offsetX) / s.zoom;
++				const contentY = (mouseY - s.offsetY) / s.zoom;
++				return {
++					...s,
++					zoom: newZoom,
++					offsetX: mouseX - contentX * newZoom,
++					offsetY: mouseY - contentY * newZoom
++				};
+ 			});
+-		} else dispatch({
+-			offsetX: state.offsetX - e.deltaX,
+-			offsetY: state.offsetY - e.deltaY
+-		});
+-	}, [
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY,
+-		minZoom,
+-		maxZoom
+-	]);
++		} else dispatch((s) => ({
++			...s,
++			offsetX: s.offsetX - e.deltaX,
++			offsetY: s.offsetY - e.deltaY
++		}));
++	}, [minZoom, maxZoom]);
+ 	useEffect(() => {
+ 		const ref = innerRef.current;
+ 		ref?.addEventListener("wheel", onWheel, { passive: false });
+diff --git a/lib/InfiniteCanvas/index.tsx b/lib/InfiniteCanvas/index.tsx
+index 032d4157138db81ecb64a60a8882d72245d86efa..628ee27afce87a959259e95d8e9c333e5c11bb77 100644
+--- a/lib/InfiniteCanvas/index.tsx
++++ b/lib/InfiniteCanvas/index.tsx
+@@ -199,35 +199,38 @@ const InfiniteCanvas = ({
+     // Zoom
+     if (e.ctrlKey || e.metaKey) {
+       const zoomFactor = Math.exp(-e.deltaY * 0.01);
+-      const newZoom = Math.max(minZoom,
+-        Math.min(maxZoom, state.zoom * zoomFactor));
+ 
+       // Mouse position relative to canvas
+       const rect = innerRef.current?.getBoundingClientRect();
+       const mouseX = e.clientX - (rect?.left ?? 0);
+       const mouseY = e.clientY - (rect?.top ?? 0);
+ 
+-      // Mouse position in content coordinates (before transform)
+-      const contentX = (mouseX - state.offsetX) / state.zoom;
+-      const contentY = (mouseY - state.offsetY) / state.zoom;
+-
+-      // Adjust offset so zoom centers on mouse position
+-      const newOffsetX = mouseX - contentX * newZoom;
+-      const newOffsetY = mouseY - contentY * newZoom;
+-
+-      dispatch({
+-        zoom: newZoom,
+-        offsetX: newOffsetX,
+-        offsetY: newOffsetY,
++      // Functional updates: several wheel events can fire between renders
++      dispatch(s => {
++        const newZoom = Math.max(minZoom,
++          Math.min(maxZoom, s.zoom * zoomFactor));
++
++        // Mouse position in content coordinates (before transform)
++        const contentX = (mouseX - s.offsetX) / s.zoom;
++        const contentY = (mouseY - s.offsetY) / s.zoom;
++
++        // Adjust offset so zoom centers on mouse position
++        return {
++          ...s,
++          zoom: newZoom,
++          offsetX: mouseX - contentX * newZoom,
++          offsetY: mouseY - contentY * newZoom,
++        };
+       });
+     } else {
+       // Pan only
+-      dispatch({
+-        offsetX: state.offsetX - e.deltaX,
+-        offsetY: state.offsetY - e.deltaY,
+-      });
++      dispatch(s => ({
++        ...s,
++        offsetX: s.offsetX - e.deltaX,
++        offsetY: s.offsetY - e.deltaY,
++      }));
+     }
+-  }, [state.zoom, state.offsetX, state.offsetY, minZoom, maxZoom]);
++  }, [minZoom, maxZoom]);
+ 
+   useEffect(() => {
+     const ref = innerRef.current;
