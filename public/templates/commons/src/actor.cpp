@@ -317,7 +317,6 @@ namespace neo
 
   void actor::check_input()
   {
-    const neo::types::map* map_data = game->active_scene->map_data;
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     if (game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER)
