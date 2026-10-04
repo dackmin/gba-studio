@@ -146,6 +146,20 @@ namespace neo::variables
       it->second->assign(*value);
     }
 
+    inline void reset()
+    {
+      {{#each variables}}
+      {{#each this.values}}
+      set_raw("{{this.name}}", {{int this.defaultValue}}, {{bool this.defaultValue}}, "{{this.defaultValue}}");
+      {{/each}}
+      {{/each}}
+      {{#each scripts}}
+      {{#each this.parameters}}
+      set_raw("{{scriptParamKey this.id}}", 0, false, "");
+      {{/each}}
+      {{/each}}
+    }
+
     inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val)
     {
       if (key.empty()) {

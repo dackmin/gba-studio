@@ -512,7 +512,7 @@ const Event = ({
                   value={[
                     'stop-music', 'disable-input', 'enable-input', 'freeze-camera',
                     'disable-player', 'enable-player', 'save-game', 'load-game',
-                    'save-state', 'load-state',
+                    'save-state', 'load-state', 'reset-game',
                   ]}
                 >
                   <Text className="text-xs text-slate text-center">

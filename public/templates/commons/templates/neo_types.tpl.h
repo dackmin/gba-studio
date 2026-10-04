@@ -284,6 +284,12 @@ namespace neo::types
       event(type_) {}
   };
 
+  struct reset_game_event: event
+  {
+    reset_game_event(bn::string_view type_):
+      event(type_) {}
+  };
+
   struct dialog_event: event
   {
     neo::types::direction direction;

@@ -627,6 +627,10 @@ export interface LoadStateEvent extends SceneEvent {
   type: 'load-state';
 }
 
+export interface ResetGameEvent extends SceneEvent {
+  type: 'reset-game';
+}
+
 export interface GameMenuChoice {
   type: 'menu-choice';
   text: string;

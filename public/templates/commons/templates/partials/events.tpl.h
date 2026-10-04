@@ -69,6 +69,11 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_type = "save-state";
 BN_DATA_EWRAM neo::types::save_state_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type
 );
+{{else if (eq this.type "reset-game")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_type = "reset-game";
+BN_DATA_EWRAM neo::types::reset_game_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type
+);
 {{else if (eq this.type "load-state")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "load-state";
 BN_DATA_EWRAM neo::types::load_state_event {{../prefix}}_{{@index}}(

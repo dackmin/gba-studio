@@ -65,6 +65,7 @@ namespace neo
       bn::vector<neo::types::parallel_event*, 10> active_parallel_events;
 
       void set_scene(bn::string_view scene_name);
+      void reset();
       bn::string_view resolve_actor_reference(bn::string_view actor_reference);
       void set_background(bn::regular_bg_item background, bool visible = false);
       void exec_event(const neo::types::event* e, bool is_loop);

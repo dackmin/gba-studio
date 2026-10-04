@@ -21,6 +21,7 @@ import {
   Pencil1Icon,
   PlayIcon,
   RadiobuttonIcon,
+  ReloadIcon,
   Share2Icon,
   ShadowIcon,
   ShadowNoneIcon,
@@ -461,6 +462,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     keywords: ['load', 'state', 'ram', 'memory', 'restore'],
     construct: () => ({
       type: 'load-state',
+    }),
+  }, {
+    icon: ReloadIcon,
+    name: 'Reset Game',
+    value: 'reset-game',
+    keywords: ['reset', 'restart', 'new game', 'variables', 'default'],
+    construct: () => ({
+      type: 'reset-game',
     }),
   }],
 }];
