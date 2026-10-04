@@ -239,6 +239,82 @@ namespace neo
     }
   }
 
+  bool actor::try_interact()
+  {
+    a_buffered = false;
+
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    neo::actor* other = game->get_actor_at(
+      map_data->to_tile_x(game->variables, (int)position.x()),
+      map_data->to_tile_y(game->variables, (int)position.y()),
+      direction
+    );
+
+    if (other != nullptr && game->active_scene != nullptr && other->definition->interact_events != nullptr)
+    {
+      if (!other->definition->disable_direction_on_interact)
+      {
+        other->set_direction(opposite_direction());
+      }
+      for (int i = 0; i < other->definition->interact_events_count; i++)
+      {
+        game->exec_event(other->definition->interact_events[i], true);
+      }
+
+      game->update_frame();
+      return true;
+    }
+
+    neo::sprite* other_sprite = game->get_sprite_at(
+      map_data->to_tile_x(game->variables, (int)position.x()),
+      map_data->to_tile_y(game->variables, (int)position.y()),
+      direction
+    );
+
+    if (other_sprite != nullptr && game->active_scene != nullptr && other_sprite->definition->interact_events != nullptr)
+    {
+      for (int i = 0; i < other_sprite->definition->interact_events_count; i++)
+      {
+        game->exec_event(other_sprite->definition->interact_events[i], true);
+      }
+
+      game->update_frame();
+      return true;
+    }
+
+    int facing_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
+    int facing_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
+
+    switch (direction)
+    {
+      case neo::types::direction::LEFT:
+        facing_tile_x -= 1;
+        break;
+      case neo::types::direction::RIGHT:
+        facing_tile_x += 1;
+        break;
+      case neo::types::direction::UP:
+        facing_tile_y -= 1;
+        break;
+      default:
+        facing_tile_y += 1;
+        break;
+    }
+
+    neo::sensor* other_sensor = game->get_sensor_at(facing_tile_x, facing_tile_y);
+
+    if (other_sensor != nullptr && game->active_scene != nullptr && other_sensor->definition->interact_events != nullptr)
+    {
+      other_sensor->trigger_interact();
+
+      game->update_frame();
+      return true;
+    }
+
+    return false;
+  }
+
   void actor::check_input()
   {
     const neo::types::map* map_data = game->active_scene->map_data;
@@ -250,74 +326,9 @@ namespace neo
       return;
     }
 
-    if (bn::keypad::a_pressed())
+    if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
     {
-      neo::actor* other = game->get_actor_at(
-        map_data->to_tile_x(game->variables, (int)position.x()),
-        map_data->to_tile_y(game->variables, (int)position.y()),
-        direction
-      );
-
-      if (other != nullptr && game->active_scene != nullptr && other->definition->interact_events != nullptr)
-      {
-        if (!other->definition->disable_direction_on_interact)
-        {
-          other->set_direction(opposite_direction());
-        }
-        for (int i = 0; i < other->definition->interact_events_count; i++)
-        {
-          game->exec_event(other->definition->interact_events[i], true);
-        }
-
-        game->update_frame();
-        return;
-      }
-
-      neo::sprite* other_sprite = game->get_sprite_at(
-        map_data->to_tile_x(game->variables, (int)position.x()),
-        map_data->to_tile_y(game->variables, (int)position.y()),
-        direction
-      );
-
-      if (other_sprite != nullptr && game->active_scene != nullptr && other_sprite->definition->interact_events != nullptr)
-      {
-        for (int i = 0; i < other_sprite->definition->interact_events_count; i++)
-        {
-          game->exec_event(other_sprite->definition->interact_events[i], true);
-        }
-
-        game->update_frame();
-        return;
-      }
-
-      int facing_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
-      int facing_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
-
-      switch (direction)
-      {
-        case neo::types::direction::LEFT:
-          facing_tile_x -= 1;
-          break;
-        case neo::types::direction::RIGHT:
-          facing_tile_x += 1;
-          break;
-        case neo::types::direction::UP:
-          facing_tile_y -= 1;
-          break;
-        default:
-          facing_tile_y += 1;
-          break;
-      }
-
-      neo::sensor* other_sensor = game->get_sensor_at(facing_tile_x, facing_tile_y);
-
-      if (other_sensor != nullptr && game->active_scene != nullptr && other_sensor->definition->interact_events != nullptr)
-      {
-        other_sensor->trigger_interact();
-
-        game->update_frame();
-        return;
-      }
+      return;
     }
 
     if (bn::keypad::left_pressed() || bn::keypad::left_held())
@@ -340,6 +351,11 @@ namespace neo
 
         while (bn::keypad::left_held() && !game->scene_changed)
         {
+          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
+          {
+            break;
+          }
+
           move(anim);
         }
 
@@ -367,6 +383,11 @@ namespace neo
 
         while (bn::keypad::right_held() && !game->scene_changed)
         {
+          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
+          {
+            break;
+          }
+
           move(anim);
         }
 
@@ -394,6 +415,11 @@ namespace neo
 
         while (bn::keypad::up_held() && !game->scene_changed)
         {
+          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
+          {
+            break;
+          }
+
           move(anim);
         }
 
@@ -420,6 +446,11 @@ namespace neo
 
         while (bn::keypad::down_held() && !game->scene_changed)
         {
+          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
+          {
+            break;
+          }
+
           move(anim);
         }
 
@@ -847,6 +878,11 @@ namespace neo
       }
 
       game->update_frame();
+
+      if (bn::keypad::a_pressed())
+      {
+        a_buffered = true;
+      }
     }
 
     neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);

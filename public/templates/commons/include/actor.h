@@ -68,6 +68,7 @@ namespace neo
       // collision group), so collide events fire once per touch instead
       // of on every frame of contact.
       bool player_touching = false;
+      bool a_buffered = false;
 
     private:
       void move(neo::types::sprite_animation* anim);
@@ -79,6 +80,7 @@ namespace neo
       // not-touching -> touching transition. Shared by both movement
       // models (top-down grid steps and side-scroller free movement).
       void check_collisions();
+      bool try_interact();
       static bn::string_view get_collision_side(
         int player_left, int player_top, int player_width, int player_height,
         int other_left, int other_top, int other_width, int other_height);
