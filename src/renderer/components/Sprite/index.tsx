@@ -13,7 +13,7 @@ import type {
   GameSpriteFile,
   SpriteAnimationFrame,
 } from '../../../types';
-import { loadImage, tileToPixel } from '../../../helpers';
+import { getAssetUrl, loadImage, tileToPixel } from '../../../helpers';
 import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
 import { mergeRefs } from '../../services/helpers';
@@ -76,7 +76,7 @@ const Sprite = ({
       ? await loadImage(sprite.path)
       : await loadImage(!sprite?._file
         ? `resources://public/templates/commons/graphics/sprite_default.bmp`
-        : `project://${sprite.path}`);
+        : getAssetUrl(sprite));
 
     const defaultFrames = ([] as number[])
       .concat(SPRITE_HORIZONTAL_FRAMES.idle[direction].map(f => f.index || 0));

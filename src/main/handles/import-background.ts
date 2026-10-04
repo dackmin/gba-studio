@@ -44,6 +44,7 @@ export default async function (
   backgroundInfo.name = backgroundInfo.name || fileName;
   backgroundInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
   backgroundInfo._file = contentFileName;
+  backgroundInfo._version = Date.now();
 
   try {
     await fsp.access(path.join(contentDir, contentFileName));

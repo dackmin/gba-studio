@@ -3,7 +3,13 @@ import { set } from '@junipero/react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MovePlayerToEvent } from '../../../types';
-import { findBackground, findSprite, getImageSize, pixelToTile } from '../../../helpers';
+import {
+  findBackground,
+  findSprite,
+  getAssetUrl,
+  getImageSize,
+  pixelToTile,
+} from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
@@ -32,7 +38,7 @@ const EventMovePlayerTo = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+      : getAssetUrl(background)
   ), [scene, background]);
 
   const updateSize = useCallback(async () => {

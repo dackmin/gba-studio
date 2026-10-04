@@ -32,6 +32,7 @@ export const serializeSprite = async (
   delete sprite._realWidth;
   delete sprite._realHeight;
   delete sprite._fileName;
+  delete sprite._version;
 
   return sprite;
 };
@@ -45,6 +46,7 @@ export const serializeBackground = async (
   delete background._realWidth;
   delete background._realHeight;
   delete background._fileName;
+  delete background._version;
 
   return background;
 };

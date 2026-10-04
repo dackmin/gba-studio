@@ -15,7 +15,13 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
-import { findBackground, getGraphicName, getImageSize, pixelToTile } from '../../../helpers';
+import {
+  findBackground,
+  getAssetUrl,
+  getGraphicName,
+  getImageSize,
+  pixelToTile,
+} from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
@@ -107,7 +113,7 @@ const SceneForm = ({
     const [width, height] = await getImageSize(
       !value || value === 'bg_default' || !background
         ? `resources://public/templates/commons/graphics/bg_default.bmp`
-        : `project://${background.path}`
+        : getAssetUrl(background)
     );
 
     scene.map = scene.map || {

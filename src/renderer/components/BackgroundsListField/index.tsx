@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
-import { findBackground, getGraphicName } from '../../../helpers';
+import { findBackground, getAssetUrl, getGraphicName } from '../../../helpers';
 
 export interface BackgroundsListFieldProps {
   value?: string;
@@ -30,7 +30,7 @@ const BackgroundsListField = ({
             <Avatar
               src={!val || val === 'bg_default' || !selected
                 ? `resources://public/templates/commons/graphics/bg_default.bmp`
-                : `project://${selected?.path}`}
+                : getAssetUrl(selected)}
               fallback=""
             />
             <Text>{ selected?.name ?? 'Default background' }</Text>
@@ -58,7 +58,7 @@ const BackgroundsListField = ({
           >
             <div className="flex items-center gap-2">
               <Avatar
-                src={`project://${bg.path}`}
+                src={getAssetUrl(bg)}
                 fallback=""
                 size="1"
               />

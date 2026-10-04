@@ -3,7 +3,7 @@ import { set } from '@junipero/react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveCameraToEvent } from '../../../types';
-import { findBackground, getImageSize } from '../../../helpers';
+import { findBackground, getAssetUrl, getImageSize } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
@@ -31,7 +31,7 @@ const EventMoveCameraTo = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+      : getAssetUrl(background)
   ), [scene, background]);
 
   const updateSize = useCallback(async () => {

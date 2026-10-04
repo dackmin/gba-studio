@@ -27,6 +27,7 @@ import type {
 import { useApp, useCanvas, useEditor } from '../../services/hooks';
 import {
   findBackground,
+  getAssetUrl,
   getImageSize,
   loadImage,
   pixelToTile,
@@ -134,7 +135,7 @@ const Scene = ({
   const backgroundPath = useMemo(() => (
     !background?._file || !scene.background || scene.background === 'bg_default'
       ? `resources://public/templates/commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+      : getAssetUrl(background)
   ), [scene.background, background]);
 
   const updateSize = useCallback(async () => {

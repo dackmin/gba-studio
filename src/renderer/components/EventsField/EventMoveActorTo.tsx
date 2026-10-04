@@ -6,6 +6,7 @@ import type { MoveActorToEvent } from '../../../types';
 import {
   findBackground,
   findSprite,
+  getAssetUrl,
   getImageSize,
   pixelToTile,
   tileToPixel,
@@ -39,7 +40,7 @@ const EventMoveActorTo = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+      : getAssetUrl(background)
   ), [scene, background]);
 
   const actor = useMemo(() => (

@@ -3,7 +3,7 @@ import { Button, Heading, Inset, Separator, Text, TextField } from '@radix-ui/th
 import { classNames, set } from '@junipero/react';
 
 import { useApp, useSprite } from '../../services/hooks';
-import { getImageSize } from '../../../helpers';
+import { getAssetUrl, getImageSize } from '../../../helpers';
 
 const BackgroundForm = () => {
   const { projectPath, onCanvasChange, ...appPayload } = useApp();
@@ -12,13 +12,13 @@ const BackgroundForm = () => {
 
   const updateSize = useCallback(async () => {
     try {
-      const [width, height] = await getImageSize('project://' + selectedBackground?.path || '');
+      const [width, height] = await getImageSize(getAssetUrl(selectedBackground));
 
       setSize([width, height]);
     } catch {
       setSize([240, 160]);
     }
-  }, [selectedBackground?.path]);
+  }, [selectedBackground]);
 
   useEffect(() => {
     updateSize();

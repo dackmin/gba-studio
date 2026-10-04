@@ -292,6 +292,7 @@ export interface GameSpriteFile {
   _realHeight?: number;
   _file?: string;
   _fileName?: string;
+  _version?: number;
   _animations?: InternalSpriteAnimation[];
   $schema?: string;
 }
@@ -309,6 +310,7 @@ export interface GameBackgroundFile {
   _realHeight?: number;
   _file?: string;
   _fileName?: string;
+  _version?: number;
   $schema?: string;
 }
 

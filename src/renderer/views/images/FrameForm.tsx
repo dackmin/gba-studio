@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 
 import type { EventValue, SpriteAnimation } from '../../../types';
 import { usePlayback, useSprite } from '../../services/hooks';
-import { getTilesCount, loadImage } from '../../../helpers';
+import { getAssetUrl, getTilesCount, loadImage } from '../../../helpers';
 import EventValueField from '../../components/EventValueField';
 
 const FrameForm = () => {
@@ -35,7 +35,7 @@ const FrameForm = () => {
       ? await loadImage(selectedSprite.path)
       : await loadImage(!selectedSprite?._file
         ? `resources://public/templates/commons/graphics/sprite_default.bmp`
-        : `project://${selectedSprite.path}`);
+        : getAssetUrl(selectedSprite));
 
     setSize([image.width, image.height]);
     setLoading(false);

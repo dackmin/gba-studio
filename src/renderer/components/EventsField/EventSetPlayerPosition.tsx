@@ -3,7 +3,7 @@ import { set } from '@junipero/react';
 import { Text } from '@radix-ui/themes';
 
 import type { SetPlayerPositionEvent } from '../../../types';
-import { findBackground, getImageSize, pixelToTile } from '../../../helpers';
+import { findBackground, getAssetUrl, getImageSize, pixelToTile } from '../../../helpers';
 import { useApp, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
@@ -31,7 +31,7 @@ const EventSetPlayerPosition = ({
     scene.background === 'bg_default'
       ? `resources://public/templates/` +
         `commons/graphics/bg_default.bmp`
-      : `project://${background.path}`
+      : getAssetUrl(background)
   ), [scene, background]);
 
   const updateSize = useCallback(async () => {

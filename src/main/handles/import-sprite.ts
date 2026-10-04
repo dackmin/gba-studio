@@ -46,6 +46,7 @@ export default async function (
   spriteInfo.name = spriteInfo.name || fileName;
   spriteInfo.path = path.relative(projectDir, path.join(graphicsDir, fileName + '.bmp'));
   spriteInfo._file = contentFileName;
+  spriteInfo._version = Date.now();
 
   try {
     await fsp.access(path.join(contentDir, contentFileName));

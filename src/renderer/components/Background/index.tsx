@@ -2,6 +2,7 @@ import { type ComponentPropsWithoutRef, type RefCallback, type RefObject, useMem
 import { classNames } from '@junipero/react';
 
 import type { GameBackgroundFile } from '../../../types';
+import { getAssetUrl } from '../../../helpers';
 
 export interface BackgroundProps extends ComponentPropsWithoutRef<'img'> {
   ref?: RefCallback<HTMLImageElement> | RefObject<HTMLImageElement>;
@@ -19,7 +20,7 @@ const Background = ({
       ? background.path
       : !background?._file
         ? `resources://public/templates/commons/graphics/bg_default.bmp`
-        : `project://${background.path}`
+        : getAssetUrl(background)
   ), [background]);
 
   return (

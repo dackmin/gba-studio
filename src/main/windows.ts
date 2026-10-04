@@ -204,7 +204,7 @@ export const createProjectWindow = async (projectPath: string) => {
   });
 
   ses.protocol.handle('project', req => {
-    const filePath = req.url.replace('project://', '');
+    const filePath = req.url.replace('project://', '').split('?')[0];
 
     return net.fetch(url.pathToFileURL(path
       .join(path.dirname(projectPath), filePath)).toString());
