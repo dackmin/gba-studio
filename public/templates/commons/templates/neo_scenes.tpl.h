@@ -107,7 +107,7 @@ namespace neo::scenes
   // Map collisions
   {{#if (and (isset this.map) (neq this.sceneType 'logos'))}}
   {{#if (hasItems this.map.collisions)}}
-  BN_DATA_EWRAM int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
+  const int {{slug this.name}}_map_collisions[{{multiply (valuedef this.map.width 0) (valuedef this.map.height 0)}}] = {
     {{#each this.map.collisions}}
     {{this}}{{#unless @last}},{{/unless}}
     {{/each}}
