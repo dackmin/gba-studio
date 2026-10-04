@@ -467,7 +467,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: ReloadIcon,
     name: 'Reset Game',
     value: 'reset-game',
-    keywords: ['reset', 'restart', 'new game', 'variables', 'default'],
+    keywords: ['reset', 'variables', 'default', 'clear'],
     construct: () => ({
       type: 'reset-game',
     }),

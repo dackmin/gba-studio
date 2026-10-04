@@ -55,8 +55,6 @@ namespace neo
   void game::reset()
   {
     variables.reset();
-    last_goto_event = nullptr;
-    set_scene(neo::scenes::STARTING_SCENE);
   }
 
   bn::string_view game::resolve_actor_reference(bn::string_view actor_reference)

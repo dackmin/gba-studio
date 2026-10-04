@@ -169,7 +169,7 @@ namespace neo::events
 
     /**
      * @name reset-game
-     * Puts every variable back to its default value and restarts from the first scene.
+     * Puts every variable back to its default value, without changing scene.
      */
     else if (e->type == "reset-game")
     {
