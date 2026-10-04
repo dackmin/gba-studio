@@ -176,16 +176,21 @@ namespace neo
       return false;
     }
 
-    if (is_player)
-    {
-      neo::types::map* map_data = game->active_scene->map_data;
-      int player_tile_x = map_data->to_tile_x(game->variables, (int)position.x());
-      int player_tile_y = map_data->to_tile_y(game->variables, (int)position.y());
-      return tile_x == player_tile_x && tile_y == player_tile_y;
-    }
+    neo::types::map* map_data = game->active_scene->map_data;
+    int grid_size = map_data->grid_size->as_int(game->variables);
 
-    return (tile_x == position.x().right_shift_integer())
-      && (tile_y == position.y().right_shift_integer());
+    // Position is the top-left tile; the actor covers as many tiles as its sprite spans.
+    int origin_tile_x = is_player
+      ? map_data->to_tile_x(game->variables, (int)position.x())
+      : position.x().right_shift_integer();
+    int origin_tile_y = is_player
+      ? map_data->to_tile_y(game->variables, (int)position.y())
+      : position.y().right_shift_integer();
+    int tiles_wide = bn::max(1, (width() + grid_size - 1) / grid_size);
+    int tiles_high = bn::max(1, (height() + grid_size - 1) / grid_size);
+
+    return tile_x >= origin_tile_x && tile_x < origin_tile_x + tiles_wide
+      && tile_y >= origin_tile_y && tile_y < origin_tile_y + tiles_high;
   }
 
   void actor::trigger_collide()
