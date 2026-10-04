@@ -24,6 +24,7 @@ namespace neo
 
       void init();
       void update();
+      bn::sprite_tiles_ptr get_direction_tiles(const bn::sprite_tiles_item& item, int index);
       void set_direction(neo::types::direction direction);
       void set_position(int tile_x, int tile_y);
       void set_position(bn::fixed_point pixel_position);
