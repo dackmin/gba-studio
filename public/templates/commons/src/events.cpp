@@ -308,7 +308,7 @@ namespace neo::events
       {
         if (game->variables.has(set_var_evt->key))
         {
-          neo::variables::value& var = game->variables.get(set_var_evt->key);
+          neo::variables::variable& var = game->variables.get(set_var_evt->key);
           int amount = set_var_evt->value->as_int();
           var.set_int(var.as_int() + (
             set_var_evt->operation == neo::types::variable_operation::INCREMENT ? amount : -amount
@@ -536,7 +536,7 @@ namespace neo::events
       const neo::types::execute_script_event* script_evt =
         static_cast<const neo::types::execute_script_event*>(e);
       neo::types::script script = neo::scenes::get_script(script_evt->name);
-      bn::vector<neo::variables::value, 10> previous_parameters;
+      bn::vector<neo::variables::variable, 10> previous_parameters;
 
       for (int i = 0; i < script.parameters_count; ++i)
       {
@@ -570,13 +570,7 @@ namespace neo::events
 
       for (int i = 0; i < script.parameters_count; ++i)
       {
-        const neo::variables::value& previous = previous_parameters[i];
-        game->variables.set_raw(
-          script.parameters[i],
-          previous.as_int(),
-          previous.as_bool(),
-          previous.as_string()
-        );
+        game->variables.get(script.parameters[i]).assign(previous_parameters[i]);
       }
     }
 

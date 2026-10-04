@@ -83,7 +83,7 @@ namespace neo::types
           return 0;
         }
 
-        neo::variables::value& var_value = variables.get(value->as_string());
+        neo::variables::variable& var_value = variables.get(value->as_string());
         return var_value.as_int();
       }
       else
@@ -102,7 +102,7 @@ namespace neo::types
           return false;
         }
 
-        neo::variables::value& var_value = variables.get(value->as_string());
+        neo::variables::variable& var_value = variables.get(value->as_string());
         return var_value.as_bool();
       }
       else
@@ -121,7 +121,7 @@ namespace neo::types
           return "";
         }
 
-        neo::variables::value& var_value = variables.get(value->as_string());
+        neo::variables::variable& var_value = variables.get(value->as_string());
         return var_value.as_string();
       }
       else

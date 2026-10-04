@@ -18,25 +18,38 @@ namespace neo::variables
     int int_value;
     bool bool_value;
     bn::string_view str_value;
-    // 6 chars fit -99999..999999, which set_int() clamps to.
-    bn::string<6> computed_str;
-    bool has_computed_str = false;
 
-    value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
+    constexpr value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
       name(name_),
       int_value(val_),
       bool_value(bool_val_),
       str_value(str_val_) {}
 
-    inline int as_int () const
+    constexpr int as_int () const
     {
       return int_value;
     }
 
-    inline bool as_bool () const
+    constexpr bool as_bool () const
     {
       return bool_value;
     }
+
+    constexpr bn::string_view as_string () const
+    {
+      return str_value;
+    }
+  };
+
+  // Registry-owned runtime variable: only these need a text buffer for computed ints
+  struct variable: value
+  {
+    // 6 chars fit -99999..999999, which set_int() clamps to.
+    bn::string<6> computed_str;
+    bool has_computed_str = false;
+
+    variable(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
+      value(name_, val_, bool_val_, str_val_) {}
 
     inline bn::string_view as_string () const
     {
@@ -57,6 +70,14 @@ namespace neo::variables
       int_value = other.int_value;
       bool_value = other.bool_value;
       str_value = other.str_value;
+      has_computed_str = false;
+    }
+
+    inline void assign (const variable& other)
+    {
+      int_value = other.int_value;
+      bool_value = other.bool_value;
+      str_value = other.str_value;
       computed_str = other.computed_str;
       has_computed_str = other.has_computed_str;
     }
@@ -64,13 +85,13 @@ namespace neo::variables
 
   struct registry
   {
-    bn::unordered_map<bn::string_view, neo::variables::value*, {{max (powerOfTwo (add (valuesCount variables) (scriptParamsCount scripts))) 1}}> all;
+    bn::unordered_map<bn::string_view, neo::variables::variable*, {{max (powerOfTwo (add (valuesCount variables) (scriptParamsCount scripts))) 1}}> all;
 
     registry(): all()
     {
       {{#each variables}}
       {{#each this.values}}
-      neo::variables::value* value_{{@../index}}_{{slug this.name}}_{{@index}} = new neo::variables::value(
+      neo::variables::variable* value_{{@../index}}_{{slug this.name}}_{{@index}} = new neo::variables::variable(
         "{{this.name}}",
         {{int this.defaultValue}},
         {{bool this.defaultValue}},
@@ -84,7 +105,7 @@ namespace neo::variables
       {{/each}}
       {{#each scripts}}
       {{#each this.parameters}}
-      neo::variables::value* script_parameter_{{@../index}}_{{@index}} = new neo::variables::value(
+      neo::variables::variable* script_parameter_{{@../index}}_{{@index}} = new neo::variables::variable(
         "{{scriptParamKey this.id}}", 0, false, ""
       );
       all.insert_or_assign("{{scriptParamKey this.id}}", script_parameter_{{@../index}}_{{@index}});
@@ -101,7 +122,7 @@ namespace neo::variables
       return all.find(key) != all.end();
     }
 
-    inline neo::variables::value& get(bn::string_view key)
+    inline neo::variables::variable& get(bn::string_view key)
     {
       BN_ASSERT(!key.empty(), "Empty variable key requested");
 
@@ -110,7 +131,7 @@ namespace neo::variables
       return *(it->second);
     }
 
-    inline void set(bn::string_view key, neo::variables::value* value)
+    inline void set(bn::string_view key, const neo::variables::value* value)
     {
       if (key.empty()) {
         BN_LOG("Empty variable key set attempted");

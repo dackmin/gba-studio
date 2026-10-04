@@ -1,10 +1,10 @@
-BN_DATA_EWRAM bn::string_view {{prefix}}_name = "";
+constexpr bn::string_view {{prefix}}_name = "";
 {{#if (eq value.type "variable")}}
-BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{else}}"{{escapeCpp value.name}}"{{/with}};
+constexpr bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{else}}"{{escapeCpp value.name}}"{{/with}};
 {{else if (eq value.type "actor")}}
-BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = "{{escapeCpp value.name}}";
+constexpr bn::string_view {{prefix}}_string_value = "{{escapeCpp value.name}}";
 {{else if (not (isInt value.value))}}
-BN_DATA_EWRAM bn::string_view {{prefix}}_string_value = "{{escapeCpp (valuedef value.value value)}}";
+constexpr bn::string_view {{prefix}}_string_value = "{{escapeCpp (valuedef value.value value)}}";
 {{/if}}
 BN_DATA_EWRAM neo::variables::value {{prefix}}_raw_value(
   {{prefix}}_name,
@@ -16,7 +16,7 @@ BN_DATA_EWRAM neo::variables::value {{prefix}}_raw_value(
   nullptr
   {{/if}}
 );
-BN_DATA_EWRAM bn::string_view {{prefix}}_type = "{{valuedef value.type 'value'}}";
+constexpr bn::string_view {{prefix}}_type = "{{valuedef value.type 'value'}}";
 BN_DATA_EWRAM neo::types::event_value {{prefix}}_value(
   {{prefix}}_type,
   &{{prefix}}_raw_value

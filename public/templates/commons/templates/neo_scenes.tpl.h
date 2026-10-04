@@ -33,7 +33,7 @@
 
 namespace neo::scenes
 {
-  BN_DATA_EWRAM bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
+  constexpr bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
 
   bn::vector<bn::string_view, 10> make_button_vector()
   {
@@ -144,7 +144,7 @@ namespace neo::scenes
   {{/if}}
 
   // -- Sensor
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view {{slug ../this.name}}_sensor_{{@index}}_id = "{{this.id}}";
   BN_DATA_EWRAM neo::types::sensor {{slug ../this.name}}_sensor_{{@index}} = {
     {{slug ../this.name}}_sensor_{{@index}}_id,
     {{this.x}},
@@ -243,8 +243,8 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
     {{slug ../this.name}}_actor_{{@index}}_id,
     {{slug ../this.name}}_actor_{{@index}}_name,
@@ -332,8 +332,8 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_sprite_" @index "_z") value=(valuedef this.z 2)}}
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr bn::string_view {{slug ../this.name}}_sprite_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view {{slug ../this.name}}_sprite_{{@index}}_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::sprite {{slug ../this.name}}_sprite_{{@index}} = {
     {{slug ../this.name}}_sprite_{{@index}}_id,
     {{slug ../this.name}}_sprite_{{@index}}_name,
@@ -381,8 +381,8 @@ namespace neo::scenes
 
   // Player
   {{#if (and (isset this.player) (neq this.sceneType 'logos'))}}
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_id = "player";
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_player_name = "player";
+  constexpr bn::string_view {{slug this.name}}_player_id = "player";
+  constexpr bn::string_view {{slug this.name}}_player_name = "player";
   BN_DATA_EWRAM neo::types::actor {{slug this.name}}_player_actor = {
     {{slug this.name}}_player_id,
     {{slug this.name}}_player_name,
@@ -414,8 +414,8 @@ namespace neo::scenes
   {{/if}}
   {{/if}}
 
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
+  constexpr bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
+  constexpr bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
@@ -469,8 +469,8 @@ namespace neo::scenes
   {{/each}}
 
   // Default scene
-  BN_DATA_EWRAM bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
-  BN_DATA_EWRAM bn::string_view default_scene_name = "default";
+  constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+  constexpr bn::string_view default_scene_name = "default";
   BN_DATA_EWRAM neo::types::scene scene_default = {
     default_scene_id,
     default_scene_name,
@@ -506,8 +506,8 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
-  BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_name = "{{escapeCpp this.name}}";
+  constexpr bn::string_view {{slug this.name}}_script_id = "{{this.id}}";
+  constexpr bn::string_view {{slug this.name}}_script_name = "{{escapeCpp this.name}}";
   {{#if this.parameters.length}}
   BN_DATA_EWRAM bn::string_view {{slug this.name}}_script_parameters[] = {
     {{#each this.parameters}}
@@ -535,8 +535,8 @@ namespace neo::scenes
   {{/each}}
 
   // Default script
-  BN_DATA_EWRAM bn::string_view script_default_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
-  BN_DATA_EWRAM bn::string_view script_default_name = "default";
+  constexpr bn::string_view script_default_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+  constexpr bn::string_view script_default_name = "default";
   BN_DATA_EWRAM neo::types::script script_default = {
     script_default_id,
     script_default_name,
