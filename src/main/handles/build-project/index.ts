@@ -32,6 +32,7 @@ import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
 import { copyAssets } from './assets';
+import { logMemoryUsage } from './memory';
 
 const builds = new Map<string, Build>();
 
@@ -215,6 +216,8 @@ export async function buildProject (
   }
 
   const romSize = (await fs.stat(finalGamePath)).size;
+
+  await logMemoryUsage(build, target);
 
   build.events.onSuccess(
     `Project built successfully in ` +
