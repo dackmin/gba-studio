@@ -1,8 +1,8 @@
 import path from 'node:path';
 
-import type { IpcMainInvokeEvent } from 'electron';
+import type { HostContext } from '../../types';
 
-export default function (_: IpcMainInvokeEvent, projectPath: string) {
+export default function (_: HostContext, projectPath: string) {
   const romPath = path.join(
     'out',
     path.basename(projectPath, path.extname(projectPath)) + '.gba'

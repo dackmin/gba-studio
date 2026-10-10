@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import type { IpcMainInvokeEvent } from 'electron';
-
 import type {
   AppPayload,
   GameBackgroundFile,
@@ -12,6 +10,7 @@ import type {
   GameSoundFile,
   GameSpriteFile,
   GameVariables,
+  HostContext,
 } from '../../types';
 import { getAudioFiles, getGraphicsFiles, getSceneFiles, getScriptsFiles } from '../files';
 import { serialize } from '../serialize';
@@ -58,7 +57,7 @@ export const cleanObsoleteItems = async (
 };
 
 export default async (
-  _: IpcMainInvokeEvent,
+  _: HostContext,
   projectPath: string,
   data: Partial<AppPayload>
 ) => {

@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { type IpcMainInvokeEvent, BrowserWindow } from 'electron';
 import fse from 'fs-extra';
 import slugify from 'slugify';
 
@@ -9,11 +8,11 @@ import type {
   GameProject,
   ProjectTemplate,
 } from '../../types';
+import type { HostContext } from '../../types';
 import { getResourcesDir } from '../utils';
-import { createProjectWindow } from '../windows';
 import Storage from '../storage';
 
-export default async (storage: Storage, event: IpcMainInvokeEvent, opts: {
+export default async (storage: Storage, ctx: HostContext, opts: {
   type: ProjectTemplate;
   path: string;
   name: string;
@@ -42,13 +41,5 @@ export default async (storage: Storage, event: IpcMainInvokeEvent, opts: {
 
   storage.addToRecentProjects(projectPath, project);
 
-  // Hide selection window
-  const win = BrowserWindow.fromWebContents(event.sender);
-  win?.hide();
-
-  createProjectWindow(projectPath);
-
-  // Close selection window
-  await new Promise(resolve => setTimeout(resolve, 100));
-  win?.close();
+  await ctx.window.openProject(projectPath);
 };

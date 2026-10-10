@@ -1,10 +1,9 @@
-import type { IpcMainInvokeEvent } from 'electron';
-
+import type { HostContext } from '../../types';
 import Storage from '../storage';
 
 export default async function (
   storage: Storage,
-  _: IpcMainInvokeEvent,
+  _: HostContext,
   data: any
 ) {
   await storage.addToClipboard(data);

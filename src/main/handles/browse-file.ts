@@ -1,21 +1,20 @@
 import path from 'node:path';
 
-import { type IpcMainInvokeEvent, FileFilter, dialog } from 'electron';
+import type { FileFilter, HostContext } from '../../types';
 
-export default async (_: IpcMainInvokeEvent, opts?: {
+export default async (ctx: HostContext, opts?: {
   prefix?: string;
   projectPath?: string;
   filters?: FileFilter[];
 }) => {
-  const result = await dialog.showOpenDialog({
-    properties: ['openFile'],
+  const file = await ctx.dialogs.openFile({
     filters: opts?.filters || [],
     defaultPath: opts?.projectPath ? path.basename(opts?.projectPath || '') : undefined,
   });
 
-  if (!result.filePaths[0]) {
+  if (!file) {
     return '';
   }
 
-  return path.join(opts?.prefix || '', result.filePaths[0]);
+  return path.join(opts?.prefix || '', file);
 };

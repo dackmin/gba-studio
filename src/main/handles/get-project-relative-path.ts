@@ -1,9 +1,9 @@
 import path from 'node:path';
 
-import type { IpcMainInvokeEvent } from 'electron';
+import type { HostContext } from '../../types';
 
 export default async function (
-  _: IpcMainInvokeEvent,
+  _: HostContext,
   projectPath: string,
   filePath: string,
 ) {

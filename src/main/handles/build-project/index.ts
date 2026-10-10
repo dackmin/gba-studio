@@ -4,10 +4,9 @@ import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 
-import type { IpcMainInvokeEvent } from 'electron';
 import fse from 'fs-extra';
 
-import type { AppPayload, Build, BuildOptions } from '../../../types';
+import type { AppPayload, Build, BuildOptions, HostContext } from '../../../types';
 import { getResourcesDir } from '../../utils';
 import {
   getBuildDir,
@@ -37,17 +36,17 @@ import { logMemoryUsage } from './memory';
 const builds = new Map<string, Build>();
 
 function createHandlers (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string
 ): Build['events'] {
   return {
-    onLog: (...args: any[]) => sendLog(event, buildId, args.join(' ')),
-    onStep: (...args: any[]) => sendStep(event, buildId, args.join(' ')),
-    onError: (...args: any[]) => sendError(event, buildId, args.join(' ')),
-    onSuccess: (...args: any[]) => sendSuccessLog(event, buildId, args.join(' ')),
-    onAbort: () => sendAbort(event, buildId),
-    onStart: () => event.sender.send('build-started', { id: buildId }),
-    onComplete: () => event.sender.send('build-completed', { id: buildId }),
+    onLog: (...args: any[]) => sendLog(ctx, buildId, args.join(' ')),
+    onStep: (...args: any[]) => sendStep(ctx, buildId, args.join(' ')),
+    onError: (...args: any[]) => sendError(ctx, buildId, args.join(' ')),
+    onSuccess: (...args: any[]) => sendSuccessLog(ctx, buildId, args.join(' ')),
+    onAbort: () => sendAbort(ctx, buildId),
+    onStart: () => ctx.send('build-started', { id: buildId }),
+    onComplete: () => ctx.send('build-completed', { id: buildId }),
   };
 }
 
@@ -243,7 +242,6 @@ export async function buildProject (
 }
 
 async function startBuild (
-  event: IpcMainInvokeEvent,
   build: Build,
 ) {
   try {
@@ -269,7 +267,7 @@ async function startBuild (
 
 export async function startBuildProject (
   storage: Storage,
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   projectPath: string,
   data: Partial<AppPayload>,
   opts?: BuildOptions,
@@ -284,18 +282,18 @@ export async function startBuildProject (
     controller,
     data: await serialize(await sanitize(data, { projectPath })),
     opts,
-    events: createHandlers(event, buildId),
+    events: createHandlers(ctx, buildId),
   };
 
   builds.set(buildId, build);
   build.events.onStart();
-  startBuild(event, build);
+  startBuild(build);
 
   return buildId;
 }
 
 export function abortBuildProject (
-  _: IpcMainInvokeEvent
+  _: HostContext
 ) {
   for (const build of builds.values()) {
     if (!build.controller?.signal.aborted) {
@@ -306,20 +304,20 @@ export function abortBuildProject (
 }
 
 export async function cleanBuildFolder (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   projectPath: string,
 ) {
   const buildId = randomUUID();
   const build: Build = {
     id: buildId,
     projectPath,
-    events: createHandlers(event, buildId),
+    events: createHandlers(ctx, buildId),
   };
 
-  event.sender.send('clean-started', { id: build.id });
-  sendStep(event, build.id, 'Cleaning build folder...');
+  ctx.send('clean-started', { id: build.id });
+  sendStep(ctx, build.id, 'Cleaning build folder...');
   await fse.remove(getBuildDir(build));
-  event.sender.send('clean-completed', { id: build.id });
-  sendSuccessLog(event, build.id, 'Build folder cleaned.');
+  ctx.send('clean-completed', { id: build.id });
+  sendSuccessLog(ctx, build.id, 'Build folder cleaned.');
 }
 

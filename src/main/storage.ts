@@ -1,30 +1,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { app } from 'electron';
-
 import type { AppStorage, GameProject } from '../types';
 
 export default class Storage {
   config: AppStorage = {};
+  configPath: string;
 
-  constructor () {
-    const configPath = path.join(app.getPath('userData'), 'config.json');
+  constructor (userDataDir: string) {
+    this.configPath = path.join(userDataDir, 'config.json');
 
-    if (!fs.existsSync(path.dirname(configPath))) {
-      fs.mkdirSync(path.dirname(configPath), { recursive: true });
+    if (!fs.existsSync(path.dirname(this.configPath))) {
+      fs.mkdirSync(path.dirname(this.configPath), { recursive: true });
     }
 
     try {
-      this.config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      this.config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'));
     } catch {}
   }
 
   save () {
-    const configPath = path.join(app.getPath('userData'), 'config.json');
-
     return fs.promises.writeFile(
-      configPath,
+      this.configPath,
       JSON.stringify(this.config, null, 2) + '\n',
       'utf-8'
     );

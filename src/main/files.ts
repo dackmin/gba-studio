@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { Jimp } from 'jimp';
 
-import type { GameScene, GameScript } from '../types';
+import type { GameScene, GameScript, HostDialogs } from '../types';
 import { toFileSlug } from '../helpers';
 
 export type ContentFileKind = 'scene' | 'script';
@@ -84,13 +84,12 @@ export const getVariableFiles = async (
 };
 
 export const renameContentFile = async (
+  dialogs: Pick<HostDialogs, 'saveFile'>,
   kind: ContentFileKind,
   projectPath: string,
   currentFileName: string,
   data?: Partial<GameScene | GameScript>,
 ): Promise<string | null> => {
-  // Lazy import: the CLI bundles this module outside of Electron
-  const { dialog } = await import('electron');
   const contentDir = path.join(path.dirname(projectPath), 'content');
   await fs.mkdir(contentDir, { recursive: true });
 
@@ -98,17 +97,17 @@ export const renameContentFile = async (
     ? currentFileName
     : `${currentFileName || `${kind}_1`}.json`;
 
-  const result = await dialog.showSaveDialog({
+  const filePath = await dialogs.saveFile({
     title: `Rename ${kind === 'scene' ? 'Scene' : 'Script'} File`,
     defaultPath: path.join(contentDir, defaultFileName),
     filters: [{ name: `JSON ${kind} file`, extensions: ['json'] }],
   });
 
-  if (result.canceled || !result.filePath) {
+  if (!filePath) {
     return null;
   }
 
-  const rawBaseName = path.basename(result.filePath, '.json');
+  const rawBaseName = path.basename(filePath, '.json');
   const slug = toFileSlug(rawBaseName.replace(new RegExp(`^${kind}_`), ''));
   const newFileName = `${kind}_${slug}.json`;
 

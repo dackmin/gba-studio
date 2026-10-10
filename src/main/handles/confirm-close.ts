@@ -1,11 +1,5 @@
-import { type IpcMainInvokeEvent, BrowserWindow } from 'electron';
+import type { HostContext } from '../../types';
 
-import { allowWindowClose } from '../windows';
-
-export default async (event: IpcMainInvokeEvent) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-
-  if (win) {
-    allowWindowClose(win);
-  }
+export default async (ctx: HostContext) => {
+  await ctx.window.allowClose();
 };

@@ -1,15 +1,14 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 
-import type { IpcMainInvokeEvent } from 'electron';
 import { omit } from '@junipero/core';
 
-import type { GameSoundFile } from '../../types';
+import type { GameSoundFile, HostContext } from '../../types';
 import { sanitizeSound } from '../sanitize';
 import { toFileSlug } from '../../helpers';
 
 export default async function (
-  _: IpcMainInvokeEvent,
+  _: HostContext,
   projectPath: string,
   filePath: string,
   soundInfo: GameSoundFile,

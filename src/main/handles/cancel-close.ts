@@ -1,8 +1,5 @@
-import type { IpcMainInvokeEvent } from 'electron';
+import type { HostContext } from '../../types';
 
-import { setQuitting } from '../windows';
-
-export default async (_event: IpcMainInvokeEvent) => {
-  // Abort a pending Cmd+Q/quit attempt so it doesn't resume once other windows close
-  setQuitting(false);
+export default async (ctx: HostContext) => {
+  await ctx.window.cancelQuit();
 };

@@ -2,18 +2,17 @@ import { type SpawnOptions, spawn } from 'node:child_process';
 import path from 'node:path';
 import { platform } from 'node:process';
 
-import type { IpcMainInvokeEvent } from 'electron';
 import slugify from 'slugify';
 import { v4 as uuid } from 'uuid';
 
-import type { Build } from '../../../types';
+import type { Build, HostContext } from '../../../types';
 
 export function sendStep (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string,
   message: string
 ) {
-  event.sender.send('build-step', {
+  ctx.send('build-step', {
     id: buildId,
     message,
     messageId: uuid(),
@@ -21,11 +20,11 @@ export function sendStep (
 }
 
 export function sendLog (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string,
   message: string
 ) {
-  event.sender.send('build-log', {
+  ctx.send('build-log', {
     id: buildId,
     type: 'log',
     message,
@@ -35,18 +34,18 @@ export function sendLog (
 }
 
 export function sendError (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string,
   message: string
 ) {
-  event.sender.send('build-log', {
+  ctx.send('build-log', {
     id: buildId,
     type: 'error',
     message,
     messageId: uuid(),
     time: Date.now(),
   });
-  event.sender.send('build-error', {
+  ctx.send('build-error', {
     id: buildId,
     message,
     messageId: uuid(),
@@ -54,11 +53,11 @@ export function sendError (
 }
 
 export function sendSuccessLog (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string,
   message: string
 ) {
-  event.sender.send('build-log', {
+  ctx.send('build-log', {
     id: buildId,
     type: 'success',
     message,
@@ -68,10 +67,10 @@ export function sendSuccessLog (
 }
 
 export function sendAbort (
-  event: IpcMainInvokeEvent,
+  ctx: HostContext,
   buildId: string,
 ) {
-  event.sender.send('build-aborted', {
+  ctx.send('build-aborted', {
     id: buildId,
     messageId: uuid(),
   });

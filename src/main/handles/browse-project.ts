@@ -1,36 +1,26 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-import { type IpcMainInvokeEvent, dialog, BrowserWindow } from 'electron';
+import type { HostContext } from '../../types';
 
-import { createProjectWindow } from '../windows';
+export default async (ctx: HostContext) => {
+  const selected = await ctx.dialogs.openProject();
 
-export default async (event: IpcMainInvokeEvent) => {
-  const paths = await dialog.showOpenDialog({
-    properties: ['openDirectory', 'openFile'],
-  });
-
-  if (!paths.filePaths[0]) {
+  if (!selected) {
     return;
   }
 
-  const selectionWin = BrowserWindow.fromWebContents(event.sender);
-  selectionWin?.hide();
-
-  const stats = await fs.stat(paths.filePaths[0]);
+  const stats = await fs.stat(selected);
 
   if (stats.isDirectory()) {
     const projectFile = await fs
-      .readdir(paths.filePaths[0])
+      .readdir(selected)
       .then(files => files.find(file => file.endsWith('.gbasproj')));
 
     if (projectFile) {
-      createProjectWindow(path.join(paths.filePaths[0], projectFile));
+      await ctx.window.openProject(path.join(selected, projectFile));
     }
-  } else if (stats.isFile() && paths.filePaths[0].endsWith('.gbasproj')) {
-    createProjectWindow(paths.filePaths[0]);
+  } else if (stats.isFile() && selected.endsWith('.gbasproj')) {
+    await ctx.window.openProject(selected);
   }
-
-  await new Promise(resolve => setTimeout(resolve, 100));
-  selectionWin?.close();
 };

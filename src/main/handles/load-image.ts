@@ -1,11 +1,10 @@
-import type { IpcMainInvokeEvent } from 'electron';
 import { Jimp } from 'jimp';
 
-import type { SpriteBitmap } from '../../types';
+import type { SpriteBitmap, HostContext } from '../../types';
 import { toBmp, resizeToFit } from '../images';
 
 export default async function (
-  _: IpcMainInvokeEvent,
+  _: HostContext,
   filePath: string,
   mode: 'sprite' | 'background' = 'sprite',
   opts?: {

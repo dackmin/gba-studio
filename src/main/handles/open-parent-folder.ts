@@ -1,15 +1,15 @@
 import path from 'node:path';
 
-import { type IpcMainInvokeEvent, shell } from 'electron';
+import type { HostContext } from '../../types';
 
 export default async (
-  _event: IpcMainInvokeEvent,
+  ctx: HostContext,
   projectPath: string,
   filePath: string
 ) => {
   const projectParent = path.dirname(projectPath);
 
-  shell.showItemInFolder(filePath.startsWith('project://')
+  await ctx.shell.showItemInFolder(filePath.startsWith('project://')
     ? path.join(projectParent, filePath.replace('project://', ''))
     : filePath);
 };

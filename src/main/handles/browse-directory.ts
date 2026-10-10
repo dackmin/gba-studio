@@ -1,18 +1,16 @@
 import path from 'node:path';
 
-import { type IpcMainInvokeEvent, dialog } from 'electron';
+import type { HostContext } from '../../types';
 
-export default async (_: IpcMainInvokeEvent, opts?: {
+export default async (ctx: HostContext, opts?: {
   prefix?: string;
   suffix?: string;
 }) => {
-  const result = await dialog.showOpenDialog({
-    properties: ['openDirectory'],
-  });
+  const directory = await ctx.dialogs.openDirectory();
 
-  if (!result.filePaths[0]) {
+  if (!directory) {
     return '';
   }
 
-  return path.join(opts?.prefix || '', result.filePaths[0], opts?.suffix || '');
+  return path.join(opts?.prefix || '', directory, opts?.suffix || '');
 };

@@ -1,13 +1,12 @@
-import type { IpcMainInvokeEvent } from 'electron';
-
-import type { GameScript } from '../../types';
+import type { GameScript, HostContext } from '../../types';
 import { renameContentFile } from '../files';
 
 export default async function (
-  _: IpcMainInvokeEvent,
+  ctx: HostContext,
   projectPath: string,
   currentFileName: string,
   scriptData?: Partial<GameScript>,
 ): Promise<string | null> {
-  return renameContentFile('script', projectPath, currentFileName, scriptData);
+  return renameContentFile(
+    ctx.dialogs, 'script', projectPath, currentFileName, scriptData);
 }

@@ -7,6 +7,11 @@ export const isDev = () =>
   !!MAIN_WINDOW_VITE_DEV_SERVER_URL;
 
 export const getResourcesDir = () => {
+  // Non-Electron hosts (sidecar) pass the directory that contains `public/`
+  if (process.env.GBAS_RESOURCES) {
+    return process.env.GBAS_RESOURCES;
+  }
+
   if (isDev()) {
     const url = path.join(__dirname, '../../');
 
