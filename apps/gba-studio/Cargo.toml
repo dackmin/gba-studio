@@ -1,0 +1,17 @@
+[package]
+name = "gba-studio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Internal
+gbas-core = { path = "../gbas-core" }
+# External
+egui = "0.36.2"
+eframe = "0.36.2"
+egui_extras = "0.36.2"
+egui_dnd = "0.17.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+handlebars = "6.4.4"
+include_dir = "0.7.4"

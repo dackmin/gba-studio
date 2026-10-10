@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 public/vendors/*/darwin/**
 public/vendors/*/win32/**
 public/vendors/*/linux/**
+
+# Rust
+target/
