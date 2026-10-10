@@ -104,7 +104,7 @@ const Actor = ({
             <ContextMenu.Label className="text-xs!">Actor</ContextMenu.Label>
             <ContextMenu.Item
               onClick={onDelete}
-              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+              shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
             >
               Delete
             </ContextMenu.Item>

@@ -44,7 +44,7 @@ const NewProjectForm = () => {
   }, [state]);
 
   const onBrowse = useCallback(async () => {
-    const directory = await window.electron.browseDirectory({
+    const directory = await window.bridge.browseDirectory({
       suffix: slugify(state.name || 'my-awesome-game'),
     });
 
@@ -54,7 +54,7 @@ const NewProjectForm = () => {
   }, [onValueChange, state.name]);
 
   const onCreate = useCallback(async () => {
-    await window.electron.createProject({
+    await window.bridge.createProject({
       type: state.type,
       name: state.name,
       path: state.path,

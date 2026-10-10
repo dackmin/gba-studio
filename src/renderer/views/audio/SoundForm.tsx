@@ -52,7 +52,7 @@ const SoundForm = () => {
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, 'project://' + selectedSound.path);
+    await window.bridge.openParentFolder(projectPath, 'project://' + selectedSound.path);
   }, [selectedSound, projectPath]);
 
   if (!selectedSound) {

@@ -82,7 +82,7 @@ const Sensor = ({
             <ContextMenu.Label className="text-xs!">Sensor</ContextMenu.Label>
             <ContextMenu.Item
               onClick={onDelete}
-              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+              shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
             >
               Delete
             </ContextMenu.Item>

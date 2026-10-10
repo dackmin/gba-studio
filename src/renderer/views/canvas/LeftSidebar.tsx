@@ -181,7 +181,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onRemoveScene.bind(null, scene)}
                 >
                   Delete
@@ -244,7 +244,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onRemoveScript.bind(null, script)}
                 >
                   Delete
@@ -309,7 +309,7 @@ const LeftSidebar = ({
                 </ContextMenu.Trigger>
                 <ContextMenu.Content>
                   <ContextMenu.Item
-                    shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                    shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                     onClick={onRemoveVariable.bind(null, variable)}
                   >
                     Delete

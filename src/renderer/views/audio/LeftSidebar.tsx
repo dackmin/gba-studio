@@ -17,12 +17,12 @@ const LeftSidebar = ({
 
   const onAddSound = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    window.electron.send('import-sound');
+    window.bridge.send('import-sound');
   }, []);
 
   const onAddMusic = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    window.electron.send('import-music');
+    window.bridge.send('import-music');
   }, []);
 
   const onDeleteSound = useCallback(async () => {
@@ -107,7 +107,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onDeleteSound}
                 >
                   Delete
@@ -171,7 +171,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onDeleteMusic}
                 >
                   Delete

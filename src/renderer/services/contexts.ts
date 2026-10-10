@@ -59,7 +59,7 @@ export const AppContext = createContext<AppContextType>({
   projectBase: '',
   resourcesPath: '',
   dirty: false,
-  isFullscreen: window.electron.isFullscreen,
+  isFullscreen: window.bridge.isFullscreen,
   save: async () => {},
   setEditorConfig: () => {},
   setClipboard: () => {},

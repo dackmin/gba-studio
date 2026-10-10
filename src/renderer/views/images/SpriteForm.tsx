@@ -89,7 +89,7 @@ const SpriteForm = () => {
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, 'project://' + selectedSprite.path);
+    await window.bridge.openParentFolder(projectPath, 'project://' + selectedSprite.path);
   }, [selectedSprite, projectPath]);
 
   if (!selectedSprite) {

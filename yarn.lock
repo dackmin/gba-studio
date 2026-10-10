@@ -3500,6 +3500,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/api@npm:2.12.2":
+  version: 2.12.2
+  resolution: "@tauri-apps/api@npm:2.12.2"
+  checksum: 10c0/1224b861d15312e11bce75f7813fd22f5afb2f0390030c67d4a99eeb119585a17af8951f4940a38d1053cff0462ff8b3848711016d837ae4d0387b3a543ee865
+  languageName: node
+  linkType: hard
+
 "@testing-library/react@npm:16.3.3":
   version: 16.3.3
   resolution: "@testing-library/react@npm:16.3.3"
@@ -5675,6 +5682,7 @@ __metadata:
     "@radix-ui/themes": "npm:3.3.0"
     "@reforged/maker-appimage": "npm:5.3.1"
     "@tailwindcss/vite": "npm:4.3.3"
+    "@tauri-apps/api": "npm:2.12.2"
     "@testing-library/react": "npm:16.3.3"
     "@thenick775/mgba-wasm": "npm:2.5.1"
     "@types/debug": "npm:4.1.13"

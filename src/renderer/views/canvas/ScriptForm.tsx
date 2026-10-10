@@ -76,7 +76,7 @@ const ScriptForm = ({
   }, [onValueChange, script.parameters]);
 
   const onRenameFile = useCallback(async () => {
-    const newFileName = await window.electron.renameScriptFile(
+    const newFileName = await window.bridge.renameScriptFile(
       projectPath,
       script._file || 'script_1.json',
       script,
@@ -94,7 +94,7 @@ const ScriptForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(
+    await window.bridge.openParentFolder(
       projectPath,
       `project://content/${script._file}`
     );

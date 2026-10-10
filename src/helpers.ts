@@ -45,8 +45,21 @@ export const getSoundName = (filePath?: string) => {
   return filePath.replace(/\.(wav|mod|json)$/, '');
 };
 
+// Tauri serves custom schemes as http://<scheme>.localhost on Windows.
+export const projectUrl = (assetPath = '') => {
+  const g = globalThis as any;
+
+  if (!g.__TAURI_INTERNALS__) {
+    return `project://${assetPath}`;
+  }
+
+  return /Windows/i.test(g.navigator?.userAgent ?? '')
+    ? `http://project.localhost/${assetPath}`
+    : `project://localhost/${assetPath}`;
+};
+
 export const getAssetUrl = (asset?: { path?: string; _version?: number }) =>
-  `project://${asset?.path}` + (asset?._version ? `?v=${asset._version}` : '');
+  projectUrl(`${asset?.path}`) + (asset?._version ? `?v=${asset._version}` : '');
 
 export const loadImage = async (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {

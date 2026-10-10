@@ -4,6 +4,7 @@ import mGBA, { type mGBAEmulator, type LogEntry } from '@thenick775/mgba-wasm';
 import { v4 as uuid } from 'uuid';
 
 import { useApp, useBridgeListener, useEmulator, useLogs } from '../../services/hooks';
+import { projectUrl } from '../../../helpers';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 import Gamepad from '../../components/Gamepad';
 
@@ -104,8 +105,8 @@ const Preview = () => {
         restoreAutoSaveStateOnLoad: false,
       });
 
-      const romPath = await window.electron.getRomPath(projectPath);
-      const file = await fetch(`project://${romPath}`);
+      const romPath = await window.bridge.getRomPath(projectPath);
+      const file = await fetch(projectUrl(romPath));
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
 

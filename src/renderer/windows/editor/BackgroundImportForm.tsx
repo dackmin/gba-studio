@@ -65,7 +65,7 @@ const BackgroundImportForm = ({
   const loadFile = useCallback(async (file: string, firstInit = true) => {
     dispatch({ fetching: true });
 
-    const imageContent = await window.electron.loadImage(file, 'background');
+    const imageContent = await window.bridge.loadImage(file, 'background');
 
     const width = imageContent.width > imageContent.height
       ? imageContent.height : imageContent.width;
@@ -92,7 +92,7 @@ const BackgroundImportForm = ({
   }, []);
 
   const onBrowse = useCallback(async () => {
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
@@ -133,7 +133,7 @@ const BackgroundImportForm = ({
 
     dispatch({ importing: true });
 
-    const createdBackground = await window.electron.importBackground(
+    const createdBackground = await window.bridge.importBackground(
       projectPath,
       state.path,
       {
@@ -167,7 +167,7 @@ const BackgroundImportForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, state.path);
+    await window.bridge.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
 
   return (

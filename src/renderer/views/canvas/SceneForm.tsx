@@ -61,7 +61,7 @@ const SceneForm = ({
       return;
     }
 
-    const newFileName = await window.electron.renameSceneFile(
+    const newFileName = await window.bridge.renameSceneFile(
       projectPath,
       scene._file || 'scene_1.json',
       scene,
@@ -96,7 +96,7 @@ const SceneForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(
+    await window.bridge.openParentFolder(
       projectPath,
       `project://content/${scene._file}`
     );

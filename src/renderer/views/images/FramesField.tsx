@@ -98,20 +98,20 @@ const FramesField = ({
             </ContextMenu.Trigger>
             <ContextMenu.Content>
               <ContextMenu.Item
-                shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+B'}
+                shortcut={(window.bridge.isDarwin ? '⌘' : 'Ctrl') + '+B'}
                 onClick={onAddBefore.bind(null, frame)}
               >
                 Add Before
               </ContextMenu.Item>
               <ContextMenu.Item
-                shortcut={(window.electron.isDarwin ? '⌘' : 'Ctrl') + '+N'}
+                shortcut={(window.bridge.isDarwin ? '⌘' : 'Ctrl') + '+N'}
                 onClick={onAddFrame.bind(null, frame)}
               >
                 Add After
               </ContextMenu.Item>
               <ContextMenu.Separator />
               <ContextMenu.Item
-                shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                 onClick={onDeleteFrame.bind(null, frame)}
               >
                 Delete

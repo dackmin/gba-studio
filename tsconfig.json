@@ -16,6 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
   },
-  "include": ["**/*.ts", "**/*.tsx", "./src/types.ts", "globals.d.ts", ".plugins/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "globals.d.ts", ".plugins/**/*.ts"],
   "exclude": ["node_modules", "dist", ".vite", "public/vendors", "out"]
 }

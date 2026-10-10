@@ -74,7 +74,7 @@ const SoundImportForm = ({
   }, []);
 
   const onBrowse = useCallback(async () => {
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Sounds', extensions: ['wav'] },
@@ -101,7 +101,7 @@ const SoundImportForm = ({
 
     dispatch({ importing: true });
 
-    const createdSound = await window.electron.importSound(
+    const createdSound = await window.bridge.importSound(
       projectPath,
       state.path,
       {
@@ -133,7 +133,7 @@ const SoundImportForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, state.path);
+    await window.bridge.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
 
   return (

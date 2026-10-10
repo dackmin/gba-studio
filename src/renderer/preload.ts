@@ -1,4 +1,4 @@
-import { type FileFilter, contextBridge, ipcRenderer } from 'electron';
+import { type IpcRendererEvent, contextBridge, ipcRenderer } from 'electron';
 
 import type {
   AppPayload,
@@ -13,26 +13,43 @@ import type {
   ProjectTemplate,
   RecentProject,
   SpriteBitmap,
+  AppBridge,
+  BuildData,
+  FileFilter,
 } from '../types';
 
 const queryParams = new URLSearchParams(globalThis.location.search);
 const isDev = queryParams.get('isDev') === 'true';
 const isFullscreen = queryParams.get('isFullscreen') === 'true';
 
-contextBridge.exposeInMainWorld('electron', {
-  // EventTarget
+// Maps user listeners to their IPC wrappers so they can be removed later.
+const wrapped = new WeakMap<(...args: any[]) => void, (...args: any[]) => void>();
+
+const wrap = (func: (...args: any[]) => void) => {
+  let cb = wrapped.get(func);
+
+  if (!cb) {
+    cb = (_: IpcRendererEvent | null, ...args: any[]) => func(...args);
+    wrapped.set(func, cb);
+  }
+
+  return cb;
+};
+
+contextBridge.exposeInMainWorld('bridge', {
+  // Events
   addEventListener: (channel: string, func: (...args: any[]) => void) => {
-    ipcRenderer.addListener(channel, func);
+    ipcRenderer.addListener(channel, wrap(func));
 
     return () => {
-      ipcRenderer.removeListener(channel, func);
+      ipcRenderer.removeListener(channel, wrap(func));
     };
   },
   removeEventListener: (channel: string, func: (...args: any[]) => void) => {
-    ipcRenderer.removeListener(channel, func);
+    ipcRenderer.removeListener(channel, wrap(func));
   },
   send: (channel: string, ...args: any[]) => {
-    ipcRenderer.emit(channel, ...args);
+    ipcRenderer.emit(channel, null, ...args);
   },
 
   // Invokables
@@ -69,7 +86,7 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('create-project', opts),
   startBuildProject: (
     projectPath: string,
-    data?: Partial<AppPayload>,
+    data?: BuildData,
     opts?: BuildOptions
   ): Promise<string> =>
     ipcRenderer.invoke('start-build-project', projectPath, data, opts),
@@ -105,25 +122,25 @@ contextBridge.exposeInMainWorld('electron', {
     projectPath: string,
     filePath: string,
     spriteInfo: Partial<GameSpriteFile>,
-  ): Promise<Partial<GameSpriteFile>> =>
+  ): Promise<GameSpriteFile> =>
     ipcRenderer.invoke('import-sprite', projectPath, filePath, spriteInfo),
   importBackground: (
     projectPath: string,
     filePath: string,
     backgroundInfo: Partial<GameBackgroundFile>,
-  ): Promise<Partial<GameBackgroundFile>> =>
+  ): Promise<GameBackgroundFile> =>
     ipcRenderer.invoke('import-background', projectPath, filePath, backgroundInfo),
   importSound: (
     projectPath: string,
     filePath: string,
     soundInfo: Partial<GameSoundFile>,
-  ): Promise<Partial<GameSoundFile>> =>
+  ): Promise<GameSoundFile> =>
     ipcRenderer.invoke('import-sound', projectPath, filePath, soundInfo),
   importMusic: (
     projectPath: string,
     filePath: string,
     musicInfo: Partial<GameMusicFile>,
-  ): Promise<Partial<GameMusicFile>> =>
+  ): Promise<GameMusicFile> =>
     ipcRenderer.invoke('import-music', projectPath, filePath, musicInfo),
   renameSceneFile: (
     projectPath: string,
@@ -150,4 +167,4 @@ contextBridge.exposeInMainWorld('electron', {
   isWindows: process.platform === 'win32',
   isDev,
   isFullscreen,
-} as Omit<AppBridge, 'dispatchEvent'>);
+} satisfies AppBridge);

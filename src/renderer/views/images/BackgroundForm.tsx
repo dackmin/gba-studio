@@ -61,7 +61,7 @@ const BackgroundForm = () => {
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, 'project://' + selectedBackground.path);
+    await window.bridge.openParentFolder(projectPath, 'project://' + selectedBackground.path);
   }, [selectedBackground, projectPath]);
 
   if (!selectedBackground) {

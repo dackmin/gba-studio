@@ -70,7 +70,7 @@ const LeftSidebar = ({
 
   const onToggleBuild = useCallback(async (clean?: boolean) => {
     if (building) {
-      await window.electron.abortBuildProject();
+      await window.bridge.abortBuildProject();
 
       return;
     }
@@ -78,7 +78,7 @@ const LeftSidebar = ({
     const startingScene = selectedScene?.id ??
       findScene(scenes, getData('canvas.selectedScene'))?.id;
 
-    await window.electron.startBuildProject(projectPath, {
+    await window.bridge.startBuildProject(projectPath, {
       project: {
         ...project,
         startingScene: startingScene
@@ -109,12 +109,12 @@ const LeftSidebar = ({
 
   const onCleanBuildFolder = useCallback(async () => {
     if (building) {
-      await window.electron.abortBuildProject();
+      await window.bridge.abortBuildProject();
 
       return;
     }
 
-    await window.electron.cleanBuildFolder(projectPath);
+    await window.bridge.cleanBuildFolder(projectPath);
   }, [building, projectPath]);
 
   useBridgeListener('clean-build-folder', onCleanBuildFolder, [onCleanBuildFolder]);
@@ -165,8 +165,8 @@ const LeftSidebar = ({
           'pointer-events-auto',
           {
             'transition-[padding-left,width] duration-100': !resizingSidebar,
-            'pl-[100px]': !isFullscreen && window.electron.isDarwin,
-            'pl-6': isFullscreen || !window.electron.isDarwin,
+            'pl-[100px]': !isFullscreen && window.bridge.isDarwin,
+            'pl-6': isFullscreen || !window.bridge.isDarwin,
           },
         )}
         style={{ width: !isCollapsed('leftSidebar') ? leftSidebarWidth : 0 }}
@@ -209,7 +209,7 @@ const LeftSidebar = ({
               <span className="flex items-center gap-2">
                 <Text>Build project</Text>
                 <Kbd>
-                  { window.electron.isDarwin ? '⌘' : 'Ctrl' }
+                  { window.bridge.isDarwin ? '⌘' : 'Ctrl' }
                   + Enter
                 </Kbd>
               </span>

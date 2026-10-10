@@ -64,7 +64,7 @@ const SpriteImportForm = ({
   const loadFile = useCallback(async (file: string, firstInit = true) => {
     dispatch({ fetching: true });
 
-    const imageContent = await window.electron.loadImage(file, 'sprite');
+    const imageContent = await window.bridge.loadImage(file, 'sprite');
 
     const width = imageContent.width > imageContent.height
       ? imageContent.height : imageContent.width;
@@ -112,7 +112,7 @@ const SpriteImportForm = ({
   }, []);
 
   const onBrowse = useCallback(async () => {
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
@@ -163,7 +163,7 @@ const SpriteImportForm = ({
 
     dispatch({ importing: true });
 
-    const createdSprite = await window.electron.importSprite(
+    const createdSprite = await window.bridge.importSprite(
       projectPath,
       state.path,
       {
@@ -198,7 +198,7 @@ const SpriteImportForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, state.path);
+    await window.bridge.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
 
   const transparencyColor = useDelayedValue(state.transparentColor);

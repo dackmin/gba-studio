@@ -74,7 +74,7 @@ const MusicImportForm = ({
   }, []);
 
   const onBrowse = useCallback(async () => {
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Music', extensions: ['mod'] },
@@ -101,7 +101,7 @@ const MusicImportForm = ({
 
     dispatch({ importing: true });
 
-    const createdMusic = await window.electron.importMusic(
+    const createdMusic = await window.bridge.importMusic(
       projectPath,
       state.path,
       {
@@ -133,7 +133,7 @@ const MusicImportForm = ({
       return;
     }
 
-    await window.electron.openParentFolder(projectPath, state.path);
+    await window.bridge.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
 
   return (

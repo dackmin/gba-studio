@@ -93,9 +93,9 @@ const App = () => {
 
   const init = useCallback(async () => {
     if (projectPath) {
-      const data = await window.electron.loadProject(projectPath);
-      const editorConfig = await window.electron.getEditorConfig();
-      const clipboard = await window.electron.getClipboard();
+      const data = await window.bridge.loadProject(projectPath);
+      const editorConfig = await window.bridge.getEditorConfig();
+      const clipboard = await window.bridge.getClipboard();
 
       dispatch({
         ...data,
@@ -120,7 +120,7 @@ const App = () => {
 
   const save = useCallback(async () => {
     if (projectPath) {
-      await window.electron.saveProject(projectPath, {
+      await window.bridge.saveProject(projectPath, {
         ...pick(state, [
           'project',
           'scenes',
@@ -146,20 +146,20 @@ const App = () => {
 
   useBridgeListener('request-close', async () => {
     if (!state.dirty) {
-      window.electron.confirmClose();
+      window.bridge.confirmClose();
 
       return;
     }
 
-    const choice = await window.electron.showUnsavedChangesDialog();
+    const choice = await window.bridge.showUnsavedChangesDialog();
 
     if (choice === 'save') {
       await save();
-      window.electron.confirmClose();
+      window.bridge.confirmClose();
     } else if (choice === 'discard') {
-      window.electron.confirmClose();
+      window.bridge.confirmClose();
     } else {
-      window.electron.cancelClose();
+      window.bridge.cancelClose();
     }
   }, [state.dirty, save]);
 
@@ -285,12 +285,12 @@ const App = () => {
 
   const setEditorConfig = useCallback((config: AppStorage) => {
     dispatch({ editorConfig: config });
-    window.electron.setEditorConfig(config);
+    window.bridge.setEditorConfig(config);
   }, []);
 
   const setClipboard = useCallback((data: any) => {
     dispatch({ clipboard: data });
-    window.electron.registerClipboard(data);
+    window.bridge.registerClipboard(data);
   }, []);
 
   const getContext = useCallback((): AppContextType => ({

@@ -596,7 +596,7 @@ const Scene = ({
             </ContextMenu.Item>
             <ContextMenu.Separator />
             <ContextMenu.Item
-              shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+              shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
               onClick={onDelete?.bind(null, scene)}
             >
               Delete

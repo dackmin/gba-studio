@@ -227,7 +227,7 @@ const Canvas = () => {
       e?.preventDefault();
       e?.stopPropagation();
 
-      window.electron.registerClipboard(selectedScene);
+      window.bridge.registerClipboard(selectedScene);
 
       return;
     }
@@ -239,7 +239,7 @@ const Canvas = () => {
     e?.preventDefault();
     e?.stopPropagation();
 
-    window.electron.registerClipboard(selectedItem);
+    window.bridge.registerClipboard(selectedItem);
   }, [selectedItem, selectedScene]);
 
   useBridgeListener('copy', onCopy, [onCopy]);
@@ -268,7 +268,7 @@ const Canvas = () => {
       return;
     }
 
-    const clipboard = await window.electron.getClipboard();
+    const clipboard = await window.bridge.getClipboard();
 
     if (clipboard?.type === 'scene') {
       e?.preventDefault();
@@ -357,7 +357,7 @@ const Canvas = () => {
     e?.preventDefault();
     e?.stopPropagation();
 
-    window.electron.registerClipboard(selectedItem);
+    window.bridge.registerClipboard(selectedItem);
 
     switch (selectedItem?.type) {
       case 'actor':

@@ -23,7 +23,7 @@ const ProjectSelection = () => {
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(action === 'new-project');
 
   useBridgeListener('browse-project', async () => {
-    await window.electron.browseProject();
+    await window.bridge.browseProject();
   }, []);
 
   useBridgeListener('new-project', () => {
@@ -31,11 +31,11 @@ const ProjectSelection = () => {
   }, []);
 
   const onOpenExisting = async () => {
-    await window.electron.browseProject();
+    await window.bridge.browseProject();
   };
 
   const getRecentProjects = useCallback(async () => {
-    const projects = await window.electron.getRecentProjects();
+    const projects = await window.bridge.getRecentProjects();
     dispatch({ recentProjects: projects, selectedProject: projects[0] });
   }, []);
 
@@ -52,7 +52,7 @@ const ProjectSelection = () => {
     e?: MouseEvent<HTMLAnchorElement>
   ) => {
     if ((e?.detail ?? 0) >= 2) {
-      window.electron.loadRecentProject(project.path);
+      window.bridge.loadRecentProject(project.path);
 
       return;
     }
@@ -61,12 +61,12 @@ const ProjectSelection = () => {
   };
 
   const onClearRecentProjects = async () => {
-    await window.electron.clearRecentProjects();
+    await window.bridge.clearRecentProjects();
     dispatch({ recentProjects: [], selectedProject: undefined });
   };
 
   const onRemoveRecentProject = useCallback(async (project: RecentProject) => {
-    await window.electron.removeRecentProject(project.path);
+    await window.bridge.removeRecentProject(project.path);
     dispatch({
       recentProjects: state.recentProjects.filter(p => p.path !== project.path),
       selectedProject: state.selectedProject?.path === project.path
@@ -179,7 +179,7 @@ const ProjectSelection = () => {
                     </ContextMenu.Trigger>
                     <ContextMenu.Content className="!app-no-drag">
                       <ContextMenu.Item
-                        onClick={window.electron.loadRecentProject.bind(null, project.path)}
+                        onClick={window.bridge.loadRecentProject.bind(null, project.path)}
                       >
                         Open
                       </ContextMenu.Item>

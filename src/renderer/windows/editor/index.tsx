@@ -83,7 +83,7 @@ const Editor = () => {
     soundModalRef.current?.close();
     musicModalRef.current?.close();
 
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
@@ -100,7 +100,7 @@ const Editor = () => {
     soundModalRef.current?.close();
     musicModalRef.current?.close();
 
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
@@ -117,7 +117,7 @@ const Editor = () => {
     spriteModalRef.current?.close();
     musicModalRef.current?.close();
 
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Sounds', extensions: ['wav'] },
@@ -134,7 +134,7 @@ const Editor = () => {
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
 
-    const file = await window.electron.browseFile({
+    const file = await window.bridge.browseFile({
       projectPath,
       filters: [
         { name: 'Music', extensions: ['mod'] },

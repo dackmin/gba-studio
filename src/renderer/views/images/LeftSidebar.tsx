@@ -23,12 +23,12 @@ const LeftSidebar = ({
 
   const onAddSprite = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    window.electron.send('import-sprite');
+    window.bridge.send('import-sprite');
   }, []);
 
   const onAddBackground = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    window.electron.send('import-background');
+    window.bridge.send('import-background');
   }, []);
 
   const onDeleteSprite = useCallback(async () => {
@@ -130,7 +130,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onDeleteSprite}
                 >
                   Delete
@@ -196,7 +196,7 @@ const LeftSidebar = ({
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  shortcut={window.bridge.isDarwin ? '⌦' : 'Del'}
                   onClick={onDeleteBackground}
                 >
                   Delete

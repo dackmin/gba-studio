@@ -73,7 +73,7 @@ const TitleBar = ({
                     <span className="flex items-center gap-2">
                       <Text>Toggle Bottom Bar</Text>
                       <Kbd>
-                        { window.electron.platform === 'darwin' ? '⌘' : 'Ctrl' }
+                        { window.bridge.platform === 'darwin' ? '⌘' : 'Ctrl' }
                         →
                       </Kbd>
                     </span>

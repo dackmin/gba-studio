@@ -1,4 +1,3 @@
-import type { IpcRendererEvent } from 'electron';
 import {
   type DependencyList,
   use,
@@ -92,14 +91,11 @@ export const useBridgeListener = <T extends any[] = any[]>(
   }, [func, ...deps]);
 
   useEffect(() => {
-    const cb = (
-      _: IpcRendererEvent,
-      ...args: any[]
-    ) => {
+    const cb = (...args: any[]) => {
       funcRef.current(...args as T);
     };
 
-    const off = window.electron.addEventListener(channel, cb);
+    const off = window.bridge.addEventListener(channel, cb);
 
     return () => {
       off();
