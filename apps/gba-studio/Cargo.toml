@@ -7,10 +7,14 @@ edition = "2021"
 # Internal
 gbas-core = { path = "../gbas-core" }
 # External
-egui = "0.36.2"
-eframe = "0.36.2"
-egui_extras = "0.36.2"
-egui_dnd = "0.17.0"
+# egui_glass 0.1.5 is built against egui/eframe 0.35 and wgpu 29, so everything egui-related stays on 0.35.
+egui = "0.35"
+eframe = { version = "0.35", default-features = false, features = ["accesskit", "default_fonts", "wgpu", "wayland", "x11"] }
+egui_extras = { version = "0.35", features = ["svg"] }
+egui_glass = "0.1.5"
+egui_dnd = "0.16"
+rfd = "0.15"
+fontdb = "0.23"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 handlebars = "6.4.4"
