@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    name: Publish draft release
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      startsWith(github.event.workflow_run.head_branch, 'v')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.event.workflow_run.head_branch }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Check tag matches package version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          if [ "$TAG" != "v$VERSION" ]; then
+            echo "Tag $TAG does not match package.json version $VERSION"
+            exit 1
+          fi
+      - name: Download build artifacts
+        run: gh run download "$RUN_ID" --dir artifacts
+      - name: Collect release files
+        run: |
+          mkdir release-files
+          find artifacts -type f -exec mv -n {} release-files/ \;
+          ls -l release-files
+      - name: Create draft release
+        run: |
+          gh release create "$TAG" release-files/* \
+            --title "$TAG" \
+            --draft \
+            --generate-notes \
+            --verify-tag

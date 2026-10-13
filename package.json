@@ -26,7 +26,8 @@
     "lint": "oxlint",
     "bundle:devkitPro": "node ./scripts/extract-vendor.ts devkitPro",
     "bundle:python": "node ./scripts/extract-vendor.ts python",
-    "shasum": "node ./scripts/shasum.ts"
+    "shasum": "node ./scripts/shasum.ts",
+    "release": "commit-and-tag-version && git push --follow-tags"
   },
   "peerDependencies": {
     "@neoframe/electron-window-corner-addon": "0.1.4"
@@ -77,6 +78,7 @@
     "@types/yargs": "17.0.35",
     "@vitejs/plugin-react": "6.1.2",
     "ajv": "8.20.0",
+    "commit-and-tag-version": "^13.2.2",
     "commitlint": "21.2.3",
     "debug": "4.4.3",
     "electron": "44.7.0",
