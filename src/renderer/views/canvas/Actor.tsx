@@ -10,6 +10,7 @@ import { ContextMenu } from '@radix-ui/themes';
 import type { GameActor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { findSprite, tileToPixel } from '../../../helpers';
+import { usePreviewCursor } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
 export interface ActorProps extends MoveableProps {
@@ -29,7 +30,8 @@ const Actor = ({
   onMoveEnd,
   ...rest
 }: ActorProps) => {
-  const { zoom, mouseX, mouseY, offsetX, offsetY } = useInfiniteCanvas();
+  const { zoom } = useInfiniteCanvas();
+  const cursor = usePreviewCursor(preview);
   const { sprites } = useApp();
   const { tool, selectedItem } = useCanvas();
 
@@ -46,10 +48,7 @@ const Actor = ({
     findSprite(sprites, actor.sprite)
   ), [sprites, actor.sprite]);
 
-  const previewPosition = useMemo(() => preview ? {
-    x: Math.round((mouseX - offsetX) / zoom),
-    y: Math.round((mouseY - offsetY) / zoom),
-  } : null, [preview, mouseX, mouseY, offsetX, offsetY, zoom]);
+  const previewPosition = preview ? cursor : null;
 
   return (
     <Moveable

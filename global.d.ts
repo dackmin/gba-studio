@@ -1,7 +1,7 @@
 /// <reference types="electron" />
 /// <reference types="@electron-forge/plugin-vite/forge-vite-env" />
-/// <reference types="./src/types.ts" />
 /// <reference types="jimp" />
+/// <reference types="./src/types.ts" />
 
 interface ImportMetaEnv {
   readonly VITE_SCHEMAS_BASE: string;

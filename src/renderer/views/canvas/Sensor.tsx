@@ -1,4 +1,4 @@
-import { type MouseEvent, useCallback, useMemo } from 'react';
+import { type MouseEvent, useCallback } from 'react';
 import {
   type MoveableProps,
   Moveable,
@@ -9,7 +9,7 @@ import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameSensor } from '../../../types';
 import { tileToPixel } from '../../../helpers';
-import { useCanvas } from '../../services/hooks';
+import { useCanvas, usePreviewCursor } from '../../services/hooks';
 
 export interface SensorProps extends MoveableProps {
   sensor: GameSensor;
@@ -28,7 +28,8 @@ const Sensor = ({
   onDelete,
   ...rest
 }: SensorProps) => {
-  const { zoom, mouseX, mouseY, offsetX, offsetY } = useInfiniteCanvas();
+  const { zoom } = useInfiniteCanvas();
+  const cursor = usePreviewCursor(preview);
   const { tool, selectedItem } = useCanvas();
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
@@ -40,10 +41,7 @@ const Sensor = ({
     onSelect?.(e);
   }, [onSelect, tool]);
 
-  const previewPosition = useMemo(() => preview ? {
-    x: Math.round((mouseX - offsetX) / zoom),
-    y: Math.round((mouseY - offsetY) / zoom),
-  } : null, [preview, mouseX, mouseY, offsetX, offsetY, zoom]);
+  const previewPosition = preview ? cursor : null;
 
   return (
     <Moveable

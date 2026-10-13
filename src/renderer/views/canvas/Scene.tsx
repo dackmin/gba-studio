@@ -24,7 +24,12 @@ import type {
   GameSensor,
   GameSprite,
 } from '../../../types';
-import { useApp, useCanvas, useEditor } from '../../services/hooks';
+import {
+  useApp,
+  useCanvas,
+  useEditor,
+  usePreviewCursor,
+} from '../../services/hooks';
 import {
   findBackground,
   getAssetUrl,
@@ -82,7 +87,8 @@ const Scene = ({
   const moveableRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLCanvasElement>(null);
   const backgroundImageRef = useRef<HTMLImageElement>(null);
-  const { zoom, mouseX, offsetX, mouseY, offsetY } = useInfiniteCanvas();
+  const { zoom, offsetX, offsetY } = useInfiniteCanvas();
+  const cursor = usePreviewCursor(preview);
   const { eventEmitter, project, backgrounds } = useApp();
   const { selectedScene, selectedItem, tool } = useCanvas();
   const { tileX, tileY, setTilePosition } = useEditor();
@@ -121,12 +127,9 @@ const Scene = ({
 
   const sceneConfig = useMemo(() => (
     preview
-      ? {
-        x: Math.round((mouseX - offsetX) / zoom),
-        y: Math.round((mouseY - offsetY) / zoom),
-      }
+      ? cursor
       : project?.scenes?.find(s => s._file === scene._file || s.id === scene.id)
-  ), [project, mouseX, mouseY, offsetX, offsetY, zoom, scene, preview]);
+  ), [project, cursor, scene, preview]);
 
   const background = useMemo(() => (
     findBackground(backgrounds, scene.background)
@@ -241,7 +244,7 @@ const Scene = ({
 
   useEffect(() => {
     requestAnimationFrame(drawBackground);
-  }, [drawBackground, state.size, zoom]);
+  }, [drawBackground, state.size]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();

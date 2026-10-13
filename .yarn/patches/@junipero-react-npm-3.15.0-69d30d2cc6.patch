@@ -1,12 +1,203 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index 7fa22b8cea21a3f2b4af91833e3b67a0969d7f13..41b4e07be41c6c4d0da280855a19972d022bff86 100644
+index 7fa22b8cea21a3f2b4af91833e3b67a0969d7f13..b586556bd21f9c916548f1f5ba9496acdd89913d 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -2056,30 +2056,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+@@ -14,12 +14,16 @@ const ListContext = (0, react.createContext)({});
+ const FieldControlContext = (0, react.createContext)({});
+ const ToastsContext = (0, react.createContext)({});
+ const ModalContext = (0, react.createContext)({});
++const DEFAULT_CURSOR = {
++	x: 0,
++	y: 0
++};
+ const InfiniteCanvasContext = (0, react.createContext)({
+ 	zoom: 1,
+ 	offsetX: 0,
+ 	offsetY: 0,
+-	mouseX: 0,
+-	mouseY: 0,
++	subscribeCursor: () => () => {},
++	getCursor: () => DEFAULT_CURSOR,
+ 	fitIntoView: async () => {},
+ 	setZoom: async () => {},
+ 	panTo: async () => {},
+@@ -37,6 +41,10 @@ const useList = () => (0, react.use)(ListContext);
+ const useToasts = () => (0, react.use)(ToastsContext);
+ const useModal = () => (0, react.use)(ModalContext);
+ const useInfiniteCanvas = () => (0, react.use)(InfiniteCanvasContext);
++const useInfiniteCanvasCursor = () => {
++	const { subscribeCursor, getCursor } = (0, react.use)(InfiniteCanvasContext);
++	return (0, react.useSyncExternalStore)(subscribeCursor, getCursor, getCursor);
++};
+ //#endregion
+ //#region lib/Abstract/index.tsx
+ const Abstract = ({ className, ...rest }) => {
+@@ -1996,10 +2004,17 @@ const FieldGroup = ({ ref, className, tag: Tag = "div", ...rest }) => {
+ FieldGroup.displayName = "FieldGroup";
+ //#endregion
+ //#region lib/InfiniteCanvas/index.tsx
+-const InfiniteCanvas = ({ ref, children, overlay, className, background, initialZoom, initialOffsetX, initialOffsetY, minZoom = .1, maxZoom = 10, center = initialZoom === void 0 && initialOffsetX === void 0 && initialOffsetY === void 0, centerMargin = 300, padding, cursorMode = "default", fitAbsolute = true, globalEventsTarget = globalThis, onZoom, onPan, ...rest }) => {
++// Idle time after the last wheel/drag event before the live view is
++// committed to React state (and therefore to context consumers)
++const COMMIT_DELAY = 120;
++const getContentTransform = ({ zoom, offsetX, offsetY }) => `translate3d(${offsetX}px, ${offsetY}px, 0) scale3d(${zoom}, ${zoom}, 1)`;
++// The pattern is drawn unscaled and zoomed/panned through its transform
++const getPatternTransform = ({ zoom, offsetX, offsetY }, size) => `translate(${offsetX} ${offsetY}) scale(${zoom}) translate(${size} ${size})`;
++const InfiniteCanvas = ({ ref, children, overlay, className, background, initialZoom, initialOffsetX, initialOffsetY, minZoom = .1, maxZoom = 10, center = initialZoom === undefined && initialOffsetX === undefined && initialOffsetY === undefined, centerMargin = 300, padding, cursorMode = "default", fitAbsolute = true, globalEventsTarget = globalThis, onZoom, onPan, ...rest }) => {
+ 	const innerRef = (0, react.useRef)(null);
+ 	const contentRef = (0, react.useRef)(null);
+ 	const backgroundRef = (0, react.useRef)(null);
++	const patternRef = (0, react.useRef)(null);
+ 	const patternId = (0, react.useId)();
+ 	const { gap = 20, size = 1, fill = "var(--dots-color)", pattern = "dot", patternId: customPatternId = patternId } = background || {};
+ 	const { top: paddingTop = 0, right: paddingRight = 0, bottom: paddingBottom = 0, left: paddingLeft = 0 } = typeof padding === "number" ? {
+@@ -2008,20 +2023,41 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		bottom: padding,
+ 		left: padding
+ 	} : padding || {};
+-	const [state, dispatch] = (0, react.useReducer)(_junipero_core.mockState, {
++	// Source of truth for pan/zoom: mutated synchronously and written straight
++	// to the DOM, so gestures never wait on a React render
++	const view = (0, react.useRef)({
+ 		zoom: initialZoom || 1,
+-		mouseX: 0,
+-		mouseY: 0,
+ 		offsetX: initialOffsetX ?? 0,
+-		offsetY: initialOffsetY ?? 0,
++		offsetY: initialOffsetY ?? 0
++	});
++	const mouse = (0, react.useRef)({
++		x: 0,
++		y: 0
++	});
++	const panning = (0, react.useRef)({
++		active: false,
++		startX: 0,
++		startY: 0
++	});
++	const cursor = (0, react.useRef)({
++		x: 0,
++		y: 0
++	});
++	const cursorListeners = (0, react.useRef)(new Set());
++	const frame = (0, react.useRef)(0);
++	const commitTimer = (0, react.useRef)(undefined);
++	const [state, dispatch] = (0, react.useReducer)(_junipero_core.mockState, {
++		zoom: view.current.zoom,
++		offsetX: view.current.offsetX,
++		offsetY: view.current.offsetY,
+ 		animate: 0,
+-		panning: false,
+-		panStartX: 0,
+-		panStartY: 0
++		panning: false
+ 	});
+ 	(0, _junipero_hooks.useTimeout)(() => {
+ 		dispatch({ animate: 0 });
+ 	}, state.animate, [state.animate], { enabled: state.animate > 0 });
++	// Read through a ref so a non-memoized onZoom/onPan (recreated on every
++	// parent render) can't re-trigger these effects and cause an infinite loop
+ 	const onZoomRef = (0, react.useRef)(onZoom);
+ 	onZoomRef.current = onZoom;
+ 	const onPanRef = (0, react.useRef)(onPan);
+@@ -2032,12 +2068,81 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	(0, react.useEffect)(() => {
+ 		onPanRef.current?.(state.offsetX, state.offsetY);
+ 	}, [state.offsetX, state.offsetY]);
++	(0, react.useEffect)(() => () => {
++		cancelAnimationFrame(frame.current);
++		clearTimeout(commitTimer.current);
++	}, []);
++	const notifyCursor = (0, react.useCallback)(() => {
++		const { zoom, offsetX, offsetY } = view.current;
++		const x = Math.round((mouse.current.x - offsetX) / zoom);
++		const y = Math.round((mouse.current.y - offsetY) / zoom);
++		if (x === cursor.current.x && y === cursor.current.y) {
++			return;
++		}
++		cursor.current = {
++			x,
++			y
++		};
++		cursorListeners.current.forEach((listener) => listener());
++	}, []);
++	const subscribeCursor = (0, react.useCallback)((listener) => {
++		cursorListeners.current.add(listener);
++		return () => {
++			cursorListeners.current.delete(listener);
++		};
++	}, []);
++	const getCursor = (0, react.useCallback)(() => cursor.current, []);
++	const flushView = (0, react.useCallback)(() => {
++		frame.current = 0;
++		if (contentRef.current) {
++			contentRef.current.style.transform = getContentTransform(view.current);
++		}
++		patternRef.current?.setAttribute("patternTransform", getPatternTransform(view.current, size));
++		notifyCursor();
++	}, [size, notifyCursor]);
++	const scheduleFlush = (0, react.useCallback)(() => {
++		if (!frame.current) {
++			frame.current = requestAnimationFrame(flushView);
++		}
++	}, [flushView]);
++	// Publish the live view to React state (and context consumers)
++	const commitView = (0, react.useCallback)((animate) => {
++		clearTimeout(commitTimer.current);
++		const { zoom, offsetX, offsetY } = view.current;
++		dispatch({
++			zoom,
++			offsetX,
++			offsetY,
++			...animate !== undefined && { animate }
++		});
++	}, []);
++	const scheduleCommit = (0, react.useCallback)(() => {
++		clearTimeout(commitTimer.current);
++		commitTimer.current = setTimeout(() => commitView(), COMMIT_DELAY);
++	}, [commitView]);
++	// Programmatic moves commit right away, the render applies the transform
++	// together with the transition so it animates
++	const moveTo = (0, react.useCallback)((next, animate) => {
++		Object.assign(view.current, next);
++		commitView(animate);
++		notifyCursor();
++	}, [commitView, notifyCursor]);
+ 	(0, react.useImperativeHandle)(ref, () => ({
+-		zoom: state.zoom,
+-		offsetX: state.offsetX,
+-		offsetY: state.offsetY,
+-		mouseX: state.mouseX,
+-		mouseY: state.mouseY,
++		get zoom() {
++			return view.current.zoom;
++		},
++		get offsetX() {
++			return view.current.offsetX;
++		},
++		get offsetY() {
++			return view.current.offsetY;
++		},
++		get mouseX() {
++			return mouse.current.x;
++		},
++		get mouseY() {
++			return mouse.current.y;
++		},
+ 		fitIntoView,
+ 		setZoom,
+ 		zoomIn,
+@@ -2054,31 +2159,38 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const onWheel = (0, react.useCallback)((e) => {
+ 		e.preventDefault();
  		e.stopPropagation();
++		const v = view.current;
++		// Zoom
  		if (e.ctrlKey || e.metaKey) {
  			const zoomFactor = Math.exp(-e.deltaY * .01);
 -			const newZoom = Math.max(minZoom, Math.min(maxZoom, state.zoom * zoomFactor));
++			const newZoom = Math.max(minZoom, Math.min(maxZoom, v.zoom * zoomFactor));
++			// Mouse position relative to canvas
  			const rect = innerRef.current?.getBoundingClientRect();
  			const mouseX = e.clientX - (rect?.left ?? 0);
  			const mouseY = e.clientY - (rect?.top ?? 0);
@@ -18,46 +209,748 @@ index 7fa22b8cea21a3f2b4af91833e3b67a0969d7f13..41b4e07be41c6c4d0da280855a19972d
 -				zoom: newZoom,
 -				offsetX: newOffsetX,
 -				offsetY: newOffsetY
-+			dispatch((s) => {
-+				const newZoom = Math.max(minZoom, Math.min(maxZoom, s.zoom * zoomFactor));
-+				const contentX = (mouseX - s.offsetX) / s.zoom;
-+				const contentY = (mouseY - s.offsetY) / s.zoom;
-+				return {
-+					...s,
-+					zoom: newZoom,
-+					offsetX: mouseX - contentX * newZoom,
-+					offsetY: mouseY - contentY * newZoom
-+				};
- 			});
+-			});
 -		} else dispatch({
 -			offsetX: state.offsetX - e.deltaX,
 -			offsetY: state.offsetY - e.deltaY
 -		});
--	}, [
++			// Mouse position in content coordinates (before transform)
++			const contentX = (mouseX - v.offsetX) / v.zoom;
++			const contentY = (mouseY - v.offsetY) / v.zoom;
++			mouse.current = {
++				x: mouseX,
++				y: mouseY
++			};
++			// Adjust offset so zoom centers on mouse position
++			v.zoom = newZoom;
++			v.offsetX = mouseX - contentX * newZoom;
++			v.offsetY = mouseY - contentY * newZoom;
++		} else {
++			// Pan only
++			v.offsetX -= e.deltaX;
++			v.offsetY -= e.deltaY;
++		}
++		scheduleFlush();
++		scheduleCommit();
+ 	}, [
 -		state.zoom,
 -		state.offsetX,
 -		state.offsetY,
--		minZoom,
+ 		minZoom,
 -		maxZoom
--	]);
-+		} else dispatch((s) => ({
-+			...s,
-+			offsetX: s.offsetX - e.deltaX,
-+			offsetY: s.offsetY - e.deltaY
-+		}));
-+	}, [minZoom, maxZoom]);
++		maxZoom,
++		scheduleFlush,
++		scheduleCommit
+ 	]);
  	(0, react.useEffect)(() => {
  		const ref = innerRef.current;
- 		ref?.addEventListener("wheel", onWheel, { passive: false });
+@@ -2088,20 +2200,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		};
+ 	}, [onWheel]);
+ 	const getContentBounds = (0, react.useCallback)(() => {
+-		if (!contentRef.current) return null;
+-		if (!fitAbsolute) return {
+-			minX: 0,
+-			minY: 0,
+-			maxX: contentRef.current.scrollWidth,
+-			maxY: contentRef.current.scrollHeight
+-		};
++		if (!contentRef.current) {
++			return null;
++		}
++		if (!fitAbsolute) {
++			return {
++				minX: 0,
++				minY: 0,
++				maxX: contentRef.current.scrollWidth,
++				maxY: contentRef.current.scrollHeight
++			};
++		}
+ 		const children = Array.from(contentRef.current.children);
+-		if (!children.length) return {
+-			minX: 0,
+-			minY: 0,
+-			maxX: 0,
+-			maxY: 0
+-		};
++		if (!children.length) {
++			return {
++				minX: 0,
++				minY: 0,
++				maxX: 0,
++				maxY: 0
++			};
++		}
+ 		return children.reduce((bounds, el) => ({
+ 			minX: Math.min(bounds.minX, el.offsetLeft),
+ 			minY: Math.min(bounds.minY, el.offsetTop),
+@@ -2114,8 +2232,12 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 			maxY: -Infinity
+ 		});
+ 	}, [fitAbsolute]);
++	// Portion of the canvas not reserved by padding (e.g. sidebars/overlays),
++	// used as the target area/center for fitting and centering operations
+ 	const getVisibleRect = (0, react.useCallback)(() => {
+-		if (!innerRef.current) return null;
++		if (!innerRef.current) {
++			return null;
++		}
+ 		const rect = innerRef.current.getBoundingClientRect();
+ 		const width = Math.max(rect.width - paddingLeft - paddingRight, 0);
+ 		const height = Math.max(rect.height - paddingTop - paddingBottom, 0);
+@@ -2134,125 +2256,146 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const fitIntoView = (0, react.useCallback)(async (transitionDuration) => {
+ 		const bounds = getContentBounds();
+ 		const visible = getVisibleRect();
+-		if (!visible || !bounds) return;
++		if (!visible || !bounds) {
++			return;
++		}
+ 		const contentWidth = bounds.maxX - bounds.minX;
+ 		const contentHeight = bounds.maxY - bounds.minY;
+ 		const contentCenterX = (bounds.minX + bounds.maxX) / 2;
+ 		const contentCenterY = (bounds.minY + bounds.maxY) / 2;
++		// Use a padded box (content + margin) only to determine the zoom level,
++		// so the content doesn't end up flush against the visible area's edges
+ 		const zoomX = visible.width === 0 || contentWidth === 0 ? 1 : visible.width / (contentWidth + centerMargin * 2);
+ 		const zoomY = visible.height === 0 || contentHeight === 0 ? 1 : visible.height / (contentHeight + centerMargin * 2);
+ 		const newZoom = Math.max(Math.min(zoomX, zoomY, maxZoom), minZoom);
++		// Center the actual (unpadded) content's bounding box within the
++		// visible area, i.e. excluding any space reserved by padding
+ 		const newOffsetX = visible.centerX - contentCenterX * newZoom;
+ 		const newOffsetY = visible.centerY - contentCenterY * newZoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoom,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+ 		centerMargin,
+ 		getContentBounds,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	(0, react.useLayoutEffect)(() => {
+-		if (!center) return;
++		if (!center) {
++			return;
++		}
+ 		fitIntoView(0);
+-	}, [center, fitIntoView]);
++		// Mount only: a padding change (e.g. sidebar resize) must not reset the view
++	}, []);
+ 	const setZoom = (0, react.useCallback)(async (newZoom, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible) return;
++		if (!visible) {
++			return;
++		}
+ 		const newZoomClamped = Math.max(Math.min(newZoom, maxZoom), minZoom);
+-		const centerContentX = (visible.centerX - state.offsetX) / state.zoom;
+-		const centerContentY = (visible.centerY - state.offsetY) / state.zoom;
++		// Keep whatever content point is currently at the visible area's
++		// center fixed, instead of jumping back to the content's bounds center
++		const { zoom, offsetX, offsetY } = view.current;
++		const centerContentX = (visible.centerX - offsetX) / zoom;
++		const centerContentY = (visible.centerY - offsetY) / zoom;
+ 		const newOffsetX = visible.centerX - centerContentX * newZoomClamped;
+ 		const newOffsetY = visible.centerY - centerContentY * newZoomClamped;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoomClamped,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	const zoomIn = (0, react.useCallback)((transitionDuration) => {
+-		const newZoom = (state.zoom || 1) * 1.2;
++		const newZoom = (view.current.zoom || 1) * 1.2;
+ 		return setZoom(newZoom, transitionDuration);
+-	}, [state.zoom, setZoom]);
++	}, [setZoom]);
+ 	const zoomOut = (0, react.useCallback)((transitionDuration) => {
+-		const newZoom = (state.zoom || 1) / 1.2;
++		const newZoom = (view.current.zoom || 1) / 1.2;
+ 		return setZoom(newZoom, transitionDuration);
+-	}, [state.zoom, setZoom]);
++	}, [setZoom]);
+ 	const getCursorPosition = (0, react.useCallback)(() => {
+-		if (!innerRef.current) return {
+-			x: 0,
+-			y: 0
+-		};
++		if (!innerRef.current) {
++			return {
++				x: 0,
++				y: 0
++			};
++		}
++		const { zoom, offsetX, offsetY } = view.current;
+ 		return {
+-			x: Math.round((state.mouseX - state.offsetX) / state.zoom),
+-			y: Math.round((state.mouseY - state.offsetY) / state.zoom)
++			x: Math.round((mouse.current.x - offsetX) / zoom),
++			y: Math.round((mouse.current.y - offsetY) / zoom)
+ 		};
+-	}, [
+-		state.mouseX,
+-		state.mouseY,
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY
+-	]);
++	}, []);
+ 	const panTo = (0, react.useCallback)(async (x, y, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible || !contentRef.current) return;
+-		const newOffsetX = visible.centerX - x * state.zoom;
+-		const newOffsetY = visible.centerY - y * state.zoom;
++		if (!visible || !contentRef.current) {
++			return;
++		}
++		const newOffsetX = visible.centerX - x * view.current.zoom;
++		const newOffsetY = visible.centerY - y * view.current.zoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
+-	}, [state.zoom, getVisibleRect]);
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
++	}, [getVisibleRect, moveTo]);
+ 	const panAndZoomTo = (0, react.useCallback)(async (x, y, newZoom, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible || !contentRef.current) return;
++		if (!visible || !contentRef.current) {
++			return;
++		}
+ 		const newZoomClamped = Math.max(Math.min(newZoom, maxZoom), minZoom);
+ 		const newOffsetX = visible.centerX - x * newZoomClamped;
+ 		const newOffsetY = visible.centerY - y * newZoomClamped;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoomClamped,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	const getElementBounds = (0, react.useCallback)((elmt) => {
+-		if (!contentRef.current || !elmt) return null;
++		if (!contentRef.current || !elmt) {
++			return null;
++		}
+ 		let x = 0;
+ 		let y = 0;
+ 		let node = elmt;
+@@ -2271,7 +2414,9 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const centerOn = (0, react.useCallback)(async (elmt, transitionDuration) => {
+ 		const bounds = elmt && getElementBounds(elmt);
+ 		const visible = getVisibleRect();
+-		if (!visible || !bounds) return;
++		if (!visible || !bounds) {
++			return;
++		}
+ 		const elWidth = bounds.maxX - bounds.minX;
+ 		const elHeight = bounds.maxY - bounds.minY;
+ 		const elCenterX = (bounds.minX + bounds.maxX) / 2;
+@@ -2282,28 +2427,32 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		const newOffsetX = visible.centerX - elCenterX * newZoom;
+ 		const newOffsetY = visible.centerY - elCenterY * newZoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoom,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+ 		centerMargin,
+ 		getElementBounds,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+-	const getContext = (0, react.useCallback)(() => ({
++	// Only committed values are exposed, so consumers re-render once per
++	// gesture instead of once per event
++	const context = (0, react.useMemo)(() => ({
+ 		zoom: state.zoom,
+ 		offsetX: state.offsetX,
+ 		offsetY: state.offsetY,
+-		mouseX: state.mouseX,
+-		mouseY: state.mouseY,
++		subscribeCursor,
++		getCursor,
+ 		fitIntoView,
+ 		panTo,
+ 		panAndZoomTo,
+@@ -2315,8 +2464,8 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		state.zoom,
+ 		state.offsetX,
+ 		state.offsetY,
+-		state.mouseX,
+-		state.mouseY,
++		subscribeCursor,
++		getCursor,
+ 		fitIntoView,
+ 		setZoom,
+ 		zoomIn,
+@@ -2326,52 +2475,55 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		centerOn
+ 	]);
+ 	const onMouseDown = (0, react.useCallback)((e) => {
+-		if (cursorMode !== "pan") return;
++		if (cursorMode !== "pan") {
++			return;
++		}
+ 		e.preventDefault();
+ 		e.stopPropagation();
+-		dispatch({
+-			panning: true,
+-			panStartX: e.clientX,
+-			panStartY: e.clientY
+-		});
++		panning.current = {
++			active: true,
++			startX: e.clientX,
++			startY: e.clientY
++		};
++		dispatch({ panning: true });
+ 	}, [cursorMode]);
+ 	const onMouseMove = (0, react.useCallback)((e) => {
++		// Track cursor position relative to the canvas, not the viewport, so it
++		// stays consistent with offsetX/offsetY regardless of where the canvas
++		// is positioned on the page
+ 		const rect = innerRef.current?.getBoundingClientRect();
+-		const mouseX = e.clientX - (rect?.left ?? 0);
+-		const mouseY = e.clientY - (rect?.top ?? 0);
+-		if (!state.panning || cursorMode !== "pan") {
+-			dispatch({
+-				mouseX,
+-				mouseY
+-			});
++		mouse.current = {
++			x: e.clientX - (rect?.left ?? 0),
++			y: e.clientY - (rect?.top ?? 0)
++		};
++		if (!panning.current.active || cursorMode !== "pan") {
++			notifyCursor();
+ 			return;
+ 		}
+-		const deltaX = e.clientX - state.panStartX;
+-		const deltaY = e.clientY - state.panStartY;
+-		dispatch({
+-			mouseX,
+-			mouseY,
+-			offsetX: state.offsetX + deltaX,
+-			offsetY: state.offsetY + deltaY,
+-			panStartX: e.clientX,
+-			panStartY: e.clientY
+-		});
++		view.current.offsetX += e.clientX - panning.current.startX;
++		view.current.offsetY += e.clientY - panning.current.startY;
++		panning.current.startX = e.clientX;
++		panning.current.startY = e.clientY;
++		scheduleFlush();
++		scheduleCommit();
+ 	}, [
+-		state.panStartX,
+-		state.panStartY,
+-		state.offsetX,
+-		state.offsetY,
+-		state.panning,
+-		cursorMode
++		cursorMode,
++		notifyCursor,
++		scheduleFlush,
++		scheduleCommit
+ 	]);
+ 	const onMouseUp = (0, react.useCallback)(() => {
+-		if (!state.panning || cursorMode !== "pan") return;
+-		dispatch({
+-			panning: false,
+-			panStartX: 0,
+-			panStartY: 0
+-		});
+-	}, [state.panning, cursorMode]);
++		if (!panning.current.active || cursorMode !== "pan") {
++			return;
++		}
++		panning.current = {
++			active: false,
++			startX: 0,
++			startY: 0
++		};
++		dispatch({ panning: false });
++		commitView();
++	}, [cursorMode, commitView]);
+ 	(0, react.useEffect)(() => {
+ 		if (["pan", "add"].includes(cursorMode)) {
+ 			globalEventsTarget.addEventListener("mousemove", onMouseMove);
+@@ -2387,10 +2539,8 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		globalEventsTarget,
+ 		cursorMode
+ 	]);
+-	const scaledPatternGap = gap * state.zoom;
+-	const scaledPatternSize = size * state.zoom;
+ 	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InfiniteCanvasContext, {
+-		value: getContext(),
++		value: context,
+ 		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+ 			...rest,
+ 			ref: innerRef,
+@@ -2401,7 +2551,7 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 					ref: contentRef,
+ 					className: (0, _junipero_core.classNames)("infinite-canvas-content"),
+ 					style: {
+-						transform: `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) scale3d(${state.zoom}, ${state.zoom}, 1)`,
++						transform: getContentTransform(view.current),
+ 						transformOrigin: "0 0",
+ 						...state.animate > 0 && { transition: `transform ${state.animate}ms ease-in-out` }
+ 					},
+@@ -2412,31 +2562,30 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 					ref: backgroundRef,
+ 					className: "infinite-canvas-background",
+ 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pattern", {
++						ref: patternRef,
+ 						id: customPatternId,
+ 						patternUnits: "userSpaceOnUse",
+-						x: state.offsetX % scaledPatternGap,
+-						y: state.offsetY % scaledPatternGap,
+-						width: scaledPatternGap,
+-						height: scaledPatternGap,
+-						patternTransform: `translate(${scaledPatternSize}, ${scaledPatternSize})`,
++						width: gap,
++						height: gap,
++						patternTransform: getPatternTransform(view.current, size),
+ 						children: pattern === "cross" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("line", {
+-							x1: scaledPatternSize * 2,
++							x1: size * 2,
+ 							y1: "0",
+-							x2: scaledPatternSize * 2,
+-							y2: scaledPatternSize * 4,
++							x2: size * 2,
++							y2: size * 4,
+ 							stroke: fill,
+-							strokeWidth: scaledPatternSize / 4
++							strokeWidth: size / 4
+ 						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("line", {
+ 							x1: "0",
+-							y1: scaledPatternSize * 2,
+-							x2: scaledPatternSize * 4,
+-							y2: scaledPatternSize * 2,
++							y1: size * 2,
++							x2: size * 4,
++							y2: size * 2,
+ 							stroke: fill,
+-							strokeWidth: scaledPatternSize / 4
++							strokeWidth: size / 4
+ 						})] }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("circle", {
+-							cx: scaledPatternSize,
+-							cy: scaledPatternSize,
+-							r: scaledPatternSize,
++							cx: size,
++							cy: size,
++							r: size,
+ 							fill
+ 						})
+ 					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("rect", {
+@@ -5073,6 +5222,7 @@ Object.defineProperty(exports, "useEventListener", {
+ });
+ exports.useFieldControl = useFieldControl;
+ exports.useInfiniteCanvas = useInfiniteCanvas;
++exports.useInfiniteCanvasCursor = useInfiniteCanvasCursor;
+ Object.defineProperty(exports, "useInterval", {
+ 	enumerable: true,
+ 	get: function() {
 diff --git a/dist/index.js b/dist/index.js
-index bbf440d8211496dd40c3ae93a88f9570228c1c7a..f49d3479a65d5d311899ef9ffefa3b37352dfc3c 100644
+index bbf440d8211496dd40c3ae93a88f9570228c1c7a..aa7293509023aaf5e69ca787e1cd5fb420943bac 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -2055,30 +2055,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+@@ -1,7 +1,7 @@
+ "use client";
+ import { COLORS, addClass, addMonths, addMonths as addMonths$1, classNames, classNames as classNames$1, cloneDeep, closestIndexTo, denormalizeHSLA, denormalizeHSVA, denormalizeRGBA, endOfDay, endOfMonth, endOfYear, ensureMinMax, ensureMinMax as ensureMinMax$1, ensureNode, ensureNode as ensureNode$1, exists, exists as exists$1, filterDeep, filterDeep as filterDeep$1, findDeep, findDeep as findDeep$1, formatThousand, fromPairs, get, getDaysInMonth, getDaysInMonth as getDaysInMonth$1, getFloatPrecision, getFloatPrecision as getFloatPrecision$1, hsla2hsva, hsva2hsla, hsva2rgba, isArray, isDate, isNull, isObject, isUndefined, mergeDeep, mockState, mockState as mockState$1, omit, omit as omit$1, omitBy, parseColor, parseColor as parseColor$1, pick, removeClass, rgba2hex, rgba2hsva, set, startOfDay, startOfMonth, startOfMonth as startOfMonth$1, startOfYear, stringifyColor, stringifyColor as stringifyColor$1, subMonths, subMonths as subMonths$1 } from "@junipero/core";
+ import { useEffectAfterMount, useEventListener, useEventListener as useEventListener$1, useInterval, useLayoutEffectAfterMount, useLayoutEffectAfterMount as useLayoutEffectAfterMount$1, useTimeout, useTimeout as useTimeout$1 } from "@junipero/hooks";
+-import { Children, Fragment, createContext, use, useCallback, useEffect, useId, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
++import { Children, Fragment, createContext, use, useCallback, useEffect, useId, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
+ import { Fragment as Fragment$1, jsx, jsxs } from "react/jsx-runtime";
+ import { autoUpdate, flip, offset, safePolygon, shift, useClick, useDismiss, useFloating, useHover, useInteractions } from "@floating-ui/react";
+ import { Slot } from "@radix-ui/react-slot";
+@@ -13,12 +13,16 @@ const ListContext = createContext({});
+ const FieldControlContext = createContext({});
+ const ToastsContext = createContext({});
+ const ModalContext = createContext({});
++const DEFAULT_CURSOR = {
++	x: 0,
++	y: 0
++};
+ const InfiniteCanvasContext = createContext({
+ 	zoom: 1,
+ 	offsetX: 0,
+ 	offsetY: 0,
+-	mouseX: 0,
+-	mouseY: 0,
++	subscribeCursor: () => () => {},
++	getCursor: () => DEFAULT_CURSOR,
+ 	fitIntoView: async () => {},
+ 	setZoom: async () => {},
+ 	panTo: async () => {},
+@@ -36,6 +40,10 @@ const useList = () => use(ListContext);
+ const useToasts = () => use(ToastsContext);
+ const useModal = () => use(ModalContext);
+ const useInfiniteCanvas = () => use(InfiniteCanvasContext);
++const useInfiniteCanvasCursor = () => {
++	const { subscribeCursor, getCursor } = use(InfiniteCanvasContext);
++	return useSyncExternalStore(subscribeCursor, getCursor, getCursor);
++};
+ //#endregion
+ //#region lib/Abstract/index.tsx
+ const Abstract = ({ className, ...rest }) => {
+@@ -1995,10 +2003,17 @@ const FieldGroup = ({ ref, className, tag: Tag = "div", ...rest }) => {
+ FieldGroup.displayName = "FieldGroup";
+ //#endregion
+ //#region lib/InfiniteCanvas/index.tsx
+-const InfiniteCanvas = ({ ref, children, overlay, className, background, initialZoom, initialOffsetX, initialOffsetY, minZoom = .1, maxZoom = 10, center = initialZoom === void 0 && initialOffsetX === void 0 && initialOffsetY === void 0, centerMargin = 300, padding, cursorMode = "default", fitAbsolute = true, globalEventsTarget = globalThis, onZoom, onPan, ...rest }) => {
++// Idle time after the last wheel/drag event before the live view is
++// committed to React state (and therefore to context consumers)
++const COMMIT_DELAY = 120;
++const getContentTransform = ({ zoom, offsetX, offsetY }) => `translate3d(${offsetX}px, ${offsetY}px, 0) scale3d(${zoom}, ${zoom}, 1)`;
++// The pattern is drawn unscaled and zoomed/panned through its transform
++const getPatternTransform = ({ zoom, offsetX, offsetY }, size) => `translate(${offsetX} ${offsetY}) scale(${zoom}) translate(${size} ${size})`;
++const InfiniteCanvas = ({ ref, children, overlay, className, background, initialZoom, initialOffsetX, initialOffsetY, minZoom = .1, maxZoom = 10, center = initialZoom === undefined && initialOffsetX === undefined && initialOffsetY === undefined, centerMargin = 300, padding, cursorMode = "default", fitAbsolute = true, globalEventsTarget = globalThis, onZoom, onPan, ...rest }) => {
+ 	const innerRef = useRef(null);
+ 	const contentRef = useRef(null);
+ 	const backgroundRef = useRef(null);
++	const patternRef = useRef(null);
+ 	const patternId = useId();
+ 	const { gap = 20, size = 1, fill = "var(--dots-color)", pattern = "dot", patternId: customPatternId = patternId } = background || {};
+ 	const { top: paddingTop = 0, right: paddingRight = 0, bottom: paddingBottom = 0, left: paddingLeft = 0 } = typeof padding === "number" ? {
+@@ -2007,20 +2022,41 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		bottom: padding,
+ 		left: padding
+ 	} : padding || {};
+-	const [state, dispatch] = useReducer(mockState$1, {
++	// Source of truth for pan/zoom: mutated synchronously and written straight
++	// to the DOM, so gestures never wait on a React render
++	const view = useRef({
+ 		zoom: initialZoom || 1,
+-		mouseX: 0,
+-		mouseY: 0,
+ 		offsetX: initialOffsetX ?? 0,
+-		offsetY: initialOffsetY ?? 0,
++		offsetY: initialOffsetY ?? 0
++	});
++	const mouse = useRef({
++		x: 0,
++		y: 0
++	});
++	const panning = useRef({
++		active: false,
++		startX: 0,
++		startY: 0
++	});
++	const cursor = useRef({
++		x: 0,
++		y: 0
++	});
++	const cursorListeners = useRef(new Set());
++	const frame = useRef(0);
++	const commitTimer = useRef(undefined);
++	const [state, dispatch] = useReducer(mockState$1, {
++		zoom: view.current.zoom,
++		offsetX: view.current.offsetX,
++		offsetY: view.current.offsetY,
+ 		animate: 0,
+-		panning: false,
+-		panStartX: 0,
+-		panStartY: 0
++		panning: false
+ 	});
+ 	useTimeout$1(() => {
+ 		dispatch({ animate: 0 });
+ 	}, state.animate, [state.animate], { enabled: state.animate > 0 });
++	// Read through a ref so a non-memoized onZoom/onPan (recreated on every
++	// parent render) can't re-trigger these effects and cause an infinite loop
+ 	const onZoomRef = useRef(onZoom);
+ 	onZoomRef.current = onZoom;
+ 	const onPanRef = useRef(onPan);
+@@ -2031,12 +2067,81 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	useEffect(() => {
+ 		onPanRef.current?.(state.offsetX, state.offsetY);
+ 	}, [state.offsetX, state.offsetY]);
++	useEffect(() => () => {
++		cancelAnimationFrame(frame.current);
++		clearTimeout(commitTimer.current);
++	}, []);
++	const notifyCursor = useCallback(() => {
++		const { zoom, offsetX, offsetY } = view.current;
++		const x = Math.round((mouse.current.x - offsetX) / zoom);
++		const y = Math.round((mouse.current.y - offsetY) / zoom);
++		if (x === cursor.current.x && y === cursor.current.y) {
++			return;
++		}
++		cursor.current = {
++			x,
++			y
++		};
++		cursorListeners.current.forEach((listener) => listener());
++	}, []);
++	const subscribeCursor = useCallback((listener) => {
++		cursorListeners.current.add(listener);
++		return () => {
++			cursorListeners.current.delete(listener);
++		};
++	}, []);
++	const getCursor = useCallback(() => cursor.current, []);
++	const flushView = useCallback(() => {
++		frame.current = 0;
++		if (contentRef.current) {
++			contentRef.current.style.transform = getContentTransform(view.current);
++		}
++		patternRef.current?.setAttribute("patternTransform", getPatternTransform(view.current, size));
++		notifyCursor();
++	}, [size, notifyCursor]);
++	const scheduleFlush = useCallback(() => {
++		if (!frame.current) {
++			frame.current = requestAnimationFrame(flushView);
++		}
++	}, [flushView]);
++	// Publish the live view to React state (and context consumers)
++	const commitView = useCallback((animate) => {
++		clearTimeout(commitTimer.current);
++		const { zoom, offsetX, offsetY } = view.current;
++		dispatch({
++			zoom,
++			offsetX,
++			offsetY,
++			...animate !== undefined && { animate }
++		});
++	}, []);
++	const scheduleCommit = useCallback(() => {
++		clearTimeout(commitTimer.current);
++		commitTimer.current = setTimeout(() => commitView(), COMMIT_DELAY);
++	}, [commitView]);
++	// Programmatic moves commit right away, the render applies the transform
++	// together with the transition so it animates
++	const moveTo = useCallback((next, animate) => {
++		Object.assign(view.current, next);
++		commitView(animate);
++		notifyCursor();
++	}, [commitView, notifyCursor]);
+ 	useImperativeHandle(ref, () => ({
+-		zoom: state.zoom,
+-		offsetX: state.offsetX,
+-		offsetY: state.offsetY,
+-		mouseX: state.mouseX,
+-		mouseY: state.mouseY,
++		get zoom() {
++			return view.current.zoom;
++		},
++		get offsetX() {
++			return view.current.offsetX;
++		},
++		get offsetY() {
++			return view.current.offsetY;
++		},
++		get mouseX() {
++			return mouse.current.x;
++		},
++		get mouseY() {
++			return mouse.current.y;
++		},
+ 		fitIntoView,
+ 		setZoom,
+ 		zoomIn,
+@@ -2053,31 +2158,38 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const onWheel = useCallback((e) => {
+ 		e.preventDefault();
  		e.stopPropagation();
++		const v = view.current;
++		// Zoom
  		if (e.ctrlKey || e.metaKey) {
  			const zoomFactor = Math.exp(-e.deltaY * .01);
 -			const newZoom = Math.max(minZoom, Math.min(maxZoom, state.zoom * zoomFactor));
++			const newZoom = Math.max(minZoom, Math.min(maxZoom, v.zoom * zoomFactor));
++			// Mouse position relative to canvas
  			const rect = innerRef.current?.getBoundingClientRect();
  			const mouseX = e.clientX - (rect?.left ?? 0);
  			const mouseY = e.clientY - (rect?.top ?? 0);
@@ -69,96 +962,1268 @@ index bbf440d8211496dd40c3ae93a88f9570228c1c7a..f49d3479a65d5d311899ef9ffefa3b37
 -				zoom: newZoom,
 -				offsetX: newOffsetX,
 -				offsetY: newOffsetY
-+			dispatch((s) => {
-+				const newZoom = Math.max(minZoom, Math.min(maxZoom, s.zoom * zoomFactor));
-+				const contentX = (mouseX - s.offsetX) / s.zoom;
-+				const contentY = (mouseY - s.offsetY) / s.zoom;
-+				return {
-+					...s,
-+					zoom: newZoom,
-+					offsetX: mouseX - contentX * newZoom,
-+					offsetY: mouseY - contentY * newZoom
-+				};
- 			});
+-			});
 -		} else dispatch({
 -			offsetX: state.offsetX - e.deltaX,
 -			offsetY: state.offsetY - e.deltaY
 -		});
--	}, [
++			// Mouse position in content coordinates (before transform)
++			const contentX = (mouseX - v.offsetX) / v.zoom;
++			const contentY = (mouseY - v.offsetY) / v.zoom;
++			mouse.current = {
++				x: mouseX,
++				y: mouseY
++			};
++			// Adjust offset so zoom centers on mouse position
++			v.zoom = newZoom;
++			v.offsetX = mouseX - contentX * newZoom;
++			v.offsetY = mouseY - contentY * newZoom;
++		} else {
++			// Pan only
++			v.offsetX -= e.deltaX;
++			v.offsetY -= e.deltaY;
++		}
++		scheduleFlush();
++		scheduleCommit();
+ 	}, [
 -		state.zoom,
 -		state.offsetX,
 -		state.offsetY,
--		minZoom,
+ 		minZoom,
 -		maxZoom
--	]);
-+		} else dispatch((s) => ({
-+			...s,
-+			offsetX: s.offsetX - e.deltaX,
-+			offsetY: s.offsetY - e.deltaY
-+		}));
-+	}, [minZoom, maxZoom]);
++		maxZoom,
++		scheduleFlush,
++		scheduleCommit
+ 	]);
  	useEffect(() => {
  		const ref = innerRef.current;
- 		ref?.addEventListener("wheel", onWheel, { passive: false });
+@@ -2087,20 +2199,26 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		};
+ 	}, [onWheel]);
+ 	const getContentBounds = useCallback(() => {
+-		if (!contentRef.current) return null;
+-		if (!fitAbsolute) return {
+-			minX: 0,
+-			minY: 0,
+-			maxX: contentRef.current.scrollWidth,
+-			maxY: contentRef.current.scrollHeight
+-		};
++		if (!contentRef.current) {
++			return null;
++		}
++		if (!fitAbsolute) {
++			return {
++				minX: 0,
++				minY: 0,
++				maxX: contentRef.current.scrollWidth,
++				maxY: contentRef.current.scrollHeight
++			};
++		}
+ 		const children = Array.from(contentRef.current.children);
+-		if (!children.length) return {
+-			minX: 0,
+-			minY: 0,
+-			maxX: 0,
+-			maxY: 0
+-		};
++		if (!children.length) {
++			return {
++				minX: 0,
++				minY: 0,
++				maxX: 0,
++				maxY: 0
++			};
++		}
+ 		return children.reduce((bounds, el) => ({
+ 			minX: Math.min(bounds.minX, el.offsetLeft),
+ 			minY: Math.min(bounds.minY, el.offsetTop),
+@@ -2113,8 +2231,12 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 			maxY: -Infinity
+ 		});
+ 	}, [fitAbsolute]);
++	// Portion of the canvas not reserved by padding (e.g. sidebars/overlays),
++	// used as the target area/center for fitting and centering operations
+ 	const getVisibleRect = useCallback(() => {
+-		if (!innerRef.current) return null;
++		if (!innerRef.current) {
++			return null;
++		}
+ 		const rect = innerRef.current.getBoundingClientRect();
+ 		const width = Math.max(rect.width - paddingLeft - paddingRight, 0);
+ 		const height = Math.max(rect.height - paddingTop - paddingBottom, 0);
+@@ -2133,125 +2255,146 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const fitIntoView = useCallback(async (transitionDuration) => {
+ 		const bounds = getContentBounds();
+ 		const visible = getVisibleRect();
+-		if (!visible || !bounds) return;
++		if (!visible || !bounds) {
++			return;
++		}
+ 		const contentWidth = bounds.maxX - bounds.minX;
+ 		const contentHeight = bounds.maxY - bounds.minY;
+ 		const contentCenterX = (bounds.minX + bounds.maxX) / 2;
+ 		const contentCenterY = (bounds.minY + bounds.maxY) / 2;
++		// Use a padded box (content + margin) only to determine the zoom level,
++		// so the content doesn't end up flush against the visible area's edges
+ 		const zoomX = visible.width === 0 || contentWidth === 0 ? 1 : visible.width / (contentWidth + centerMargin * 2);
+ 		const zoomY = visible.height === 0 || contentHeight === 0 ? 1 : visible.height / (contentHeight + centerMargin * 2);
+ 		const newZoom = Math.max(Math.min(zoomX, zoomY, maxZoom), minZoom);
++		// Center the actual (unpadded) content's bounding box within the
++		// visible area, i.e. excluding any space reserved by padding
+ 		const newOffsetX = visible.centerX - contentCenterX * newZoom;
+ 		const newOffsetY = visible.centerY - contentCenterY * newZoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoom,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+ 		centerMargin,
+ 		getContentBounds,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	useLayoutEffect(() => {
+-		if (!center) return;
++		if (!center) {
++			return;
++		}
+ 		fitIntoView(0);
+-	}, [center, fitIntoView]);
++		// Mount only: a padding change (e.g. sidebar resize) must not reset the view
++	}, []);
+ 	const setZoom = useCallback(async (newZoom, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible) return;
++		if (!visible) {
++			return;
++		}
+ 		const newZoomClamped = Math.max(Math.min(newZoom, maxZoom), minZoom);
+-		const centerContentX = (visible.centerX - state.offsetX) / state.zoom;
+-		const centerContentY = (visible.centerY - state.offsetY) / state.zoom;
++		// Keep whatever content point is currently at the visible area's
++		// center fixed, instead of jumping back to the content's bounds center
++		const { zoom, offsetX, offsetY } = view.current;
++		const centerContentX = (visible.centerX - offsetX) / zoom;
++		const centerContentY = (visible.centerY - offsetY) / zoom;
+ 		const newOffsetX = visible.centerX - centerContentX * newZoomClamped;
+ 		const newOffsetY = visible.centerY - centerContentY * newZoomClamped;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoomClamped,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	const zoomIn = useCallback((transitionDuration) => {
+-		const newZoom = (state.zoom || 1) * 1.2;
++		const newZoom = (view.current.zoom || 1) * 1.2;
+ 		return setZoom(newZoom, transitionDuration);
+-	}, [state.zoom, setZoom]);
++	}, [setZoom]);
+ 	const zoomOut = useCallback((transitionDuration) => {
+-		const newZoom = (state.zoom || 1) / 1.2;
++		const newZoom = (view.current.zoom || 1) / 1.2;
+ 		return setZoom(newZoom, transitionDuration);
+-	}, [state.zoom, setZoom]);
++	}, [setZoom]);
+ 	const getCursorPosition = useCallback(() => {
+-		if (!innerRef.current) return {
+-			x: 0,
+-			y: 0
+-		};
++		if (!innerRef.current) {
++			return {
++				x: 0,
++				y: 0
++			};
++		}
++		const { zoom, offsetX, offsetY } = view.current;
+ 		return {
+-			x: Math.round((state.mouseX - state.offsetX) / state.zoom),
+-			y: Math.round((state.mouseY - state.offsetY) / state.zoom)
++			x: Math.round((mouse.current.x - offsetX) / zoom),
++			y: Math.round((mouse.current.y - offsetY) / zoom)
+ 		};
+-	}, [
+-		state.mouseX,
+-		state.mouseY,
+-		state.zoom,
+-		state.offsetX,
+-		state.offsetY
+-	]);
++	}, []);
+ 	const panTo = useCallback(async (x, y, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible || !contentRef.current) return;
+-		const newOffsetX = visible.centerX - x * state.zoom;
+-		const newOffsetY = visible.centerY - y * state.zoom;
++		if (!visible || !contentRef.current) {
++			return;
++		}
++		const newOffsetX = visible.centerX - x * view.current.zoom;
++		const newOffsetY = visible.centerY - y * view.current.zoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
+-	}, [state.zoom, getVisibleRect]);
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
++	}, [getVisibleRect, moveTo]);
+ 	const panAndZoomTo = useCallback(async (x, y, newZoom, transitionDuration) => {
+ 		const visible = getVisibleRect();
+-		if (!visible || !contentRef.current) return;
++		if (!visible || !contentRef.current) {
++			return;
++		}
+ 		const newZoomClamped = Math.max(Math.min(newZoom, maxZoom), minZoom);
+ 		const newOffsetX = visible.centerX - x * newZoomClamped;
+ 		const newOffsetY = visible.centerY - y * newZoomClamped;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoomClamped,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+ 	const getElementBounds = useCallback((elmt) => {
+-		if (!contentRef.current || !elmt) return null;
++		if (!contentRef.current || !elmt) {
++			return null;
++		}
+ 		let x = 0;
+ 		let y = 0;
+ 		let node = elmt;
+@@ -2270,7 +2413,9 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 	const centerOn = useCallback(async (elmt, transitionDuration) => {
+ 		const bounds = elmt && getElementBounds(elmt);
+ 		const visible = getVisibleRect();
+-		if (!visible || !bounds) return;
++		if (!visible || !bounds) {
++			return;
++		}
+ 		const elWidth = bounds.maxX - bounds.minX;
+ 		const elHeight = bounds.maxY - bounds.minY;
+ 		const elCenterX = (bounds.minX + bounds.maxX) / 2;
+@@ -2281,28 +2426,32 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		const newOffsetX = visible.centerX - elCenterX * newZoom;
+ 		const newOffsetY = visible.centerY - elCenterY * newZoom;
+ 		const animate = transitionDuration ?? 100;
+-		dispatch({
++		moveTo({
+ 			zoom: newZoom,
+ 			offsetX: newOffsetX,
+-			offsetY: newOffsetY,
+-			animate
+-		});
+-		if (animate > 0) return new Promise((resolve) => {
+-			setTimeout(resolve, animate);
+-		});
++			offsetY: newOffsetY
++		}, animate);
++		if (animate > 0) {
++			return new Promise((resolve) => {
++				setTimeout(resolve, animate);
++			});
++		}
+ 	}, [
+ 		minZoom,
+ 		maxZoom,
+ 		centerMargin,
+ 		getElementBounds,
+-		getVisibleRect
++		getVisibleRect,
++		moveTo
+ 	]);
+-	const getContext = useCallback(() => ({
++	// Only committed values are exposed, so consumers re-render once per
++	// gesture instead of once per event
++	const context = useMemo(() => ({
+ 		zoom: state.zoom,
+ 		offsetX: state.offsetX,
+ 		offsetY: state.offsetY,
+-		mouseX: state.mouseX,
+-		mouseY: state.mouseY,
++		subscribeCursor,
++		getCursor,
+ 		fitIntoView,
+ 		panTo,
+ 		panAndZoomTo,
+@@ -2314,8 +2463,8 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		state.zoom,
+ 		state.offsetX,
+ 		state.offsetY,
+-		state.mouseX,
+-		state.mouseY,
++		subscribeCursor,
++		getCursor,
+ 		fitIntoView,
+ 		setZoom,
+ 		zoomIn,
+@@ -2325,52 +2474,55 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		centerOn
+ 	]);
+ 	const onMouseDown = useCallback((e) => {
+-		if (cursorMode !== "pan") return;
++		if (cursorMode !== "pan") {
++			return;
++		}
+ 		e.preventDefault();
+ 		e.stopPropagation();
+-		dispatch({
+-			panning: true,
+-			panStartX: e.clientX,
+-			panStartY: e.clientY
+-		});
++		panning.current = {
++			active: true,
++			startX: e.clientX,
++			startY: e.clientY
++		};
++		dispatch({ panning: true });
+ 	}, [cursorMode]);
+ 	const onMouseMove = useCallback((e) => {
++		// Track cursor position relative to the canvas, not the viewport, so it
++		// stays consistent with offsetX/offsetY regardless of where the canvas
++		// is positioned on the page
+ 		const rect = innerRef.current?.getBoundingClientRect();
+-		const mouseX = e.clientX - (rect?.left ?? 0);
+-		const mouseY = e.clientY - (rect?.top ?? 0);
+-		if (!state.panning || cursorMode !== "pan") {
+-			dispatch({
+-				mouseX,
+-				mouseY
+-			});
++		mouse.current = {
++			x: e.clientX - (rect?.left ?? 0),
++			y: e.clientY - (rect?.top ?? 0)
++		};
++		if (!panning.current.active || cursorMode !== "pan") {
++			notifyCursor();
+ 			return;
+ 		}
+-		const deltaX = e.clientX - state.panStartX;
+-		const deltaY = e.clientY - state.panStartY;
+-		dispatch({
+-			mouseX,
+-			mouseY,
+-			offsetX: state.offsetX + deltaX,
+-			offsetY: state.offsetY + deltaY,
+-			panStartX: e.clientX,
+-			panStartY: e.clientY
+-		});
++		view.current.offsetX += e.clientX - panning.current.startX;
++		view.current.offsetY += e.clientY - panning.current.startY;
++		panning.current.startX = e.clientX;
++		panning.current.startY = e.clientY;
++		scheduleFlush();
++		scheduleCommit();
+ 	}, [
+-		state.panStartX,
+-		state.panStartY,
+-		state.offsetX,
+-		state.offsetY,
+-		state.panning,
+-		cursorMode
++		cursorMode,
++		notifyCursor,
++		scheduleFlush,
++		scheduleCommit
+ 	]);
+ 	const onMouseUp = useCallback(() => {
+-		if (!state.panning || cursorMode !== "pan") return;
+-		dispatch({
+-			panning: false,
+-			panStartX: 0,
+-			panStartY: 0
+-		});
+-	}, [state.panning, cursorMode]);
++		if (!panning.current.active || cursorMode !== "pan") {
++			return;
++		}
++		panning.current = {
++			active: false,
++			startX: 0,
++			startY: 0
++		};
++		dispatch({ panning: false });
++		commitView();
++	}, [cursorMode, commitView]);
+ 	useEffect(() => {
+ 		if (["pan", "add"].includes(cursorMode)) {
+ 			globalEventsTarget.addEventListener("mousemove", onMouseMove);
+@@ -2386,10 +2538,8 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 		globalEventsTarget,
+ 		cursorMode
+ 	]);
+-	const scaledPatternGap = gap * state.zoom;
+-	const scaledPatternSize = size * state.zoom;
+ 	return /* @__PURE__ */ jsx(InfiniteCanvasContext, {
+-		value: getContext(),
++		value: context,
+ 		children: /* @__PURE__ */ jsxs("div", {
+ 			...rest,
+ 			ref: innerRef,
+@@ -2400,7 +2550,7 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 					ref: contentRef,
+ 					className: classNames$1("infinite-canvas-content"),
+ 					style: {
+-						transform: `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) scale3d(${state.zoom}, ${state.zoom}, 1)`,
++						transform: getContentTransform(view.current),
+ 						transformOrigin: "0 0",
+ 						...state.animate > 0 && { transition: `transform ${state.animate}ms ease-in-out` }
+ 					},
+@@ -2411,31 +2561,30 @@ const InfiniteCanvas = ({ ref, children, overlay, className, background, initial
+ 					ref: backgroundRef,
+ 					className: "infinite-canvas-background",
+ 					children: [/* @__PURE__ */ jsx("pattern", {
++						ref: patternRef,
+ 						id: customPatternId,
+ 						patternUnits: "userSpaceOnUse",
+-						x: state.offsetX % scaledPatternGap,
+-						y: state.offsetY % scaledPatternGap,
+-						width: scaledPatternGap,
+-						height: scaledPatternGap,
+-						patternTransform: `translate(${scaledPatternSize}, ${scaledPatternSize})`,
++						width: gap,
++						height: gap,
++						patternTransform: getPatternTransform(view.current, size),
+ 						children: pattern === "cross" ? /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx("line", {
+-							x1: scaledPatternSize * 2,
++							x1: size * 2,
+ 							y1: "0",
+-							x2: scaledPatternSize * 2,
+-							y2: scaledPatternSize * 4,
++							x2: size * 2,
++							y2: size * 4,
+ 							stroke: fill,
+-							strokeWidth: scaledPatternSize / 4
++							strokeWidth: size / 4
+ 						}), /* @__PURE__ */ jsx("line", {
+ 							x1: "0",
+-							y1: scaledPatternSize * 2,
+-							x2: scaledPatternSize * 4,
+-							y2: scaledPatternSize * 2,
++							y1: size * 2,
++							x2: size * 4,
++							y2: size * 2,
+ 							stroke: fill,
+-							strokeWidth: scaledPatternSize / 4
++							strokeWidth: size / 4
+ 						})] }) : /* @__PURE__ */ jsx("circle", {
+-							cx: scaledPatternSize,
+-							cy: scaledPatternSize,
+-							r: scaledPatternSize,
++							cx: size,
++							cy: size,
++							r: size,
+ 							fill
+ 						})
+ 					}), /* @__PURE__ */ jsx("rect", {
+@@ -4701,6 +4850,6 @@ const Transition = ({ in: inProp, name = "transition", timeout = 100, mountOnEnt
+ };
+ Transition.displayName = "Transition";
+ //#endregion
+-export { Abstract, AccessLogo, Alert, Alerts, AlertsContext, AlertsControl, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Arrows, Badge, BreadCrumb, BreadCrumbItem, Button, COLORS, Calendar, Card, Check, CheckboxField, CodeField, ColorField, ConnectLogo, DateField, Draggable, Dropdown, DropdownContext, DropdownGroup, DropdownItem, DropdownMenu, DropdownToggle, Droppable, EngageLogo, FieldAddon, FieldControl, FieldControlContext, FieldGroup, FlowLogo, InfiniteCanvas, InfiniteCanvasZoom, JuniperoLogo, Label, List, ListCell, ListColumn, ListContext, ListItem, Modal, ModalContext, ModalControl, Moveable, PooolCompactCutoutLogo, PooolCompactLogo, PooolCutoutIconLogo, PooolCutoutLogo, PooolIconLogo, PooolLogo, RadioField, Remove, SelectField, Slider, Spinner, SplitLogo, Step, Stepper, SubscribeLogo, TRANSITION_STATE_ACTIVE, TRANSITION_STATE_DONE, TRANSITION_STATE_ENTER, TRANSITION_STATE_EXIT, TRANSITION_STATE_IDLE, TRANSITION_STATE_STARTING, TRANSITION_STATE_UNMOUNTED, Tab, Tabs, Tag, TextField, Time, Toast, Toasts, ToastsContext, ToastsControl, Toggle, Tooltip, TouchableZone, Transition, addClass, addMonths, classNames, cloneDeep, closestIndexTo, denormalizeHSLA, denormalizeHSVA, denormalizeRGBA, endOfDay, endOfMonth, endOfYear, ensureMinMax, ensureNode, exists, filterDeep, findDeep, formatThousand, fromPairs, get, getDaysInMonth, getFloatPrecision, hsla2hsva, hsva2hsla, hsva2rgba, isArray, isDate, isNull, isObject, isUndefined, mergeDeep, mockState, omit, omitBy, parseColor, pick, removeClass, rgba2hex, rgba2hsva, set, startOfDay, startOfMonth, startOfYear, stringifyColor, subMonths, useAlerts, useDropdown, useEffectAfterMount, useEventListener, useFieldControl, useInfiniteCanvas, useInterval, useLayoutEffectAfterMount, useList, useModal, useTimeout, useToasts };
++export { Abstract, AccessLogo, Alert, Alerts, AlertsContext, AlertsControl, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Arrows, Badge, BreadCrumb, BreadCrumbItem, Button, COLORS, Calendar, Card, Check, CheckboxField, CodeField, ColorField, ConnectLogo, DateField, Draggable, Dropdown, DropdownContext, DropdownGroup, DropdownItem, DropdownMenu, DropdownToggle, Droppable, EngageLogo, FieldAddon, FieldControl, FieldControlContext, FieldGroup, FlowLogo, InfiniteCanvas, InfiniteCanvasZoom, JuniperoLogo, Label, List, ListCell, ListColumn, ListContext, ListItem, Modal, ModalContext, ModalControl, Moveable, PooolCompactCutoutLogo, PooolCompactLogo, PooolCutoutIconLogo, PooolCutoutLogo, PooolIconLogo, PooolLogo, RadioField, Remove, SelectField, Slider, Spinner, SplitLogo, Step, Stepper, SubscribeLogo, TRANSITION_STATE_ACTIVE, TRANSITION_STATE_DONE, TRANSITION_STATE_ENTER, TRANSITION_STATE_EXIT, TRANSITION_STATE_IDLE, TRANSITION_STATE_STARTING, TRANSITION_STATE_UNMOUNTED, Tab, Tabs, Tag, TextField, Time, Toast, Toasts, ToastsContext, ToastsControl, Toggle, Tooltip, TouchableZone, Transition, addClass, addMonths, classNames, cloneDeep, closestIndexTo, denormalizeHSLA, denormalizeHSVA, denormalizeRGBA, endOfDay, endOfMonth, endOfYear, ensureMinMax, ensureNode, exists, filterDeep, findDeep, formatThousand, fromPairs, get, getDaysInMonth, getFloatPrecision, hsla2hsva, hsva2hsla, hsva2rgba, isArray, isDate, isNull, isObject, isUndefined, mergeDeep, mockState, omit, omitBy, parseColor, pick, removeClass, rgba2hex, rgba2hsva, set, startOfDay, startOfMonth, startOfYear, stringifyColor, subMonths, useAlerts, useDropdown, useEffectAfterMount, useEventListener, useFieldControl, useInfiniteCanvas, useInfiniteCanvasCursor, useInterval, useLayoutEffectAfterMount, useList, useModal, useTimeout, useToasts };
+ 
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/dist/types/InfiniteCanvas/index.d.ts b/dist/types/InfiniteCanvas/index.d.ts
+index 3fec2908a463bb02b262abf73e59dfd61858b16f..35904e8a0c6288a0448f7b4adee218632698ff15 100644
+--- a/dist/types/InfiniteCanvas/index.d.ts
++++ b/dist/types/InfiniteCanvas/index.d.ts
+@@ -53,14 +53,10 @@ export declare interface InfiniteCanvasProps extends SpecialComponentPropsWithRe
+ }
+ export declare interface InfiniteCanvasState {
+     zoom: number;
+-    mouseX: number;
+-    mouseY: number;
+     offsetX: number;
+     offsetY: number;
+     animate: number;
+     panning: boolean;
+-    panStartX: number;
+-    panStartY: number;
+ }
+ declare function InfiniteCanvas({ ref, children, overlay, className, background, initialZoom, initialOffsetX, initialOffsetY, minZoom, maxZoom, center, centerMargin, padding, cursorMode, fitAbsolute, globalEventsTarget, onZoom, onPan, ...rest }: InfiniteCanvasProps): import("react").JSX.Element;
+ declare namespace InfiniteCanvas {
+diff --git a/dist/types/contexts.d.ts b/dist/types/contexts.d.ts
+index f325b7c562d37be676696f66ec76c6733b4bcf6a..3a829fc12996910c76b56f11d4f9cb077f4a81f3 100644
+--- a/dist/types/contexts.d.ts
++++ b/dist/types/contexts.d.ts
+@@ -62,8 +62,11 @@ export declare interface InfiniteCanvasContextType {
+     zoom: number;
+     offsetX: number;
+     offsetY: number;
+-    mouseX: number;
+-    mouseY: number;
++    subscribeCursor: (listener: () => void) => () => void;
++    getCursor: () => {
++        x: number;
++        y: number;
++    };
+     fitIntoView: (transitionDuration?: number) => Promise<void>;
+     setZoom: (newZoom: number, transitionDuration?: number) => Promise<void>;
+     panTo: (x: number, y: number, transitionDuration?: number) => Promise<void>;
+diff --git a/dist/types/hooks.d.ts b/dist/types/hooks.d.ts
+index 0644d3ec7f2e85762cced770b6af653684c94a6b..d7117bc53494449327a5374d409343c9a1ebe277 100644
+--- a/dist/types/hooks.d.ts
++++ b/dist/types/hooks.d.ts
+@@ -5,4 +5,8 @@ export declare const useList: () => import("./contexts").ListContextType;
+ export declare const useToasts: () => import("./contexts").ToastsContextType;
+ export declare const useModal: () => import("./contexts").ModalContextType;
+ export declare const useInfiniteCanvas: () => import("./contexts").InfiniteCanvasContextType;
++export declare const useInfiniteCanvasCursor: () => {
++    x: number;
++    y: number;
++};
+ //# sourceMappingURL=hooks.d.ts.map
+\ No newline at end of file
+diff --git a/dist/types/index.d.ts b/dist/types/index.d.ts
+index f3fa618738223d6e105015d10a384f6f9187022b..f5fc5bc1217692618c54fcd55a2f71fb0007635c 100644
+--- a/dist/types/index.d.ts
++++ b/dist/types/index.d.ts
+@@ -52,7 +52,7 @@ export { default as Toggle, type ToggleRef, type ToggleProps, type ToggleValue,
+ export { default as Tooltip, type TooltipRef, type TooltipProps, type TooltipState, } from './Tooltip';
+ export { default as TouchableZone, type TouchableZoneRef, type TouchableZoneProps, } from './TouchableZone';
+ export { default as Transition, TRANSITION_STATE_UNMOUNTED, TRANSITION_STATE_ENTER, TRANSITION_STATE_EXIT, TRANSITION_STATE_IDLE, TRANSITION_STATE_STARTING, TRANSITION_STATE_ACTIVE, TRANSITION_STATE_DONE, type TransitionProps, type TransitionTimeoutObject, } from './Transition';
+-export { useList, useAlerts, useToasts, useDropdown, useFieldControl, useModal, useInfiniteCanvas, } from './hooks';
++export { useList, useAlerts, useToasts, useDropdown, useFieldControl, useModal, useInfiniteCanvas, useInfiniteCanvasCursor, } from './hooks';
+ export { type IconProps, Arrows, Remove, ArrowLeft, ArrowRight, ArrowDown, ArrowUp, Time, Check, } from './icons';
+ export { ListContext, AlertsContext, ToastsContext, DropdownContext, FieldControlContext, ModalContext, type AlertsContextType, type DropdownContextType, type ListContextType, type FieldContextType, type ToastsContextType, type ModalContextType, } from './contexts';
+ export type * from './types';
 diff --git a/lib/InfiniteCanvas/index.tsx b/lib/InfiniteCanvas/index.tsx
-index 032d4157138db81ecb64a60a8882d72245d86efa..628ee27afce87a959259e95d8e9c333e5c11bb77 100644
+index 032d4157138db81ecb64a60a8882d72245d86efa..ab7503153046fc3d087eadd0f42c381ad706ce99 100644
 --- a/lib/InfiniteCanvas/index.tsx
 +++ b/lib/InfiniteCanvas/index.tsx
-@@ -199,35 +199,38 @@ const InfiniteCanvas = ({
+@@ -6,6 +6,7 @@ import {
+   useId,
+   useImperativeHandle,
+   useLayoutEffect,
++  useMemo,
+   useReducer,
+   useRef,
+ } from 'react';
+@@ -85,18 +86,37 @@ export declare interface InfiniteCanvasProps extends
+   onPan?: (offsetX: number, offsetY: number) => void;
+ }
+ 
++// Committed (React-visible) state, it lags behind the live view while a
++// wheel/drag gesture is in progress
+ export declare interface InfiniteCanvasState {
+   zoom: number;
+-  mouseX: number;
+-  mouseY: number;
+   offsetX: number;
+   offsetY: number;
+   animate: number;
+   panning: boolean;
+-  panStartX: number;
+-  panStartY: number;
+ }
+ 
++interface InfiniteCanvasView {
++  zoom: number;
++  offsetX: number;
++  offsetY: number;
++}
++
++// Idle time after the last wheel/drag event before the live view is
++// committed to React state (and therefore to context consumers)
++const COMMIT_DELAY = 120;
++
++const getContentTransform = ({ zoom, offsetX, offsetY }: InfiniteCanvasView) =>
++  `translate3d(${offsetX}px, ${offsetY}px, 0) scale3d(${zoom}, ${zoom}, 1)`;
++
++// The pattern is drawn unscaled and zoomed/panned through its transform
++const getPatternTransform = (
++  { zoom, offsetX, offsetY }: InfiniteCanvasView,
++  size: number,
++) => (
++  `translate(${offsetX} ${offsetY}) scale(${zoom}) translate(${size} ${size})`
++);
++
+ const InfiniteCanvas = ({
+   ref,
+   children,
+@@ -125,6 +145,7 @@ const InfiniteCanvas = ({
+   const innerRef = useRef<HTMLDivElement>(null);
+   const contentRef = useRef<HTMLDivElement>(null);
+   const backgroundRef = useRef<SVGSVGElement>(null);
++  const patternRef = useRef<SVGPatternElement>(null);
+   const patternId = useId();
+   const {
+     gap = 20,
+@@ -141,16 +162,27 @@ const InfiniteCanvas = ({
+   } = typeof padding === 'number'
+     ? { top: padding, right: padding, bottom: padding, left: padding }
+     : padding || {};
+-  const [state, dispatch] = useReducer(mockState<InfiniteCanvasState>, {
++
++  // Source of truth for pan/zoom: mutated synchronously and written straight
++  // to the DOM, so gestures never wait on a React render
++  const view = useRef<InfiniteCanvasView>({
+     zoom: initialZoom || 1,
+-    mouseX: 0,
+-    mouseY: 0,
+     offsetX: initialOffsetX ?? 0,
+     offsetY: initialOffsetY ?? 0,
++  });
++  const mouse = useRef({ x: 0, y: 0 });
++  const panning = useRef({ active: false, startX: 0, startY: 0 });
++  const cursor = useRef({ x: 0, y: 0 });
++  const cursorListeners = useRef(new Set<() => void>());
++  const frame = useRef(0);
++  const commitTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
++
++  const [state, dispatch] = useReducer(mockState<InfiniteCanvasState>, {
++    zoom: view.current.zoom,
++    offsetX: view.current.offsetX,
++    offsetY: view.current.offsetY,
+     animate: 0,
+     panning: false,
+-    panStartX: 0,
+-    panStartY: 0,
+   });
+ 
+   useTimeout(() => {
+@@ -172,12 +204,90 @@ const InfiniteCanvas = ({
+     onPanRef.current?.(state.offsetX, state.offsetY);
+   }, [state.offsetX, state.offsetY]);
+ 
++  useEffect(() => () => {
++    cancelAnimationFrame(frame.current);
++    clearTimeout(commitTimer.current);
++  }, []);
++
++  const notifyCursor = useCallback(() => {
++    const { zoom, offsetX, offsetY } = view.current;
++    const x = Math.round((mouse.current.x - offsetX) / zoom);
++    const y = Math.round((mouse.current.y - offsetY) / zoom);
++
++    if (x === cursor.current.x && y === cursor.current.y) {
++      return;
++    }
++
++    cursor.current = { x, y };
++    cursorListeners.current.forEach(listener => listener());
++  }, []);
++
++  const subscribeCursor = useCallback((listener: () => void) => {
++    cursorListeners.current.add(listener);
++
++    return () => {
++      cursorListeners.current.delete(listener);
++    };
++  }, []);
++
++  const getCursor = useCallback(() => cursor.current, []);
++
++  const flushView = useCallback(() => {
++    frame.current = 0;
++
++    if (contentRef.current) {
++      contentRef.current.style.transform = getContentTransform(view.current);
++    }
++
++    patternRef.current?.setAttribute(
++      'patternTransform', getPatternTransform(view.current, size)
++    );
++
++    notifyCursor();
++  }, [size, notifyCursor]);
++
++  const scheduleFlush = useCallback(() => {
++    if (!frame.current) {
++      frame.current = requestAnimationFrame(flushView);
++    }
++  }, [flushView]);
++
++  // Publish the live view to React state (and context consumers)
++  const commitView = useCallback((animate?: number) => {
++    clearTimeout(commitTimer.current);
++
++    const { zoom, offsetX, offsetY } = view.current;
++
++    dispatch({
++      zoom,
++      offsetX,
++      offsetY,
++      ...animate !== undefined && { animate },
++    });
++  }, []);
++
++  const scheduleCommit = useCallback(() => {
++    clearTimeout(commitTimer.current);
++    commitTimer.current = setTimeout(() => commitView(), COMMIT_DELAY);
++  }, [commitView]);
++
++  // Programmatic moves commit right away, the render applies the transform
++  // together with the transition so it animates
++  const moveTo = useCallback((
++    next: Partial<InfiniteCanvasView>,
++    animate: number,
++  ) => {
++    Object.assign(view.current, next);
++    commitView(animate);
++    notifyCursor();
++  }, [commitView, notifyCursor]);
++
+   useImperativeHandle(ref, () => ({
+-    zoom: state.zoom,
+-    offsetX: state.offsetX,
+-    offsetY: state.offsetY,
+-    mouseX: state.mouseX,
+-    mouseY: state.mouseY,
++    get zoom() { return view.current.zoom; },
++    get offsetX() { return view.current.offsetX; },
++    get offsetY() { return view.current.offsetY; },
++    get mouseX() { return mouse.current.x; },
++    get mouseY() { return mouse.current.y; },
+     fitIntoView,
+     setZoom,
+     zoomIn,
+@@ -196,11 +306,12 @@ const InfiniteCanvas = ({
+     e.preventDefault();
+     e.stopPropagation();
+ 
++    const v = view.current;
++
      // Zoom
      if (e.ctrlKey || e.metaKey) {
        const zoomFactor = Math.exp(-e.deltaY * 0.01);
 -      const newZoom = Math.max(minZoom,
 -        Math.min(maxZoom, state.zoom * zoomFactor));
++      const newZoom = Math.max(minZoom, Math.min(maxZoom, v.zoom * zoomFactor));
  
        // Mouse position relative to canvas
        const rect = innerRef.current?.getBoundingClientRect();
-       const mouseX = e.clientX - (rect?.left ?? 0);
+@@ -208,26 +319,24 @@ const InfiniteCanvas = ({
        const mouseY = e.clientY - (rect?.top ?? 0);
  
--      // Mouse position in content coordinates (before transform)
+       // Mouse position in content coordinates (before transform)
 -      const contentX = (mouseX - state.offsetX) / state.zoom;
 -      const contentY = (mouseY - state.offsetY) / state.zoom;
--
++      const contentX = (mouseX - v.offsetX) / v.zoom;
++      const contentY = (mouseY - v.offsetY) / v.zoom;
+ 
 -      // Adjust offset so zoom centers on mouse position
 -      const newOffsetX = mouseX - contentX * newZoom;
 -      const newOffsetY = mouseY - contentY * newZoom;
--
++      mouse.current = { x: mouseX, y: mouseY };
+ 
 -      dispatch({
 -        zoom: newZoom,
 -        offsetX: newOffsetX,
 -        offsetY: newOffsetY,
-+      // Functional updates: several wheel events can fire between renders
-+      dispatch(s => {
-+        const newZoom = Math.max(minZoom,
-+          Math.min(maxZoom, s.zoom * zoomFactor));
-+
-+        // Mouse position in content coordinates (before transform)
-+        const contentX = (mouseX - s.offsetX) / s.zoom;
-+        const contentY = (mouseY - s.offsetY) / s.zoom;
-+
-+        // Adjust offset so zoom centers on mouse position
-+        return {
-+          ...s,
-+          zoom: newZoom,
-+          offsetX: mouseX - contentX * newZoom,
-+          offsetY: mouseY - contentY * newZoom,
-+        };
-       });
+-      });
++      // Adjust offset so zoom centers on mouse position
++      v.zoom = newZoom;
++      v.offsetX = mouseX - contentX * newZoom;
++      v.offsetY = mouseY - contentY * newZoom;
      } else {
        // Pan only
 -      dispatch({
 -        offsetX: state.offsetX - e.deltaX,
 -        offsetY: state.offsetY - e.deltaY,
 -      });
-+      dispatch(s => ({
-+        ...s,
-+        offsetX: s.offsetX - e.deltaX,
-+        offsetY: s.offsetY - e.deltaY,
-+      }));
++      v.offsetX -= e.deltaX;
++      v.offsetY -= e.deltaY;
      }
 -  }, [state.zoom, state.offsetX, state.offsetY, minZoom, maxZoom]);
-+  }, [minZoom, maxZoom]);
++
++    scheduleFlush();
++    scheduleCommit();
++  }, [minZoom, maxZoom, scheduleFlush, scheduleCommit]);
  
    useEffect(() => {
      const ref = innerRef.current;
+@@ -321,19 +430,20 @@ const InfiniteCanvas = ({
+     const newOffsetY = visible.centerY - contentCenterY * newZoom;
+     const animate = transitionDuration ?? 100;
+ 
+-    dispatch({
++    moveTo({
+       zoom: newZoom,
+       offsetX: newOffsetX,
+       offsetY: newOffsetY,
+-      animate,
+-    });
++    }, animate);
+ 
+     if (animate > 0) {
+       return new Promise(resolve => {
+         setTimeout(resolve, animate);
+       });
+     }
+-  }, [minZoom, maxZoom, centerMargin, getContentBounds, getVisibleRect]);
++  }, [
++    minZoom, maxZoom, centerMargin, getContentBounds, getVisibleRect, moveTo,
++  ]);
+ 
+   useLayoutEffect(() => {
+     if (!center) {
+@@ -341,7 +451,8 @@ const InfiniteCanvas = ({
+     }
+ 
+     fitIntoView(0);
+-  }, [center, fitIntoView]);
++    // Mount only: a padding change (e.g. sidebar resize) must not reset the view
++  }, []);
+ 
+   const setZoom = useCallback(async (
+     newZoom: number,
+@@ -357,52 +468,51 @@ const InfiniteCanvas = ({
+ 
+     // Keep whatever content point is currently at the visible area's
+     // center fixed, instead of jumping back to the content's bounds center
+-    const centerContentX = (visible.centerX - state.offsetX) / state.zoom;
+-    const centerContentY = (visible.centerY - state.offsetY) / state.zoom;
++    const { zoom, offsetX, offsetY } = view.current;
++    const centerContentX = (visible.centerX - offsetX) / zoom;
++    const centerContentY = (visible.centerY - offsetY) / zoom;
+ 
+     const newOffsetX = visible.centerX - centerContentX * newZoomClamped;
+     const newOffsetY = visible.centerY - centerContentY * newZoomClamped;
+     const animate = transitionDuration ?? 100;
+ 
+-    dispatch({
++    moveTo({
+       zoom: newZoomClamped,
+       offsetX: newOffsetX,
+       offsetY: newOffsetY,
+-      animate,
+-    });
++    }, animate);
+ 
+     if (animate > 0) {
+       return new Promise(resolve => {
+         setTimeout(resolve, animate);
+       });
+     }
+-  }, [
+-    minZoom, maxZoom, state.zoom, state.offsetX, state.offsetY,
+-    getVisibleRect,
+-  ]);
++  }, [minZoom, maxZoom, getVisibleRect, moveTo]);
+ 
+   const zoomIn = useCallback((transitionDuration?: number) => {
+-    const newZoom = (state.zoom || 1) * 1.2;
++    const newZoom = (view.current.zoom || 1) * 1.2;
+ 
+     return setZoom(newZoom, transitionDuration);
+-  }, [state.zoom, setZoom]);
++  }, [setZoom]);
+ 
+   const zoomOut = useCallback((transitionDuration?: number) => {
+-    const newZoom = (state.zoom || 1) / 1.2;
++    const newZoom = (view.current.zoom || 1) / 1.2;
+ 
+     return setZoom(newZoom, transitionDuration);
+-  }, [state.zoom, setZoom]);
++  }, [setZoom]);
+ 
+   const getCursorPosition = useCallback(() => {
+     if (!innerRef.current) {
+       return { x: 0, y: 0 };
+     }
+ 
++    const { zoom, offsetX, offsetY } = view.current;
++
+     return {
+-      x: Math.round((state.mouseX - state.offsetX) / state.zoom),
+-      y: Math.round((state.mouseY - state.offsetY) / state.zoom),
++      x: Math.round((mouse.current.x - offsetX) / zoom),
++      y: Math.round((mouse.current.y - offsetY) / zoom),
+     };
+-  }, [state.mouseX, state.mouseY, state.zoom, state.offsetX, state.offsetY]);
++  }, []);
+ 
+   const panTo = useCallback(async (
+     x: number,
+@@ -415,22 +525,18 @@ const InfiniteCanvas = ({
+       return;
+     }
+ 
+-    const newOffsetX = visible.centerX - x * state.zoom;
+-    const newOffsetY = visible.centerY - y * state.zoom;
++    const newOffsetX = visible.centerX - x * view.current.zoom;
++    const newOffsetY = visible.centerY - y * view.current.zoom;
+     const animate = transitionDuration ?? 100;
+ 
+-    dispatch({
+-      offsetX: newOffsetX,
+-      offsetY: newOffsetY,
+-      animate,
+-    });
++    moveTo({ offsetX: newOffsetX, offsetY: newOffsetY }, animate);
+ 
+     if (animate > 0) {
+       return new Promise(resolve => {
+         setTimeout(resolve, animate);
+       });
+     }
+-  }, [state.zoom, getVisibleRect]);
++  }, [getVisibleRect, moveTo]);
+ 
+   const panAndZoomTo = useCallback(async (
+     x: number,
+@@ -449,19 +555,18 @@ const InfiniteCanvas = ({
+     const newOffsetY = visible.centerY - y * newZoomClamped;
+     const animate = transitionDuration ?? 100;
+ 
+-    dispatch({
++    moveTo({
+       zoom: newZoomClamped,
+       offsetX: newOffsetX,
+       offsetY: newOffsetY,
+-      animate,
+-    });
++    }, animate);
+ 
+     if (animate > 0) {
+       return new Promise(resolve => {
+         setTimeout(resolve, animate);
+       });
+     }
+-  }, [minZoom, maxZoom, getVisibleRect]);
++  }, [minZoom, maxZoom, getVisibleRect, moveTo]);
+ 
+   const getElementBounds = useCallback((elmt: HTMLElement) => {
+     if (!contentRef.current || !elmt) {
+@@ -513,26 +618,29 @@ const InfiniteCanvas = ({
+     const newOffsetY = visible.centerY - elCenterY * newZoom;
+     const animate = transitionDuration ?? 100;
+ 
+-    dispatch({
++    moveTo({
+       zoom: newZoom,
+       offsetX: newOffsetX,
+       offsetY: newOffsetY,
+-      animate,
+-    });
++    }, animate);
+ 
+     if (animate > 0) {
+       return new Promise(resolve => {
+         setTimeout(resolve, animate);
+       });
+     }
+-  }, [minZoom, maxZoom, centerMargin, getElementBounds, getVisibleRect]);
++  }, [
++    minZoom, maxZoom, centerMargin, getElementBounds, getVisibleRect, moveTo,
++  ]);
+ 
+-  const getContext = useCallback((): InfiniteCanvasContextType => ({
++  // Only committed values are exposed, so consumers re-render once per
++  // gesture instead of once per event
++  const context = useMemo((): InfiniteCanvasContextType => ({
+     zoom: state.zoom,
+     offsetX: state.offsetX,
+     offsetY: state.offsetY,
+-    mouseX: state.mouseX,
+-    mouseY: state.mouseY,
++    subscribeCursor,
++    getCursor,
+     fitIntoView,
+     panTo,
+     panAndZoomTo,
+@@ -541,7 +649,7 @@ const InfiniteCanvas = ({
+     zoomIn,
+     zoomOut,
+   }), [
+-    state.zoom, state.offsetX, state.offsetY, state.mouseX, state.mouseY,
++    state.zoom, state.offsetX, state.offsetY, subscribeCursor, getCursor,
+     fitIntoView, setZoom, zoomIn, zoomOut, panTo, panAndZoomTo, centerOn,
+   ]);
+ 
+@@ -553,11 +661,8 @@ const InfiniteCanvas = ({
+     e.preventDefault();
+     e.stopPropagation();
+ 
+-    dispatch({
+-      panning: true,
+-      panStartX: e.clientX,
+-      panStartY: e.clientY,
+-    });
++    panning.current = { active: true, startX: e.clientX, startY: e.clientY };
++    dispatch({ panning: true });
+   }, [cursorMode]);
+ 
+   const onMouseMove = useCallback((e: MouseEvent) => {
+@@ -565,43 +670,36 @@ const InfiniteCanvas = ({
+     // stays consistent with offsetX/offsetY regardless of where the canvas
+     // is positioned on the page
+     const rect = innerRef.current?.getBoundingClientRect();
+-    const mouseX = e.clientX - (rect?.left ?? 0);
+-    const mouseY = e.clientY - (rect?.top ?? 0);
+ 
+-    if (!state.panning || cursorMode !== 'pan') {
+-      dispatch({ mouseX, mouseY });
++    mouse.current = {
++      x: e.clientX - (rect?.left ?? 0),
++      y: e.clientY - (rect?.top ?? 0),
++    };
++
++    if (!panning.current.active || cursorMode !== 'pan') {
++      notifyCursor();
+ 
+       return;
+     }
+ 
+-    const deltaX = e.clientX - state.panStartX;
+-    const deltaY = e.clientY - state.panStartY;
++    view.current.offsetX += e.clientX - panning.current.startX;
++    view.current.offsetY += e.clientY - panning.current.startY;
++    panning.current.startX = e.clientX;
++    panning.current.startY = e.clientY;
+ 
+-    dispatch({
+-      mouseX,
+-      mouseY,
+-      offsetX: state.offsetX + deltaX,
+-      offsetY: state.offsetY + deltaY,
+-      panStartX: e.clientX,
+-      panStartY: e.clientY,
+-    });
+-  }, [
+-    state.panStartX, state.panStartY, state.offsetX, state.offsetY,
+-    state.panning,
+-    cursorMode,
+-  ]);
++    scheduleFlush();
++    scheduleCommit();
++  }, [cursorMode, notifyCursor, scheduleFlush, scheduleCommit]);
+ 
+   const onMouseUp = useCallback(() => {
+-    if (!state.panning || cursorMode !== 'pan') {
++    if (!panning.current.active || cursorMode !== 'pan') {
+       return;
+     }
+ 
+-    dispatch({
+-      panning: false,
+-      panStartX: 0,
+-      panStartY: 0,
+-    });
+-  }, [state.panning, cursorMode]);
++    panning.current = { active: false, startX: 0, startY: 0 };
++    dispatch({ panning: false });
++    commitView();
++  }, [cursorMode, commitView]);
+ 
+   useEffect(() => {
+     if (['pan', 'add'].includes(cursorMode)) {
+@@ -618,11 +716,8 @@ const InfiniteCanvas = ({
+     globalEventsTarget, cursorMode,
+   ]);
+ 
+-  const scaledPatternGap = gap * state.zoom;
+-  const scaledPatternSize = size * state.zoom;
+-
+   return (
+-    <InfiniteCanvasContext value={getContext()}>
++    <InfiniteCanvasContext value={context}>
+       <div
+         { ...rest }
+         ref={innerRef}
+@@ -642,9 +737,7 @@ const InfiniteCanvas = ({
+             'infinite-canvas-content',
+           )}
+           style={{
+-            transform:
+-              `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) ` +
+-              `scale3d(${state.zoom}, ${state.zoom}, 1)`,
++            transform: getContentTransform(view.current),
+             transformOrigin: '0 0',
+             ...state.animate > 0 && {
+               transition: `transform ${state.animate}ms ease-in-out`,
+@@ -658,40 +751,37 @@ const InfiniteCanvas = ({
+ 
+         <svg ref={backgroundRef} className="infinite-canvas-background">
+           <pattern
++            ref={patternRef}
+             id={customPatternId}
+             patternUnits="userSpaceOnUse"
+-            x={state.offsetX % scaledPatternGap}
+-            y={state.offsetY % scaledPatternGap}
+-            width={scaledPatternGap}
+-            height={scaledPatternGap}
+-            patternTransform={
+-              `translate(${scaledPatternSize}, ${scaledPatternSize})`
+-            }
++            width={gap}
++            height={gap}
++            patternTransform={getPatternTransform(view.current, size)}
+           >
+             { pattern === 'cross' ? (
+               <>
+                 <line
+-                  x1={scaledPatternSize * 2}
++                  x1={size * 2}
+                   y1="0"
+-                  x2={scaledPatternSize * 2}
+-                  y2={scaledPatternSize * 4}
++                  x2={size * 2}
++                  y2={size * 4}
+                   stroke={fill}
+-                  strokeWidth={scaledPatternSize / 4}
++                  strokeWidth={size / 4}
+                 />
+                 <line
+                   x1="0"
+-                  y1={scaledPatternSize * 2}
+-                  x2={scaledPatternSize * 4}
+-                  y2={scaledPatternSize * 2}
++                  y1={size * 2}
++                  x2={size * 4}
++                  y2={size * 2}
+                   stroke={fill}
+-                  strokeWidth={scaledPatternSize / 4}
++                  strokeWidth={size / 4}
+                 />
+               </>
+             ) : (
+               <circle
+-                cx={scaledPatternSize}
+-                cy={scaledPatternSize}
+-                r={scaledPatternSize}
++                cx={size}
++                cy={size}
++                r={size}
+                 fill={fill}
+               />
+             ) }
+diff --git a/lib/contexts.tsx b/lib/contexts.tsx
+index b84fe8fc76011b15ec90f5430f782080ee79b30b..9cffc38f1f9161dc146ee4c12a097672dc0cd654 100644
+--- a/lib/contexts.tsx
++++ b/lib/contexts.tsx
+@@ -80,8 +80,8 @@ export declare interface InfiniteCanvasContextType {
+   zoom: number;
+   offsetX: number;
+   offsetY: number;
+-  mouseX: number;
+-  mouseY: number;
++  subscribeCursor: (listener: () => void) => () => void;
++  getCursor: () => { x: number; y: number };
+   fitIntoView: (transitionDuration?: number) => Promise<void>;
+   setZoom: (newZoom: number, transitionDuration?: number) => Promise<void>;
+   panTo: (x: number, y: number, transitionDuration?: number) => Promise<void>;
+@@ -99,12 +99,14 @@ export declare interface InfiniteCanvasContextType {
+   ) => Promise<void>;
+ }
+ 
++const DEFAULT_CURSOR = { x: 0, y: 0 };
++
+ export const InfiniteCanvasContext = createContext<InfiniteCanvasContextType>({
+   zoom: 1,
+   offsetX: 0,
+   offsetY: 0,
+-  mouseX: 0,
+-  mouseY: 0,
++  subscribeCursor: () => () => {},
++  getCursor: () => DEFAULT_CURSOR,
+   fitIntoView: async () => {},
+   setZoom: async () => {},
+   panTo: async () => {},
+diff --git a/lib/hooks.tsx b/lib/hooks.tsx
+index 38b1553e5d4456b1ddff2bf665e1298d66b5e6ba..29b90673b6ae1e38fd83da8e3fca853c94dac7be 100644
+--- a/lib/hooks.tsx
++++ b/lib/hooks.tsx
+@@ -1,4 +1,4 @@
+-import { use } from 'react';
++import { use, useSyncExternalStore } from 'react';
+ 
+ import {
+   AlertsContext,
+@@ -17,3 +17,10 @@ export const useList = () => use(ListContext);
+ export const useToasts = () => use(ToastsContext);
+ export const useModal = () => use(ModalContext);
+ export const useInfiniteCanvas = () => use(InfiniteCanvasContext);
++
++// Live cursor position in content space, re-rendering only its subscribers
++export const useInfiniteCanvasCursor = () => {
++  const { subscribeCursor, getCursor } = use(InfiniteCanvasContext);
++
++  return useSyncExternalStore(subscribeCursor, getCursor, getCursor);
++};
+diff --git a/lib/index.ts b/lib/index.ts
+index a83918562f4dc8af92416870d36544acee97c222..a9dabe34abd2407475a1e0352cc8df0c0be2ade2 100644
+--- a/lib/index.ts
++++ b/lib/index.ts
+@@ -373,6 +373,7 @@ export {
+   useFieldControl,
+   useModal,
+   useInfiniteCanvas,
++  useInfiniteCanvasCursor,
+ } from './hooks';
+ 
+ export {

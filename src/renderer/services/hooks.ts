@@ -6,8 +6,9 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
-import { useTimeout } from '@junipero/react';
+import { useInfiniteCanvas, useTimeout } from '@junipero/react';
 
 import {
   AppContext,
@@ -26,6 +27,18 @@ import {
   ScriptFormContext,
   SpriteContext,
 } from './contexts';
+
+const noopSubscribe = () => () => {};
+
+// Only subscribes when enabled so non-preview items skip cursor re-renders
+export const usePreviewCursor = (enabled: boolean) => {
+  const { subscribeCursor, getCursor } = useInfiniteCanvas();
+
+  return useSyncExternalStore(
+    enabled ? subscribeCursor : noopSubscribe,
+    getCursor,
+  );
+};
 
 const queryParams = () => {
   const params = new URLSearchParams(window.location.search);

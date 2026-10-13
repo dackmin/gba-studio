@@ -1466,7 +1466,7 @@ __metadata:
 
 "@junipero/react@patch:@junipero/react@npm%3A3.15.0#~/.yarn/patches/@junipero-react-npm-3.15.0-69d30d2cc6.patch":
   version: 3.15.0
-  resolution: "@junipero/react@patch:@junipero/react@npm%3A3.15.0#~/.yarn/patches/@junipero-react-npm-3.15.0-69d30d2cc6.patch::version=3.15.0&hash=9f97f3"
+  resolution: "@junipero/react@patch:@junipero/react@npm%3A3.15.0#~/.yarn/patches/@junipero-react-npm-3.15.0-69d30d2cc6.patch::version=3.15.0&hash=c53cc0"
   dependencies:
     "@floating-ui/react": "npm:0.27.20"
     "@junipero/core": "npm:^3.14.1"
@@ -1475,7 +1475,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/25db33afbb196ca4b9a77f3f10d6b2a2259cda5d4abc055d599b266738f2e177dbbfd1dd2c4a5b3fd0eb674e1bc68edc43335d8d9a70389589a9d1ac26cb26b6
+  checksum: 10c0/ec8c481abee45ca2bb5ac9c09335572e525e040ebb4f7a221ef0be51b9ca14f18a8a81e1b71e4b786aa5f1429a3fa0d2cb8756a4903f8e8e07f8c418f8f6c791
   languageName: node
   linkType: hard
 
