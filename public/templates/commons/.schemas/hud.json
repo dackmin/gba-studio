@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "hud.json",
+  "definitions": {
+    "HudSprite": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "const": "hud-sprite",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sprite": {
+          "type": "string"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sprite",
+        "x",
+        "y"
+      ]
+    },
+    "Hud": {
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "const": "hud",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sprites": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/HudSprite" }
+        },
+        "events": {
+          "additionalProperties": false,
+          "properties": {
+            "init": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            },
+            "update": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "$schema",
+        "type",
+        "name"
+      ]
+    }
+  },
+  "$ref": "#/definitions/Hud"
+}

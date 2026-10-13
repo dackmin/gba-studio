@@ -44,11 +44,16 @@ export interface EventDefinition extends ListItem {
   containers?: string[];
   // Whether this event can be added inside a parallel-events event.
   parallelizable?: boolean;
+  // Whether this event can be used in a HUD (needs no scene content).
+  hud?: boolean;
   construct?: (params?: any) => any;
 }
 
 export const isParallelizable = (type: string): boolean =>
   !!getEventDefinition(type).parallelizable;
+
+export const isHudEvent = (definition: EventDefinition): boolean =>
+  !!definition.hud;
 
 export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   name: 'Input',
@@ -354,6 +359,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: Pencil1Icon,
     name: 'Set Variable',
     value: 'set-variable',
+    hud: true,
     keywords: ['variable', 'set', 'change', 'value', 'increment', 'decrement', 'add', 'subtract'],
     parallelizable: true,
     construct: () => ({
@@ -369,6 +375,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: PlayIcon,
     name: 'Play Music',
     value: 'play-music',
+    hud: true,
     keywords: ['music', 'play', 'sound'],
     parallelizable: true,
     construct: () => ({
@@ -380,6 +387,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: StopIcon,
     name: 'Stop Music',
     value: 'stop-music',
+    hud: true,
     keywords: ['music', 'stop', 'sound'],
     construct: () => ({
       type: 'stop-music',
@@ -388,6 +396,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: SpeakerLoudIcon,
     name: 'Play Sound',
     value: 'play-sound',
+    hud: true,
     keywords: ['sound', 'play', 'sfx'],
     parallelizable: true,
     construct: () => ({
@@ -401,11 +410,13 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     name: 'Wait for X Milliseconds',
     keywords: ['wait', 'timer', 'delay'],
     value: 'wait',
+    hud: true,
     construct: () => ({ type: 'wait', duration: 500 }),
   }, {
     icon: GroupIcon,
     name: 'If',
     value: 'if',
+    hud: true,
     keywords: ['if', 'condition', 'check'],
     containers: ['then', 'else'],
     construct: () => ({
@@ -425,6 +436,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     icon: CodeIcon,
     name: 'Execute Script',
     value: 'execute-script',
+    hud: true,
     keywords: ['script', 'code', 'execute'],
     construct: () => ({
       type: 'execute-script',

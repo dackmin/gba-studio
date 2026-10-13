@@ -6,13 +6,14 @@ import {
 import { classNames } from '@junipero/react';
 import {
   CodeIcon,
+  LayoutIcon,
   PlusCircledIcon,
   StackIcon,
 } from '@radix-ui/react-icons';
 import { IconButton, InsetProps, Text, ContextMenu } from '@radix-ui/themes';
 import { v4 as uuid } from 'uuid';
 
-import type { GameScene, GameScript, GameVariable } from '../../../types';
+import type { GameHud, GameScene, GameScript, GameVariable } from '../../../types';
 import { useApp, useCanvas, useLocalData } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
@@ -23,14 +24,18 @@ const LeftSidebar = ({
 }: LeftSidebarProps) => {
   const {
     scenes,
+    huds,
     scripts,
     variables,
     eventEmitter,
+    onCanvasChange,
   } = useApp();
   const {
     selectedScene,
+    selectedHud,
     selectedItem,
     selectScene,
+    selectHud,
     selectScript,
     selectVariable,
     onVariablesChange,
@@ -137,6 +142,16 @@ const LeftSidebar = ({
     eventEmitter?.emit('canvas:center', scene);
   }, [selectScene, eventEmitter]);
 
+  const onSelectHud = useCallback((hud: GameHud) => {
+    selectHud?.(hud);
+    eventEmitter?.emit('canvas:center', hud);
+  }, [selectHud, eventEmitter]);
+
+  const onRemoveHud = useCallback((hud: GameHud) => {
+    onCanvasChange?.({ huds: huds.filter(h => h !== hud) });
+    selectHud?.();
+  }, [huds, onCanvasChange, selectHud]);
+
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root
@@ -183,6 +198,57 @@ const LeftSidebar = ({
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
                   onClick={onRemoveScene.bind(null, scene)}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
+          )) }
+        </Collapsible.Content>
+      </Collapsible.Root>
+
+      <Collapsible.Root
+        open={!isCollapsed('canvas.huds')}
+        onOpenChange={collapse.bind(null, 'canvas.huds')}
+      >
+        <Collapsible.Trigger>
+          <Text>HUDs</Text>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          { huds.length <= 0 ? (
+            <Text
+              size="1"
+              className="block text-center text-slate pb-3"
+            >
+              No HUDs
+            </Text>
+          ) : huds.map(hud => (
+            <ContextMenu.Root
+              key={hud.id}
+              onOpenChange={selectHud?.bind(null, hud)}
+            >
+              <ContextMenu.Trigger>
+                <a
+                  href="#"
+                  className={classNames(
+                    'flex items-center gap-2 px-3 py-1',
+                    { 'bg-(--accent-9)': selectedHud === hud },
+                  )}
+                  onClick={onSelectHud.bind(null, hud)}
+                >
+                  <LayoutIcon
+                    className={classNames(
+                      '[&_path]:fill-(--accent-9)',
+                      { '[&_path]:fill-seashell': selectedHud === hud },
+                    )}
+                  />
+                  <Text>{ hud.name }</Text>
+                </a>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  onClick={onRemoveHud.bind(null, hud)}
                 >
                   Delete
                 </ContextMenu.Item>

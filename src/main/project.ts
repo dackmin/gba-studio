@@ -4,6 +4,7 @@ import fsp from 'node:fs/promises';
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameHud,
   GameMusicFile,
   GameProject,
   GameScene,
@@ -16,6 +17,7 @@ import {
   getAudioFiles,
   getGraphicFileSize,
   getGraphicsFiles,
+  getHudFiles,
   getSceneFiles,
   getScriptsFiles,
   getVariableFiles,
@@ -41,6 +43,10 @@ export async function loadProjectData (
   // Prepare scenes
   const sceneFiles = await getSceneFiles(projectDir);
   total += sceneFiles.length;
+
+  // Prepare huds
+  const hudFiles = await getHudFiles(projectDir);
+  total += hudFiles.length;
 
   // Prepare graphics
   const graphicsFiles = await getGraphicsFiles(
@@ -84,6 +90,20 @@ export async function loadProjectData (
     current++;
     opts?.onProgress?.(current, total);
     scenes.push(scene);
+  }
+
+  // Load huds
+  const huds: GameHud[] = [];
+
+  for (const file of hudFiles) {
+    const hud: GameHud = JSON.parse(await fsp
+      .readFile(path.join(projectDir, 'content', file), 'utf-8'));
+
+    hud._file = file;
+
+    current++;
+    opts?.onProgress?.(current, total);
+    huds.push(hud);
   }
 
   // Load graphics
@@ -156,6 +176,7 @@ export async function loadProjectData (
   const payload: AppPayload = {
     project,
     scenes,
+    huds,
     variables,
     sprites,
     backgrounds,

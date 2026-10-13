@@ -8,6 +8,8 @@ import type {
   CharacterDirection,
   GameActor,
   GameBackgroundFile,
+  GameHud,
+  GameHudSprite,
   GameMusicFile,
   GameProject,
   GameScene,
@@ -165,6 +167,41 @@ export const sanitizeSceneSprite = async (
   }
 
   return sprite;
+};
+
+export const sanitizeHudSprite = async (
+  sprite: GameHudSprite
+): Promise<GameHudSprite> => {
+  if (!sprite.id) {
+    sprite.id = randomUUID();
+  }
+
+  sprite.type = 'hud-sprite';
+  sprite.x = Math.round(Number(sprite.x ?? 0));
+  sprite.y = Math.round(Number(sprite.y ?? 0));
+  sprite.z = Math.min(99, Math.max(0, Math.round(Number(sprite.z ?? 0))));
+
+  return sprite;
+};
+
+export const sanitizeHud = async (hud: GameHud): Promise<GameHud> => {
+  if (!hud.id) {
+    hud.id = randomUUID();
+  }
+
+  hud.type = 'hud';
+  hud.sprites = await Promise
+    .all((hud.sprites ?? []).map(sprite => sanitizeHudSprite(sprite)));
+
+  for (const event of hud.events?.init ?? []) {
+    await sanitizeEvent(event);
+  }
+
+  for (const event of hud.events?.update ?? []) {
+    await sanitizeEvent(event);
+  }
+
+  return hud;
 };
 
 export const sanitizeScene = async (
@@ -464,6 +501,7 @@ export const sanitizeSound = async (
 
 export const sanitizeProject = async (project: GameProject, opts?: {
   scenes: GameScene[];
+  huds?: GameHud[];
 }): Promise<GameProject> => {
   if (!project.id) {
     project.id = randomUUID();
@@ -489,6 +527,18 @@ export const sanitizeProject = async (project: GameProject, opts?: {
     ))
   ));
 
+  project.huds = (project.huds ?? []).map(hudData => {
+    if (!hudData.id) {
+      hudData.id = opts?.huds?.find(h => h._file === hudData._file)?.id;
+    }
+
+    return hudData;
+  }).filter(hudData => (
+    opts?.huds?.some(h => (
+      h._file === hudData._file || h.id === hudData.id
+    ))
+  ));
+
   return project;
 };
 
@@ -503,6 +553,17 @@ export const sanitize = async (
   // Scenes
   data.scenes = await Promise
     .all((data.scenes || []).map(scene => sanitizeScene(scene, opts)));
+
+  // Huds
+  data.huds = await Promise
+    .all((data.huds || []).map(hud => sanitizeHud(hud)));
+
+  // Scenes can't reference a deleted hud
+  for (const scene of data.scenes) {
+    if (scene.hud && !data.huds.some(h => h.id === scene.hud)) {
+      delete scene.hud;
+    }
+  }
 
   // Scripts
   data.scripts = await Promise
@@ -531,6 +592,7 @@ export const sanitize = async (
   if (data.project) {
     data.project = await sanitizeProject(data.project, {
       scenes: data.scenes || [],
+      huds: data.huds || [],
     });
   }
 

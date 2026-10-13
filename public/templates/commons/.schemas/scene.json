@@ -291,6 +291,9 @@
           "type": "array",
           "items": { "$ref": "#/definitions/Sprite" }
         },
+        "hud": {
+          "type": "string"
+        },
         "map": {
           "$ref": "#/definitions/Map"
         },

@@ -89,6 +89,74 @@ namespace neo::scenes
   {{/if}}
   {{/each}}
 
+  {{#each huds}}
+  //////////////////////////
+  // HUD: {{this.name}} //
+  //////////////////////////
+  {{#each this.sprites}}
+  constexpr bn::string_view hud_{{@../index}}_sprite_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view hud_{{@../index}}_sprite_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr neo::types::hud_sprite hud_{{@../index}}_sprite_{{@index}} = {
+    hud_{{@../index}}_sprite_{{@index}}_id,
+    hud_{{@../index}}_sprite_{{@index}}_name,
+    {{valuedef this.x 0}},
+    {{valuedef this.y 0}},
+    {{valuedef this.z 0}},
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}
+  };
+  {{/each}}
+  {{#if (hasItems this.sprites)}}
+  constexpr const neo::types::hud_sprite* hud_{{@index}}_sprites[] = {
+    {{#each this.sprites}}
+    &hud_{{@../index}}_sprite_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
+  {{#if (hasItems this.events.init)}}
+  {{>eventsPartial prefix=(concat "hud_" @index "_init_event") events=this.events.init}}
+  constexpr neo::types::event* hud_{{@index}}_init_events[] = {
+    {{#each this.events.init}}
+    &hud_{{@../index}}_init_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
+  {{#if (hasItems this.events.update)}}
+  {{>eventsPartial prefix=(concat "hud_" @index "_update_event") events=this.events.update}}
+  constexpr neo::types::event* hud_{{@index}}_update_events[] = {
+    {{#each this.events.update}}
+    &hud_{{@../index}}_update_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
+  constexpr bn::string_view hud_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view hud_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr neo::types::hud hud_{{@index}} = {
+    hud_{{@index}}_id,
+    hud_{{@index}}_name,
+    {{#if (hasItems this.sprites)}}
+    {{this.sprites.length}},
+    hud_{{@index}}_sprites,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.init)}}
+    {{this.events.init.length}},
+    hud_{{@index}}_init_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.update)}}
+    {{this.events.update.length}},
+    hud_{{@index}}_update_events
+    {{else}}
+    0,
+    nullptr
+    {{/if}}
+  };
+  {{/each}}
+
   {{#each scenes}}
   //////////////////////////
   // Scene: {{this.name}} //
@@ -459,9 +527,14 @@ namespace neo::scenes
     {{/if}}
     {{#if (hasItems this.sprites)}}
     {{this.sprites.length}},
-    {{slug this.name}}_sprites
+    {{slug this.name}}_sprites,
     {{else}}
     0,
+    nullptr,
+    {{/if}}
+    {{#if (gte (getHudIndex @root/huds this.hud) 0)}}
+    &hud_{{getHudIndex @root/huds this.hud}}
+    {{else}}
     nullptr
     {{/if}}
   };
@@ -484,6 +557,7 @@ namespace neo::scenes
     0,
     nullptr,
     0,
+    nullptr,
     nullptr
   };
 

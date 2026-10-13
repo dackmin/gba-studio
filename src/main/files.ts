@@ -34,6 +34,15 @@ export const getSceneFiles = async (
   );
 };
 
+export const getHudFiles = async (
+  base: string,
+) => {
+  return getDataFiles(
+    base,
+    file => file.startsWith('hud_') && file.endsWith('.json')
+  );
+};
+
 export const getGraphicsFiles = async (
   base: string,
   cond: (file: string) => boolean = () => true

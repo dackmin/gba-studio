@@ -99,6 +99,9 @@ export const setupHandlebars = async () => {
     id: string,
   ) => findBackground(backgrounds, id)
     ?._file?.replace(/\.json$/, '').replace(/^background_/, '') || id);
+  Handlebars.registerHelper('getHudIndex', (huds: { id: string }[] | undefined, id?: string) => {
+    return id ? (huds ?? []).findIndex(h => h.id === id) : -1;
+  });
   Handlebars.registerHelper('getSpriteName', (sprites: any[], id: string) => {
     return findSprite(sprites, id)
       ?._file?.replace(/\.json$/, '').replace(/^sprite_/, '') || id;

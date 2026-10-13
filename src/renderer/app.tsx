@@ -11,6 +11,7 @@ import { type MoveableState, cloneDeep, mockState, pick } from '@junipero/react'
 import type {
   AppPayload,
   AppStorage,
+  GameHud,
   GameProject,
   GameScene,
 } from '../types';
@@ -50,6 +51,7 @@ const App = () => {
     loading: true,
     ready: false,
     scenes: [],
+    huds: [],
     variables: [],
     sprites: [],
     backgrounds: [],
@@ -124,6 +126,7 @@ const App = () => {
         ...pick(state, [
           'project',
           'scenes',
+          'huds',
           'variables',
           'scripts',
           'backgrounds',
@@ -216,6 +219,7 @@ const App = () => {
     const newHistoryEntry: Partial<AppPayload> = cloneDeep(pick(currentState, [
       'project',
       'scenes',
+      'huds',
       'variables',
       'scripts',
       'sprites',
@@ -265,6 +269,39 @@ const App = () => {
     });
   }, [addToHistory]);
 
+  const onMoveHud = useCallback((
+    hud: GameHud,
+    e: Partial<MoveableState>
+  ) => {
+    dispatch(s => {
+      if (!s.project || !hud._file) {
+        return s;
+      }
+
+      const x = Math.round(e.deltaX || 0);
+      const y = Math.round(e.deltaY || 0);
+      const found = s.project.huds
+        ?.find(h => h.id === hud.id || h._file === hud._file);
+
+      if (found) {
+        if (found.x === x && found.y === y) {
+          return s;
+        }
+
+        found.id = hud.id;
+        found.x = x;
+        found.y = y;
+      } else {
+        s.project.huds = s.project.huds || [];
+        s.project.huds.push({ x, y, id: hud.id, _file: hud._file });
+      }
+
+      addToHistory(s);
+
+      return { ...s, dirty: true };
+    });
+  }, [addToHistory]);
+
   const onCanvasChange = useCallback((payload: Partial<AppPayload>) => {
     dispatch(s => {
       const res = { ...s, ...payload, dirty: true };
@@ -297,6 +334,7 @@ const App = () => {
     eventEmitter: eventsRef.current,
     project: state.project,
     scenes: state.scenes,
+    huds: state.huds,
     dirty: state.dirty,
     variables: state.variables,
     sprites: state.sprites,
@@ -315,15 +353,16 @@ const App = () => {
     setEditorConfig,
     setClipboard,
     onMoveScene,
+    onMoveHud,
     onCanvasChange,
     onProjectChange,
   }), [
     projectPath, resourcesPath,
-    state.scenes, state.projectBase, state.variables, state.project,
+    state.scenes, state.huds, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.sounds,
     state.scripts, state.music, state.editorConfig,
     state.clipboard, state.localData, state.isFullscreen,
-    save, onCanvasChange, onMoveScene, onProjectChange,
+    save, onCanvasChange, onMoveScene, onMoveHud, onProjectChange,
     setEditorConfig, setClipboard,
   ]);
 

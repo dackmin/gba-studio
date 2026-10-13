@@ -1,4 +1,4 @@
-import { type DragEvent, useCallback, useRef, useState } from 'react';
+import { type DragEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Dialog, Text, VisuallyHidden } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { type DraggingPositionType, cloneDeep, omit } from '@junipero/react';
@@ -9,8 +9,10 @@ import {
   type EventDefinition,
   ALL_EVENT_TYPES,
   getEventDefinition,
+  isHudEvent,
   removeEventById,
 } from '../../services/events';
+import { useHudForm } from '../../services/hooks';
 import Event from './Event';
 import Catalogue from './Catalogue';
 import DraggableStore from '../DraggableStore';
@@ -35,14 +37,22 @@ const EventsField = ({
   value,
   zone,
   max,
-  filter,
+  filter: filterProp,
   onValueChange,
   onDrop,
 }: EventsFieldProps) => {
   const addEventButtonRef = useRef<HTMLButtonElement>(null);
+  const { hud } = useHudForm();
   const [selected, setSelected] = useState<
     [SceneEvent, 'append' | 'prepend']
   >();
+
+  const filter = useMemo(() => (
+    hud
+      ? (definition: EventDefinition) =>
+        isHudEvent(definition) && (!filterProp || filterProp(definition))
+      : filterProp
+  ), [hud, filterProp]);
 
   const onDeleteEvent = useCallback((event: SceneEvent) => {
     onValueChange?.(value.filter(e => e !== event));
@@ -151,6 +161,10 @@ const EventsField = ({
       return;
     }
 
+    if (filter && !filter(getEventDefinition(data.type))) {
+      return;
+    }
+
     removeEventById(data.id, value);
 
     container = container ?? value;
@@ -164,7 +178,7 @@ const EventsField = ({
     }
 
     onValueChange?.([...value]);
-  }, [onValueChange, value]);
+  }, [onValueChange, value, filter]);
 
   return (
     <DraggableStore>

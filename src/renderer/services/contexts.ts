@@ -7,6 +7,8 @@ import type {
   LogMessage,
   CharacterDirection,
   GameActor,
+  GameHud,
+  GameHudSprite,
   GamePlayer,
   GameProject,
   GameScene,
@@ -43,12 +45,14 @@ export interface AppContextType extends Omit<AppPayload, 'project'> {
   setEditorConfig(config: AppStorage): void;
   setClipboard(data: any): void;
   onMoveScene?(scene: GameScene, e: Partial<MoveableState>): void;
+  onMoveHud?(hud: GameHud, e: Partial<MoveableState>): void;
   onCanvasChange?(payload: Partial<AppPayload>): void;
   onProjectChange?(project: GameProject): void;
 };
 
 export const AppContext = createContext<AppContextType>({
   scenes: [],
+  huds: [],
   variables: [],
   sprites: [],
   backgrounds: [],
@@ -97,8 +101,9 @@ export const EditorContext = createContext<EditorContextType>({
 
 export interface CanvasContextType {
   selectedScene?: GameScene;
+  selectedHud?: GameHud;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer | GameSprite |
-    GameVariable;
+    GameHudSprite | GameVariable;
   tool: ToolType;
   subTool?: SubToolType;
   setTool?(tool: ToolType, subTool?: SubToolType): void;
@@ -109,6 +114,8 @@ export interface CanvasContextType {
   ): void;
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;
+  selectHud?(hud?: GameHud): void;
+  selectHudSprite?(hud: GameHud, sprite?: GameHudSprite): void;
   selectScript?(script?: GameScript): void;
   selectVariable?(variable?: GameVariable): void;
   onVariablesChange?(registry: GameVariables): void;
@@ -117,6 +124,7 @@ export interface CanvasContextType {
   onVariableChange?(variable?: GameVariable): void;
   onScenesChange?(scenes: GameScene[]): void;
   onSceneChange?(scene?: GameScene): void;
+  onHudChange?(hud?: GameHud): void;
 };
 
 export const CanvasContext = createContext<CanvasContextType>({
@@ -137,6 +145,14 @@ export interface ScriptFormContextType {
 
 export const ScriptFormContext = createContext<ScriptFormContextType>({
   script: undefined,
+});
+
+export interface HudFormContextType {
+  hud?: GameHud;
+}
+
+export const HudFormContext = createContext<HudFormContextType>({
+  hud: undefined,
 });
 
 export interface BottomBarTabsContextType {

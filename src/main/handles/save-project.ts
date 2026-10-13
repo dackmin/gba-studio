@@ -6,6 +6,7 @@ import type { IpcMainInvokeEvent } from 'electron';
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameHud,
   GameMusicFile,
   GameScene,
   GameScript,
@@ -13,7 +14,13 @@ import type {
   GameSpriteFile,
   GameVariables,
 } from '../../types';
-import { getAudioFiles, getGraphicsFiles, getSceneFiles, getScriptsFiles } from '../files';
+import {
+  getAudioFiles,
+  getGraphicsFiles,
+  getHudFiles,
+  getSceneFiles,
+  getScriptsFiles,
+} from '../files';
 import { serialize } from '../serialize';
 import { sanitize } from '../sanitize';
 
@@ -21,6 +28,7 @@ export const saveItem = async (
   item:
     | GameVariables
     | GameScene
+    | GameHud
     | GameScript
     | GameSpriteFile
     | GameBackgroundFile
@@ -43,6 +51,7 @@ export const cleanObsoleteItems = async (
   newItems?: (
     | GameVariables
     | GameScene
+    | GameHud
     | GameScript
     | GameSpriteFile
     | GameBackgroundFile
@@ -80,6 +89,18 @@ export default async (
   // Save scenes
   for (const scene of data.scenes || []) {
     await saveItem(scene, projectDir);
+  }
+
+  // Delete obsolete huds
+  await cleanObsoleteItems(
+    projectDir,
+    await getHudFiles(projectDir),
+    data.huds
+  );
+
+  // Save huds
+  for (const hud of data.huds || []) {
+    await saveItem(hud, projectDir);
   }
 
   // Delete obsolete scripts

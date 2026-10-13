@@ -21,13 +21,13 @@ const VariableForm = ({
   variable,
   onChange,
 }: VariableFormProps) => {
-  const { scenes, scripts, variables } = useApp();
-  const { selectScene, selectScript, selectItem } = useCanvas();
+  const { scenes, scripts, huds, variables } = useApp();
+  const { selectScene, selectScript, selectItem, selectHud } = useCanvas();
 
   const collect = useCallback((
     events: SceneEvent[] | undefined,
     trigger: string,
-    ctx: Pick<VariableUpdate, 'scene' | 'script' | 'owner'>,
+    ctx: Pick<VariableUpdate, 'scene' | 'script' | 'hud' | 'owner'>,
   ) => {
     const res: VariableUpdate[] = [];
 
@@ -61,8 +61,14 @@ const VariableForm = ({
       res.push(...collect(script.events, 'script', { script }));
     }
 
+    for (const hud of huds) {
+      for (const [trigger, events] of Object.entries(hud.events ?? {})) {
+        res.push(...collect(events, trigger, { hud }));
+      }
+    }
+
     return res;
-  }, [scenes, scripts, collect]);
+  }, [scenes, scripts, huds, collect]);
 
   const formatValue = useCallback((value?: EventValue) => {
     if (typeof value !== 'object' || value === null) {
@@ -92,7 +98,7 @@ const VariableForm = ({
   const formatBreadCrumb = useCallback((update: VariableUpdate) => {
     return ([] as string[])
       .concat(
-        update.scene?.name || update.script?.name || 'Unknown'
+        update.scene?.name || update.script?.name || update.hud?.name || 'Unknown'
       )
       .concat(
         update.owner?.name ? [update.owner.name + ` (${update.owner.type})`] : []
@@ -106,12 +112,14 @@ const VariableForm = ({
   const onUpdateClick = useCallback((update: VariableUpdate) => {
     if (update.script) {
       selectScript?.(update.script);
+    } else if (update.hud) {
+      selectHud?.(update.hud);
     } else if (update.owner) {
       selectItem?.(update.scene, update.owner);
     } else {
       selectScene?.(update.scene);
     }
-  }, [selectScene, selectScript, selectItem]);
+  }, [selectScene, selectScript, selectItem, selectHud]);
 
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')

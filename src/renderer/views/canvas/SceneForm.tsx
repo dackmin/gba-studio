@@ -42,7 +42,7 @@ const SceneForm = ({
   scene,
   onChange,
 }: SceneFormProps) => {
-  const { backgrounds, projectPath, onCanvasChange, ...appPayload } = useApp();
+  const { backgrounds, huds, projectPath, onCanvasChange, ...appPayload } = useApp();
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -133,6 +133,17 @@ const SceneForm = ({
 
     onValueChange('background', getGraphicName(value || 'bg_default'));
   }, [scene, backgrounds, onValueChange]);
+
+  const onHudChange = useCallback((value: string) => {
+    if (value === 'none') {
+      delete scene.hud;
+      onChange?.(scene);
+
+      return;
+    }
+
+    onValueChange('hud', value);
+  }, [onChange, onValueChange, scene]);
 
   const onTypeChange = useCallback((name: string, value: string) => {
     if (value !== scene.sceneType) {
@@ -227,6 +238,23 @@ const SceneForm = ({
                 value={scene?.background || ''}
                 onValueChange={onBackgroundChange}
               />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">HUD</Text>
+              <Select.Root
+                value={huds.some(h => h.id === scene.hud) ? scene.hud : 'none'}
+                onValueChange={onHudChange}
+              >
+                <Select.Trigger className="w-full" />
+                <Select.Content>
+                  <Select.Item value="none">None</Select.Item>
+                  { huds.map(hud => (
+                    <Select.Item key={hud.id} value={hud.id}>
+                      { hud.name }
+                    </Select.Item>
+                  )) }
+                </Select.Content>
+              </Select.Root>
             </div>
             { scene.sceneType !== 'logos' && (
               <div className="flex flex-col gap-2">

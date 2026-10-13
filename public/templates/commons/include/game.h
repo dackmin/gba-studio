@@ -7,6 +7,7 @@
 #include <bn_span.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
+#include <bn_sprite_ptr.h>
 #include <bn_camera_actions.h>
 
 #include <neo_types.h>
@@ -43,6 +44,9 @@ namespace neo
 
       int sprites_count;
       bn::vector<neo::sprite*, 50> sprites;
+
+      // Screen-fixed sprites of the active scene's HUD (no camera attached)
+      bn::vector<bn::sprite_ptr, 30> hud_sprites;
 
       int sensors_count;
       bn::vector<neo::sensor*, 50> sensors;

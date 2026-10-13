@@ -1,6 +1,7 @@
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameHud,
   GameMusicFile,
   GameScene,
   GameScript,
@@ -13,6 +14,12 @@ export const serializeScript = async (script: GameScript): Promise<GameScript> =
   script.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/script.json';
 
   return script;
+};
+
+export const serializeHud = async (hud: GameHud): Promise<GameHud> => {
+  hud.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/hud.json';
+
+  return hud;
 };
 
 export const serializeVariablesRegistry = async (
@@ -112,6 +119,11 @@ export const serialize = async (
   if (payload.scripts) {
     payload.scripts = await Promise
       .all(payload.scripts.map(script => serializeScript(script)));
+  }
+
+  if (payload.huds) {
+    payload.huds = await Promise
+      .all(payload.huds.map(hud => serializeHud(hud)));
   }
 
   if (payload.variables) {

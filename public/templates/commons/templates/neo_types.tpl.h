@@ -1074,6 +1074,30 @@ namespace neo::types
     event* const* collide_events;
   };
 
+  // Screen-fixed sprite of a HUD: x/y are pixels from the top-left corner
+  // of the screen, z is a 0-99 layer among the HUD sprites.
+  struct hud_sprite
+  {
+    bn::string_view _id;
+    bn::string_view name;
+    int x;
+    int y;
+    int z;
+    bn::sprite_item sprite;
+  };
+
+  struct hud
+  {
+    bn::string_view _id;
+    bn::string_view name;
+    int sprites_count;
+    const hud_sprite* const* sprites;
+    int init_events_count;
+    event* const* init_events;
+    int update_events_count;
+    event* const* update_events;
+  };
+
   struct script
   {
     bn::string_view _id;
@@ -1104,6 +1128,7 @@ namespace neo::types
     // Sprites
     int sprites_count;
     const sprite* const* sprites;
+    const hud* hud_data;
 
     inline bool is (bn::string_view name_) const
     {

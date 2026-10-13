@@ -43,6 +43,7 @@ const LeftSidebar = ({
     projectPath,
     project,
     scenes,
+    huds,
     variables,
     scripts,
     sprites,
@@ -86,6 +87,7 @@ const LeftSidebar = ({
           : project?.startingScene,
       },
       scenes,
+      huds,
       variables,
       scripts,
       sprites,
@@ -94,7 +96,8 @@ const LeftSidebar = ({
       music,
     }, { clean });
   }, [
-    building, selectedScene, projectPath, project, scenes, variables, scripts, sprites, backgrounds,
+    building, selectedScene, projectPath, project, scenes, huds, variables, scripts, sprites,
+    backgrounds,
     sounds, music,
     getData,
   ]);

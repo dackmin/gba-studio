@@ -8,6 +8,8 @@ import { mockState } from '@junipero/react';
 
 import type {
   GameActor,
+  GameHud,
+  GameHudSprite,
   GamePlayer,
   GameScene,
   GameScript,
@@ -22,8 +24,9 @@ import { useApp, useLocalData } from '../../services/hooks';
 
 export interface CanvasState {
   selectedScene?: string;
+  selectedHud?: string;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer |
-    GameVariable;
+    GameHudSprite | GameVariable;
   tool: ToolType;
   previousTool: ToolType;
   subTool?: SubToolType;
@@ -36,6 +39,7 @@ const Provider = ({
   const { getData, setData } = useLocalData();
   const [state, dispatch] = useReducer(mockState<CanvasState>, {
     selectedScene: getData?.('canvas.selectedScene'),
+    selectedHud: undefined,
     selectedItem: undefined,
     tool: 'default',
     subTool: undefined,
@@ -50,21 +54,55 @@ const Provider = ({
 
   const selectScene = useCallback((scene?: GameScene) => {
     if (selectedScene === scene) {
-      dispatch({ selectedItem: undefined });
+      dispatch({ selectedItem: undefined, selectedHud: undefined });
 
       return;
     }
 
     setData?.('canvas.selectedScene', scene?.id);
-    dispatch({ selectedScene: scene?.id, selectedItem: undefined });
+    dispatch({
+      selectedScene: scene?.id,
+      selectedHud: undefined,
+      selectedItem: undefined,
+    });
   }, [setData, selectedScene]);
+
+  const selectedHud = useMemo(() => (
+    appPayload.huds.find(h => (
+      h._file === state.selectedHud || h.id === state.selectedHud
+    ))
+  ), [appPayload.huds, state.selectedHud]);
+
+  const selectHud = useCallback((hud?: GameHud) => {
+    dispatch({
+      selectedHud: hud?.id,
+      selectedScene: undefined,
+      selectedItem: undefined,
+    });
+  }, []);
+
+  const selectHudSprite = useCallback((hud: GameHud, sprite?: GameHudSprite) => {
+    if (state.selectedItem === sprite) {
+      return;
+    }
+
+    dispatch({
+      selectedHud: hud.id,
+      selectedScene: undefined,
+      selectedItem: sprite,
+    });
+  }, [state.selectedItem]);
 
   const selectScript = useCallback((script: GameScript) => {
     if (state.selectedItem === script) {
       return;
     }
 
-    dispatch({ selectedItem: script, selectedScene: undefined });
+    dispatch({
+      selectedItem: script,
+      selectedScene: undefined,
+      selectedHud: undefined,
+    });
   }, [state.selectedItem]);
 
   const selectVariable = useCallback((variable: GameVariable) => {
@@ -72,7 +110,11 @@ const Provider = ({
       return;
     }
 
-    dispatch({ selectedItem: variable, selectedScene: undefined });
+    dispatch({
+      selectedItem: variable,
+      selectedScene: undefined,
+      selectedHud: undefined,
+    });
   }, [state.selectedItem]);
 
   const onVariablesChange = useCallback((registry: GameVariables) => {
@@ -103,11 +145,19 @@ const Provider = ({
       return;
     }
 
-    dispatch({ selectedScene: scene._file, selectedItem: item });
+    dispatch({
+      selectedScene: scene._file,
+      selectedHud: undefined,
+      selectedItem: item,
+    });
   }, [state.selectedItem]);
 
   const resetSelection = useCallback(() => {
-    dispatch({ selectedItem: undefined, selectedScene: undefined });
+    dispatch({
+      selectedItem: undefined,
+      selectedScene: undefined,
+      selectedHud: undefined,
+    });
   }, []);
 
   const onScenesChange = useCallback((scenes: GameScene[]) => {
@@ -125,6 +175,15 @@ const Provider = ({
       ...appPayload,
       scenes: appPayload.scenes.map(s => (
         s.id === scene?.id || s._file === scene?._file ? scene! : s
+      )),
+    });
+  }, [onCanvasChange, appPayload]);
+
+  const onHudChange = useCallback((hud?: GameHud) => {
+    onCanvasChange?.({
+      ...appPayload,
+      huds: appPayload.huds.map(h => (
+        h.id === hud?.id || h._file === hud?._file ? hud! : h
       )),
     });
   }, [onCanvasChange, appPayload]);
@@ -166,6 +225,7 @@ const Provider = ({
 
   const getContext = useCallback((): CanvasContextType => ({
     selectedScene,
+    selectedHud,
     selectedItem: state.selectedItem,
     tool: state.tool,
     subTool: state.subTool,
@@ -175,19 +235,23 @@ const Provider = ({
     selectVariable,
     resetSelection,
     selectScene,
+    selectHud,
+    selectHudSprite,
     selectScript,
     onVariablesChange,
     onScriptsChange,
     onScriptChange,
     onScenesChange,
     onSceneChange,
+    onHudChange,
     onVariableChange,
   }), [
-    selectedScene,
+    selectedScene, selectedHud,
     state.selectedItem, state.tool, state.subTool,
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
     onScenesChange, selectVariable, onVariableChange,
+    selectHud, selectHudSprite, onHudChange,
   ]);
 
   return (

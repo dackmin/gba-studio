@@ -28,7 +28,7 @@ export interface AppStorage {
 export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
-export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite';
+export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' | 'hud-sprite';
 export type SubToolType = AddSubToolType;
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
@@ -156,6 +156,8 @@ export interface GameScene {
   events?: SceneEvent[];
   actors?: GameActor[];
   sprites?: GameSprite[];
+  // Id of the HUD displayed over this scene
+  hud?: string;
   // Internals
   id: string;
   _file?: string;
@@ -227,6 +229,34 @@ export interface GameSprite {
   id: string;
 }
 
+// A HUD is a fixed GBA-screen-sized layer (240x160) that only holds sprites.
+// It is displayed over a scene and never moves with the camera.
+export interface GameHud {
+  type: 'hud';
+  name: string;
+  sprites?: GameHudSprite[];
+  events?: {
+    init?: SceneEvent[];
+    update?: SceneEvent[];
+  };
+  // Internals
+  id: string;
+  _file?: string;
+  $schema?: string;
+}
+
+export interface GameHudSprite {
+  type: 'hud-sprite';
+  name: string;
+  sprite: string;
+  // Pixels from the top-left corner of the screen
+  x: number;
+  y: number;
+  z?: number;
+  // Internals
+  id: string;
+}
+
 export interface GameSensor {
   type: 'sensor';
   name: string;
@@ -270,6 +300,8 @@ export interface GameProject {
   romName: string;
   romCode: string;
   scenes: ProjectSceneData[];
+  // Canvas positions of the HUDs
+  huds?: ProjectSceneData[];
   settings?: ProjectSettings;
   configurations?: ProjectConfiguration[];
   startingScene?: string;
@@ -341,6 +373,7 @@ export interface GameMusicFile {
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
+  huds: GameHud[];
   variables: GameVariables[];
   sprites: GameSpriteFile[];
   backgrounds: GameBackgroundFile[];
@@ -744,5 +777,6 @@ export interface VariableUpdate {
   trigger: string;
   scene?: GameScene;
   script?: GameScript;
+  hud?: GameHud;
   owner?: GameActor | GameSprite | GameSensor;
 }

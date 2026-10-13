@@ -18,7 +18,14 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook';
 import { v4 as uuid } from 'uuid';
 
-import type { GameActor, GameScene, GameSensor, GameSprite } from '../../../types';
+import type {
+  GameActor,
+  GameHud,
+  GameHudSprite,
+  GameScene,
+  GameSensor,
+  GameSprite,
+} from '../../../types';
 import {
   useApp,
   useBridgeListener,
@@ -28,6 +35,8 @@ import {
 } from '../../services/hooks';
 import {
   DEFAULT_ACTOR,
+  DEFAULT_HUD,
+  DEFAULT_HUD_SPRITE,
   DEFAULT_SCENE,
   DEFAULT_SENSOR,
   DEFAULT_SPRITE,
@@ -47,6 +56,8 @@ import Toolbar from './Toolbar';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import Sprite from './Sprite';
+import Hud, { HUD_HEIGHT, HUD_WIDTH } from './Hud';
+import HudSprite from './HudSprite';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -54,9 +65,10 @@ const Canvas = () => {
   const { getSize, isCollapsed, getData } = useLocalData();
   const { project, eventEmitter } = useApp();
   const { resizingSidebar } = useEditor();
-  const { onCanvasChange, onMoveScene, ...appPayload } = useApp();
+  const { onCanvasChange, onMoveScene, onMoveHud, ...appPayload } = useApp();
   const {
     selectedScene,
+    selectedHud,
     selectedItem,
     tool,
     subTool,
@@ -65,6 +77,9 @@ const Canvas = () => {
     selectItem,
     resetSelection,
     selectScene,
+    selectHud,
+    selectHudSprite,
+    onHudChange,
   } = useCanvas();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
 
@@ -95,7 +110,7 @@ const Canvas = () => {
     }
   }, [tool, setTool]);
 
-  useEventListener('canvas:center', (e: CustomEvent<GameScene>) => {
+  useEventListener('canvas:center', (e: CustomEvent<GameScene | GameHud>) => {
     const target = scenesRefs.current[e.detail?.id || ''] ?? undefined;
 
     if (target) {
@@ -183,9 +198,40 @@ const Canvas = () => {
     selectItem?.(scene);
   }, [appPayload, onCanvasChange, selectItem]);
 
+  const onDeleteHud = useCallback((hud?: GameHud) => {
+    if (!hud) {
+      return;
+    }
+
+    onCanvasChange?.({
+      ...appPayload,
+      huds: appPayload.huds.filter(h => h !== hud),
+    });
+    resetSelection?.();
+  }, [appPayload, onCanvasChange, resetSelection]);
+
+  const onDeleteHudSprite = useCallback((hud: GameHud, sprite: GameHudSprite) => {
+    set(hud, 'sprites', hud.sprites?.filter(s => s.id !== sprite.id) || []);
+    onCanvasChange?.({
+      ...appPayload,
+      huds: appPayload.huds.map(h => h.id === hud.id ? hud : h),
+    });
+    selectHud?.(hud);
+  }, [appPayload, onCanvasChange, selectHud]);
+
   useHotkeys('delete, backspace', e => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (selectedHud) {
+      if (selectedItem?.type === 'hud-sprite') {
+        onDeleteHudSprite?.(selectedHud, selectedItem);
+      } else if (!selectedItem) {
+        onDeleteHud?.(selectedHud);
+      }
+
+      return;
+    }
 
     if (selectedItem?.type === 'player') {
       return;
@@ -213,9 +259,10 @@ const Canvas = () => {
       onDeleteScene?.(selectedScene);
     }
   }, [
-    selectedScene, selectedItem, appPayload,
+    selectedScene, selectedItem, selectedHud, appPayload,
     onCanvasChange, selectItem, resetSelection,
     onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite,
+    onDeleteHud, onDeleteHudSprite,
   ]);
 
   const onCopy = useCallback((e?: globalThis.KeyboardEvent) => {
@@ -285,7 +332,7 @@ const Canvas = () => {
     e?.preventDefault();
     e?.stopPropagation();
 
-    let newItem: typeof selectedItem;
+    let newItem: GameActor | GameSensor | GameSprite | undefined;
 
     switch (clipboard?.type) {
       case 'actor': {
@@ -496,6 +543,63 @@ const Canvas = () => {
       selectItem?.(selectedScene, sprite);
     }
 
+    if (tool === 'add' && subTool === 'hud') {
+      const hud: GameHud = {
+        ...cloneDeep(DEFAULT_HUD),
+        id: uuid(),
+        _file: `hud_${appPayload.huds.length + 1}.json`,
+        name: `HUD ${appPayload.huds.length + 1}`,
+      };
+
+      onCanvasChange?.({
+        ...appPayload,
+        huds: [...appPayload.huds, hud],
+      });
+
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      onMoveHud?.(hud, {
+        deltaX: position.x,
+        deltaY: position.y,
+      });
+
+      setTool?.('default');
+      selectHud?.(hud);
+    }
+
+    if (tool === 'add' && subTool === 'hud-sprite' && selectedHud) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const hudConfig = project?.huds?.find(h => (
+        h.id === selectedHud.id || h._file === selectedHud._file
+      ));
+
+      const sprite: GameHudSprite = {
+        ...cloneDeep(DEFAULT_HUD_SPRITE),
+        id: uuid(),
+        name: `HUD Sprite ${((selectedHud.sprites?.length || 0) + 1)}`,
+        x: Math.min(HUD_WIDTH - 1, Math.max(0,
+          Math.round(position.x - (hudConfig?.x || 0)))),
+        y: Math.min(HUD_HEIGHT - 1, Math.max(0,
+          Math.round(position.y - (hudConfig?.y || 0)))),
+      };
+
+      set(selectedHud, 'sprites', [
+        ...(selectedHud.sprites || []),
+        sprite,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        huds: appPayload.huds.map(h => h.id === selectedHud.id ? selectedHud : h),
+      });
+
+      setTool?.('default');
+      selectHudSprite?.(selectedHud, sprite);
+    }
+
     if (tool === 'add' && subTool === 'sensor' && selectedScene) {
       const position = infiniteCanvasRef.current
         ?.getCursorPosition() || { x: 0, y: 0 };
@@ -536,8 +640,9 @@ const Canvas = () => {
       selectItem?.(selectedScene, sensor);
     }
   }, [
-    tool, appPayload, subTool, selectedScene, project,
+    tool, appPayload, subTool, selectedScene, selectedHud, project,
     onCanvasChange, selectScene, onMoveScene, setTool, selectItem,
+    onMoveHud, selectHud, selectHudSprite,
   ]);
 
   const onClickOutside = useCallback((e: MouseEvent<HTMLDivElement>) => {
@@ -545,7 +650,7 @@ const Canvas = () => {
       return;
     }
 
-    if (tool === 'add' && subTool !== 'scene') {
+    if (tool === 'add' && subTool !== 'scene' && subTool !== 'hud') {
       return;
     }
 
@@ -608,6 +713,20 @@ const Canvas = () => {
           />
         )) }
 
+        { appPayload.huds.map(hud => (
+          <Hud
+            ref={(r: HTMLDivElement) => { scenesRefs.current[hud.id] = r; }}
+            key={hud.id}
+            hud={hud}
+            onSelect={selectHud}
+            onSelectSprite={selectHudSprite}
+            onMove={onMoveHud}
+            onChange={onHudChange}
+            onDelete={onDeleteHud}
+            onDeleteSprite={onDeleteHudSprite.bind(null, hud)}
+          />
+        )) }
+
         { tool === 'add' && subTool === 'scene' && (
           <Scene
             scene={DEFAULT_SCENE}
@@ -640,6 +759,22 @@ const Canvas = () => {
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
             gridSize={selectedScene?.map?.gridSize}
+          />
+        ) }
+
+        { tool === 'add' && subTool === 'hud' && (
+          <Hud
+            hud={DEFAULT_HUD}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+          />
+        ) }
+
+        { tool === 'add' && subTool === 'hud-sprite' && selectedHud && (
+          <HudSprite
+            sprite={DEFAULT_HUD_SPRITE}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
           />
         ) }
 

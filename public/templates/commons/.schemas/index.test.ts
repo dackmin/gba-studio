@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import background from './background.json' with { type: 'json' };
 import condition from './condition.json' with { type: 'json' };
 import event from './event.json' with { type: 'json' };
+import hud from './hud.json' with { type: 'json' };
 import music from './music.json' with { type: 'json' };
 import scene from './scene.json' with { type: 'json' };
 import script from './script.json' with { type: 'json' };
@@ -19,6 +20,7 @@ describe('JSON Schemas', () => {
         background,
         condition,
         event,
+        hud,
         music,
         scene,
         script,

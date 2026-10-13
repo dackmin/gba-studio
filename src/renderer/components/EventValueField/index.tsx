@@ -4,7 +4,7 @@ import { Select as SelectPrimitive } from 'radix-ui';
 import { classNames } from '@junipero/react';
 
 import type { DynamicValue, EventValue } from '../../../types';
-import { useApp, useScriptForm } from '../../services/hooks';
+import { useApp, useHudForm, useScriptForm } from '../../services/hooks';
 import Switch from '../Switch';
 import DirectionField from '../DirectionField';
 import SceneListField from '../SceneListField';
@@ -18,19 +18,25 @@ export interface EventValueFieldProps
   onValueChange?: (value: EventValue) => void;
 }
 
+const HUD_EXCLUDED_TYPES = [
+  'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene', 'actor',
+];
+
 const EventValueField = ({
   type,
   value,
   defaultValue,
   children,
   className,
-  excludeTypes = ['saved-game', 'scene'],
+  excludeTypes: excludeTypesProp = ['saved-game', 'scene'],
   min = 0,
   onValueChange,
   ...rest
 }: EventValueFieldProps) => {
   const { variables, scenes } = useApp();
   const { script } = useScriptForm();
+  const { hud } = useHudForm();
+  const excludeTypes = hud ? HUD_EXCLUDED_TYPES : excludeTypesProp;
   const val = value ?? defaultValue ?? '';
   const isDynamicValue = useMemo(() => (
     typeof val === 'object'

@@ -152,6 +152,8 @@ namespace neo
       sprites_count = 0;
     }
 
+    hud_sprites.clear();
+
     // Clean up old sensors just in case
     BN_LOG("Cleaning up old sensors, count:", sensors_count);
     if (sensors_count > 0)
@@ -244,6 +246,27 @@ namespace neo
       }
     }
 
+    // HUD
+    if (active_scene->hud_data != nullptr)
+    {
+      const neo::types::hud* hud_data = active_scene->hud_data;
+      BN_LOG("Creating HUD: ", hud_data->name);
+
+      for (int i = 0; i < hud_data->sprites_count && !hud_sprites.full(); ++i)
+      {
+        const neo::types::hud_sprite* definition = hud_data->sprites[i];
+        bn::sprite_ptr hud_sprite = definition->sprite.create_sprite(0, 0);
+
+        // Priority 0 draws over the scene; dialogs/menus (z < 1000) stay above.
+        hud_sprite.set_bg_priority(0);
+        hud_sprite.set_z_order(1000 + definition->z);
+        // Butano positions sprites by their center, relative to the screen center.
+        hud_sprite.set_x(definition->x - 120 + hud_sprite.dimensions().width() / 2);
+        hud_sprite.set_y(definition->y - 80 + hud_sprite.dimensions().height() / 2);
+        hud_sprites.push_back(bn::move(hud_sprite));
+      }
+    }
+
     // Sensors
     if (sensors_count > 0)
     {
@@ -282,6 +305,15 @@ namespace neo
     neo::save::apply_loaded_state_to_scene(this);
 
     BN_LOG("Scene events count:", active_scene->event_count);
+
+    // Execute HUD init events
+    if (active_scene->hud_data != nullptr)
+    {
+      for (int i = 0; i < active_scene->hud_data->init_events_count && !scene_changed; ++i)
+      {
+        exec_event(active_scene->hud_data->init_events[i], false);
+      }
+    }
 
     // Exec normal scene events
     for (int i = 0; i < active_scene->event_count && !scene_changed; ++i)
@@ -322,6 +354,15 @@ namespace neo
       if (active_scene->has_player && player != nullptr)
       {
         player->update();
+      }
+
+      // Execute HUD update events
+      if (active_scene->hud_data != nullptr)
+      {
+        for (int i = 0; i < active_scene->hud_data->update_events_count && !scene_changed; ++i)
+        {
+          exec_event(active_scene->hud_data->update_events[i], true);
+        }
       }
 
       for (int i = 0; i < actors_count; ++i)
