@@ -1,0 +1,22 @@
+[package]
+name = "gba-studio"
+version = "0.1.0"
+description = "GB Studio, but worse and for the GBA"
+authors = ["Ugo Stephant"]
+license = "MIT"
+edition = "2021"
+
+[lib]
+name = "gba_studio_lib"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-shell = "2"
+serde_json = "1"
+mime_guess = "2"
+percent-encoding = "2"

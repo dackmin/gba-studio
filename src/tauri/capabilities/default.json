@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for every GBA Studio window",
+  "windows": ["*"],
+  "permissions": ["core:default", "core:window:allow-start-dragging"]
+}

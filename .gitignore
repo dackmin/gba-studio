@@ -155,3 +155,4 @@ public/vendors/*/linux/**
 
 # Tauri
 target/
+src/tauri/gen/

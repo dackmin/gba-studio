@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 import type { AppBridge } from '../../types';
 
@@ -95,8 +96,35 @@ export const createTauriBridge = (): AppBridge => {
   };
 };
 
+// WebKit ignores `-webkit-app-region`, so the existing drag classes drive startDragging().
+// The nearest ancestor with either class wins; `!` variants are Tailwind important.
+const isDragRegion = (target: EventTarget | null) => {
+  for (let el = target as HTMLElement | null; el; el = el.parentElement) {
+    const { classList } = el;
+
+    if (classList.contains('app-no-drag') || classList.contains('!app-no-drag')) {
+      return false;
+    }
+
+    if (classList.contains('app-drag') || classList.contains('!app-drag')) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const enableWindowDragging = () => {
+  document.addEventListener('mousedown', e => {
+    if (e.button === 0 && isDragRegion(e.target)) {
+      getCurrentWindow().startDragging();
+    }
+  });
+};
+
 // Electron's preload already exposes the bridge; otherwise assume Tauri.
 // Must run before any module reads window.bridge at load time.
 if (!window.bridge) {
   window.bridge = createTauriBridge();
+  enableWindowDragging();
 }

@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "icon": [
+      "../../images/icon.png",
+      "../../images/AppIcon.icns",
+      "../../images/AppIcon.icon"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "bundle": {
+    "resources": {
+      "../../public/templates/": "public/templates/",
+      "../../public/vendors/butano/butano/": "public/vendors/butano/butano/",
+      "../../public/vendors/butano/licenses/": "public/vendors/butano/licenses/",
+      "../../public/vendors/butano/LICENSE": "public/vendors/butano/LICENSE",
+      "../../public/icon.svg": "public/icon.svg",
+      "../../public/public-pixel.woff2": "public/public-pixel.woff2",
+      "../../public/dialog-background.png": "public/dialog-background.png"
+    }
+  }
+}

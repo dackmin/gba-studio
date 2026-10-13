@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GBA Studio",
+  "version": "0.1.0",
+  "identifier": "dev.gbastudio.app",
+  "build": {
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../../.vite/renderer/tauri",
+    "beforeDevCommand": "yarn vite --config vite.tauri.config.ts",
+    "beforeBuildCommand": "yarn vite build --config vite.tauri.config.ts"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' data: blob: project: resources: http://project.localhost http://resources.localhost ipc: http://ipc.localhost",
+      "devCsp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' data: blob: project: resources: http://project.localhost http://resources.localhost ipc: http://ipc.localhost ws://localhost:5173",
+      "dangerousDisableAssetCspModification": ["script-src", "style-src"],
+      "headers": {
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp"
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "DeveloperTool",
+    "shortDescription": "GB Studio, but worse and for the GBA",
+    "license": "MIT",
+    "icon": [
+      "../../images/icon.png",
+      "../../images/icon.icns",
+      "../../images/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["gbasproj"],
+        "name": "GBA Studio Project",
+        "role": "Editor"
+      }
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "../entitlements.plist"
+    }
+  }
+}

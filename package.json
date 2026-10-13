@@ -13,6 +13,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "electron-forge start",
+    "dev:tauri": "tauri dev",
+    "build:tauri": "tauri build --config src/tauri/tauri.release.conf.json",
+    "tauri": "tauri",
     "test": "vitest run",
     "package": "electron-forge package",
     "make:macos": "PLATFORM=darwin; ARCH=arm64 electron-forge make --platform=darwin --arch=arm64",
@@ -69,6 +72,7 @@
     "@poool/oxlint-config": "6.3.0",
     "@reforged/maker-appimage": "5.3.1",
     "@tailwindcss/vite": "4.3.3",
+    "@tauri-apps/cli": "2.12.1",
     "@testing-library/react": "16.3.3",
     "@types/debug": "4.1.13",
     "@types/electron-squirrel-startup": "1.0.2",
