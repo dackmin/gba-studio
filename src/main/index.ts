@@ -3,6 +3,7 @@
 
 import { app, ipcMain, protocol } from 'electron';
 import started from 'electron-squirrel-startup';
+import { updateElectronApp } from 'update-electron-app';
 
 import { createSelectionWindow } from './windows';
 import {
@@ -89,6 +90,7 @@ createBeforeReadyEventListeners();
 app.whenReady().then(() => {
   createEventListeners();
   createSelectionWindow();
+  updateElectronApp({ repo: 'dackmin/gba-studio' });
 });
 
 ipcMain.handle('get-recent-projects', getRecentProjects.bind(null, storage));
