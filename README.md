@@ -4,7 +4,8 @@
 
 Just like [GB Studio](https://gbstudio.dev), but worse and for the GBA.
 
-<img width="1728" height="1019" alt="GBA Studio" src="https://github.com/user-attachments/assets/fed8afe8-ce6a-4f28-b909-a8923677bfea" style="border-radius:16px;" />
+<img width="1728" height="1019" alt="GBA Studio" src="https://github.com/user-attachments/assets/93c88bcc-2a68-47ca-927a-a6529a2e9fb9" style="border-radius:16px;" />
+
 
 GBA Studio is an Electron game creator built on top of the [Butano](https://github.com/GValiente/butano) GBA C++ game engine.
 
@@ -22,8 +23,8 @@ Download the latest build for your platform from the [build action pipeline](htt
 - [x] ~~Windows signed installer~~ (I'm too poor for this, enjoy the unsigned version)
 - [x] Portable python & devkitARM
 - [x] Sprite animations editor
-- [x] Images auto convert on build
-- [ ] Side scroller scene type
+- [x] CLI
+- [x] Side scroller scene type
 - [ ] Parallax backgrounds
 - [ ] Auto updater
 - [ ] Sound editor
