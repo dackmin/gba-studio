@@ -7,6 +7,7 @@
 #include <bn_regular_bg_ptr.h>
 #include <bn_vector.h>
 #include <bn_unique_ptr.h>
+#include <bn_color.h>
 
 #include "neo_types.h"
 
@@ -116,13 +117,15 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat "hud_" @../index "_text_" @index "_content") value=this.text}}
   constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_id = "{{this.id}}";
   constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr bn::color hud_{{@../index}}_text_{{@index}}_color = { {{colorRGB this.color 31}} };
   constexpr neo::types::hud_text hud_{{@../index}}_text_{{@index}} = {
     hud_{{@../index}}_text_{{@index}}_id,
     hud_{{@../index}}_text_{{@index}}_name,
     &hud_{{@../index}}_text_{{@index}}_content_value,
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
-    {{valuedef this.z 0}}
+    {{valuedef this.z 0}},
+    hud_{{@../index}}_text_{{@index}}_color
   };
   {{/each}}
   {{#if (hasItems this.texts)}}

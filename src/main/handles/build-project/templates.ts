@@ -7,6 +7,7 @@ import type { Build, GameBackgroundFile, GameMenuChoice, GameVariables } from '.
 import { findBackground, findSound, findSprite } from '../../../helpers';
 import { getResourcesDir } from '../../utils';
 import { getBuildDir, toSlug } from './utils';
+import { hexToRgb } from '../../images';
 
 export const setupHandlebars = async () => {
   // Add helpers
@@ -88,6 +89,15 @@ export const setupHandlebars = async () => {
   Handlebars.registerHelper('longestMenuChoice', (arr: GameMenuChoice[]) =>
     arr.sort((a, b) => b.text.length - a.text.length)[0]?.text || '');
   Handlebars.registerHelper('array', (...args) => args.slice(0, -1));
+  Handlebars.registerHelper('colorRGB', (color: string, base: number = 31) => {
+    if (!color) {
+      return '0, 0, 0';
+    }
+
+    const [r = 0, g = 0, b = 0] = hexToRgb(color);
+
+    return `${Math.round(r * base)}, ${Math.round(g * base)}, ${Math.round(b * base)}`;
+  });
 
   // Add content helpers
   Handlebars.registerHelper('getVariable', (variables: GameVariables[], id: string) => {

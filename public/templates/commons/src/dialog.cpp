@@ -6,6 +6,7 @@
 #include <bn_display.h>
 #include <bn_sprite_item.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_sprite_palette_ptr.h>
 #include <bn_unique_ptr.h>
 #include <bn_optional.h>
 #include <bn_algorithm.h>
@@ -113,10 +114,18 @@ namespace neo
       );
     }
 
+    bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+
+    for (int c = 1; c < 16; ++c)
+    {
+      palette.set_color(c, neo::types::DEFAULT_TEXT_COLOR);
+    }
+
     // Hide the sprites first
     for (bn::sprite_ptr& sprite : text_sprites)
     {
       sprite.set_visible(false);
+      sprite.set_palette(palette);
     }
 
     // Then make them appear one by one

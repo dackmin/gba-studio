@@ -259,16 +259,14 @@ export interface GameHudSprite {
   id: string;
 }
 
-// Single line drawn with the dialogs font (8x8 monospace): a plain value
-// or a variable
 export interface GameHudText {
   type: 'hud-text';
   name: string;
   text: EventValue;
-  // Pixels from the top-left corner of the screen
   x: number;
   y: number;
   z?: number;
+  color?: string;
   // Internals
   id: string;
 }

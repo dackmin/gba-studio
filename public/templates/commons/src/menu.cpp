@@ -7,6 +7,7 @@
 #include <bn_sprite_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_sprite_palette_ptr.h>
 #include <bn_unique_ptr.h>
 
 #include <bn_sprite_items_textbox.h>
@@ -115,6 +116,18 @@ namespace neo
         choice,
         text_sprites
       );
+    }
+
+    bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+
+    for (int c = 1; c < 16; ++c)
+    {
+      palette.set_color(c, neo::types::DEFAULT_TEXT_COLOR);
+    }
+
+    for (bn::sprite_ptr& sprite : text_sprites)
+    {
+      sprite.set_palette(palette);
     }
 
     int choice_index = 0;

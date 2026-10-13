@@ -12,6 +12,7 @@ import { classNames, set } from '@junipero/react';
 import type { GameHud, GameHudText } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import EventValueField from '../../components/EventValueField';
+import ColorField from '../../components/ColorField';
 
 // Sprites are limited on the GBA: one per character
 export const HUD_TEXT_MAX_LENGTH = 30;
@@ -131,6 +132,14 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
               max={99}
               value={item.z ?? 0}
               onChange={onNumberChange.bind(null, 'z', 0, 99)}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Color</Text>
+            <ColorField
+              type="text"
+              value={item.color ?? ''}
+              onValueChange={onValueChange.bind(null, 'color')}
             />
           </div>
         </div>

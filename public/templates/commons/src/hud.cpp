@@ -5,6 +5,7 @@
 #include <bn_display.h>
 #include <bn_sprite_font.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_sprite_palette_ptr.h>
 #include <bn_string.h>
 #include <bn_algorithm.h>
 
@@ -89,6 +90,8 @@ namespace neo::hud
           continue;
         }
 
+        int first_sprite = game->hud_text_sprites.size();
+
         text_generator.set_z_order(1000 + definition->z);
         text_generator.generate_top_left(
           definition->x,
@@ -96,6 +99,18 @@ namespace neo::hud
           text,
           game->hud_text_sprites
         );
+
+        bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+
+        for (int c = 1; c < 16; ++c)
+        {
+          palette.set_color(c, definition->color);
+        }
+
+        for (int j = first_sprite; j < game->hud_text_sprites.size(); ++j)
+        {
+          game->hud_text_sprites[j].set_palette(palette);
+        }
       }
     }
   }
