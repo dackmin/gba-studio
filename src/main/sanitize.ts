@@ -23,6 +23,7 @@ import type {
   GameVariables,
   IfEvent,
   OnButtonPressEvent,
+  OnVariableChangeEvent,
   ParallelEventsEvent,
   SceneEvent,
   ShowMenuEvent,
@@ -68,6 +69,16 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
     evt.events = evt.events ?? [];
 
     for (const e of evt.events ?? []) {
+      await sanitizeEvent(e);
+    }
+  }
+
+  if (event.type === 'on-variable-change') {
+    const evt = event as OnVariableChangeEvent;
+
+    evt.events = evt.events ?? [];
+
+    for (const e of evt.events) {
       await sanitizeEvent(e);
     }
   }

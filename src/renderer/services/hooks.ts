@@ -19,6 +19,7 @@ import {
   DraggableContextType,
   EditorContext,
   EmulatorContext,
+  EventsFilterContext,
   HudFormContext,
   LocalDataContext,
   LogsContext,
@@ -81,6 +82,7 @@ export const useCanvas = () => use(CanvasContext);
 export const useSceneForm = () => use(SceneFormContext);
 export const useScriptForm = () => use(ScriptFormContext);
 export const useHudForm = () => use(HudFormContext);
+export const useEventsFilter = () => use(EventsFilterContext);
 export const useBottomBarTabs = () => use(BottomBarTabsContext);
 export const useLogs = () => use(LogsContext);
 export const useSprite = () => use(SpriteContext);

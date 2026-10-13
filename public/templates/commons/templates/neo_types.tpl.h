@@ -327,6 +327,15 @@ namespace neo::types
       event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), choices(choices_) {}
   };
 
+  struct variable_change_event: event
+  {
+    bn::string_view key;
+    int events_count;
+    event* const* events;
+    variable_change_event(bn::string_view type_, bn::string_view key_, int events_count_, event* const* events_):
+      event(type_), key(key_), events_count(events_count_), events(events_) {}
+  };
+
   struct set_variable_event: event
   {
     bn::string_view key;

@@ -1,6 +1,7 @@
 import {
   ActivityLogIcon,
   AllSidesIcon,
+  BellIcon,
   ChatBubbleIcon,
   CodeIcon,
   ComponentInstanceIcon,
@@ -368,6 +369,14 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       value: '',
       operation: 'set',
     }),
+  }, {
+    icon: BellIcon,
+    name: 'On Variable Change',
+    value: 'on-variable-change',
+    containers: ['events'],
+    hud: true,
+    keywords: ['variable', 'change', 'watch', 'listen', 'callback', 'observe'],
+    construct: () => ({ type: 'on-variable-change', variable: '', events: [] }),
   }],
 }, {
   name: 'Sound',

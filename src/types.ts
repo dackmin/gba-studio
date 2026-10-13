@@ -496,6 +496,12 @@ export interface OnButtonPressEvent extends SceneEvent {
   events?: SceneEvent[];
 }
 
+export interface OnVariableChangeEvent extends SceneEvent {
+  type: 'on-variable-change';
+  variable: string;
+  events?: SceneEvent[];
+}
+
 export interface ParallelEventsEvent extends SceneEvent {
   type: 'parallel-events';
   events: SceneEvent[];

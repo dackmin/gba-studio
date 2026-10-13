@@ -12,7 +12,8 @@ import {
   isHudEvent,
   removeEventById,
 } from '../../services/events';
-import { useHudForm } from '../../services/hooks';
+import { EventsFilterContext } from '../../services/contexts';
+import { useEventsFilter, useHudForm } from '../../services/hooks';
 import Event from './Event';
 import Catalogue from './Catalogue';
 import DraggableStore from '../DraggableStore';
@@ -43,16 +44,33 @@ const EventsField = ({
 }: EventsFieldProps) => {
   const addEventButtonRef = useRef<HTMLButtonElement>(null);
   const { hud } = useHudForm();
+  const { filter: inheritedFilter } = useEventsFilter();
   const [selected, setSelected] = useState<
     [SceneEvent, 'append' | 'prepend']
   >();
 
-  const filter = useMemo(() => (
-    hud
-      ? (definition: EventDefinition) =>
-        isHudEvent(definition) && (!filterProp || filterProp(definition))
-      : filterProp
-  ), [hud, filterProp]);
+  // Combines the HUD restriction, the parent field's filter and our own
+  const filter = useMemo(() => {
+    const filters: ((definition: EventDefinition) => boolean)[] = [];
+
+    if (hud) {
+      filters.push(isHudEvent);
+    }
+
+    if (inheritedFilter) {
+      filters.push(inheritedFilter);
+    }
+
+    if (filterProp) {
+      filters.push(filterProp);
+    }
+
+    return filters.length
+      ? (definition: EventDefinition) => filters.every(f => f(definition))
+      : undefined;
+  }, [hud, inheritedFilter, filterProp]);
+
+  const filterContext = useMemo(() => ({ filter }), [filter]);
 
   const onDeleteEvent = useCallback((event: SceneEvent) => {
     onValueChange?.(value.filter(e => e !== event));
@@ -181,53 +199,55 @@ const EventsField = ({
   }, [onValueChange, value, filter]);
 
   return (
-    <DraggableStore>
-      <div className="flex flex-col gap-[1px]">
+    <EventsFilterContext value={filterContext}>
+      <DraggableStore>
         <div className="flex flex-col gap-[1px]">
-          { value.length === 0 ? (
-            <Text size="2" className="block p-3 text-center text-slate">
-              No events
-            </Text>
-          ) : value.map((event, index) => (
-            <Event
-              key={event.id}
-              index={index}
-              event={event}
-              zone={zone}
-              onValueChange={onChangeEvent.bind(null, event.id || index)}
-              onDelete={onDeleteEvent}
-              onPrepend={onPrependClick}
-              onAppend={onAppendClick}
-              onDrop={onDrop ?? onDrop_}
-            />
-          )) }
-        </div>
+          <div className="flex flex-col gap-[1px]">
+            { value.length === 0 ? (
+              <Text size="2" className="block p-3 text-center text-slate">
+                No events
+              </Text>
+            ) : value.map((event, index) => (
+              <Event
+                key={event.id}
+                index={index}
+                event={event}
+                zone={zone}
+                onValueChange={onChangeEvent.bind(null, event.id || index)}
+                onDelete={onDeleteEvent}
+                onPrepend={onPrependClick}
+                onAppend={onAppendClick}
+                onDrop={onDrop ?? onDrop_}
+              />
+            )) }
+          </div>
 
-        <div className="px-3 my-3">
-          <Dialog.Root>
-            <Dialog.Trigger>
-              <Button
-                ref={addEventButtonRef}
-                className="block !w-full"
-                disabled={max !== undefined && value.length >= max}
-              >
-                <PlusIcon />
-                <Text>Add Event</Text>
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Content>
-              <VisuallyHidden>
-                <Dialog.Title>Event Palette</Dialog.Title>
-                <Dialog.Description>
-                  Select an event to add to the list
-                </Dialog.Description>
-              </VisuallyHidden>
-              <Catalogue filter={filter} onSelect={onAddEvent} />
-            </Dialog.Content>
-          </Dialog.Root>
+          <div className="px-3 my-3">
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <Button
+                  ref={addEventButtonRef}
+                  className="block !w-full"
+                  disabled={max !== undefined && value.length >= max}
+                >
+                  <PlusIcon />
+                  <Text>Add Event</Text>
+                </Button>
+              </Dialog.Trigger>
+              <Dialog.Content>
+                <VisuallyHidden>
+                  <Dialog.Title>Event Palette</Dialog.Title>
+                  <Dialog.Description>
+                    Select an event to add to the list
+                  </Dialog.Description>
+                </VisuallyHidden>
+                <Catalogue filter={filter} onSelect={onAddEvent} />
+              </Dialog.Content>
+            </Dialog.Root>
+          </div>
         </div>
-      </div>
-    </DraggableStore>
+      </DraggableStore>
+    </EventsFilterContext>
   );
 };
 

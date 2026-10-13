@@ -48,6 +48,45 @@ namespace neo::events
     // on-button-press handler runs exec_event, which can register more
     // scripted events; the nested call must not poll again.
     bool polling_scripted_events = false;
+
+    constexpr int MAX_VARIABLE_CHANGE_DEPTH = 4;
+    int variable_change_depth = 0;
+  }
+
+  static void notify_variable_change(neo::game* game, bn::string_view key)
+  {
+    if (variable_change_depth >= MAX_VARIABLE_CHANGE_DEPTH)
+    {
+      BN_LOG("Variable change callbacks nested too deep, skipping: ", key);
+      return;
+    }
+
+    ++variable_change_depth;
+
+    for (int i = 0; i < game->scripted_events_count && !game->scene_changed; ++i)
+    {
+      const neo::types::event* registered = game->scripted_events[i];
+
+      if (!(registered->type == "on-variable-change"))
+      {
+        continue;
+      }
+
+      const neo::types::variable_change_event* change_evt =
+        static_cast<const neo::types::variable_change_event*>(registered);
+
+      if (!(change_evt->key == key))
+      {
+        continue;
+      }
+
+      for (int j = 0; j < change_evt->events_count && !game->scene_changed; ++j)
+      {
+        exec_event(game, change_evt->events[j], true);
+      }
+    }
+
+    --variable_change_depth;
   }
 
   void exec_event (neo::game* game, const neo::types::event* e, bool is_loop) {
@@ -225,6 +264,22 @@ namespace neo::events
     }
 
     /**
+     * @name on-variable-change
+     * @param variable string — Variable name
+     * Registers callbacks run when a set-variable event changes the variable.
+     */
+    else if (e->type == "on-variable-change")
+    {
+      // Registered once; the callbacks are dispatched by set-variable itself.
+      if (!is_loop)
+      {
+        BN_LOG("Registering on-variable-change scripted event");
+        game->scripted_events_count++;
+        game->scripted_events.push_back(const_cast<neo::types::event*>(e));
+      }
+    }
+
+    /**
      * @name show-dialog
      * @param text string — Dialog text
      * @param speed string — Text reveal speed (slow, normal, fast)
@@ -311,6 +366,15 @@ namespace neo::events
       const neo::types::set_variable_event* set_var_evt =
         static_cast<const neo::types::set_variable_event*>(e);
 
+      // Snapshot (variable owns its text buffer) to detect an actual change.
+      const bool has_variable = game->variables.has(set_var_evt->key);
+      bn::optional<neo::variables::variable> previous;
+
+      if (has_variable)
+      {
+        previous = game->variables.get(set_var_evt->key);
+      }
+
       if (
         set_var_evt->operation == neo::types::variable_operation::INCREMENT ||
         set_var_evt->operation == neo::types::variable_operation::DECREMENT
@@ -328,6 +392,20 @@ namespace neo::events
       else
       {
         game->variables.set(set_var_evt->key, set_var_evt->value);
+      }
+
+      if (has_variable)
+      {
+        const neo::variables::variable& current = game->variables.get(set_var_evt->key);
+
+        if (
+          previous->as_int() != current.as_int() ||
+          previous->as_bool() != current.as_bool() ||
+          !(previous->as_string() == current.as_string())
+        )
+        {
+          notify_variable_change(game, set_var_evt->key);
+        }
       }
     }
 

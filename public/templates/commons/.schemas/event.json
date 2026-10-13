@@ -335,6 +335,28 @@
       ],
       "type": "object"
     },
+    "OnVariableChangeEvent": {
+      "properties": {
+        "variable": {
+          "type": "string"
+        },
+        "type": {
+          "const": "on-variable-change",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "variable",
+        "type"
+      ],
+      "type": "object"
+    },
     "DisableInputEvent": {
       "properties": {
         "type": {
@@ -879,6 +901,7 @@
         { "$ref": "#/definitions/PlaySoundEvent" },
         { "$ref": "#/definitions/WaitForButtonEvent" },
         { "$ref": "#/definitions/OnButtonPressEvent" },
+        { "$ref": "#/definitions/OnVariableChangeEvent" },
         { "$ref": "#/definitions/DisableInputEvent" },
         { "$ref": "#/definitions/EnableInputEvent" },
         { "$ref": "#/definitions/SetVariableEvent" },

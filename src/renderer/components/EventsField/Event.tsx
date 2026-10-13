@@ -37,6 +37,7 @@ import type {
   MoveCameraToEvent,
   MovePlayerToEvent,
   OnButtonPressEvent,
+  OnVariableChangeEvent,
   ParallelEventsEvent,
   PlayMusicEvent,
   PlaySoundEvent,
@@ -63,6 +64,7 @@ import EventGoToScene from './EventGoToScene';
 import EventPlayMusic from './EventPlayMusic';
 import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
+import EventVariableChange from './EventVariableChange';
 import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
 import EventSprite from './EventSprite';
@@ -413,6 +415,12 @@ const Event = ({
                 <Switch.Case value="set-variable">
                   <EventSetVariable
                     event={event as SetVariableEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="on-variable-change">
+                  <EventVariableChange
+                    event={event as OnVariableChangeEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

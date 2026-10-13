@@ -162,6 +162,28 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
     {{/each}}
   )
 );
+{{else if (eq this.type "on-variable-change")}}
+{{#if (hasItems this.events)}}
+{{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
+constexpr neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.variable) as | variable |}}"{{variable.name}}"{{else}}""{{/with}};
+constexpr bn::string_view {{../prefix}}_{{@index}}_type = "on-variable-change";
+BN_DATA_EWRAM neo::types::variable_change_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_variable_name,
+  {{#if (hasItems this.events)}}
+  {{this.events.length}},
+  {{../prefix}}_{{@index}}_events
+  {{else}}
+  0,
+  nullptr
+  {{/if}}
+);
 {{else if (eq this.type "set-variable")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_string_value = "{{escapeCpp this.value}}";

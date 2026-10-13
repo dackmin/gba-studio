@@ -28,6 +28,7 @@ import type {
   GameMusicFile,
 } from '../../types';
 import type EventEmitter from './emitter';
+import type { EventDefinition } from './events';
 import { LocalData } from './local-db';
 
 export interface AppContextType extends Omit<AppPayload, 'project'> {
@@ -153,6 +154,14 @@ export interface HudFormContextType {
 
 export const HudFormContext = createContext<HudFormContextType>({
   hud: undefined,
+});
+
+export interface EventsFilterContextType {
+  filter?: (definition: EventDefinition) => boolean;
+}
+
+export const EventsFilterContext = createContext<EventsFilterContextType>({
+  filter: undefined,
 });
 
 export interface BottomBarTabsContextType {
