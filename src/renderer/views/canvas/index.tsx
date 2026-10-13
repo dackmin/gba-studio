@@ -22,6 +22,7 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
+  GameHudText,
   GameScene,
   GameSensor,
   GameSprite,
@@ -37,6 +38,7 @@ import {
   DEFAULT_ACTOR,
   DEFAULT_HUD,
   DEFAULT_HUD_SPRITE,
+  DEFAULT_HUD_TEXT,
   DEFAULT_SCENE,
   DEFAULT_SENSOR,
   DEFAULT_SPRITE,
@@ -58,6 +60,7 @@ import Sensor from './Sensor';
 import Sprite from './Sprite';
 import Hud, { HUD_HEIGHT, HUD_WIDTH } from './Hud';
 import HudSprite from './HudSprite';
+import HudText from './HudText';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -78,7 +81,7 @@ const Canvas = () => {
     resetSelection,
     selectScene,
     selectHud,
-    selectHudSprite,
+    selectHudItem,
     onHudChange,
   } = useCanvas();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
@@ -210,8 +213,16 @@ const Canvas = () => {
     resetSelection?.();
   }, [appPayload, onCanvasChange, resetSelection]);
 
-  const onDeleteHudSprite = useCallback((hud: GameHud, sprite: GameHudSprite) => {
-    set(hud, 'sprites', hud.sprites?.filter(s => s.id !== sprite.id) || []);
+  const onDeleteHudItem = useCallback((
+    hud: GameHud,
+    item: GameHudSprite | GameHudText,
+  ) => {
+    if (item.type === 'hud-text') {
+      set(hud, 'texts', hud.texts?.filter(t => t.id !== item.id) || []);
+    } else {
+      set(hud, 'sprites', hud.sprites?.filter(s => s.id !== item.id) || []);
+    }
+
     onCanvasChange?.({
       ...appPayload,
       huds: appPayload.huds.map(h => h.id === hud.id ? hud : h),
@@ -224,8 +235,8 @@ const Canvas = () => {
     e.stopPropagation();
 
     if (selectedHud) {
-      if (selectedItem?.type === 'hud-sprite') {
-        onDeleteHudSprite?.(selectedHud, selectedItem);
+      if (selectedItem?.type === 'hud-sprite' || selectedItem?.type === 'hud-text') {
+        onDeleteHudItem?.(selectedHud, selectedItem);
       } else if (!selectedItem) {
         onDeleteHud?.(selectedHud);
       }
@@ -262,7 +273,7 @@ const Canvas = () => {
     selectedScene, selectedItem, selectedHud, appPayload,
     onCanvasChange, selectItem, resetSelection,
     onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite,
-    onDeleteHud, onDeleteHudSprite,
+    onDeleteHud, onDeleteHudItem,
   ]);
 
   const onCopy = useCallback((e?: globalThis.KeyboardEvent) => {
@@ -597,7 +608,39 @@ const Canvas = () => {
       });
 
       setTool?.('default');
-      selectHudSprite?.(selectedHud, sprite);
+      selectHudItem?.(selectedHud, sprite);
+    }
+
+    if (tool === 'add' && subTool === 'hud-text' && selectedHud) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const hudConfig = project?.huds?.find(h => (
+        h.id === selectedHud.id || h._file === selectedHud._file
+      ));
+
+      const text: GameHudText = {
+        ...cloneDeep(DEFAULT_HUD_TEXT),
+        id: uuid(),
+        name: `HUD Text ${((selectedHud.texts?.length || 0) + 1)}`,
+        x: Math.min(HUD_WIDTH - 1, Math.max(0,
+          Math.round(position.x - (hudConfig?.x || 0)))),
+        y: Math.min(HUD_HEIGHT - 1, Math.max(0,
+          Math.round(position.y - (hudConfig?.y || 0)))),
+      };
+
+      set(selectedHud, 'texts', [
+        ...(selectedHud.texts || []),
+        text,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        huds: appPayload.huds.map(h => h.id === selectedHud.id ? selectedHud : h),
+      });
+
+      setTool?.('default');
+      selectHudItem?.(selectedHud, text);
     }
 
     if (tool === 'add' && subTool === 'sensor' && selectedScene) {
@@ -642,7 +685,7 @@ const Canvas = () => {
   }, [
     tool, appPayload, subTool, selectedScene, selectedHud, project,
     onCanvasChange, selectScene, onMoveScene, setTool, selectItem,
-    onMoveHud, selectHud, selectHudSprite,
+    onMoveHud, selectHud, selectHudItem,
   ]);
 
   const onClickOutside = useCallback((e: MouseEvent<HTMLDivElement>) => {
@@ -719,11 +762,11 @@ const Canvas = () => {
             key={hud.id}
             hud={hud}
             onSelect={selectHud}
-            onSelectSprite={selectHudSprite}
+            onSelectItem={selectHudItem}
             onMove={onMoveHud}
             onChange={onHudChange}
             onDelete={onDeleteHud}
-            onDeleteSprite={onDeleteHudSprite.bind(null, hud)}
+            onDeleteItem={onDeleteHudItem.bind(null, hud)}
           />
         )) }
 
@@ -773,6 +816,14 @@ const Canvas = () => {
         { tool === 'add' && subTool === 'hud-sprite' && selectedHud && (
           <HudSprite
             sprite={DEFAULT_HUD_SPRITE}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+          />
+        ) }
+
+        { tool === 'add' && subTool === 'hud-text' && selectedHud && (
+          <HudText
+            item={DEFAULT_HUD_TEXT}
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
           />

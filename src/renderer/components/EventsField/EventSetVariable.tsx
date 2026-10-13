@@ -1,10 +1,8 @@
-import { useCallback, useReducer, useState, type ChangeEvent } from 'react';
+import { type ChangeEvent, useCallback, useState } from 'react';
 import { set } from '@junipero/react';
 import { Select, Text, TextField } from '@radix-ui/themes';
 
-import type {
-  SetVariableEvent,
-} from '../../../types';
+import type { SetVariableEvent } from '../../../types';
 import { useDelayedCallback } from '../../services/hooks';
 import VariablesListField from '../VariablesListField';
 

@@ -45,6 +45,7 @@ import type {
   SetActorDirectionEvent,
   SetActorPositionEvent,
   SetBackgroundEvent,
+  SetHudTextEvent,
   SetSpriteEvent,
   SetPaletteEffectEvent,
   SetPlayerDirectionEvent,
@@ -64,6 +65,7 @@ import EventGoToScene from './EventGoToScene';
 import EventPlayMusic from './EventPlayMusic';
 import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
+import EventSetHudText from './EventSetHudText';
 import EventVariableChange from './EventVariableChange';
 import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
@@ -415,6 +417,12 @@ const Event = ({
                 <Switch.Case value="set-variable">
                   <EventSetVariable
                     event={event as SetVariableEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="set-hud-text">
+                  <EventSetHudText
+                    event={event as SetHudTextEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

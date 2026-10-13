@@ -1,4 +1,12 @@
-import type { GameActor, GameHud, GameHudSprite, GameScene, GameSensor, GameSprite } from '../../types';
+import type {
+  GameActor,
+  GameHud,
+  GameHudSprite,
+  GameHudText,
+  GameScene,
+  GameSensor,
+  GameSprite,
+} from '../../types';
 
 export const DEFAULT_SCENE: GameScene = {
   id: 'preview',
@@ -70,6 +78,16 @@ export const DEFAULT_HUD_SPRITE: GameHudSprite = {
   y: 0,
   z: 0,
   sprite: 'sprite_default',
+};
+
+export const DEFAULT_HUD_TEXT: GameHudText = {
+  id: 'preview',
+  type: 'hud-text',
+  name: 'New HUD Text',
+  text: 'Text',
+  x: 0,
+  y: 0,
+  z: 0,
 };
 
 export const DEFAULT_FIXED_ANMATIONS = {

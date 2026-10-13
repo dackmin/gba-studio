@@ -28,6 +28,7 @@ import {
   ShadowNoneIcon,
   SpeakerLoudIcon,
   StopIcon,
+  TextIcon,
 } from '@radix-ui/react-icons';
 import { get } from '@junipero/react';
 
@@ -377,6 +378,22 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     hud: true,
     keywords: ['variable', 'change', 'watch', 'listen', 'callback', 'observe'],
     construct: () => ({ type: 'on-variable-change', variable: '', events: [] }),
+  }],
+}, {
+  name: 'HUD',
+  items: [{
+    icon: TextIcon,
+    name: 'Set HUD Text',
+    value: 'set-hud-text',
+    hud: true,
+    parallelizable: true,
+    keywords: ['hud', 'text', 'set', 'change', 'update', 'score', 'label'],
+    construct: () => ({
+      type: 'set-hud-text',
+      hud: '',
+      text: '',
+      value: '',
+    }),
   }],
 }, {
   name: 'Sound',

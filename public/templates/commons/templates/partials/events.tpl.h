@@ -162,6 +162,17 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
     {{/each}}
   )
 );
+{{else if (eq this.type "set-hud-text")}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_content") value=this.value}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_hud = "{{escapeCpp this.hud}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_text = "{{escapeCpp this.text}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-hud-text";
+BN_DATA_EWRAM neo::types::set_hud_text_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_hud,
+  {{../prefix}}_{{@index}}_text,
+  &{{../prefix}}_{{@index}}_content_value
+);
 {{else if (eq this.type "on-variable-change")}}
 {{#if (hasItems this.events)}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}

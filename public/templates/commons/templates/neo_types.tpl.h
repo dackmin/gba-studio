@@ -336,6 +336,15 @@ namespace neo::types
       event(type_), key(key_), events_count(events_count_), events(events_) {}
   };
 
+  struct set_hud_text_event: event
+  {
+    bn::string_view hud;
+    bn::string_view text;
+    const event_value* value;
+    set_hud_text_event(bn::string_view type_, bn::string_view hud_, bn::string_view text_, const event_value* value_):
+      event(type_), hud(hud_), text(text_), value(value_) {}
+  };
+
   struct set_variable_event: event
   {
     bn::string_view key;
@@ -1095,12 +1104,26 @@ namespace neo::types
     bn::sprite_item sprite;
   };
 
+  // Single line drawn with the dialogs font, one sprite per character. The
+  // content (value or variable) is re-resolved every frame.
+  struct hud_text
+  {
+    bn::string_view _id;
+    bn::string_view name;
+    const event_value* content;
+    int x;
+    int y;
+    int z;
+  };
+
   struct hud
   {
     bn::string_view _id;
     bn::string_view name;
     int sprites_count;
     const hud_sprite* const* sprites;
+    int texts_count;
+    const hud_text* const* texts;
     int init_events_count;
     event* const* init_events;
     int update_events_count;

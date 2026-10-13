@@ -112,6 +112,26 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#each this.texts}}
+  {{>valuePartial prefix=(concat "hud_" @../index "_text_" @index "_content") value=this.text}}
+  constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr neo::types::hud_text hud_{{@../index}}_text_{{@index}} = {
+    hud_{{@../index}}_text_{{@index}}_id,
+    hud_{{@../index}}_text_{{@index}}_name,
+    &hud_{{@../index}}_text_{{@index}}_content_value,
+    {{valuedef this.x 0}},
+    {{valuedef this.y 0}},
+    {{valuedef this.z 0}}
+  };
+  {{/each}}
+  {{#if (hasItems this.texts)}}
+  constexpr const neo::types::hud_text* hud_{{@index}}_texts[] = {
+    {{#each this.texts}}
+    &hud_{{@../index}}_text_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
   {{#if (hasItems this.events.init)}}
   {{>eventsPartial prefix=(concat "hud_" @index "_init_event") events=this.events.init}}
   constexpr neo::types::event* hud_{{@index}}_init_events[] = {
@@ -136,6 +156,13 @@ namespace neo::scenes
     {{#if (hasItems this.sprites)}}
     {{this.sprites.length}},
     hud_{{@index}}_sprites,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.texts)}}
+    {{this.texts.length}},
+    hud_{{@index}}_texts,
     {{else}}
     0,
     nullptr,

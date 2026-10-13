@@ -10,6 +10,7 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
+  GameHudText,
   GamePlayer,
   GameScene,
   GameScript,
@@ -26,7 +27,7 @@ export interface CanvasState {
   selectedScene?: string;
   selectedHud?: string;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer |
-    GameHudSprite | GameVariable;
+    GameHudSprite | GameHudText | GameVariable;
   tool: ToolType;
   previousTool: ToolType;
   subTool?: SubToolType;
@@ -81,15 +82,18 @@ const Provider = ({
     });
   }, []);
 
-  const selectHudSprite = useCallback((hud: GameHud, sprite?: GameHudSprite) => {
-    if (state.selectedItem === sprite) {
+  const selectHudItem = useCallback((
+    hud: GameHud,
+    item?: GameHudSprite | GameHudText,
+  ) => {
+    if (state.selectedItem === item) {
       return;
     }
 
     dispatch({
       selectedHud: hud.id,
       selectedScene: undefined,
-      selectedItem: sprite,
+      selectedItem: item,
     });
   }, [state.selectedItem]);
 
@@ -236,7 +240,7 @@ const Provider = ({
     resetSelection,
     selectScene,
     selectHud,
-    selectHudSprite,
+    selectHudItem,
     selectScript,
     onVariablesChange,
     onScriptsChange,
@@ -251,7 +255,7 @@ const Provider = ({
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
     onScenesChange, selectVariable, onVariableChange,
-    selectHud, selectHudSprite, onHudChange,
+    selectHud, selectHudItem, onHudChange,
   ]);
 
   return (

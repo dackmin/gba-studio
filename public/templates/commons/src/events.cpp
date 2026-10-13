@@ -38,6 +38,7 @@ namespace neo::scenes
 #include "save.h"
 #include "conditions.h"
 #include "effects.h"
+#include "hud.h"
 #include "events.h"
 
 namespace neo::events
@@ -277,6 +278,19 @@ namespace neo::events
         game->scripted_events_count++;
         game->scripted_events.push_back(const_cast<neo::types::event*>(e));
       }
+    }
+
+    /**
+     * @name set-hud-text
+     * @param hud string — HUD id (empty: the HUD the event runs in)
+     * @param text string — HUD text id
+     * @param value value, variable or player attribute — New content
+     */
+    else if (e->type == "set-hud-text")
+    {
+      const neo::types::set_hud_text_event* hud_text_evt =
+        static_cast<const neo::types::set_hud_text_event*>(e);
+      neo::hud::set_text(game, hud_text_evt->hud, hud_text_evt->text, hud_text_evt->value);
     }
 
     /**

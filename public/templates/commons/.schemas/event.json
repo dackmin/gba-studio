@@ -403,6 +403,28 @@
       ],
       "type": "object"
     },
+    "SetHudTextEvent": {
+      "properties": {
+        "hud": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "value": { "$ref": "#/definitions/EventValue" },
+        "type": {
+          "const": "set-hud-text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hud",
+        "text",
+        "value",
+        "type"
+      ],
+      "type": "object"
+    },
     "ShowDialogEvent": {
       "properties": {
         "text": {
@@ -905,6 +927,7 @@
         { "$ref": "#/definitions/DisableInputEvent" },
         { "$ref": "#/definitions/EnableInputEvent" },
         { "$ref": "#/definitions/SetVariableEvent" },
+        { "$ref": "#/definitions/SetHudTextEvent" },
         { "$ref": "#/definitions/ShowDialogEvent" },
         { "$ref": "#/definitions/DisableActorEvent" },
         { "$ref": "#/definitions/EnableActorEvent" },

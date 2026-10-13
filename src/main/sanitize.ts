@@ -10,6 +10,7 @@ import type {
   GameBackgroundFile,
   GameHud,
   GameHudSprite,
+  GameHudText,
   GameMusicFile,
   GameProject,
   GameScene,
@@ -195,6 +196,30 @@ export const sanitizeHudSprite = async (
   return sprite;
 };
 
+export const sanitizeHudText = async (
+  text: GameHudText
+): Promise<GameHudText> => {
+  if (!text.id) {
+    text.id = randomUUID();
+  }
+
+  text.type = 'hud-text';
+
+  if (typeof text.text === 'object' && text.text !== null) {
+    if (text.text.type !== 'variable') {
+      text.text = '';
+    }
+  } else {
+    text.text = String(text.text ?? '').replace(/[\r\n]+/g, ' ').slice(0, 30);
+  }
+
+  text.x = Math.round(Number(text.x ?? 0));
+  text.y = Math.round(Number(text.y ?? 0));
+  text.z = Math.min(99, Math.max(0, Math.round(Number(text.z ?? 0))));
+
+  return text;
+};
+
 export const sanitizeHud = async (hud: GameHud): Promise<GameHud> => {
   if (!hud.id) {
     hud.id = randomUUID();
@@ -203,6 +228,8 @@ export const sanitizeHud = async (hud: GameHud): Promise<GameHud> => {
   hud.type = 'hud';
   hud.sprites = await Promise
     .all((hud.sprites ?? []).map(sprite => sanitizeHudSprite(sprite)));
+  hud.texts = await Promise
+    .all((hud.texts ?? []).map(text => sanitizeHudText(text)));
 
   for (const event of hud.events?.init ?? []) {
     await sanitizeEvent(event);

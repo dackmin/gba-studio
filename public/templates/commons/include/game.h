@@ -47,6 +47,11 @@ namespace neo
 
       // Screen-fixed sprites of the active scene's HUD (no camera attached)
       bn::vector<bn::sprite_ptr, 30> hud_sprites;
+      // Glyph sprites of the HUD texts, rebuilt when a resolved text changes
+      bn::vector<bn::sprite_ptr, 64> hud_text_sprites;
+      unsigned hud_text_hash = 0;
+      // Current content of each HUD text (set-hud-text swaps entries)
+      bn::vector<const neo::types::event_value*, 20> hud_text_content;
 
       int sensors_count;
       bn::vector<neo::sensor*, 50> sensors;

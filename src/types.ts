@@ -28,7 +28,8 @@ export interface AppStorage {
 export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
-export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' | 'hud-sprite';
+export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' |
+  'hud-sprite' | 'hud-text';
 export type SubToolType = AddSubToolType;
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
@@ -229,12 +230,13 @@ export interface GameSprite {
   id: string;
 }
 
-// A HUD is a fixed GBA-screen-sized layer (240x160) that only holds sprites.
-// It is displayed over a scene and never moves with the camera.
+// A HUD is a fixed GBA-screen-sized layer (240x160) that only holds sprites
+// and texts. It is displayed over a scene and never moves with the camera.
 export interface GameHud {
   type: 'hud';
   name: string;
   sprites?: GameHudSprite[];
+  texts?: GameHudText[];
   events?: {
     init?: SceneEvent[];
     update?: SceneEvent[];
@@ -249,6 +251,20 @@ export interface GameHudSprite {
   type: 'hud-sprite';
   name: string;
   sprite: string;
+  // Pixels from the top-left corner of the screen
+  x: number;
+  y: number;
+  z?: number;
+  // Internals
+  id: string;
+}
+
+// Single line drawn with the dialogs font (8x8 monospace): a plain value
+// or a variable
+export interface GameHudText {
+  type: 'hud-text';
+  name: string;
+  text: EventValue;
   // Pixels from the top-left corner of the screen
   x: number;
   y: number;
@@ -494,6 +510,15 @@ export interface OnButtonPressEvent extends SceneEvent {
   type: 'on-button-press';
   buttons: string[];
   events?: SceneEvent[];
+}
+
+export interface SetHudTextEvent extends SceneEvent {
+  type: 'set-hud-text';
+  // HUD id, empty means the HUD the event is used in
+  hud: string;
+  // Id of the HUD text to update
+  text: string;
+  value: EventValue;
 }
 
 export interface OnVariableChangeEvent extends SceneEvent {

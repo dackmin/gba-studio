@@ -1,5 +1,27 @@
 import type { RefCallback, RefObject } from 'react';
 
+import type { EventValue, GameVariables } from '../../types';
+
+export const getHudTextPreview = (
+  value: EventValue,
+  variables: GameVariables[],
+): string => {
+  if (typeof value !== 'object' || value === null) {
+    return String(value ?? '');
+  }
+
+  if (value.type === 'variable') {
+    const variable = variables.flatMap(v => v.values)
+      .find(v => v.id === value.name || v.name === value.name);
+
+    return typeof variable?.defaultValue === 'object' || !variable
+      ? `$${variable?.name ?? ''}`
+      : String(variable.defaultValue);
+  }
+
+  return '';
+};
+
 // bridge undo/redo/cut/copy/paste events fire regardless of focus, so
 // callers should bail out and let native text field behavior win instead
 export const isEditableElementFocused = () => {

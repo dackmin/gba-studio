@@ -151,6 +151,9 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'hud-sprite')}>
             HUD Sprite
           </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={onAddClick.bind(null, 'hud-text')}>
+            HUD Text
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <IconButton

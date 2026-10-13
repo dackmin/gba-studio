@@ -9,6 +9,7 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
+  GameHudText,
   GamePlayer,
   GameProject,
   GameScene,
@@ -104,7 +105,7 @@ export interface CanvasContextType {
   selectedScene?: GameScene;
   selectedHud?: GameHud;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer | GameSprite |
-    GameHudSprite | GameVariable;
+    GameHudSprite | GameHudText | GameVariable;
   tool: ToolType;
   subTool?: SubToolType;
   setTool?(tool: ToolType, subTool?: SubToolType): void;
@@ -116,7 +117,7 @@ export interface CanvasContextType {
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;
   selectHud?(hud?: GameHud): void;
-  selectHudSprite?(hud: GameHud, sprite?: GameHudSprite): void;
+  selectHudItem?(hud: GameHud, item?: GameHudSprite | GameHudText): void;
   selectScript?(script?: GameScript): void;
   selectVariable?(variable?: GameVariable): void;
   onVariablesChange?(registry: GameVariables): void;

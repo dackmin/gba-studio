@@ -8,13 +8,16 @@ import {
 } from '@junipero/react';
 import { Card, ContextMenu } from '@radix-ui/themes';
 
-import type { GameHud, GameHudSprite } from '../../../types';
+import type { GameHud, GameHudSprite, GameHudText } from '../../../types';
 import { useApp, useCanvas, usePreviewCursor } from '../../services/hooks';
 import HudSprite from './HudSprite';
+import HudText from './HudText';
 
 // GBA screen size
 export const HUD_WIDTH = 240;
 export const HUD_HEIGHT = 160;
+
+type HudItem = GameHudSprite | GameHudText;
 
 export interface HudProps
   extends Omit<MoveableProps, 'onSelect' | 'onChange'> {
@@ -22,10 +25,10 @@ export interface HudProps
   preview?: boolean;
   onChange?: (hud: GameHud) => void;
   onSelect?: (hud: GameHud) => void;
-  onSelectSprite?: (hud: GameHud, sprite: GameHudSprite) => void;
+  onSelectItem?: (hud: GameHud, item: HudItem) => void;
   onMove?: (hud: GameHud, e: MoveableState) => void;
   onDelete?: (hud?: GameHud) => void;
-  onDeleteSprite?: (sprite: GameHudSprite) => void;
+  onDeleteItem?: (item: HudItem) => void;
 }
 
 const Hud = ({
@@ -35,10 +38,10 @@ const Hud = ({
   preview = false,
   onChange,
   onSelect,
-  onSelectSprite,
+  onSelectItem,
   onMove,
   onDelete,
-  onDeleteSprite,
+  onDeleteItem,
   ...rest
 }: HudProps) => {
   const { zoom } = useInfiniteCanvas();
@@ -52,9 +55,11 @@ const Hud = ({
       : project?.huds?.find(h => h._file === hud._file || h.id === hud.id)
   ), [project, cursor, hud, preview]);
 
-  const sprites = useMemo(() => (
-    [...(hud.sprites || [])].sort((a, b) => (b.z ?? 0) - (a.z ?? 0))
-  ), [hud.sprites]);
+  // Lower z is drawn in front, like on the console
+  const items = useMemo<HudItem[]>(() => (
+    [...(hud.sprites || []), ...(hud.texts || [])]
+      .sort((a, b) => (b.z ?? 0) - (a.z ?? 0))
+  ), [hud.sprites, hud.texts]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -62,23 +67,23 @@ const Hud = ({
     onSelect?.(hud);
   }, [onSelect, hud]);
 
-  const onMovedSprite = useCallback((
-    sprite: GameHudSprite,
+  const onMovedItem = useCallback((
+    item: HudItem,
     e: MoveableState
   ) => {
-    sprite.x = Math.max(0, Math.round(e.deltaX));
-    sprite.y = Math.max(0, Math.round(e.deltaY));
+    item.x = Math.max(0, Math.round(e.deltaX));
+    item.y = Math.max(0, Math.round(e.deltaY));
     onChange?.(hud);
   }, [onChange, hud]);
 
-  const onSelectSprite_ = useCallback((
-    sprite: GameHudSprite,
+  const onSelectItem_ = useCallback((
+    item: HudItem,
     e: MouseEvent<HTMLElement>
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelectSprite?.(hud, sprite);
-  }, [onSelectSprite, hud]);
+    onSelectItem?.(hud, item);
+  }, [onSelectItem, hud]);
 
   return (
     <Moveable
@@ -115,13 +120,21 @@ const Hud = ({
               )}
               style={{ width: HUD_WIDTH, height: HUD_HEIGHT }}
             >
-              { sprites.map(sprite => (
+              { items.map(item => item.type === 'hud-text' ? (
+                <HudText
+                  key={item.id}
+                  item={item}
+                  onMoveEnd={onMovedItem.bind(null, item)}
+                  onSelect={onSelectItem_.bind(null, item)}
+                  onDelete={onDeleteItem?.bind(null, item)}
+                />
+              ) : (
                 <HudSprite
-                  key={sprite.id}
-                  sprite={sprite}
-                  onMoveEnd={onMovedSprite.bind(null, sprite)}
-                  onSelect={onSelectSprite_.bind(null, sprite)}
-                  onDelete={onDeleteSprite?.bind(null, sprite)}
+                  key={item.id}
+                  sprite={item}
+                  onMoveEnd={onMovedItem.bind(null, item)}
+                  onSelect={onSelectItem_.bind(null, item)}
+                  onDelete={onDeleteItem?.bind(null, item)}
                 />
               )) }
             </Card>

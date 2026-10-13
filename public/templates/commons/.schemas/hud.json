@@ -37,6 +37,41 @@
         "y"
       ]
     },
+    "HudText": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "const": "hud-text",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "text": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "text",
+        "x",
+        "y"
+      ]
+    },
     "Hud": {
       "additionalProperties": false,
       "properties": {
@@ -56,6 +91,10 @@
         "sprites": {
           "type": "array",
           "items": { "$ref": "#/definitions/HudSprite" }
+        },
+        "texts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/HudText" }
         },
         "events": {
           "additionalProperties": false,
