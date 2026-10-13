@@ -11,7 +11,7 @@ const Close = ({
   <a
     className={classNames(
       'rounded-full block w-4 h-4 flex items-center justify-center',
-      'absolute top-4 left-4 app-no-drag bg-mischka dark:bg-nevada',
+      'absolute top-4 left-4 app-no-drag! bg-mischka dark:bg-nevada',
       'hover:bg-(--accent-9) hover:dark:bg-slate group transition-all',
       'duration-200 ease-in-out',
     )}
@@ -22,7 +22,7 @@ const Close = ({
       height={12}
       className={classNames(
         '[&_path]:fill-slate dark:[&_path]:fill-onyx',
-        'group-hover:[&_path]:fill-seashell',
+        'group-hover:[&_path]:fill-seashell app-no-drag!',
         'transition-all duration-200 ease-in-out',
       )}
     />

@@ -82,12 +82,12 @@ const ProjectSelection = () => {
         'app-drag',
       )}
     >
-      <Close onClick={onClose} />
       <div
         className={classNames(
-          'flex-auto flex flex-col items-center p-8 gap-4'
+          'flex-auto flex flex-col items-center p-8 gap-4',
         )}
       >
+        <Close onClick={onClose} />
         <div
           className={classNames(
             'w-[100px] aspect-square bg-alabaster dark:bg-nevada rounded-2xl',
