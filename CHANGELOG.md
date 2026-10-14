@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/dackmin/gba-studio/compare/v0.1.0...v0.2.0) (2026-10-14)
+
+### Features
+
+* add custom fonts to dialogs menus & hud ([c5c51c9](https://github.com/dackmin/gba-studio/commit/c5c51c9c9da393aeb4236177c0126d093d0a22ce))
+* allow to change text color ([1bb616b](https://github.com/dackmin/gba-studio/commit/1bb616b52181a70dc1df7aca6ecaf0aed478f7b6))
+* allow to import font images ([4450214](https://github.com/dackmin/gba-studio/commit/44502140869554c0601477429c5194be34e80e9a))
+* auto update ([a284082](https://github.com/dackmin/gba-studio/commit/a2840826e8feb87318c16aebde4f8da6d833e648))
+
+### Bug Fixes
+
+* bad bmp ([a23573d](https://github.com/dackmin/gba-studio/commit/a23573d7d091b569900464fa800ea8afa08bef48))
+* correctly update text preview color ([0d0e6c0](https://github.com/dackmin/gba-studio/commit/0d0e6c0ad099dc16c67b9c73495778a8b74813e0))
+* don't use itch material as default sprites ([79e0e43](https://github.com/dackmin/gba-studio/commit/79e0e43e31c2fc968c6cd9a4729f97b22901bae1))
+* templates ([d1a16cc](https://github.com/dackmin/gba-studio/commit/d1a16ccae2c40da313f8b243ca8bf6231af51c6a))
+* upgrade electron ([3ae69ba](https://github.com/dackmin/gba-studio/commit/3ae69bade71eab3afb2940ef810df7262c76649e))
+
 ## 0.1.0 (2026-10-13)
 
 ### Features
