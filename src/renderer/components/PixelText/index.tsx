@@ -1,8 +1,8 @@
 import { type ComponentPropsWithoutRef, useEffect, useRef } from 'react';
+import { hsva2rgba, parseColor } from '@junipero/core';
 
 import { loadImage } from '../../../helpers';
 
-// Same bitmap font as the dialogs: 8x8 glyphs stacked vertically from '!'
 const FONT_URL = 'resources://public/templates/commons/graphics/gbs_mono.bmp';
 const GLYPH_SIZE = 8;
 const FIRST_CHAR = 33;
@@ -14,9 +14,10 @@ export const getTextWidth = (text: string) => text.length * GLYPH_SIZE;
 export interface PixelTextProps
   extends Omit<ComponentPropsWithoutRef<'canvas'>, 'width' | 'height'> {
   text: string;
+  color?: string;
 }
 
-const PixelText = ({ text, ...rest }: PixelTextProps) => {
+const PixelText = ({ text, color = '#000', ...rest }: PixelTextProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const PixelText = ({ text, ...rest }: PixelTextProps) => {
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
+      const { r = 0, g = 0, b = 0 } = hsva2rgba(parseColor(color));
 
       for (let i = 0; i < data.length; i += 4) {
         if (
@@ -63,6 +65,10 @@ const PixelText = ({ text, ...rest }: PixelTextProps) => {
           data[i + 2] === TRANSPARENT_COLOR[2]
         ) {
           data[i + 3] = 0;
+        } else if (color) {
+          data[i] = r * 255;
+          data[i + 1] = g * 255;
+          data[i + 2] = b * 255;
         }
       }
 
@@ -74,7 +80,7 @@ const PixelText = ({ text, ...rest }: PixelTextProps) => {
     return () => {
       cancelled = true;
     };
-  }, [text]);
+  }, [text, color]);
 
   return (
     <canvas

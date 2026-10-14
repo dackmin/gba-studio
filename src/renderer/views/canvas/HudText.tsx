@@ -71,6 +71,7 @@ const HudText = ({
               <PixelText
                 className="absolute z-1 top-0 left-0 pixelated"
                 text={text}
+                color={item.color}
               />
             </div>
           </ContextMenu.Trigger>
