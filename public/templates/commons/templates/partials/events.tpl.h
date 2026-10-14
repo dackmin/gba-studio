@@ -107,6 +107,11 @@ BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   nullptr,
   {{/if}}
   neo::types::dialog_portrait_position::{{uppercase (valuedef this.portraitPosition 'left')}},
+  {{#if (hasFont @root/fonts this.font)}}
+  &bn::sprite_items::{{getFontName @root/fonts this.font}},
+  {{else}}
+  nullptr,
+  {{/if}}
   make_dialog_vector(
     {{#each (truncate this.text (dialogLineLength this.portrait))}}
     {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
@@ -156,6 +161,11 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
   {{valuedef this.choices.length 0}},
   neo::types::direction::{{uppercase (valuedef this.direction 'down_right')}},
   {{valuedef this.z 1}},
+  {{#if (hasFont @root/fonts this.font)}}
+  &bn::sprite_items::{{getFontName @root/fonts this.font}},
+  {{else}}
+  nullptr,
+  {{/if}}
   make_menu_vector(
     {{#each this.choices}}
     {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}

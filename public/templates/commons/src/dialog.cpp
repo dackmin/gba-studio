@@ -12,9 +12,9 @@
 #include <bn_algorithm.h>
 
 #include <bn_sprite_items_textbox.h>
-#include <bn_sprite_items_gbs_mono.h>
 
 #include <neo_types.h>
+#include <neo_font.h>
 
 #include "dialog.h"
 #include "dialog_bg.h"
@@ -33,16 +33,23 @@ namespace neo
     text_z_order(1)
   {}
 
+  void dialog::set_font (const bn::sprite_item* font_)
+  {
+    font = font_;
+  }
+
   void dialog::show ()
   {
     BN_LOG("Showing dialog");
+    const bn::sprite_item& font_item = font != nullptr ? *font : neo::font::default_font;
+    int line_height = font_item.shape_size().height();
     int total_width = bn::display::width() - MARGIN * 2;
     int portrait_width = portrait != nullptr ? portrait->shape_size().width() : 0;
     int portrait_height = portrait != nullptr ? portrait->shape_size().height() : 0;
     bool portrait_left = portrait_position == neo::types::dialog_portrait_position::LEFT;
     int text_offset = portrait != nullptr && portrait_left ? portrait_width + PORTRAIT_GAP : 0;
     int total_height = bn::max(
-      LINE_HEIGHT * lines_count,
+      line_height * lines_count,
       portrait_height
     ) + PADDING_TOP + PADDING_BOTTOM;
     int x = 0;
@@ -93,8 +100,8 @@ namespace neo
     bn::unique_ptr<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>> text_sprites_storage =
       bn::make_unique<bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>>();
     bn::vector<bn::sprite_ptr, MAX_LINES * MAX_LENGTH>& text_sprites = *text_sprites_storage;
-    bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
-    bn::sprite_text_generator text_generator(font);
+    bn::sprite_font sprite_font = bn::sprite_font(font_item);
+    bn::sprite_text_generator text_generator(sprite_font);
     text_generator.set_left_alignment();
     text_generator.set_bg_priority(0);
     text_generator.set_z_order(text_z_order);
@@ -104,7 +111,7 @@ namespace neo
     {
       bn::string_view line = lines.at(i);
       bn::fixed text_x = x + PADDING_LEFT + text_offset;
-      bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
+      bn::fixed text_y = y + PADDING_TOP + (i * line_height);
 
       text_generator.generate_top_left(
         text_x,
@@ -114,7 +121,7 @@ namespace neo
       );
     }
 
-    bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+    bn::sprite_palette_ptr palette = font_item.palette_item().create_new_palette();
 
     for (int c = 1; c < 16; ++c)
     {

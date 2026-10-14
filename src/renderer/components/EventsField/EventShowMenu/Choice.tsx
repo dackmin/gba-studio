@@ -19,7 +19,7 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { type DraggingPositionType, Draggable, Droppable, set, classNames } from '@junipero/react';
 import { Tooltip } from 'radix-ui';
 
-import type { GameMenuChoice, IfEventCondition, SceneEvent } from '../../../../types';
+import type { GameFontFile, GameMenuChoice, IfEventCondition, SceneEvent } from '../../../../types';
 import { EventIfCondition } from '../EventIf';
 import DialogMenuPreview from '../../DialogMenuPreview';
 import EventsField from '..';
@@ -28,6 +28,7 @@ export interface ChoiceProps {
   index: number;
   choice: GameMenuChoice;
   choices: GameMenuChoice[];
+  font?: Partial<GameFontFile>;
   onDelete?: (choice: GameMenuChoice) => void;
   onValueChange?: (choice: GameMenuChoice) => void;
   onDrop?: (
@@ -42,6 +43,7 @@ const Choice = ({
   index,
   choice,
   choices,
+  font,
   onDelete,
   onValueChange,
   onDrop,
@@ -184,6 +186,7 @@ const Choice = ({
                   <DialogMenuPreview
                     items={choices.map(c => c.text)}
                     current={index}
+                    font={font}
                   />
                 </Tooltip.Content>
               </Tooltip.Portal>

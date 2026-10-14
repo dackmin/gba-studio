@@ -1,13 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Button, Card, Inset, Text } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
 import { set } from '@junipero/react';
 
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
+import { findFont } from '../../../../helpers';
 import { SceneFormContext } from '../../../services/contexts';
-import { useCanvas } from '../../../services/hooks';
+import { useApp, useCanvas } from '../../../services/hooks';
 import DirectionField from '../../DirectionField';
+import FontsListField from '../../FontsListField';
 import Choice from './Choice';
 
 export interface EventShowMenuProps {
@@ -20,6 +22,10 @@ const EventShowMenu = ({
   onValueChange,
 }: EventShowMenuProps) => {
   const { selectedScene } = useCanvas();
+  const { fonts } = useApp();
+  const font = useMemo(() => (
+    event.font ? findFont(fonts, event.font) : undefined
+  ), [fonts, event.font]);
 
   const addChoice = useCallback(() => {
     const newChoice: GameMenuChoice = {
@@ -90,6 +96,13 @@ const EventShowMenu = ({
           />
         </div>
         <div className="flex flex-col gap-2">
+          <Text size="1" className="text-slate">Font</Text>
+          <FontsListField
+            value={event.font || ''}
+            onValueChange={onValueChange_.bind(null, 'font')}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <Text size="1" className="text-slate">Choices</Text>
           <Card>
             <Inset>
@@ -100,6 +113,7 @@ const EventShowMenu = ({
                     index={i}
                     choice={choice}
                     choices={event.choices}
+                    font={font}
                     onDelete={onChoiceDelete}
                     onValueChange={onChoiceChange}
                     onDrop={onDrop}

@@ -1,5 +1,5 @@
 import { type ChangeEvent, useCallback, useReducer } from 'react';
-import { Button, Card, Heading, IconButton, Tabs, Text, TextField } from '@radix-ui/themes';
+import { Button, Card, Heading, Tabs, Text, TextField } from '@radix-ui/themes';
 import { cloneDeep, mockState, set } from '@junipero/react';
 import { PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
@@ -10,6 +10,7 @@ import type {
 import { useApp } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 import ConfigurationForm from './ConfigurationForm';
+import FontsListField from '../../components/FontsListField';
 
 export interface SettingsState {
   project: GameProject;
@@ -155,6 +156,18 @@ const Settings = () => {
                 onBlur={onProjectChange?.bind(null, state.project)}
               />
             </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Default Font</Text>
+              <FontsListField
+                size="3"
+                className="w-96!"
+                value={state.project?.settings?.font || ''}
+                onValueChange={onValueChange.bind(null, 'settings.font')}
+              />
+              <Text size="1" color="gray">
+                Font used to draw in-game texts (dialogs, menus, HUD texts)
+              </Text>
+            </div>
           </Card>
         </div>
         <div className="flex flex-col gap-3">
@@ -179,13 +192,21 @@ const Settings = () => {
                 <Tabs.Trigger key={config.id} value={config.id}>
                   <div className="!flex items-center gap-2">
                     <Text>{ config.name || 'Unnamed' }</Text>
-                    <IconButton
-                      variant="ghost"
-                      size="1"
-                      onClick={onRemoveConfiguration.bind(null, config.id)}
+                    { /* A span instead of IconButton: Tabs.Trigger renders a
+                      <button>, and buttons can't be nested in buttons */ }
+                    <span
+                      role="button"
+                      aria-label="Remove configuration"
+                      tabIndex={-1}
+                      className="cursor-pointer"
+                      onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        onRemoveConfiguration(config.id);
+                      }}
                     >
                       <TrashIcon />
-                    </IconButton>
+                    </span>
                   </div>
                 </Tabs.Trigger>
               )) }

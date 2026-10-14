@@ -10,6 +10,8 @@ import {
 } from 'react';
 import { useInfiniteCanvas, useTimeout } from '@junipero/react';
 
+import { findFont, getAssetUrl } from '../../helpers';
+import { hexToRgb } from './helpers';
 import {
   AppContext,
   AudioContext,
@@ -92,6 +94,19 @@ export const useLocalData = () => use(LocalDataContext);
 export const useModal = () => use(ModalContext);
 export const useAudio = () => use(AudioContext);
 export const useDraggable = <T>() => use<DraggableContextType<T>>(DraggableContext);
+
+export const useProjectFont = () => {
+  const { project, fonts } = useApp();
+  const selected = findFont(fonts, project?.settings?.font);
+
+  return {
+    fontUrl: selected ? getAssetUrl(selected) : undefined,
+    glyphHeight: selected?.height || 8,
+    transparencyColor: selected?.transparentColor
+      ? hexToRgb(selected.transparentColor)
+      : undefined,
+  };
+};
 
 export const useBridgeListener = <T extends any[] = any[]>(
   channel: string,

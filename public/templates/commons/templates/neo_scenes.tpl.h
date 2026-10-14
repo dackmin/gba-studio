@@ -17,6 +17,9 @@
 {{#each sprites}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites this.id}}.h>
 {{/each}}
+{{#each fonts}}
+#include <bn_sprite_items_{{getFontName @root/fonts this.id}}.h>
+{{/each}}
 {{#each scenes}}
 #include <bn_regular_bg_items_{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}.h>
 {{#if this.player.sprite}}
@@ -125,7 +128,12 @@ namespace neo::scenes
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
     {{valuedef this.z 0}},
-    hud_{{@../index}}_text_{{@index}}_color
+    hud_{{@../index}}_text_{{@index}}_color,
+    {{#if (hasFont @root/fonts this.font)}}
+    &bn::sprite_items::{{getFontName @root/fonts this.font}}
+    {{else}}
+    nullptr
+    {{/if}}
   };
   {{/each}}
   {{#if (hasItems this.texts)}}

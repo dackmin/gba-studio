@@ -13,6 +13,7 @@ import type { GameHud, GameHudText } from '../../../types';
 import { useCanvas } from '../../services/hooks';
 import EventValueField from '../../components/EventValueField';
 import ColorField from '../../components/ColorField';
+import FontsListField from '../../components/FontsListField';
 
 // Sprites are limited on the GBA: one per character
 export const HUD_TEXT_MAX_LENGTH = 30;
@@ -140,6 +141,13 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
               type="text"
               value={item.color ?? ''}
               onValueChange={onValueChange.bind(null, 'color')}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Text className="block text-slate" size="1">Font</Text>
+            <FontsListField
+              value={item.font || ''}
+              onValueChange={onValueChange.bind(null, 'font')}
             />
           </div>
         </div>

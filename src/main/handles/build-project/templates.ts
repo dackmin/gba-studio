@@ -3,8 +3,14 @@ import path from 'node:path';
 import Handlebars from 'handlebars';
 import fse from 'fs-extra';
 
-import type { Build, GameBackgroundFile, GameMenuChoice, GameVariables } from '../../../types';
-import { findBackground, findSound, findSprite } from '../../../helpers';
+import type {
+  Build,
+  GameBackgroundFile,
+  GameFontFile,
+  GameMenuChoice,
+  GameVariables,
+} from '../../../types';
+import { findBackground, findFont, findSound, findSprite } from '../../../helpers';
 import { getResourcesDir } from '../../utils';
 import { getBuildDir, toSlug } from './utils';
 import { hexToRgb } from '../../images';
@@ -116,6 +122,13 @@ export const setupHandlebars = async () => {
     return findSprite(sprites, id)
       ?._file?.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
   });
+  Handlebars.registerHelper('getFontName', (fonts: GameFontFile[], id: string) => {
+    return findFont(fonts, id)
+      ?._file?.replace(/\.json$/, '').replace(/^font_/, '') || '';
+  });
+  Handlebars.registerHelper('hasFont', (fonts: GameFontFile[], id: string) => {
+    return !!findFont(fonts, id);
+  });
   Handlebars.registerHelper('getSoundName', (sounds: any[], id: string) => {
     return findSound(sounds, id)
       ?._file?.replace(/\.json$/, '').replace(/^sound_/, '') || id;
@@ -196,13 +209,28 @@ export const buildSingleTemplate = async (
     templateName
   ), 'utf-8');
 
-  const result = await compileTemplate(template, build.data);
+  const data = await prepareTemplateData(build);
+
+  const result = await compileTemplate(template, data);
 
   await fse.outputFile(
     path.join(getBuildDir(build), './build', templateName.replace('.tpl', '')),
     result,
     'utf-8',
   );
+};
+
+const prepareTemplateData = async (build: Build) => {
+  const data: any = { ...build.data };
+  const fontId = build.data?.project?.settings?.font;
+  const font = findFont(build.data?.fonts, fontId);
+
+  data.fontName = font
+    ? font._file?.replace(/\.json$/, '').replace(/^font_/, '') || ''
+    : '';
+  data.glyphHeight = font?.height || 8;
+
+  return data;
 };
 
 export const buildTemplates = async (
@@ -219,6 +247,10 @@ export const buildTemplates = async (
   build.events.onLog('Building types...');
   await buildSingleTemplate('neo_types.tpl.h', build);
   build.events.onSuccess('neo_types.h built');
+
+  build.events.onLog('Building font...');
+  await buildSingleTemplate('neo_font.tpl.h', build);
+  build.events.onSuccess('neo_font.h built');
 
   build.events.onLog('Building variables...');
   await buildSingleTemplate('neo_variables.tpl.h', build);

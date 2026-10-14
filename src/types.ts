@@ -267,6 +267,7 @@ export interface GameHudText {
   y: number;
   z?: number;
   color?: string;
+  font?: string;
   // Internals
   id: string;
 }
@@ -301,6 +302,7 @@ export interface ProjectSettings {
   emulatorType?: 'internal' | 'external';
   emulatorCommand?: string;
   logsEnabled?: boolean;
+  font?: string;
 }
 
 export interface ProjectConfiguration {
@@ -598,6 +600,7 @@ export interface ShowDialogEvent extends SceneEvent {
   speed?: 'slow' | 'normal' | 'fast';
   portrait?: string;
   portraitPosition?: 'left' | 'right';
+  font?: string;
 }
 
 export interface DisableActorEvent extends SceneEvent {
@@ -726,6 +729,7 @@ export interface ShowMenuEvent extends SceneEvent {
   choices: GameMenuChoice[];
   direction?: Direction;
   z?: number;
+  font?: string;
 }
 
 export interface IfEventCondition {

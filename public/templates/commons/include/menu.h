@@ -5,6 +5,7 @@
 #include <bn_vector.h>
 
 #include <neo_types.h>
+#include <neo_font.h>
 
 namespace neo
 {
@@ -12,7 +13,6 @@ namespace neo
 
   class menu
   {
-    static constexpr int LINE_HEIGHT = 8;
     static constexpr int PADDING_LEFT = 12;
     static constexpr int PADDING_RIGHT = 8;
     static constexpr int PADDING_TOP = 8;
@@ -34,10 +34,12 @@ namespace neo
       int show();
       void set_direction(neo::types::direction direction_);
       void set_z_order(int z_order_);
+      void set_font(const bn::sprite_item* font_);
 
       neo::game* game;
       bn::vector<neo::types::menu_choice, MAX_ITEMS> choices;
       neo::types::direction direction;
+      const bn::sprite_item* font = nullptr;
       int bg_z_order;
       int text_z_order;
   };

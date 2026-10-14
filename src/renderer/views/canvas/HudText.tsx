@@ -1,4 +1,4 @@
-import { type MouseEvent, useCallback } from 'react';
+import { type MouseEvent, useCallback, useMemo } from 'react';
 import {
   type MoveableProps,
   Moveable,
@@ -8,8 +8,9 @@ import {
 import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameHudText } from '../../../types';
-import { useApp, useCanvas, usePreviewCursor } from '../../services/hooks';
-import { getHudTextPreview } from '../../services/helpers';
+import { useApp, useCanvas, usePreviewCursor, useProjectFont } from '../../services/hooks';
+import { findFont, getAssetUrl } from '../../../helpers';
+import { getHudTextPreview, hexToRgb } from '../../services/helpers';
 import PixelText, { getTextWidth } from '../../components/PixelText';
 
 export interface HudTextProps extends MoveableProps {
@@ -30,8 +31,23 @@ const HudText = ({
   const { zoom } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { tool, selectedItem } = useCanvas();
-  const { variables } = useApp();
-  const text = getHudTextPreview(item.text, variables).slice(0, 30);
+  const { variables, fonts } = useApp();
+  const projectFont = useProjectFont();
+  const text = useMemo(() => (
+    getHudTextPreview(item.text, variables).slice(0, 30)
+  ), [item.text, variables]);
+  const customFont = useMemo(() => (
+    item.font ? findFont(fonts, item.font) : undefined
+  ), [item.font, fonts]);
+  const fontProps = useMemo(() => (
+    customFont ? {
+      fontUrl: getAssetUrl(customFont),
+      glyphHeight: customFont.height || 8,
+      transparencyColor: customFont.transparentColor
+        ? hexToRgb(customFont.transparentColor)
+        : undefined,
+    } : projectFont
+  ), [customFont, projectFont]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -54,7 +70,7 @@ const HudText = ({
         left: 0,
         top: 0,
         width: Math.max(8, getTextWidth(text)),
-        height: 8,
+        height: fontProps.glyphHeight,
       }}
     >
       <div className="absolute w-full h-full">
@@ -72,6 +88,7 @@ const HudText = ({
                 className="absolute z-1 top-0 left-0 pixelated"
                 text={text}
                 color={item.color}
+                { ...fontProps }
               />
             </div>
           </ContextMenu.Trigger>

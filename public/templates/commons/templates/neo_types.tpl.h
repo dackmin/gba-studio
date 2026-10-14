@@ -298,9 +298,10 @@ namespace neo::types
     neo::types::text_speed speed;
     const bn::sprite_item* portrait;
     neo::types::dialog_portrait_position portrait_position;
+    const bn::sprite_item* font;
     bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::vector<bn::string_view, 5>& lines_):
-      event(type_), direction(direction_), z(z_), speed(speed_), portrait(portrait_), portrait_position(portrait_position_), lines(lines_) {}
+    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::sprite_item* font_, const bn::vector<bn::string_view, 5>& lines_):
+      event(type_), direction(direction_), z(z_), speed(speed_), portrait(portrait_), portrait_position(portrait_position_), font(font_), lines(lines_) {}
   };
 
   struct if_condition;
@@ -323,9 +324,10 @@ namespace neo::types
     int choices_count;
     neo::types::direction direction;
     int z;
+    const bn::sprite_item* font;
     bn::vector<menu_choice, 5> choices;
-    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::vector<menu_choice, 5>& choices_):
-      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), choices(choices_) {}
+    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::sprite_item* font_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), font(font_), choices(choices_) {}
   };
 
   struct variable_change_event: event
@@ -1116,6 +1118,7 @@ namespace neo::types
     int y;
     int z;
     bn::color color;
+    const bn::sprite_item* font;
   };
 
   struct hud

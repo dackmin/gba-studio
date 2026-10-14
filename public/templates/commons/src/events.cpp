@@ -297,6 +297,7 @@ namespace neo::events
      * @name show-dialog
      * @param text string — Dialog text
      * @param speed string — Text reveal speed (slow, normal, fast)
+     * @param font string — Project font used to render the text (empty = project font)
      */
     else if (e->type == "show-dialog")
     {
@@ -307,6 +308,7 @@ namespace neo::events
       d->set_z_order(dialog_evt->z);
       d->set_speed(dialog_evt->speed);
       d->set_portrait(dialog_evt->portrait, dialog_evt->portrait_position);
+      d->set_font(dialog_evt->font);
       d->show();
       delete d;
     }
@@ -314,6 +316,7 @@ namespace neo::events
     /**
      * @name show-menu
      * @param choices array of menu choices — Menu choices
+     * @param font string — Project font used to render the choices (empty = project font)
      */
     else if (e->type == "show-menu")
     {
@@ -352,6 +355,7 @@ namespace neo::events
       neo::menu* m = new neo::menu(game, visible_choices);
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
+      m->set_font(menu_evt->font);
       BN_LOG("Opening menu");
       int selected = m->show();
       delete m;

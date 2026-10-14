@@ -9,9 +9,8 @@
 #include <bn_string.h>
 #include <bn_algorithm.h>
 
-#include <bn_sprite_items_gbs_mono.h>
-
 #include <neo_types.h>
+#include <neo_font.h>
 
 #include "hud.h"
 #include "game.h"
@@ -68,11 +67,6 @@ namespace neo::hud
 
       game->hud_text_sprites.clear();
 
-      bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
-      bn::sprite_text_generator text_generator(font);
-      text_generator.set_left_alignment();
-      text_generator.set_bg_priority(0);
-
       for (int i = 0; i < game->hud_text_content.size(); ++i)
       {
         const neo::types::hud_text* definition = hud_data->texts[i];
@@ -90,9 +84,16 @@ namespace neo::hud
           continue;
         }
 
+        const bn::sprite_item& font_item = definition->font != nullptr
+          ? *definition->font
+          : neo::font::default_font;
+        bn::sprite_text_generator text_generator{bn::sprite_font(font_item)};
+        text_generator.set_left_alignment();
+        text_generator.set_bg_priority(0);
+        text_generator.set_z_order(1000 + definition->z);
+
         int first_sprite = game->hud_text_sprites.size();
 
-        text_generator.set_z_order(1000 + definition->z);
         text_generator.generate_top_left(
           definition->x,
           definition->y,
@@ -100,7 +101,7 @@ namespace neo::hud
           game->hud_text_sprites
         );
 
-        bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+        bn::sprite_palette_ptr palette = font_item.palette_item().create_new_palette();
 
         for (int c = 1; c < 16; ++c)
         {

@@ -4,10 +4,11 @@ import { Select, Text, TextArea } from '@radix-ui/themes';
 import { Tooltip } from 'radix-ui';
 
 import type { ShowDialogEvent } from '../../../types';
-import { findSprite } from '../../../helpers';
+import { findFont, findSprite } from '../../../helpers';
 import { useApp, useDelayedCallback } from '../../services/hooks';
 import DialogPreview from '../DialogPreview';
 import DirectionField from '../DirectionField';
+import FontsListField from '../FontsListField';
 import SpritesListField from '../SpritesListField';
 
 export interface EventShowDialogProps {
@@ -23,11 +24,14 @@ const EventShowDialog = ({
 }: EventShowDialogProps) => {
   const [event, setEvent] = useState(eventProp);
   const [opened, setOpened] = useState(false);
-  const { sprites } = useApp();
+  const { sprites, fonts } = useApp();
 
   const portrait = useMemo(() => (
     event.portrait ? findSprite(sprites, event.portrait) : undefined
   ), [sprites, event.portrait]);
+  const font = useMemo(() => (
+    event.font ? findFont(fonts, event.font) : undefined
+  ), [fonts, event.font]);
 
   // Performance optimizations
   const onDelayedValueChange = useDelayedCallback(onValueChange, 300);
@@ -99,6 +103,13 @@ const EventShowDialog = ({
         </Select.Root>
       </div>
       <div className="flex flex-col gap-2">
+        <Text size="1" className="text-slate">Font</Text>
+        <FontsListField
+          value={event.font || ''}
+          onValueChange={onValueChange_.bind(null, 'font')}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Text</Text>
         <div className="relative">
           <Tooltip.Root
@@ -121,6 +132,7 @@ const EventShowDialog = ({
                   text={event.text}
                   portrait={portrait}
                   portraitPosition={event.portraitPosition}
+                  font={font}
                 />
               </Tooltip.Content>
             </Tooltip.Portal>

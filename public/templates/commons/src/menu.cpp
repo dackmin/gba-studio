@@ -11,10 +11,10 @@
 #include <bn_unique_ptr.h>
 
 #include <bn_sprite_items_textbox.h>
-#include <bn_sprite_items_gbs_mono.h>
 #include <bn_sprite_items_menu_arrow.h>
 
 #include <neo_types.h>
+#include <neo_font.h>
 
 #include "menu.h"
 #include "game.h"
@@ -33,6 +33,8 @@ namespace neo
 
   int menu::show ()
   {
+    const bn::sprite_item& font_item = font != nullptr ? *font : neo::font::default_font;
+    int line_height = font_item.shape_size().height();
     int longest = 0;
     for (int i = 0; i < choices.size(); ++i)
     {
@@ -43,7 +45,7 @@ namespace neo
     }
 
     int total_width = CHAR_WIDTH * longest + PADDING_LEFT + PADDING_RIGHT;
-    int total_height = LINE_HEIGHT * choices.size() + PADDING_TOP + PADDING_BOTTOM;
+    int total_height = line_height * choices.size() + PADDING_TOP + PADDING_BOTTOM;
 
     int x = 0;
     int y = 0;
@@ -95,8 +97,8 @@ namespace neo
     bn::unique_ptr<bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>> text_sprites_storage =
       bn::make_unique<bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>>();
     bn::vector<bn::sprite_ptr, MAX_ITEMS * MAX_LENGTH>& text_sprites = *text_sprites_storage;
-    bn::sprite_font font = bn::sprite_font(bn::sprite_items::gbs_mono);
-    bn::sprite_text_generator text_generator(font);
+    bn::sprite_font sprite_font = bn::sprite_font(font_item);
+    bn::sprite_text_generator text_generator(sprite_font);
     text_generator.set_left_alignment();
     text_generator.set_bg_priority(TEXT_PRIORITY);
     text_generator.set_z_order(text_z_order);
@@ -106,7 +108,7 @@ namespace neo
     {
       bn::string_view choice = choices.at(i).text;
       bn::fixed text_x = x + PADDING_LEFT;
-      bn::fixed text_y = y + PADDING_TOP + (i * LINE_HEIGHT);
+      bn::fixed text_y = y + PADDING_TOP + (i * line_height);
 
       BN_LOG("Rendering menu choice: ", choice, " at position (", text_x, ",", text_y, ")");
 
@@ -118,7 +120,7 @@ namespace neo
       );
     }
 
-    bn::sprite_palette_ptr palette = bn::sprite_items::gbs_mono.palette_item().create_new_palette();
+    bn::sprite_palette_ptr palette = font_item.palette_item().create_new_palette();
 
     for (int c = 1; c < 16; ++c)
     {
@@ -135,7 +137,7 @@ namespace neo
 
     // Draw arrow
     int arrow_x = x + ARROW_PADDING / 2;
-    int arrow_y = y + PADDING_TOP + choice_index * LINE_HEIGHT;
+    int arrow_y = y + PADDING_TOP + choice_index * line_height;
     bn::sprite_ptr arrow = bn::sprite_items::menu_arrow.create_sprite(0, 0);
     arrow.set_top_left_position(arrow_x, arrow_y);
     arrow.set_visible(true);
@@ -158,7 +160,7 @@ namespace neo
         if (choice_index > 0)
         {
           choice_index--;
-          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * line_height);
           BN_LOG("Moved up inside menu to choice index: ", choice_index);
           game->update_frame();
         }
@@ -168,7 +170,7 @@ namespace neo
         if (choice_index < choices.size() - 1)
         {
           choice_index++;
-          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * LINE_HEIGHT);
+          arrow.set_top_left_position(arrow_x, y + PADDING_TOP + choice_index * line_height);
           BN_LOG("Moved down inside menu to choice index: ", choice_index);
           game->update_frame();
         }
@@ -201,5 +203,10 @@ namespace neo
   {
     bg_z_order = z_order_;
     text_z_order = z_order_ - 1;
+  }
+
+  void menu::set_font (const bn::sprite_item* font_)
+  {
+    font = font_;
   }
 }

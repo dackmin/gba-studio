@@ -1,8 +1,12 @@
-import { useMemo, type ComponentPropsWithoutRef } from 'react';
+import { type ComponentPropsWithoutRef, useMemo } from 'react';
 import { classNames } from '@junipero/react';
 
-import type { GameSpriteFile } from '../../../types';
+import type { GameFontFile, GameSpriteFile } from '../../../types';
+import { getAssetUrl } from '../../../helpers';
+import { hexToRgb } from '../../services/helpers';
+import { useProjectFont } from '../../services/hooks';
 import Sprite from '../Sprite';
+import PixelText from '../PixelText';
 
 export interface DialogPreviewProps extends ComponentPropsWithoutRef<'div'> {
   text: string;
@@ -10,6 +14,7 @@ export interface DialogPreviewProps extends ComponentPropsWithoutRef<'div'> {
   maxLines?: number;
   portrait?: Partial<GameSpriteFile>;
   portraitPosition?: 'left' | 'right';
+  font?: Partial<GameFontFile>;
 }
 
 const DialogPreview = ({
@@ -18,10 +23,25 @@ const DialogPreview = ({
   maxLines = 5,
   portrait,
   portraitPosition = 'left',
+  font,
   className,
   ...rest
 }: DialogPreviewProps) => {
-  const maxLineLength = maxLineLengthProp ?? (portrait ? 24 : 27);
+  const projectFont = useProjectFont();
+  const dialogFont = useMemo(() => (
+    font?._file || font?.path ? {
+      fontUrl: font.path?.startsWith('data:')
+        ? font.path
+        : getAssetUrl(font as GameFontFile),
+      glyphHeight: font.height || 8,
+      transparencyColor: font.transparentColor
+        ? hexToRgb(font.transparentColor)
+        : undefined,
+    } : projectFont
+  ), [font, projectFont]);
+  const maxLineLength = useMemo(() => (
+    maxLineLengthProp ?? (portrait ? 24 : 27)
+  ), [maxLineLengthProp, portrait]);
 
   const parts = useMemo(() => (
     textProp
@@ -36,13 +56,13 @@ const DialogPreview = ({
     <div
       { ...rest }
       className={classNames(
-        'dialog font-public-pixel text-black text-[8px] w-[232px]',
+        'dialog w-[232px]',
         className,
       )}
     >
       <div
         className={classNames(
-          'p-[8px] flex gap-[4px] min-h-[32px]',
+          'p-[8px] flex gap-[4px]',
           { 'flex-row-reverse': !!portrait && portraitPosition === 'right' },
         )}
       >
@@ -56,7 +76,9 @@ const DialogPreview = ({
         ) }
         <div className="flex-auto">
           { parts.map((part, index) => (
-            <div key={index}>{part}</div>
+            <div key={index}>
+              <PixelText text={part} color="#000" { ...dialogFont } />
+            </div>
           ))}
         </div>
       </div>

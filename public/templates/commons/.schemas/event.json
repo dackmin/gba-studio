@@ -452,6 +452,9 @@
           ],
           "type": "string"
         },
+        "font": {
+          "type": "string"
+        },
         "type": {
           "const": "show-dialog",
           "type": "string"
@@ -721,6 +724,9 @@
         "direction": { "$ref": "#/definitions/Direction" },
         "z": {
           "type": "number"
+        },
+        "font": {
+          "type": "string"
         },
         "type": {
           "const": "show-menu",
