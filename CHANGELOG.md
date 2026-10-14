@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.1](https://github.com/dackmin/gba-studio/compare/v0.2.0...v0.2.1) (2026-10-14)
+
+### Bug Fixes
+
+* bad default font preview url ([33a292d](https://github.com/dackmin/gba-studio/commit/33a292df3a87413318f3ac1405c5c7e7956dc14c))
+
 ## [0.2.0](https://github.com/dackmin/gba-studio/compare/v0.1.0...v0.2.0) (2026-10-14)
 
 ### Features
