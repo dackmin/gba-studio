@@ -384,6 +384,24 @@ export interface GameMusicFile {
   $schema?: string;
 }
 
+export interface GameFontFile {
+  type: 'font';
+  name: string;
+  path: string;
+  width?: number;
+  height?: number;
+  transparentColor?: string;
+  format?: string;
+  // Internals
+  id?: string;
+  _realWidth?: number;
+  _realHeight?: number;
+  _file?: string;
+  _fileName?: string;
+  _version?: number;
+  $schema?: string;
+}
+
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
@@ -391,6 +409,7 @@ export declare interface AppPayload {
   variables: GameVariables[];
   sprites: GameSpriteFile[];
   backgrounds: GameBackgroundFile[];
+  fonts: GameFontFile[];
   music: GameMusicFile[];
   sounds: GameSoundFile[];
   scripts: GameScript[];

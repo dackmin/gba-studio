@@ -35,6 +35,7 @@ import {
   loadImage,
   importSprite,
   importBackground,
+  importFont,
   importSound,
   importMusic,
   showUnsavedChangesDialog,
@@ -117,6 +118,7 @@ ipcMain.handle('get-project-relative-path', getProjectRelativePath);
 ipcMain.handle('load-image', loadImage);
 ipcMain.handle('import-sprite', importSprite);
 ipcMain.handle('import-background', importBackground);
+ipcMain.handle('import-font', importFont);
 ipcMain.handle('import-sound', importSound);
 ipcMain.handle('import-music', importMusic);
 ipcMain.handle('show-unsaved-changes-dialog', showUnsavedChangesDialog);

@@ -55,6 +55,7 @@ const App = () => {
     variables: [],
     sprites: [],
     backgrounds: [],
+    fonts: [],
     music: [],
     sounds: [],
     scripts: [],
@@ -76,8 +77,8 @@ const App = () => {
     document.querySelector('html')?.classList.add(newTheme);
   }, []);
 
-  useBridgeListener('graphics-updated', ({ sprites, backgrounds }) => {
-    dispatch({ sprites, backgrounds });
+  useBridgeListener('graphics-updated', ({ sprites, backgrounds, fonts }) => {
+    dispatch({ sprites, backgrounds, fonts });
   }, []);
 
   useBridgeListener('audio-updated', ({ music, sounds }) => {
@@ -130,6 +131,7 @@ const App = () => {
           'variables',
           'scripts',
           'backgrounds',
+          'fonts',
           'sprites',
           'music',
           'sounds',
@@ -224,6 +226,7 @@ const App = () => {
       'scripts',
       'sprites',
       'backgrounds',
+      'fonts',
       'music',
       'sounds',
     ]));
@@ -339,6 +342,7 @@ const App = () => {
     variables: state.variables,
     sprites: state.sprites,
     backgrounds: state.backgrounds,
+    fonts: state.fonts,
     music: state.music,
     sounds: state.sounds,
     scripts: state.scripts,
@@ -359,7 +363,7 @@ const App = () => {
   }), [
     projectPath, resourcesPath,
     state.scenes, state.huds, state.projectBase, state.variables, state.project,
-    state.dirty, state.sprites, state.backgrounds, state.sounds,
+    state.dirty, state.sprites, state.backgrounds, state.fonts, state.sounds,
     state.scripts, state.music, state.editorConfig,
     state.clipboard, state.localData, state.isFullscreen,
     save, onCanvasChange, onMoveScene, onMoveHud, onProjectChange,

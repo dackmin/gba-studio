@@ -6,13 +6,16 @@ import Switch from '../../components/Switch';
 import SpriteForm from './SpriteForm';
 import FrameForm from './FrameForm';
 import BackgroundForm from './BackgroundForm';
+import FontForm from './FontForm';
 
 const RightSidebar = () => {
-  const { selectedSprite, selectedBackground, selectedFrame } = useSprite();
+  const {
+    selectedSprite, selectedBackground, selectedFont, selectedFrame,
+  } = useSprite();
 
   const selectedItem = useMemo(() => (
-    selectedFrame || selectedSprite || selectedBackground
-  ), [selectedFrame, selectedSprite, selectedBackground]);
+    selectedFrame || selectedSprite || selectedBackground || selectedFont
+  ), [selectedFrame, selectedSprite, selectedBackground, selectedFont]);
 
   return (
     <Switch value={selectedItem?.type || ''}>
@@ -24,6 +27,9 @@ const RightSidebar = () => {
       </Switch.Case>
       <Switch.Case value="background">
         <BackgroundForm />
+      </Switch.Case>
+      <Switch.Case value="font">
+        <FontForm />
       </Switch.Case>
       <Switch.Case default>
         <div className="w-full h-full flex items-center justify-center p-4">

@@ -5,6 +5,7 @@ import slugify from 'slugify';
 import type {
   GameActor,
   GameBackgroundFile,
+  GameFontFile,
   GameMusicFile,
   GameScene,
   GameSensor,
@@ -119,6 +120,13 @@ export const findBackground = (
   id?: string,
 ): GameBackgroundFile | undefined => {
   return backgrounds.find(b => b.id === id || b.name === id || b._file === id);
+};
+
+export const findFont = (
+  fonts: GameFontFile[] = [],
+  id?: string,
+): GameFontFile | undefined => {
+  return fonts.find(f => f.id === id || f.name === id || f._file === id);
 };
 
 export const findSound = (

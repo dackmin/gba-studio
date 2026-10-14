@@ -1,6 +1,7 @@
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameFontFile,
   GameHud,
   GameMusicFile,
   GameScene,
@@ -56,6 +57,20 @@ export const serializeBackground = async (
   delete background._version;
 
   return background;
+};
+
+export const serializeFont = async (
+  font: GameFontFile
+): Promise<GameFontFile> => {
+  font.$schema = import.meta.env.VITE_SCHEMAS_BASE + '/font.json';
+  font.path = font.path.replace(/\\/g, '/');
+
+  delete font._realWidth;
+  delete font._realHeight;
+  delete font._fileName;
+  delete font._version;
+
+  return font;
 };
 
 export const serializeMusic = async (
@@ -139,6 +154,11 @@ export const serialize = async (
   if (payload.backgrounds) {
     payload.backgrounds = await Promise
       .all(payload.backgrounds.map(background => serializeBackground(background)));
+  }
+
+  if (payload.fonts) {
+    payload.fonts = await Promise
+      .all(payload.fonts.map(font => serializeFont(font)));
   }
 
   if (payload.sounds) {

@@ -60,7 +60,7 @@ interface AppBridge extends EventTarget {
   getProjectRelativePath(projectPath: string, filePath: string): Promise<string>;
   loadImage(
     filePath: string,
-    mode: 'sprite' | 'background',
+    mode: 'sprite' | 'background' | 'font',
     opts?: {
       transparencyColor?: string;
     },
@@ -75,6 +75,11 @@ interface AppBridge extends EventTarget {
     filePath: string,
     backgroundInfo: Partial<GameBackgroundFile>,
   ): Promise<Partial<GameBackgroundFile>>;
+  importFont(
+    projectPath: string,
+    filePath: string,
+    fontInfo: Partial<GameFontFile>,
+  ): Promise<Partial<GameFontFile>>;
   importSound(
     projectPath: string,
     filePath: string,

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 import { app, BrowserWindow, globalShortcut } from 'electron';
 
-import type { GameBackgroundFile, GameSpriteFile } from '../types';
+import type { GameBackgroundFile, GameFontFile, GameSpriteFile } from '../types';
 import { createProjectWindow, createSelectionWindow, isQuitting, setQuitting } from './windows';
 import { getAudioFiles, getGraphicsFiles } from './files';
 
@@ -64,10 +64,11 @@ export const createGraphicsFileWatcher = async (
 
       const sprites: GameSpriteFile[] = [];
       const backgrounds: GameBackgroundFile[] = [];
+      const fonts: GameFontFile[] = [];
 
       for (const file of files) {
         try {
-          const graphic: GameSpriteFile | GameBackgroundFile = JSON.parse(
+          const graphic: GameSpriteFile | GameBackgroundFile | GameFontFile = JSON.parse(
             await fs.promises
               .readFile(path.join(projectBase, 'graphics', file), 'utf-8')
           );
@@ -76,13 +77,15 @@ export const createGraphicsFileWatcher = async (
             sprites.push(graphic as GameSpriteFile);
           } else if (['background'].includes(graphic.type)) {
             backgrounds.push(graphic as GameBackgroundFile);
+          } else if (['font'].includes(graphic.type)) {
+            fonts.push(graphic as GameFontFile);
           }
 
           graphic._file = file;
         } catch {}
       }
 
-      win.webContents.send('graphics-updated', { sprites, backgrounds });
+      win.webContents.send('graphics-updated', { sprites, backgrounds, fonts });
     },
   );
 };

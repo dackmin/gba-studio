@@ -1,9 +1,9 @@
 import { type ComponentPropsWithoutRef, MouseEvent, useCallback } from 'react';
 import { classNames } from '@junipero/react';
 import { Text, ContextMenu, IconButton } from '@radix-ui/themes';
-import { ImageIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+import { ImageIcon, PlusCircledIcon, FontFamilyIcon } from '@radix-ui/react-icons';
 
-import type { GameBackgroundFile, GameSpriteFile } from '../../../types';
+import type { GameBackgroundFile, GameFontFile, GameSpriteFile } from '../../../types';
 import { useApp, useLocalData, useSprite } from '../../services/hooks';
 import Collapsible from '../../components/Collapsible';
 
@@ -11,15 +11,25 @@ export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
 
 export interface LeftSidebarState {
   deleting: boolean;
-  selected?: GameSpriteFile | GameBackgroundFile;
+  selected?: GameSpriteFile | GameBackgroundFile | GameFontFile;
 }
 
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const { sprites, backgrounds, eventEmitter, onCanvasChange, ...appPayload } = useApp();
+  const {
+    sprites,
+    backgrounds,
+    fonts,
+    eventEmitter,
+    onCanvasChange,
+    ...appPayload
+  } = useApp();
   const { collapse, isCollapsed } = useLocalData();
-  const { selectedSprite, selectedBackground, selectSprite, selectBackground } = useSprite();
+  const {
+    selectedSprite, selectedBackground, selectedFont,
+    selectSprite, selectBackground, selectFont,
+  } = useSprite();
 
   const onAddSprite = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -31,6 +41,11 @@ const LeftSidebar = ({
     window.electron.send('import-background');
   }, []);
 
+  const onAddFont = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    window.electron.send('import-font');
+  }, []);
+
   const onDeleteSprite = useCallback(async () => {
     if (!selectedSprite) {
       return;
@@ -40,10 +55,14 @@ const LeftSidebar = ({
     onCanvasChange?.({
       ...appPayload,
       backgrounds,
+      fonts,
       sprites: updatedSprites,
     });
     selectSprite?.(updatedSprites[0]);
-  }, [selectedSprite, sprites, backgrounds, appPayload, onCanvasChange, selectSprite]);
+  }, [
+    selectedSprite, sprites, backgrounds, fonts, appPayload, onCanvasChange,
+    selectSprite,
+  ]);
 
   const onDeleteBackground = useCallback(async () => {
     if (!selectedBackground) {
@@ -53,9 +72,28 @@ const LeftSidebar = ({
     onCanvasChange?.({
       ...appPayload,
       sprites,
+      fonts,
       backgrounds: backgrounds.filter(b => b._file !== selectedBackground._file),
     });
-  }, [selectedBackground, onCanvasChange, sprites, appPayload, backgrounds]);
+  }, [selectedBackground, onCanvasChange, sprites, appPayload, backgrounds, fonts]);
+
+  const onDeleteFont = useCallback(async () => {
+    if (!selectedFont) {
+      return;
+    }
+
+    const updatedFonts = fonts.filter(f => f._file !== selectedFont._file);
+    onCanvasChange?.({
+      ...appPayload,
+      sprites,
+      backgrounds,
+      fonts: updatedFonts,
+    });
+    selectFont?.(updatedFonts[0]);
+  }, [
+    selectedFont, onCanvasChange, sprites, appPayload, backgrounds, fonts,
+    selectFont,
+  ]);
 
   const onSelectSprite = useCallback((sprite: GameSpriteFile) => {
     selectSprite?.(sprite);
@@ -71,6 +109,14 @@ const LeftSidebar = ({
       eventEmitter?.emit('images:center', background);
     }, 100);
   }, [selectBackground, eventEmitter]);
+
+  const onSelectFont = useCallback((font: GameFontFile) => {
+    selectFont?.(font);
+
+    setTimeout(() => {
+      eventEmitter?.emit('images:center', font);
+    }, 100);
+  }, [selectFont, eventEmitter]);
 
   return (
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
@@ -198,6 +244,72 @@ const LeftSidebar = ({
                 <ContextMenu.Item
                   shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
                   onClick={onDeleteBackground}
+                >
+                  Delete
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
+          )) }
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <Collapsible.Root
+        className="!w-full"
+        open={!isCollapsed('canvas.fonts')}
+        onOpenChange={collapse.bind(null, 'canvas.fonts')}
+      >
+        <Collapsible.Trigger>
+          <div className="flex items-center justify-between w-full">
+            <Text>Fonts</Text>
+            <IconButton
+              variant="ghost"
+              radius="full"
+              onClick={onAddFont}
+            >
+              <PlusCircledIcon
+                width={16}
+                height={16}
+              />
+            </IconButton>
+          </div>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          { fonts.length === 0 ? (
+            <Text
+              size="1"
+              className="block text-center text-slate pb-3"
+            >
+              No fonts available.
+            </Text>
+          ) : fonts.map(font => (
+            <ContextMenu.Root
+              key={font._file}
+              onOpenChange={selectFont?.bind(null, font)}
+            >
+              <ContextMenu.Trigger>
+                <a
+                  key={font._file}
+                  href="#"
+                  className={classNames(
+                    'flex items-center gap-2 px-3 py-1',
+                    { 'bg-(--accent-9)':
+                      selectedFont === font },
+                  )}
+                  onClick={onSelectFont.bind(null, font)}
+                >
+                  <FontFamilyIcon
+                    className={classNames(
+                      '[&_path]:fill-(--accent-9)',
+                      { '[&_path]:fill-seashell':
+                        selectedFont === font },
+                    )}
+                  />
+                  <Text>{ font.name || 'Untitled' }</Text>
+                </a>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
+                  onClick={onDeleteFont}
                 >
                   Delete
                 </ContextMenu.Item>

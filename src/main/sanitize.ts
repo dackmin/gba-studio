@@ -8,6 +8,7 @@ import type {
   CharacterDirection,
   GameActor,
   GameBackgroundFile,
+  GameFontFile,
   GameHud,
   GameHudSprite,
   GameHudText,
@@ -517,6 +518,23 @@ export const sanitizeBackground = async (
   return background;
 };
 
+export const sanitizeFont = async (
+  font: GameFontFile
+): Promise<GameFontFile> => {
+  if (!font.id) {
+    font.id = randomUUID();
+  }
+
+  if (!font.format) {
+    font.format = path.extname(font.path).slice(1);
+  }
+
+  font.width = Number(font.width ?? 8);
+  font.height = Number(font.height ?? 8);
+
+  return font;
+};
+
 export const sanitizeMusic = async (
   music: GameMusicFile
 ): Promise<GameMusicFile> => {
@@ -618,6 +636,10 @@ export const sanitize = async (
   // Backgrounds
   data.backgrounds = await Promise
     .all((data.backgrounds || []).map(background => sanitizeBackground(background)));
+
+  // Fonts
+  data.fonts = await Promise
+    .all((data.fonts || []).map(font => sanitizeFont(font)));
 
   // Sounds
   data.sounds = await Promise

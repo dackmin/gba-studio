@@ -326,11 +326,43 @@ export function hexToRgb (hex: string): [number, number, number] {
 
 export function resizeToFit <T extends JimpImage> (
   image: T,
-  mode: 'sprite' | 'background',
+  mode: 'sprite' | 'background' | 'font',
 ) {
   let resized = false;
 
   switch (mode) {
+    case 'font': {
+      // A font is a vertical strip of glyphs: the image must be exactly 8px
+      // wide, with one glyph stacked below the other. Both dimensions are
+      // padded up to a multiple of 8 so grit can slice it into tiles.
+      const targetWidth = roundUpToTile(image.bitmap.width);
+
+      if (targetWidth !== image.bitmap.width) {
+        resized = true;
+        image.contain({
+          w: targetWidth,
+          h: image.bitmap.height,
+          // Pad on the right only, so existing glyphs keep their alignment.
+          align: HorizontalAlign.LEFT | VerticalAlign.TOP,
+          mode: ResizeStrategy.NEAREST_NEIGHBOR,
+        });
+      }
+
+      const targetHeight = roundUpToTile(image.bitmap.height);
+
+      if (targetHeight !== image.bitmap.height) {
+        resized = true;
+        image.contain({
+          w: image.bitmap.width,
+          h: targetHeight,
+          // Pad on the bottom only, so existing glyphs keep their alignment.
+          align: HorizontalAlign.LEFT | VerticalAlign.TOP,
+          mode: ResizeStrategy.NEAREST_NEIGHBOR,
+        });
+      }
+
+      break;
+    }
     case 'sprite': {
       // Butano sprite size chart
       // https://gvaliente.github.io/butano/classbn_1_1sprite__shape__size.html

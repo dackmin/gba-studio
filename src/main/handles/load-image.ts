@@ -7,7 +7,7 @@ import { toBmp, resizeToFit } from '../images';
 export default async function (
   _: IpcMainInvokeEvent,
   filePath: string,
-  mode: 'sprite' | 'background' = 'sprite',
+  mode: 'sprite' | 'background' | 'font' = 'sprite',
   opts?: {
     transparencyColor?: string;
   }

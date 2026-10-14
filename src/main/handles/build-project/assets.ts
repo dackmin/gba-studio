@@ -90,6 +90,31 @@ export async function copyAssets (
     build.events.onLog(`Copied background: ${background.name} (${fileName}.json)`);
   }
 
+  // Copy fonts
+  for (const font of build.data?.fonts || []) {
+    const source = path.join(projectDir, font.path);
+    const fileName = path.basename(font.path, path.extname(font.path));
+    const destination = path.join(graphicsOutputDir, fileName + '.bmp');
+
+    if (await isSame(source, destination)) {
+      build.events.onLog(`Skipping ${font.name}, cached`);
+      continue;
+    }
+
+    await fs.writeFile(
+      path.join(graphicsOutputDir, fileName + '.json'),
+      JSON.stringify({
+        type: 'sprite',
+        width: Math.max(8, Math.round(font.width ?? 8)),
+        height: Math.max(8, Math.round(font.height ?? 8)),
+      }, null, 2),
+      'utf-8'
+    );
+
+    await fse.copyFile(source, destination);
+    build.events.onLog(`Copied font: ${font.name} (${fileName}.json)`);
+  }
+
   const audioOutputDir = path.join(buildDir, 'audio');
   await fse.ensureDir(audioOutputDir);
 

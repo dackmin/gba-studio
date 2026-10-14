@@ -4,6 +4,7 @@ import fsp from 'node:fs/promises';
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameFontFile,
   GameHud,
   GameMusicFile,
   GameProject,
@@ -109,9 +110,10 @@ export async function loadProjectData (
   // Load graphics
   const sprites: GameSpriteFile[] = [];
   const backgrounds: GameBackgroundFile[] = [];
+  const fonts: GameFontFile[] = [];
 
   for (const file of graphicsFiles) {
-    const graphic: GameSpriteFile | GameBackgroundFile = JSON.parse(await fsp
+    const graphic: GameSpriteFile | GameBackgroundFile | GameFontFile = JSON.parse(await fsp
       .readFile(path.join(projectDir, 'content', file), 'utf-8'));
 
     if (['sprite'].includes(graphic.type)) {
@@ -124,6 +126,14 @@ export async function loadProjectData (
       sprites.push(graphic as GameSpriteFile);
     } else if (['background'].includes(graphic.type)) {
       backgrounds.push(graphic as GameBackgroundFile);
+    } else if (['font'].includes(graphic.type)) {
+      const { width, height } = await getGraphicFileSize(path.
+        join(projectDir, graphic.path));
+
+      graphic._realWidth = width;
+      graphic._realHeight = height;
+
+      fonts.push(graphic as GameFontFile);
     }
 
     graphic._file = file;
@@ -180,6 +190,7 @@ export async function loadProjectData (
     variables,
     sprites,
     backgrounds,
+    fonts,
     music,
     sounds,
     scripts,

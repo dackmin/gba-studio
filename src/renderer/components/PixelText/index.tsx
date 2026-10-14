@@ -7,17 +7,28 @@ const FONT_URL = 'resources://public/templates/commons/graphics/gbs_mono.bmp';
 const GLYPH_SIZE = 8;
 const FIRST_CHAR = 33;
 const LAST_CHAR = 126;
-const TRANSPARENT_COLOR = [0, 255, 0];
+const TRANSPARENT_COLOR: [number, number, number] = [0, 255, 0];
 
-export const getTextWidth = (text: string) => text.length * GLYPH_SIZE;
+export const getTextWidth = (text: string, glyphWidth: number = GLYPH_SIZE) =>
+  text.length * glyphWidth;
 
 export interface PixelTextProps
   extends Omit<ComponentPropsWithoutRef<'canvas'>, 'width' | 'height'> {
   text: string;
   color?: string;
+  fontUrl?: string;
+  glyphHeight?: number;
+  transparencyColor?: [number, number, number];
 }
 
-const PixelText = ({ text, color = '#000', ...rest }: PixelTextProps) => {
+const PixelText = ({
+  text,
+  color,
+  fontUrl = FONT_URL,
+  glyphHeight = GLYPH_SIZE,
+  transparencyColor = TRANSPARENT_COLOR,
+  ...rest
+}: PixelTextProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -31,7 +42,7 @@ const PixelText = ({ text, color = '#000', ...rest }: PixelTextProps) => {
         return;
       }
 
-      const font = await loadImage(FONT_URL);
+      const font = await loadImage(fontUrl);
 
       if (cancelled) {
         return;
@@ -49,20 +60,20 @@ const PixelText = ({ text, color = '#000', ...rest }: PixelTextProps) => {
 
         ctx.drawImage(
           font,
-          0, (code - FIRST_CHAR) * GLYPH_SIZE, GLYPH_SIZE, GLYPH_SIZE,
-          index * GLYPH_SIZE, 0, GLYPH_SIZE, GLYPH_SIZE,
+          0, (code - FIRST_CHAR) * glyphHeight, GLYPH_SIZE, glyphHeight,
+          index * GLYPH_SIZE, 0, GLYPH_SIZE, glyphHeight,
         );
       });
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
-      const { r = 0, g = 0, b = 0 } = hsva2rgba(parseColor(color));
+      const { r = 0, g = 0, b = 0 } = color ? hsva2rgba(parseColor(color)) : {};
 
       for (let i = 0; i < data.length; i += 4) {
         if (
-          data[i] === TRANSPARENT_COLOR[0] &&
-          data[i + 1] === TRANSPARENT_COLOR[1] &&
-          data[i + 2] === TRANSPARENT_COLOR[2]
+          data[i] === transparencyColor[0] &&
+          data[i + 1] === transparencyColor[1] &&
+          data[i + 2] === transparencyColor[2]
         ) {
           data[i + 3] = 0;
         } else if (color) {
@@ -80,14 +91,14 @@ const PixelText = ({ text, color = '#000', ...rest }: PixelTextProps) => {
     return () => {
       cancelled = true;
     };
-  }, [text, color]);
+  }, [text, color, fontUrl, glyphHeight, transparencyColor]);
 
   return (
     <canvas
       { ...rest }
       ref={canvasRef}
       width={Math.max(1, getTextWidth(text))}
-      height={GLYPH_SIZE}
+      height={glyphHeight}
     />
   );
 };

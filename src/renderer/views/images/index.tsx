@@ -7,11 +7,20 @@ import {
 } from '@junipero/react';
 
 import type { SpriteAnimation } from '../../../types';
+import { getAssetUrl } from '../../../helpers';
 import { useApp, useLocalData, useSprite } from '../../services/hooks';
+import { hexToRgb } from '../../services/helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Sprite from '../../components/Sprite';
 import Background from '../../components/Background';
+import PixelText, { getTextWidth } from '../../components/PixelText';
 import Playback from './Playback';
+
+const SAMPLE_TEXTS = [
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  'abcdefghijklmnopqrstuvwxyz',
+  '0123456789 !?.:',
+];
 
 const Images = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -21,11 +30,13 @@ const Images = () => {
   const {
     selectedSprite,
     selectedBackground,
+    selectedFont,
     selectedAnimation,
     selectedStateName,
     selectedDirection,
     selectSprite,
     selectBackground,
+    selectFont,
   } = useSprite();
 
   useEventListener('images:center', () => {
@@ -53,8 +64,13 @@ const Images = () => {
       selectSprite?.(selectedSprite);
     } else if (selectedBackground) {
       selectBackground?.(selectedBackground);
+    } else if (selectedFont) {
+      selectFont?.(selectedFont);
     }
-  }, [selectedSprite, selectedBackground, selectSprite, selectBackground]);
+  }, [
+    selectedSprite, selectedBackground, selectedFont,
+    selectSprite, selectBackground, selectFont,
+  ]);
 
   return (
     <FullscreenView>
@@ -83,10 +99,32 @@ const Images = () => {
               animated={true}
               transparencyColor={selectedSprite?.transparentColor}
             />
-          ) : selectedBackground && (
+          ) : selectedBackground ? (
             <Background
               background={selectedBackground}
             />
+          ) : selectedFont && (
+            <div className="flex flex-col gap-2 border-1 border-green-500 p-2">
+              { SAMPLE_TEXTS.map(line => (
+                <PixelText
+                  key={line}
+                  text={line}
+                  color="#000"
+                  fontUrl={getAssetUrl(selectedFont)}
+                  glyphHeight={selectedFont.height || 8}
+                  transparencyColor={
+                    selectedFont.transparentColor
+                      ? hexToRgb(selectedFont.transparentColor)
+                      : [0, 255, 0]
+                  }
+                  className="pixelated"
+                  style={{
+                    width: getTextWidth(line) * 4,
+                    height: (selectedFont.height || 8) * 4,
+                  }}
+                />
+              )) }
+            </div>
           ) }
         </div>
       </InfiniteCanvas>

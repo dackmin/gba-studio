@@ -48,6 +48,7 @@ const LeftSidebar = ({
     scripts,
     sprites,
     backgrounds,
+    fonts,
     sounds,
     music,
     editorConfig,
@@ -92,12 +93,13 @@ const LeftSidebar = ({
       scripts,
       sprites,
       backgrounds,
+      fonts,
       sounds,
       music,
     }, { clean });
   }, [
     building, selectedScene, projectPath, project, scenes, huds, variables, scripts, sprites,
-    backgrounds,
+    backgrounds, fonts,
     sounds, music,
     getData,
   ]);

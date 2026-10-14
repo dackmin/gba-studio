@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import type {
   CharacterDirection,
   GameBackgroundFile,
+  GameFontFile,
   GameSpriteFile,
   SpriteAnimation,
   SpriteAnimationFrame,
@@ -24,6 +25,7 @@ import PlaybackProvider from './PlaybackProvider';
 export interface SpriteState {
   selectedSprite?: GameSpriteFile;
   selectedBackground?: GameBackgroundFile;
+  selectedFont?: GameFontFile;
   selectedAnimation?: SpriteAnimation;
   selectedStateName?: Exclude<keyof SpriteAnimation['states'], 'fixed'>;
   selectedDirection?: CharacterDirection;
@@ -57,6 +59,7 @@ const Provider = ({
       selectedSprite: spriteFile,
       selectedAnimation: spriteFile?.animations?.[0],
       selectedBackground: undefined,
+      selectedFont: undefined,
       selectedStateName: undefined,
       selectedDirection: undefined,
       selectedState: undefined,
@@ -75,8 +78,24 @@ const Provider = ({
       selectedState: undefined,
       selectedFrame: undefined,
       selectedSprite: undefined,
+      selectedFont: undefined,
     });
   }, [state.selectedBackground]);
+
+  const selectFont = useCallback((fontFile: GameFontFile) => {
+    if (state.selectedFont === fontFile) {
+      return;
+    }
+
+    dispatch({
+      selectedFont: fontFile,
+      selectedAnimation: undefined,
+      selectedState: undefined,
+      selectedFrame: undefined,
+      selectedSprite: undefined,
+      selectedBackground: undefined,
+    });
+  }, [state.selectedFont]);
 
   const selectAnimation = useCallback((animation?: SpriteAnimation) => {
     if (state.selectedAnimation === animation) {
@@ -198,6 +217,7 @@ const Provider = ({
   const getContext = useCallback((): SpriteContextType => ({
     selectedSprite: state.selectedSprite,
     selectedBackground: state.selectedBackground,
+    selectedFont: state.selectedFont,
     selectedAnimation: state.selectedAnimation,
     selectedState: state.selectedState,
     selectedFrame: state.selectedFrame,
@@ -205,6 +225,7 @@ const Provider = ({
     selectedDirection: state.selectedDirection,
     selectSprite,
     selectBackground,
+    selectFont,
     selectAnimation,
     selectState,
     selectFrame,
@@ -216,6 +237,7 @@ const Provider = ({
   }), [
     state.selectedSprite,
     state.selectedBackground,
+    state.selectedFont,
     state.selectedAnimation,
     state.selectedState,
     state.selectedFrame,
@@ -223,6 +245,7 @@ const Provider = ({
     state.selectedStateName,
     selectSprite,
     selectBackground,
+    selectFont,
     selectAnimation,
     selectState,
     selectFrame,

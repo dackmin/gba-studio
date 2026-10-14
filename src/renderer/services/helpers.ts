@@ -1,4 +1,5 @@
 import type { RefCallback, RefObject } from 'react';
+import { hsva2rgba, parseColor } from '@junipero/core';
 
 import type { EventValue, GameVariables } from '../../types';
 
@@ -50,4 +51,10 @@ export const mergeRefs = (
       }
     });
   };
+};
+
+export const hexToRgb = (hex: string): [number, number, number] => {
+  const { r = 0, g = 0, b = 0 } = hsva2rgba(parseColor(hex));
+
+  return [r * 255, g * 255, b * 255];
 };

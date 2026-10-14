@@ -25,6 +25,7 @@ import type {
   SubToolType,
   ToolType,
   GameBackgroundFile,
+  GameFontFile,
   GameSoundFile,
   GameMusicFile,
 } from '../../types';
@@ -58,6 +59,7 @@ export const AppContext = createContext<AppContextType>({
   variables: [],
   sprites: [],
   backgrounds: [],
+  fonts: [],
   music: [],
   sounds: [],
   scripts: [],
@@ -198,6 +200,7 @@ export const LogsContext = createContext<LogsContextType>({
 export interface SpriteContextType {
   selectedSprite?: GameSpriteFile;
   selectedBackground?: GameBackgroundFile;
+  selectedFont?: GameFontFile;
   selectedAnimation?: SpriteAnimation;
   selectedState?: SpriteAnimationState;
   selectedFrame?: SpriteAnimationFrame;
@@ -205,6 +208,7 @@ export interface SpriteContextType {
   selectedDirection?: CharacterDirection;
   selectSprite?(spriteFile?: GameSpriteFile): void;
   selectBackground?(backgroundFile?: GameBackgroundFile): void;
+  selectFont?(fontFile?: GameFontFile): void;
   selectAnimation?(animation?: SpriteAnimation): void;
   selectState?(state?: SpriteAnimationState): void;
   selectFrame?(frame?: SpriteAnimationFrame): void;
@@ -219,8 +223,12 @@ export interface SpriteContextType {
 
 export const SpriteContext = createContext<SpriteContextType>({
   selectedSprite: undefined,
+  selectedBackground: undefined,
+  selectedFont: undefined,
   selectedAnimation: undefined,
   selectSprite: () => {},
+  selectBackground: () => {},
+  selectFont: () => {},
   selectAnimation: () => {},
   onAnimationsChange: () => {},
   onAddAnimation: () => {},

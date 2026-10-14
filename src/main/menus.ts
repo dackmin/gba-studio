@@ -101,6 +101,16 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
                 },
               },
               {
+                label: 'Font',
+                click: async () => {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+                  if (focusedWindow) {
+                    focusedWindow.webContents.send('import-font');
+                  }
+                },
+              },
+              {
                 label: 'Sound',
                 click: async () => {
                   const focusedWindow = BrowserWindow.getFocusedWindow();

@@ -5,6 +5,7 @@ import type {
   AppStorage,
   BuildOptions,
   GameBackgroundFile,
+  GameFontFile,
   GameMusicFile,
   GameScene,
   GameScript,
@@ -95,7 +96,7 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('get-project-relative-path', projectPath, filePath),
   loadImage: (
     filePath: string,
-    mode: 'sprite' | 'background',
+    mode: 'sprite' | 'background' | 'font',
     opts?: {
       transparencyColor?: string;
     }
@@ -113,6 +114,12 @@ contextBridge.exposeInMainWorld('electron', {
     backgroundInfo: Partial<GameBackgroundFile>,
   ): Promise<Partial<GameBackgroundFile>> =>
     ipcRenderer.invoke('import-background', projectPath, filePath, backgroundInfo),
+  importFont: (
+    projectPath: string,
+    filePath: string,
+    fontInfo: Partial<GameFontFile>,
+  ): Promise<Partial<GameFontFile>> =>
+    ipcRenderer.invoke('import-font', projectPath, filePath, fontInfo),
   importSound: (
     projectPath: string,
     filePath: string,

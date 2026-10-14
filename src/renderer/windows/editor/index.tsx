@@ -13,6 +13,7 @@ import LogsStore from './LogsStore';
 import LocalDataStore from './LocalDataStore';
 import SpriteImportModal, { type SpriteImportModalRef } from './SpriteImportModal';
 import BackgroundImportModal, { type BackgroundImportModalRef } from './BackgroundImportModal';
+import FontImportModal, { type FontImportModalRef } from './FontImportModal';
 import SoundImportModal, { type SoundImportModalRef } from './SoundImportModal';
 import MusicImportModal, { type MusicImportModalRef } from './MusicImportModal';
 
@@ -30,6 +31,7 @@ const Editor = () => {
   const { project, localData, projectPath } = useApp();
   const spriteModalRef = useRef<SpriteImportModalRef>(null);
   const backgroundModalRef = useRef<BackgroundImportModalRef>(null);
+  const fontModalRef = useRef<FontImportModalRef>(null);
   const soundModalRef = useRef<SoundImportModalRef>(null);
   const musicModalRef = useRef<MusicImportModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
@@ -80,6 +82,7 @@ const Editor = () => {
 
   useBridgeListener('import-sprite', async () => {
     backgroundModalRef.current?.close();
+    fontModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
 
@@ -97,6 +100,7 @@ const Editor = () => {
 
   useBridgeListener('import-background', async () => {
     spriteModalRef.current?.close();
+    fontModalRef.current?.close();
     soundModalRef.current?.close();
     musicModalRef.current?.close();
 
@@ -112,9 +116,28 @@ const Editor = () => {
     }
   }, []);
 
+  useBridgeListener('import-font', async () => {
+    backgroundModalRef.current?.close();
+    spriteModalRef.current?.close();
+    soundModalRef.current?.close();
+    musicModalRef.current?.close();
+
+    const file = await window.electron.browseFile({
+      projectPath,
+      filters: [
+        { name: 'Images', extensions: ['bmp', 'png', 'jpg'] },
+      ],
+    });
+
+    if (file) {
+      fontModalRef.current?.open(file);
+    }
+  }, []);
+
   useBridgeListener('import-sound', async () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
+    fontModalRef.current?.close();
     musicModalRef.current?.close();
 
     const file = await window.electron.browseFile({
@@ -133,6 +156,7 @@ const Editor = () => {
     backgroundModalRef.current?.close();
     spriteModalRef.current?.close();
     soundModalRef.current?.close();
+    fontModalRef.current?.close();
 
     const file = await window.electron.browseFile({
       projectPath,
@@ -226,6 +250,7 @@ const Editor = () => {
 
             <SpriteImportModal ref={spriteModalRef} />
             <BackgroundImportModal ref={backgroundModalRef} />
+            <FontImportModal ref={fontModalRef} />
             <SoundImportModal ref={soundModalRef} />
             <MusicImportModal ref={musicModalRef} />
           </Provider>

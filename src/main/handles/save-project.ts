@@ -6,6 +6,7 @@ import type { IpcMainInvokeEvent } from 'electron';
 import type {
   AppPayload,
   GameBackgroundFile,
+  GameFontFile,
   GameHud,
   GameMusicFile,
   GameScene,
@@ -32,6 +33,7 @@ export const saveItem = async (
     | GameScript
     | GameSpriteFile
     | GameBackgroundFile
+    | GameFontFile
     | GameMusicFile
     | GameSoundFile,
   projectDir: string
@@ -55,6 +57,7 @@ export const cleanObsoleteItems = async (
     | GameScript
     | GameSpriteFile
     | GameBackgroundFile
+    | GameFontFile
     | GameMusicFile
     | GameSoundFile
   )[],
@@ -125,6 +128,18 @@ export default async (
   // Save backgrounds
   for (const background of data.backgrounds || []) {
     await saveItem(background, projectDir);
+  }
+
+  // Delete obsolete fonts
+  await cleanObsoleteItems(
+    projectDir,
+    await getGraphicsFiles(projectDir, f => f.startsWith('font_')),
+    data.fonts
+  );
+
+  // Save fonts
+  for (const font of data.fonts || []) {
+    await saveItem(font, projectDir);
   }
 
   // Delete obsolete sprites

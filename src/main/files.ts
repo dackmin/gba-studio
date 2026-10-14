@@ -50,7 +50,8 @@ export const getGraphicsFiles = async (
   return getDataFiles(
     base,
     file =>
-      (file.startsWith('sprite_') || file.startsWith('background_')) &&
+      (file.startsWith('sprite_') || file.startsWith('background_') ||
+        file.startsWith('font_')) &&
       file.endsWith('.json') &&
       (!cond || cond(file))
   );

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "font.json",
+  "definitions": {
+    "Font": {
+      "type": "object",
+      "required": ["type", "name", "format", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "font"
+        },
+        "name": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["bmp"]
+        },
+        "path": {
+          "type": "string"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "transparentColor": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$ref": "#/definitions/Font"
+}

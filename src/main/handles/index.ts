@@ -19,6 +19,7 @@ export { default as getProjectRelativePath } from './get-project-relative-path';
 export { default as loadImage } from './load-image';
 export { default as importSprite } from './import-sprite';
 export { default as importBackground } from './import-background';
+export { default as importFont } from './import-font';
 export { default as importSound } from './import-sound';
 export { default as importMusic } from './import-music';
 export { default as showUnsavedChangesDialog } from './show-unsaved-changes-dialog';
