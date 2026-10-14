@@ -3,7 +3,7 @@ import { hsva2rgba, parseColor } from '@junipero/core';
 
 import { loadImage } from '../../../helpers';
 
-const FONT_URL = 'resources://public/templates/commons/graphics/gbs_mono.bmp';
+const FONT_URL = 'resources://public/templates/commons/graphics/font_default.bmp';
 const GLYPH_SIZE = 8;
 const FIRST_CHAR = 33;
 const LAST_CHAR = 126;
