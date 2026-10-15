@@ -14,6 +14,7 @@ export const DEFAULT_SCENE: GameScene = {
   background: 'bg_default',
   type: 'scene',
   sceneType: 'logos',
+  player: { type: 'player', x: 0, y: 0 },
 };
 
 export const DEFAULT_ACTOR: GameActor = {

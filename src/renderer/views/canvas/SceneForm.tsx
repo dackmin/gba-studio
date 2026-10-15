@@ -148,6 +148,11 @@ const SceneForm = ({
   const onTypeChange = useCallback((name: string, value: string) => {
     if (value !== scene.sceneType) {
       set(scene, name, value);
+
+      if (value !== 'logos' && !scene.player) {
+        scene.player = { type: 'player', x: 0, y: 0 };
+      }
+
       onBackgroundChange(scene.background || '');
     } else {
       set(scene, name, value);
