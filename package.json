@@ -45,9 +45,9 @@
     "jimp": "1.6.1",
     "radix-ui": "1.4.3",
     "re-resizable": "6.11.2",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-colorful": "5.8.1",
-    "react-dom": "19.3.0",
+    "react-dom": "19.3.1",
     "react-hotkeys-hook": "5.3.3",
     "slugify": "1.6.9",
     "tar": "7.5.22",
@@ -68,7 +68,7 @@
     "@electron/fuses": "2.1.3",
     "@junipero/tailwind-plugin": "3.14.1",
     "@poool/oxlint-config": "6.3.0",
-    "@reforged/maker-appimage": "5.3.1",
+    "@reforged/maker-appimage": "6.0.0",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/react": "16.3.3",
     "@types/debug": "4.1.13",
@@ -79,7 +79,7 @@
     "@types/yargs": "17.0.35",
     "@vitejs/plugin-react": "6.1.2",
     "ajv": "8.20.0",
-    "commit-and-tag-version": "^13.2.2",
+    "commit-and-tag-version": "13.3.0",
     "commitlint": "21.2.3",
     "debug": "4.4.3",
     "electron": "44.7.2",
@@ -88,7 +88,7 @@
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "vite": "8.3.4",
-    "vitest": "5.0.4"
+    "vitest": "5.0.5"
   },
   "build": {
     "electronLanguages": [
