@@ -20,10 +20,15 @@ export default async function (
   // @ts-expect-error - jimp is weird
   const { resized } = resizeToFit(image, mode);
 
+  // Backgrounds can't be customized by users (no transparency color picker), so artwork pixels
+  // matching the reserved palette color must never be keyed out: only actually transparent
+  // pixels (transparent PNG holes and resize padding) are.
+  const bmpOptions = mode === 'background'
+    ? { matchTransparent: false }
+    : { transparentColor: opts?.transparencyColor };
+
   // @ts-expect-error - jimp is weird
-  const { buffer: bmpBuffer, tiles, transparentColor } = await toBmp(image, {
-    transparencyColor: opts?.transparencyColor,
-  });
+  const { buffer: bmpBuffer, tiles, transparentColor } = await toBmp(image, bmpOptions);
 
   return {
     width: image.bitmap.width,

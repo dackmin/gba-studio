@@ -33,7 +33,7 @@ export default async function (
 
   // @ts-expect-error - jimp is weird
   const { buffer: bmpBuffer } = await toBmp(image, {
-    transparencyColor: fontInfo?.transparentColor,
+    transparentColor: fontInfo?.transparentColor,
   });
 
   await fsp.writeFile(path.join(graphicsDir, fileName + '.bmp'), bmpBuffer);

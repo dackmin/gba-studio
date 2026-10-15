@@ -31,8 +31,11 @@ export default async function (
   // @ts-expect-error - jimp is weird
   resizeToFit(image, 'background');
 
+  // Backgrounds can't be customized by users (no transparency color picker), so artwork pixels
+  // matching the reserved palette color must never be keyed out: only actually transparent
+  // pixels (transparent PNG holes and resize padding) are.
   // @ts-expect-error - jimp is weird
-  const { buffer: bmpBuffer } = await toBmp(image);
+  const { buffer: bmpBuffer } = await toBmp(image, { matchTransparent: false });
 
   await fsp.writeFile(path.join(graphicsDir, fileName + '.bmp'), bmpBuffer);
 

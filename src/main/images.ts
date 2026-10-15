@@ -5,7 +5,7 @@ import {
   ResizeStrategy,
   VerticalAlign,
 } from 'jimp';
-import { hsva2rgba, parseColor } from '@junipero/core';
+import { denormalizeRGBA, hsva2rgba, parseColor } from '@junipero/core';
 
 export type JimpImage = InstanceType<typeof Jimp>;
 
@@ -34,6 +34,7 @@ function quantizeToPalette<T extends JimpImage> (
   image: T,
   colors: number,
   transparentColor: [number, number, number],
+  matchTransparent: boolean,
 ): QuantizedImage {
   const { width, height, data } = image.bitmap;
 
@@ -63,10 +64,12 @@ function quantizeToPalette<T extends JimpImage> (
       continue;
     }
 
-    // Pixels with the same color as transparentColor either
-    if (quantized[i] === transparentColor[0] &&
-        quantized[i + 1] === transparentColor[1] &&
-        quantized[i + 2] === transparentColor[2]) {
+    if (
+      matchTransparent &&
+      quantized[i] === transparentColor[0] &&
+      quantized[i + 1] === transparentColor[1] &&
+      quantized[i + 2] === transparentColor[2]
+    ) {
       continue;
     }
 
@@ -103,9 +106,18 @@ export interface ToBmpOptions {
    */
   colors?: 16 | 256;
   /**
-   * The color to treat as transparent when quantizing the image. Defaults to black (#000).
+   * The color to reserve as the transparent palette entry (index 0) when quantizing the image.
+   * When omitted, the color of the first pixel is used instead.
    */
   transparentColor?: string;
+  /**
+   * Whether opaque pixels matching the transparent color are keyed out (treated as transparent).
+   * Enabled by default, like for sprites and fonts whose transparency color is customizable in
+   * the editor. Must be disabled for backgrounds: users can't customize the background
+   * transparency color, so nothing else than actually transparent pixels (transparent PNG holes
+   * and resize padding) is allowed to be keyed out.
+   */
+  matchTransparent?: boolean;
   /**
    * Matches grit's `-mRt` (identical 8x8 tiles reused instead of duplicated). On by default,
    * like butano_graphics_tool.py does for regular/affine backgrounds.
@@ -138,17 +150,24 @@ export async function toBmp<T extends JimpImage> (
   opts?: ToBmpOptions,
 ): Promise<BmpResult> {
   const colors = opts?.colors ?? 256;
-  let transparentColor = opts?.transparentColor ? hexToRgb(opts?.transparentColor) : undefined;
+  const transparentColor = opts?.transparentColor
+    ? hexToRgb(opts.transparentColor)
+    : undefined;
 
-  // Transparent color is usually the color of the first pixel
-  if (!transparentColor) {
+  // Transparent color is by default the color of the first pixel, unless specified otherwise.
+  let finalTransparentColor = transparentColor;
+
+  if (!finalTransparentColor) {
     const firstPixel = intToRGBA(image.getPixelColor(0, 0));
-    transparentColor = [firstPixel.r, firstPixel.g, firstPixel.b];
+    finalTransparentColor = [firstPixel.r, firstPixel.g, firstPixel.b];
   }
 
-  transparentColor ??= [0, 0, 0];
-
-  const { width, height, indices, palette } = quantizeToPalette(image, colors, transparentColor);
+  const { width, height, indices, palette } = quantizeToPalette(
+    image,
+    colors,
+    finalTransparentColor,
+    opts?.matchTransparent ?? true,
+  );
   const tiles = countUniqueTiles(indices, width, height, opts);
 
   // BMP scanlines are padded to 4-byte boundaries.
@@ -216,7 +235,7 @@ export async function toBmp<T extends JimpImage> (
     }
   }
 
-  return { buffer: bmp, tiles, transparentColor };
+  return { buffer: bmp, tiles, transparentColor: finalTransparentColor };
 }
 
 /**
@@ -319,7 +338,7 @@ export function flipTile (indices: Uint8Array, horizontal: boolean, vertical: bo
 }
 
 export function hexToRgb (hex: string): [number, number, number] {
-  const { r, g, b } = hsva2rgba(parseColor(hex));
+  const { r, g, b } = denormalizeRGBA(hsva2rgba(parseColor(hex)));
 
   return [r ?? 0, g ?? 0, b ?? 0];
 }

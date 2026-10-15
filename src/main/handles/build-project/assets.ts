@@ -163,7 +163,7 @@ export async function checkTransparencyColor (
   if (sprite.transparentColor !== destinationTransparencyColor) {
     // @ts-expect-error - jimp is weird
     const { buffer } = await toBmp(destinationImage, {
-      transparencyColor: sprite.transparentColor,
+      transparentColor: sprite.transparentColor,
     });
 
     await fs.writeFile(destination, buffer, 'utf-8');
