@@ -18,6 +18,8 @@ import {
   loadRecentProject,
   loadProject,
   saveProject,
+  autosaveProject,
+  discardAutosave,
   createProject,
   startBuildProject,
   abortBuildProject,
@@ -101,6 +103,8 @@ ipcMain.handle('browse-file', browseFile);
 ipcMain.handle('browse-project', browseProject);
 ipcMain.handle('load-project', loadProject.bind(null, storage));
 ipcMain.handle('save-project', saveProject);
+ipcMain.handle('autosave-project', autosaveProject);
+ipcMain.handle('discard-autosave', discardAutosave);
 ipcMain.handle('create-project', createProject.bind(null, storage));
 ipcMain.handle('start-build-project', startBuildProject.bind(null, storage));
 ipcMain.handle('abort-build-project', abortBuildProject);

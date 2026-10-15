@@ -17,6 +17,7 @@ import type {
 } from '../../types';
 import {
   getAudioFiles,
+  getAutosavePath,
   getGraphicsFiles,
   getHudFiles,
   getSceneFiles,
@@ -181,4 +182,9 @@ export default async (
   // Save project config
   await fs.writeFile(projectPath,
     JSON.stringify(data.project || {}, null, 2) + '\n', 'utf-8');
+
+  // The project was fully saved: the crash-recovery autosave is now obsolete
+  try {
+    await fs.unlink(getAutosavePath(projectPath));
+  } catch {}
 };

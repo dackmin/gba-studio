@@ -51,6 +51,10 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('load-project', path),
   saveProject: (path: string, payload: AppPayload): Promise<void> =>
     ipcRenderer.invoke('save-project', path, payload),
+  autosaveProject: (path: string, payload: AppPayload): Promise<void> =>
+    ipcRenderer.invoke('autosave-project', path, payload),
+  discardAutosave: (path: string): Promise<void> =>
+    ipcRenderer.invoke('discard-autosave', path),
   browseDirectory: (opts?: {
     prefix?: string;
     suffix?: string;

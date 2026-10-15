@@ -158,3 +158,9 @@ export const getGraphicFileSize = async (
     return { width: undefined, height: undefined };
   }
 };
+
+export const getAutosavePath = (projectPath: string) => {
+  const base = path.basename(projectPath, path.extname(projectPath));
+
+  return path.join(path.dirname(projectPath), `.${base}.autosave`);
+};

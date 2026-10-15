@@ -38,6 +38,8 @@ interface AppBridge extends EventTarget {
   browseProject(): Promise<string>;
   loadProject(path: string): Promise<AppPayload>;
   saveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
+  autosaveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
+  discardAutosave(path: string): Promise<void>;
   createProject(opts: {
     type: ProjectTemplate;
     name: string;

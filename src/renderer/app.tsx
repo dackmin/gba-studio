@@ -4,9 +4,10 @@ import {
   useLayoutEffect,
   useReducer,
   useRef,
+  useState,
 } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { type MoveableState, cloneDeep, mockState, pick } from '@junipero/react';
+import { type MoveableState, cloneDeep, mockState, pick, useInterval } from '@junipero/react';
 
 import type {
   AppPayload,
@@ -22,10 +23,11 @@ import {
   useQuery,
 } from './services/hooks';
 import { isEditableElementFocused } from './services/helpers';
+import { load, LocalData } from './services/local-db';
 import EventEmitter from './services/emitter';
 import ProjectSelection from './windows/project-selection';
 import Editor from './windows/editor';
-import { load, LocalData } from './services/local-db';
+import RecoveredAutosaveBanner from './windows/editor/RecoveredAutosaveBanner';
 
 export interface AppState extends Omit<AppPayload, 'project'> {
   projectBase: string;
@@ -45,6 +47,7 @@ export interface AppState extends Omit<AppPayload, 'project'> {
 const App = () => {
   const eventsRef = useRef<EventEmitter>(new EventEmitter());
   const { projectPath, resourcesPath, projectBase, theme, isFullscreen } = useQuery();
+  const [recoveredAutosave, setRecoveredAutosave] = useState(false);
   const [state, dispatch] = useReducer(mockState<AppState>, {
     theme,
     projectBase,
@@ -67,6 +70,7 @@ const App = () => {
     localData: undefined,
     isFullscreen: isFullscreen === 'true',
   });
+  const autosaveState = useRef(state);
 
   useBridgeListener('fullscreen-updated', (isFullscreen: boolean) => {
     dispatch({ isFullscreen });
@@ -100,11 +104,15 @@ const App = () => {
       const editorConfig = await window.electron.getEditorConfig();
       const clipboard = await window.electron.getClipboard();
 
+      const recovered = data._recoveredAutosave;
+      setRecoveredAutosave(recovered);
+
       dispatch({
         ...data,
         history: [cloneDeep(data)],
         historyIndex: 0,
         loading: false,
+        dirty: recovered,
         editorConfig,
         ready: true,
         clipboard,
@@ -138,10 +146,67 @@ const App = () => {
         ]),
       });
       dispatch({ dirty: false });
+      setRecoveredAutosave(false);
     }
   }, [
     projectPath, state,
   ]);
+
+  useEffect(() => {
+    autosaveState.current = state;
+  }, [state]);
+
+  useInterval(() => {
+    if (!state.ready || !state.dirty || !projectPath) {
+      return;
+    }
+
+    window.electron.autosaveProject(projectPath, {
+      ...pick(autosaveState.current, [
+        'project',
+        'scenes',
+        'huds',
+        'variables',
+        'scripts',
+        'backgrounds',
+        'fonts',
+        'sprites',
+        'music',
+        'sounds',
+      ]),
+    });
+  }, 2000, [state.ready, state.dirty, projectPath]);
+
+  // Immediate (non-debounced) autosave, used when the user cancels closing
+  const autosaveNow = useCallback(async () => {
+    if (!projectPath) {
+      return;
+    }
+
+    await window.electron.autosaveProject(projectPath, {
+      ...pick(state, [
+        'project',
+        'scenes',
+        'huds',
+        'variables',
+        'scripts',
+        'backgrounds',
+        'fonts',
+        'sprites',
+        'music',
+        'sounds',
+      ]),
+    });
+  }, [
+    projectPath, state,
+  ]);
+
+  const discardAutosave = useCallback(async () => {
+    if (projectPath) {
+      await window.electron.discardAutosave(projectPath);
+      setRecoveredAutosave(false);
+    }
+  }, [projectPath]);
 
   useBridgeListener('save', () => {
     if (state.dirty) {
@@ -162,11 +227,13 @@ const App = () => {
       await save();
       window.electron.confirmClose();
     } else if (choice === 'discard') {
+      await discardAutosave();
       window.electron.confirmClose();
     } else {
+      await autosaveNow();
       window.electron.cancelClose();
     }
-  }, [state.dirty, save]);
+  }, [state.dirty, save, autosaveNow, discardAutosave]);
 
   const undo = useCallback(() => {
     if (state.history.length === 0 ||
@@ -377,6 +444,11 @@ const App = () => {
           <Editor />
         ) : (
           <ProjectSelection />
+        ) }
+        { recoveredAutosave && state.ready && (
+          <RecoveredAutosaveBanner
+            onDiscard={discardAutosave}
+          />
         ) }
       </AppContext>
     </Theme>

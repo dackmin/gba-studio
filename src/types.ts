@@ -415,7 +415,17 @@ export declare interface AppPayload {
   music: GameMusicFile[];
   sounds: GameSoundFile[];
   scripts: GameScript[];
+  // Internals
+  _recoveredAutosave?: boolean;
 };
+
+export declare interface AutoSavePayload {
+  $autosave: true;
+  version: number;
+  savedAt: number;
+  projectPath: string;
+  data: Partial<AppPayload>;
+}
 
 export interface AnyDynamic {
   type: string;
