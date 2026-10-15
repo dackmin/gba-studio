@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.1](https://github.com/dackmin/gba-studio/compare/v0.3.0...v0.3.1) (2026-10-15)
+
+### Bug Fixes
+
+* do not use first color as transparent on backgrounds ([ed54e02](https://github.com/dackmin/gba-studio/commit/ed54e023488f60333395af4bf74b105dd5131ed5))
+* update butano submodule ([d61ea3b](https://github.com/dackmin/gba-studio/commit/d61ea3b682c7f99099dd47566accc1a6e4c35ada))
+* upgrade various dependencies ([543569e](https://github.com/dackmin/gba-studio/commit/543569e488e2d9b30242f48f51958c1a13491701))
+
 ## [0.3.0](https://github.com/dackmin/gba-studio/compare/v0.2.1...v0.3.0) (2026-10-15)
 
 ### Features
