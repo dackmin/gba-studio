@@ -11,7 +11,7 @@ export interface LeftSidebarProps extends ComponentPropsWithoutRef<'div'> {}
 const LeftSidebar = ({
   className,
 }: LeftSidebarProps) => {
-  const { collapse, isCollapsed } = useLocalData();
+  const { isSectionOpen, setSectionOpen } = useLocalData();
   const { sounds, music, onCanvasChange, ...appPayload } = useApp();
   const { selectedSound, selectedMusic, selectSound, selectMusic } = useAudio();
 
@@ -55,8 +55,8 @@ const LeftSidebar = ({
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.sounds')}
-        onOpenChange={collapse.bind(null, 'canvas.sounds')}
+        open={isSectionOpen('canvas.sounds', sounds.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.sounds')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
@@ -119,8 +119,8 @@ const LeftSidebar = ({
       </Collapsible.Root>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.music')}
-        onOpenChange={collapse.bind(null, 'canvas.music')}
+        open={isSectionOpen('canvas.music', music.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.music')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">

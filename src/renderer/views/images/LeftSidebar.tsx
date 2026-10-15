@@ -25,7 +25,7 @@ const LeftSidebar = ({
     onCanvasChange,
     ...appPayload
   } = useApp();
-  const { collapse, isCollapsed } = useLocalData();
+  const { isSectionOpen, setSectionOpen } = useLocalData();
   const {
     selectedSprite, selectedBackground, selectedFont,
     selectSprite, selectBackground, selectFont,
@@ -122,8 +122,8 @@ const LeftSidebar = ({
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.sprites')}
-        onOpenChange={collapse.bind(null, 'canvas.sprites')}
+        open={isSectionOpen('canvas.sprites', sprites.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.sprites')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
@@ -188,8 +188,8 @@ const LeftSidebar = ({
       </Collapsible.Root>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.backgrounds')}
-        onOpenChange={collapse.bind(null, 'canvas.backgrounds')}
+        open={isSectionOpen('canvas.backgrounds', backgrounds.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.backgrounds')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
@@ -254,8 +254,8 @@ const LeftSidebar = ({
       </Collapsible.Root>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.fonts')}
-        onOpenChange={collapse.bind(null, 'canvas.fonts')}
+        open={isSectionOpen('canvas.fonts', fonts.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.fonts')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">

@@ -42,7 +42,7 @@ const LeftSidebar = ({
     onScriptsChange,
     onScenesChange,
   } = useCanvas();
-  const { collapse, isCollapsed } = useLocalData();
+  const { isSectionOpen, setSectionOpen } = useLocalData();
 
   const allVariables = useMemo(() => (
     variables.flatMap(v => Object.keys(v.values || {}))
@@ -156,8 +156,8 @@ const LeftSidebar = ({
     <div className={classNames('flex flex-col !w-full gap-px', className)}>
       <Collapsible.Root
         className="!w-full"
-        open={!isCollapsed('canvas.scenes')}
-        onOpenChange={collapse.bind(null, 'canvas.scenes')}
+        open={isSectionOpen('canvas.scenes', scenes.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.scenes')}
       >
         <Collapsible.Trigger>
           <Text>Scenes</Text>
@@ -208,8 +208,8 @@ const LeftSidebar = ({
       </Collapsible.Root>
 
       <Collapsible.Root
-        open={!isCollapsed('canvas.huds')}
-        onOpenChange={collapse.bind(null, 'canvas.huds')}
+        open={isSectionOpen('canvas.huds', huds.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.huds')}
       >
         <Collapsible.Trigger>
           <Text>HUDs</Text>
@@ -259,8 +259,8 @@ const LeftSidebar = ({
       </Collapsible.Root>
 
       <Collapsible.Root
-        open={!isCollapsed('canvas.scripts')}
-        onOpenChange={collapse.bind(null, 'canvas.scripts')}
+        open={isSectionOpen('canvas.scripts', scripts.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.scripts')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">
@@ -323,8 +323,8 @@ const LeftSidebar = ({
 
       <Collapsible.Root
         className="w-full"
-        open={!isCollapsed('canvas.variables')}
-        onOpenChange={collapse.bind(null, 'canvas.variables')}
+        open={isSectionOpen('canvas.variables', allVariables.length > 0)}
+        onOpenChange={setSectionOpen.bind(null, 'canvas.variables')}
       >
         <Collapsible.Trigger>
           <div className="flex items-center justify-between w-full">

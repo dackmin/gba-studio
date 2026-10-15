@@ -18,6 +18,7 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
   const [dirty, setDirty] = useState(false);
   const [state, dispatch] = useReducer(mockState<LocalData>, localData ?? {
     collapsed: [],
+    expanded: [],
     sizes: {},
     emulator: {},
     editor: {},
@@ -58,6 +59,24 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
     }));
   }, [isCollapsed]);
 
+  const isSectionOpen = useCallback((key: string, hasItems: boolean) => (
+    !state.collapsed.includes(key) &&
+    (state.expanded.includes(key) || hasItems)
+  ), [state.collapsed, state.expanded]);
+
+  const setSectionOpen = useCallback((key: string, open: boolean) => {
+    setDirty(true);
+    dispatch(s => ({
+      ...s,
+      collapsed: open
+        ? s.collapsed.filter(k => k !== key)
+        : Array.from(new Set([...s.collapsed, key])),
+      expanded: open
+        ? Array.from(new Set([...s.expanded, key]))
+        : s.expanded.filter(k => k !== key),
+    }));
+  }, []);
+
   const getSize = useCallback((key: string, def?: number) => (
     get(state.sizes, key, def ?? 0)
   ), [state.sizes]);
@@ -97,18 +116,21 @@ const LocalDataStore = ({ children }: ComponentPropsWithoutRef<any>) => {
 
   const getContext = useCallback((): LocalDataContextType => ({
     collapsed: state.collapsed,
+    expanded: state.expanded,
     sizes: state.sizes,
     editor: state.editor,
     emulator: state.emulator,
     collapse,
     isCollapsed,
+    isSectionOpen,
+    setSectionOpen,
     getSize,
     setSize,
     getData,
     setData,
   }), [
-    state.collapsed, state.sizes, state.editor, state.emulator,
-    collapse, isCollapsed, getSize, setSize, setData, getData,
+    state.collapsed, state.expanded, state.sizes, state.editor, state.emulator,
+    collapse, isCollapsed, isSectionOpen, setSectionOpen, getSize, setSize, setData, getData,
   ]);
 
   return (

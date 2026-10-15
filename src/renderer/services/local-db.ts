@@ -1,5 +1,6 @@
 export interface LocalData {
   collapsed: string[]
+  expanded: string[]
   sizes: Record<string, number>
   editor: Record<string, any>
   emulator: Record<string, any>;
@@ -10,7 +11,14 @@ export const load = (projectId: string): LocalData => {
 
   if (localData) {
     try {
-      return JSON.parse(localData) as LocalData;
+      return {
+        collapsed: [],
+        expanded: [],
+        sizes: {},
+        emulator: {},
+        editor: {},
+        ...JSON.parse(localData),
+      } as LocalData;
     } catch (e) {
       console.error('Failed to parse local data:', e);
     }
@@ -18,6 +26,7 @@ export const load = (projectId: string): LocalData => {
 
   return {
     collapsed: [],
+    expanded: [],
     sizes: {},
     emulator: {},
     editor: {},

@@ -270,6 +270,8 @@ export const EmulatorContext = createContext<EmulatorContextType>({
 export interface LocalDataContextType extends LocalData {
   collapse(key: string): void;
   isCollapsed(key: string): boolean;
+  isSectionOpen(key: string, hasItems: boolean): boolean;
+  setSectionOpen(key: string, open: boolean): void;
   getSize(key: string, def?: number): number;
   setSize(key: string, size: number): void;
   getData(key: string): any;
@@ -278,11 +280,14 @@ export interface LocalDataContextType extends LocalData {
 
 export const LocalDataContext = createContext<LocalDataContextType>({
   collapsed: [],
+  expanded: [],
   sizes: {},
   editor: {},
   emulator: {},
   collapse: () => {},
   isCollapsed: () => false,
+  isSectionOpen: () => true,
+  setSectionOpen: () => {},
   getSize: () => 0,
   setSize: () => {},
   getData: () => {},
