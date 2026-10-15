@@ -25,8 +25,10 @@ Download the latest build for your platform from the [build action pipeline](htt
 - [x] Sprite animations editor
 - [x] CLI
 - [x] Side scroller scene type
+- [x] Auto updater
+- [ ] Shooter scene type
+- [ ] Point & click scene type
 - [ ] Parallax backgrounds
-- [ ] Auto updater
 - [ ] Sound editor
 - [ ] Plugins
 
