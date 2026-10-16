@@ -406,7 +406,7 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     parallelizable: true,
     construct: () => ({
       type: 'play-music',
-      music_name: '',
+      name: '',
       loop: true,
     }),
   }, {

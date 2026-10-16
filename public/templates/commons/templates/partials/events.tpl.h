@@ -321,7 +321,7 @@ BN_DATA_EWRAM neo::types::play_sound_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_sound_name,
   {{this.volume}},
   {{this.speed}},
-  {{this.panning}},
+  {{this.pan}},
   {{this.priority}}
 );
 {{else if (eq this.type "execute-script")}}
