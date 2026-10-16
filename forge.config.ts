@@ -26,7 +26,7 @@ const config: ForgeConfig = {
           ? ['./images/AppIcon.icon']
           : [],
       ]
-      : './images/AppIcon',
+      : './images/icon',
     appBundleId: 'dev.gbastudio.app',
     name: 'GBAStudio',
     executableName: 'gba-studio',
