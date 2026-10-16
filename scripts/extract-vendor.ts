@@ -30,6 +30,7 @@ const vendorFiles: Record<string, string[]> = {
     `tools/bin/grit${executableSuffix}`,
     `tools/bin/mmutil${executableSuffix}`,
     `tools/bin/bin2s${executableSuffix}`,
+    `tools/bin/mmutil${executableSuffix}`,
     'devkitARM/base_rules',
     'devkitARM/base_tools',
     'devkitARM/gba_rules',
