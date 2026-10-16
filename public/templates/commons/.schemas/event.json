@@ -919,6 +919,30 @@
       ],
       "type": "object"
     },
+    "SetPaletteEffectEvent": {
+      "properties": {
+        "effect": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "type": {
+          "const": "set-palette-effect",
+          "type": "string"
+        }
+      },
+      "required": [
+        "effect",
+        "value",
+        "duration",
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -960,7 +984,8 @@
         { "$ref": "#/definitions/LoadGameEvent" },
         { "$ref": "#/definitions/SaveStateEvent" },
         { "$ref": "#/definitions/LoadStateEvent" },
-        { "$ref": "#/definitions/ResetGameEvent" }
+        { "$ref": "#/definitions/ResetGameEvent" },
+        { "$ref": "#/definitions/SetPaletteEffectEvent" }
       ]
     }
   },
