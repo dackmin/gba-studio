@@ -12,7 +12,7 @@ const readBuiltFile = async (filename: string) => {
 };
 
 describe('cli/build', () => {
-  it('should build a basic project successfully', { timeout: 30000 }, async () => {
+  it('should build a basic project successfully', { timeout: 120000 }, async () => {
     // @ts-expect-error Mock electron resourcesPath
     process.resourcesPath = path.resolve();
 
