@@ -930,6 +930,10 @@
         "duration": {
           "type": "number"
         },
+        "target": {
+          "type": "string",
+          "enum": ["background", "sprite", "both"]
+        },
         "type": {
           "const": "set-palette-effect",
           "type": "string"
@@ -938,6 +942,34 @@
       "required": [
         "effect",
         "value",
+        "duration",
+        "type"
+      ],
+      "type": "object"
+    },
+    "WaveEffectEvent": {
+      "properties": {
+        "amplitude": {
+          "type": "number"
+        },
+        "speed": {
+          "type": "number"
+        },
+        "frequency": {
+          "type": "number"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "type": {
+          "const": "wave-effect",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amplitude",
+        "speed",
+        "frequency",
         "duration",
         "type"
       ],
@@ -985,7 +1017,8 @@
         { "$ref": "#/definitions/SaveStateEvent" },
         { "$ref": "#/definitions/LoadStateEvent" },
         { "$ref": "#/definitions/ResetGameEvent" },
-        { "$ref": "#/definitions/SetPaletteEffectEvent" }
+        { "$ref": "#/definitions/SetPaletteEffectEvent" },
+        { "$ref": "#/definitions/WaveEffectEvent" }
       ]
     }
   },
