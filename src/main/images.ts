@@ -30,7 +30,7 @@ export interface QuantizedImage {
 
 // Quantizes the image down to `colors` palette entries (1 reserved for transparency), the same
 // way butano's BMPs are indexed for grit
-function quantizeToPalette<T extends JimpImage> (
+export function quantizeToPalette<T extends JimpImage> (
   image: T,
   colors: number,
   transparentColor: [number, number, number],
