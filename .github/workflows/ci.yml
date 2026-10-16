@@ -31,3 +31,21 @@ jobs:
         run: yarn lint
       - name: TS Check
         run: yarn tsc
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: yarn
+          check-latest: true
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests
+        run: yarn test
