@@ -24,10 +24,11 @@ export const findProjectPath = async () => {
 export default async function build (
   opts?: {
     configurationName?: string;
+    projectPath?: string;
   }
 ) {
   const controller = new AbortController();
-  const projectPath = await findProjectPath();
+  const projectPath = opts?.projectPath ?? await findProjectPath();
 
   const currentBuild: Build = {
     id: randomUUID(),

@@ -46,7 +46,13 @@ export function getCustomPythonPath (
 ) {
   const buildConfig = getBuildConfiguration(build);
 
-  return buildConfig?.settings?.pythonPath;
+  const value = buildConfig?.settings?.pythonPath;
+
+  if (value?.includes('$root/')) {
+    return path.join(path.dirname(build.projectPath), value.split('$root/')[1]);
+  }
+
+  return value;
 }
 
 export function getCustomDevkitProPath (
@@ -54,10 +60,16 @@ export function getCustomDevkitProPath (
 ) {
   const buildConfig = getBuildConfiguration(build);
 
-  return buildConfig?.settings?.devkitProPath;
+  const value = buildConfig?.settings?.devkitProPath;
+
+  if (value?.includes('$root/')) {
+    return path.join(path.dirname(build.projectPath), value.split('$root/')[1]);
+  }
+
+  return value;
 }
 
-async function uncompressFile (filePath: string, destPath: string) {
+export async function uncompressFile (filePath: string, destPath: string) {
   await fsp.mkdir(destPath, { recursive: true });
   await tar.extract({
     file: filePath,
@@ -65,7 +77,11 @@ async function uncompressFile (filePath: string, destPath: string) {
   });
 }
 
-async function downloadPackagedVendor (vendorName: string, platform: string) {
+export async function downloadPackagedVendor (
+  vendorName: string,
+  platform: string,
+  targetPath?: string
+) {
   const response = await fetch(
     `https://github.com/dackmin/gba-studio/raw/refs/heads/main/public/` +
       `/vendors/${vendorName}/${platform}.tar.gz`,
@@ -83,7 +99,7 @@ async function downloadPackagedVendor (vendorName: string, platform: string) {
   }
 
   await fsp.writeFile(
-    path.join(getResourcesDir(), `./public/vendors/${vendorName}/${platform}.tar.gz`),
+    targetPath || path.join(getResourcesDir(), `./public/vendors/${vendorName}/${platform}.tar.gz`),
     buffer
   );
 }

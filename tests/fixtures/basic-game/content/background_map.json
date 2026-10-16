@@ -1,0 +1,10 @@
+{
+  "type": "background",
+  "name": "map",
+  "width": 512,
+  "height": 512,
+  "path": "graphics/map.bmp",
+  "id": "95458cca-f5fb-49e0-ab08-3e24a77c7703",
+  "format": "bmp",
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/background.json"
+}

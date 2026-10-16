@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/variable.json",
+  "type": "variables",
+  "values": [
+    {
+      "id": "5f16ffa0-a884-4b82-88b2-f9f6d8c30f68",
+      "type": "variable",
+      "name": "ForegroundDrawingPriority",
+      "defaultValue": "1"
+    },
+    {
+      "id": "988e1070-3fca-40cf-b35f-e298484fdf02",
+      "type": "variable",
+      "name": "GlobalFadeDuration",
+      "defaultValue": "200"
+    }
+  ],
+  "id": "6f5f0f99-e36a-4495-a9ad-36ee8d639cc4"
+}

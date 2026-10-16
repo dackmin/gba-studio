@@ -1,0 +1,21 @@
+{
+  "id": "0db1c374-9a85-4e15-b816-631039d765f6",
+  "type": "script",
+  "name": "Actor Dialogs",
+  "events": [
+    {
+      "type": "move-actor-to",
+      "actor": "__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814",
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "parameters": [
+    {
+      "id": "74cdc1b4-da05-4b51-9f20-6dc15dde4814",
+      "name": "Actor",
+      "type": "actor"
+    }
+  ],
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/script.json"
+}

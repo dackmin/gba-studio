@@ -1,0 +1,19 @@
+{
+  "name": "Test",
+  "scenes": [
+    {
+      "x": 7,
+      "y": 6,
+      "id": "d2a023cc-364d-4caf-9638-78937f593e4d",
+      "_file": "scene_0.json"
+    }
+  ],
+  "romName": "MY AWESOME GAME",
+  "romCode": "MAG",
+  "id": "40462bc0-cb50-4bb6-88f4-3ac3ad3f13b1",
+  "huds": [],
+  "settings": {
+    "pythonPath": "$root/../../../node_modules/.cache/gba-studio/vendors/python/bin/python3",
+    "devkitProPath": "$root/../../../node_modules/.cache/gba-studio/vendors/devkitPro"
+  }
+}
