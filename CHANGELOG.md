@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.2](https://github.com/dackmin/gba-studio/compare/v0.3.1...v0.3.2) (2026-10-16)
+
+### Bug Fixes
+
+* missing mmutil build tool ([bf25309](https://github.com/dackmin/gba-studio/commit/bf25309b969f7c2dbc0cfe4424f4b1c62377002e))
+* missing mmutil build tool ([17bf0a1](https://github.com/dackmin/gba-studio/commit/17bf0a1ccd648869c6b592dfbee416fc58c30f1c))
+* missing parallel events schema ([bbb0098](https://github.com/dackmin/gba-studio/commit/bbb00989fb36066500ba46c789cad504cf40b5e3))
+* missing set-palette-effect event schema ([006fc2b](https://github.com/dackmin/gba-studio/commit/006fc2b5cef0ad02bf8e84ff778f5347b3cf253c))
+* more missing events ([fcbc392](https://github.com/dackmin/gba-studio/commit/fcbc392733ba97322b1d09d3c8cc48c95948ef75))
+* various templates typos ([d6a7dbe](https://github.com/dackmin/gba-studio/commit/d6a7dbe681b7bf43a304dd86b6e5cbc29917aa69))
+
 ## [0.3.1](https://github.com/dackmin/gba-studio/compare/v0.3.0...v0.3.1) (2026-10-15)
 
 ### Bug Fixes
