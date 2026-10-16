@@ -26,6 +26,7 @@ import {
   getCustomDevkitProPath,
   getCustomPythonPath,
   getVendorPath,
+  getVendorExecutable,
 } from '../../vendors';
 import { prepareData } from './data';
 import { serialize } from '../../serialize';
@@ -65,7 +66,7 @@ async function buildMakefile (
     {
       target,
       pythonPath: getCustomPythonPath(build) ||
-        path.join(getVendorPath('python'), 'bin', 'python3'),
+        getVendorExecutable('python'),
       devkitProPath: getCustomDevkitProPath(build) ||
         getVendorPath('devkitPro'),
       butanoPath: path.join(

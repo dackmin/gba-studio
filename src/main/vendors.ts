@@ -145,15 +145,19 @@ async function checkPackagedVendor (
 }
 
 export function getVendorPath (vendorName: string) {
-  switch (process.platform) {
-    case 'win32':
-    case 'darwin':
-      return path.join(
-        getResourcesDir(),
-        `./public/vendors/${vendorName}/${process.platform}`
-      );
+  return path.join(
+    getResourcesDir(),
+    `./public/vendors/${vendorName}/${process.platform}`
+  );
+}
+
+export function getVendorExecutable (vendorName: string) {
+  switch (vendorName) {
+    case 'python':
+      return path.join(getVendorPath('python'), 'bin', 'python') +
+        (process.platform === 'win32' ? '.exe' : '3');
     default:
-      return '/opt/devkitpro';
+      return '';
   }
 }
 
@@ -165,8 +169,7 @@ async function checkPython (
   }
 
   const command = getCustomPythonPath(build) ||
-    path.join(getVendorPath('python'), 'bin', 'python3') +
-    (process.platform === 'win32' ? '.exe' : '');
+    getVendorExecutable('python');
 
   const version = await runCommand(command, ['--version'], {
     cwd: path.dirname(build.projectPath),
