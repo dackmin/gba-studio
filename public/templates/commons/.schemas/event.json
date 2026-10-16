@@ -975,6 +975,23 @@
       ],
       "type": "object"
     },
+    "ParallelEventsEvent": {
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Event" }
+        },
+        "type": {
+          "const": "parallel-events",
+          "type": "string"
+        }
+      },
+      "required": [
+        "events",
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -1018,7 +1035,8 @@
         { "$ref": "#/definitions/LoadStateEvent" },
         { "$ref": "#/definitions/ResetGameEvent" },
         { "$ref": "#/definitions/SetPaletteEffectEvent" },
-        { "$ref": "#/definitions/WaveEffectEvent" }
+        { "$ref": "#/definitions/WaveEffectEvent" },
+        { "$ref": "#/definitions/ParallelEventsEvent" }
       ]
     }
   },
