@@ -35,13 +35,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: yarn
           check-latest: true
       - name: Install dependencies
@@ -110,7 +110,7 @@ jobs:
           mv out/make/AppImage/x64/*.AppImage out/keep/gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}.AppImage
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gba-studio-${{ env.PACKAGE_VERSION }}-${{ matrix.label }}
           path: |
