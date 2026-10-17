@@ -1,0 +1,42 @@
+{
+  "id": "6be3d29c-8619-49d6-b313-e9d9b78b0b3f",
+  "type": "hud",
+  "name": "HUD 1",
+  "sprites": [
+    {
+      "id": "fb96690b-905d-4fb1-b8b4-888f846b71d3",
+      "type": "hud-sprite",
+      "name": "HUD Sprite 1",
+      "x": 6,
+      "y": 4,
+      "z": 0,
+      "sprite": "sprite_default"
+    }
+  ],
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/hud.json",
+  "events": {
+    "init": [
+      {
+        "type": "on-variable-change",
+        "variable": "604d86cb-db47-4c70-ae11-221156b64270",
+        "events": [],
+        "id": "07524bc2-fd25-46a1-81b4-695cd0e99fbc"
+      }
+    ]
+  },
+  "texts": [
+    {
+      "id": "65d889f4-8e5c-4ee3-83f2-3a737cc0f393",
+      "type": "hud-text",
+      "name": "HUD Text 1",
+      "text": {
+        "type": "variable",
+        "name": "96c1d71d-993a-42b4-9073-e7ba70439b54"
+      },
+      "x": 29,
+      "y": 9,
+      "z": 0,
+      "color": "#ffffff"
+    }
+  ]
+}

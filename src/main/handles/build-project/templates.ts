@@ -102,7 +102,7 @@ export const setupHandlebars = async () => {
 
     const [r = 0, g = 0, b = 0] = hexToRgb(color);
 
-    return `${Math.round(r * base)}, ${Math.round(g * base)}, ${Math.round(b * base)}`;
+    return `${Math.round(r/255 * base)}, ${Math.round(g/255 * base)}, ${Math.round(b/255 * base)}`;
   });
 
   // Add content helpers

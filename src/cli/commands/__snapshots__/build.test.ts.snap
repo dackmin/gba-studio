@@ -65,6 +65,78 @@ namespace neo::scenes
   }
 
 
+  //////////////////////////
+  // HUD: HUD 1 //
+  //////////////////////////
+  constexpr bn::string_view hud_0_sprite_0_id = "fb96690b-905d-4fb1-b8b4-888f846b71d3";
+  constexpr bn::string_view hud_0_sprite_0_name = "HUD Sprite 1";
+  constexpr neo::types::hud_sprite hud_0_sprite_0 = {
+    hud_0_sprite_0_id,
+    hud_0_sprite_0_name,
+    6,
+    4,
+    0,
+    bn::sprite_items::sprite_default
+  };
+  constexpr const neo::types::hud_sprite* hud_0_sprites[] = {
+    &hud_0_sprite_0
+  };
+  constexpr bn::string_view hud_0_text_0_content_name = "";
+  constexpr bn::string_view hud_0_text_0_content_string_value = "96c1d71d-993a-42b4-9073-e7ba70439b54";
+  constexpr neo::variables::value hud_0_text_0_content_raw_value(
+    hud_0_text_0_content_name,
+    0,
+    true,
+    hud_0_text_0_content_string_value
+  );
+  constexpr bn::string_view hud_0_text_0_content_type = "variable";
+  constexpr neo::types::event_value hud_0_text_0_content_value(
+    hud_0_text_0_content_type,
+    &hud_0_text_0_content_raw_value
+  );
+  
+  constexpr bn::string_view hud_0_text_0_id = "65d889f4-8e5c-4ee3-83f2-3a737cc0f393";
+  constexpr bn::string_view hud_0_text_0_name = "HUD Text 1";
+  constexpr bn::color hud_0_text_0_color = { 31, 31, 31 };
+  constexpr neo::types::hud_text hud_0_text_0 = {
+    hud_0_text_0_id,
+    hud_0_text_0_name,
+    &hud_0_text_0_content_value,
+    29,
+    9,
+    0,
+    hud_0_text_0_color,
+    nullptr
+  };
+  constexpr const neo::types::hud_text* hud_0_texts[] = {
+    &hud_0_text_0
+  };
+  // Event 0: on-variable-change
+  constexpr bn::string_view hud_0_init_event_0_variable_name = "";
+  constexpr bn::string_view hud_0_init_event_0_type = "on-variable-change";
+  BN_DATA_EWRAM neo::types::variable_change_event hud_0_init_event_0(
+    hud_0_init_event_0_type,
+    hud_0_init_event_0_variable_name,
+    0,
+    nullptr
+  );
+  constexpr neo::types::event* hud_0_init_events[] = {
+    &hud_0_init_event_0,
+  };
+  constexpr bn::string_view hud_0_id = "6be3d29c-8619-49d6-b313-e9d9b78b0b3f";
+  constexpr bn::string_view hud_0_name = "HUD 1";
+  constexpr neo::types::hud hud_0 = {
+    hud_0_id,
+    hud_0_name,
+    1,
+    hud_0_sprites,
+    1,
+    hud_0_texts,
+    1,
+    hud_0_init_events,
+    0,
+    nullptr
+  };
 
   //////////////////////////
   // Scene: Scene 0 //
