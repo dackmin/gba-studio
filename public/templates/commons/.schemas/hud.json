@@ -62,6 +62,12 @@
         },
         "z": {
           "type": "number"
+        },
+        "color": {
+          "type": "string"
+        },
+        "font": {
+          "type": "string"
         }
       },
       "required": [
