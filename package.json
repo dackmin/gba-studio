@@ -3,7 +3,7 @@
   "productName": "GBA Studio",
   "executableName": "GBAStudio",
   "type": "module",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "GB Studio, but worse and for the GBA",
   "main": ".vite/build/main.js",
   "author": {

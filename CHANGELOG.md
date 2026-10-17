@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.3](https://github.com/dackmin/gba-studio/compare/v0.3.2...v0.3.3) (2026-10-17)
+
+### Bug Fixes
+
+* build error on hud text custom color ([4852a89](https://github.com/dackmin/gba-studio/commit/4852a898765c96a7875c1b9ebc6ef4dbe75fbe9b))
+* linux & windows app icon ([5fa9315](https://github.com/dackmin/gba-studio/commit/5fa9315924ab5a993735b7435fa78fadc506e355))
+* missing hud text schema properties ([429d4c7](https://github.com/dackmin/gba-studio/commit/429d4c7ad7428e3bb98ee4f6668741b212801bf4))
+* upgrade various deps ([ba72ddc](https://github.com/dackmin/gba-studio/commit/ba72ddc46e823940a18a046d88c35437bda51346))
+* windows python executable path ([62d422f](https://github.com/dackmin/gba-studio/commit/62d422fd5dcf152cc3894386e8e18bab2932acce))
+
 ## [0.3.2](https://github.com/dackmin/gba-studio/compare/v0.3.1...v0.3.2) (2026-10-16)
 
 ### Bug Fixes
