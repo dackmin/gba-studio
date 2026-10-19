@@ -59,15 +59,16 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup Butler
+        run: |
+          gh release download --repo itchio/butler --pattern 'butler-linux-amd64.zip'
+          unzip butler-linux-amd64.zip -d ./butler
+          chmod +x ./butler/butler
       - name: Download release file
         run: |
           gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
-      - name: Upload
-        uses: Oval-Tutu/publish-to-itch-with-butler@1.0.0
-        with:
-          api-key: ${{ secrets.BUTLER_API_KEY }}
-          itch_user: dackmin
-          itch_game: gba-studio
-          channel: ${{ matrix.platform.label }}
-          package: ./release/${{ matrix.platform.dir }}
-          version: ${{ steps.setup.outputs.releaseTag }}
+      - name: Upload with Butler
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          ./butler/butler push ./release/${{ matrix.platform.dir }} dackmin/gba-studio:${{ matrix.platform.label }}" --userversion ${{ steps.setup.outputs.releaseTag }}
