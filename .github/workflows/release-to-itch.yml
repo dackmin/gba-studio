@@ -12,7 +12,7 @@ on:
 
 jobs:
   upload:
-    name: Upload to itch.io
+    name: ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -22,29 +22,26 @@ jobs:
     strategy:
       matrix:
         platform:
-          - name: Windows (setup)
-            label: windows
-            dir: windows
-            pattern: '*.exe'
-          - name: Windows (portable)
-            label: windows
-            dir: windows-portable
-            pattern: '*-win32-*.zip'
-          - name: macOS
-            label: osx
-            dir: macos
-            pattern: '*-macos-*.zip'
-          - name: Linux (AppImage)
-            label: linux
-            dir: linux-appimage
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Windows (installer)
+            channel: windows-installer
+            pattern: '*.Setup.exe'
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Windows (portable)
+            channel: windows-portable
+            pattern: '*-win32-x64.zip'
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for macOS (Apple Silicon)
+            channel: osx-arm64
+            pattern: '*-macos-arm64.zip'
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for macOS (Intel)
+            channel: osx-x64
+            pattern: '*-macos-x64.zip'
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (AppImage)
+            channel: linux-appimage
             pattern: '*.AppImage'
-          - name: Linux (deb)
-            label: linux
-            dir: linux-deb
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian)
+            channel: linux-deb
             pattern: '*.deb'
-          - name: Linux (rpm)
-            label: linux
-            dir: linux-rpm
+          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat)
+            channel: linux-rpm
             pattern: '*.rpm'
     steps:
       - name: Setup
@@ -59,6 +56,13 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Cache butler
+        uses: actions/cache@v6
+        with:
+          path: ./butler/linux-amd64/butler
+          key: ${{ runner.os }}-butler
+          restore-keys: |
+            ${{ runner.os }}-butler
       - name: Setup Butler
         run: |
           gh release download --repo itchio/butler --pattern 'butler-linux-amd64.zip'
@@ -66,9 +70,9 @@ jobs:
           chmod +x ./butler/linux-amd64/butler
       - name: Download release file
         run: |
-          gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
+          gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.channel }} ${{ steps.setup.outputs.releaseTag }}
       - name: Upload with Butler
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          ./butler/linux-amd64/butler push ./release/${{ matrix.platform.dir }} dackmin/gba-studio:${{ matrix.platform.label }} --userversion ${{ steps.setup.outputs.releaseTag }}
+          ./butler/linux-amd64/butler push ./release/${{ matrix.platform.channel }} dackmin/gba-studio:${{ matrix.platform.channel }} --userversion ${{ steps.setup.outputs.releaseTag }}
