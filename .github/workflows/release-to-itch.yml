@@ -22,14 +22,18 @@ jobs:
     strategy:
       matrix:
         platform:
-          - name: Windows
+          - name: Windows (setup)
             label: windows
             dir: windows
             pattern: '*.exe'
+          - name: Windows (portable)
+            label: windows
+            dir: windows-portable
+            pattern: '*-win32-*.zip'
           - name: macOS
             label: osx
             dir: macos
-            pattern: '*.dmg'
+            pattern: '*-macos-*.zip'
           - name: Linux (AppImage)
             label: linux
             dir: linux-appimage
