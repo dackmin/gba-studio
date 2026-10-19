@@ -47,15 +47,24 @@ jobs:
           - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for macOS (Intel)
             channel: osx-x64
             pattern: '*-macos-x64.zip'
-          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (AppImage)
-            channel: linux-appimage
-            pattern: '*.AppImage'
-          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian)
-            channel: linux-deb
-            pattern: '*.deb'
-          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat)
-            channel: linux-rpm
-            pattern: '*.rpm'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (AppImage, x64)
+            channel: linux-appimage-x64
+            pattern: '*-x64.AppImage'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (AppImage, arm64)
+            channel: linux-appimage-arm64
+            pattern: '*-arm64.AppImage'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian, x64)
+            channel: linux-deb-x64
+            pattern: '*-x64.deb'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian, arm64)
+            channel: linux-deb-arm64
+            pattern: '*-arm64.deb'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat, x64)
+            channel: linux-rpm-x64
+            pattern: '*-x64.rpm'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat, arm64)
+            channel: linux-rpm-arm64
+            pattern: '*-arm64.rpm'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
