@@ -11,38 +11,10 @@ on:
         required: true
 
 jobs:
-  upload:
-    name: ${{ matrix.platform.name }}
+  setup:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
     outputs:
-      release_tag: ${{ steps.setup.outputs.releaseTag }}
-    strategy:
-      matrix:
-        platform:
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Windows (installer)
-            channel: windows-installer
-            pattern: '*.Setup.exe'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Windows (portable)
-            channel: windows-portable
-            pattern: '*-win32-x64.zip'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for macOS (Apple Silicon)
-            channel: osx-arm64
-            pattern: '*-macos-arm64.zip'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for macOS (Intel)
-            channel: osx-x64
-            pattern: '*-macos-x64.zip'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (AppImage)
-            channel: linux-appimage
-            pattern: '*.AppImage'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian)
-            channel: linux-deb
-            pattern: '*.deb'
-          - name: GBA Studio ${{ steps.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat)
-            channel: linux-rpm
-            pattern: '*.rpm'
+      releaseTag: ${{ steps.setup.outputs.releaseTag }}
     steps:
       - name: Setup
         id: setup
@@ -52,6 +24,38 @@ jobs:
           else
             echo "releaseTag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           fi
+  upload:
+    name: ${{ matrix.platform.name }}
+    runs-on: ubuntu-latest
+    needs: [setup]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    strategy:
+      matrix:
+        platform:
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Windows (installer)
+            channel: windows-installer
+            pattern: '*.Setup.exe'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Windows (portable)
+            channel: windows-portable
+            pattern: '*-win32-x64.zip'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for macOS (Apple Silicon)
+            channel: osx-arm64
+            pattern: '*-macos-arm64.zip'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for macOS (Intel)
+            channel: osx-x64
+            pattern: '*-macos-x64.zip'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (AppImage)
+            channel: linux-appimage
+            pattern: '*.AppImage'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Ubuntu/Debian)
+            channel: linux-deb
+            pattern: '*.deb'
+          - name: GBA Studio ${{ needs.setup.outputs.releaseTag }} for Linux (Fedora/Red Hat)
+            channel: linux-rpm
+            pattern: '*.rpm'
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
@@ -70,9 +74,9 @@ jobs:
           chmod +x ./butler/linux-amd64/butler
       - name: Download release file
         run: |
-          gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.channel }} ${{ steps.setup.outputs.releaseTag }}
+          gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.channel }} ${{ needs.setup.outputs.releaseTag }}
       - name: Upload with Butler
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          ./butler/linux-amd64/butler push ./release/${{ matrix.platform.channel }} dackmin/gba-studio:${{ matrix.platform.channel }} --userversion ${{ steps.setup.outputs.releaseTag }}
+          ./butler/linux-amd64/butler push ./release/${{ matrix.platform.channel }} dackmin/gba-studio:${{ matrix.platform.channel }} --userversion ${{ needs.setup.outputs.releaseTag }}
