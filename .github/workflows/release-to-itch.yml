@@ -1,0 +1,64 @@
+name: Release to itch.io
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag name'
+        required: true
+
+jobs:
+  upload:
+    name: Upload to itch.io
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.setup.outputs.releaseTag }}
+    strategy:
+      matrix:
+        platform:
+          - name: Windows
+            label: windows
+            dir: windows
+            pattern: '*.exe'
+          - name: macOS
+            label: osx
+            dir: macos
+            pattern: '*.dmg'
+          - name: Linux (AppImage)
+            label: linux
+            dir: linux-appimage
+            pattern: '*.AppImage'
+          - name: Linux (deb)
+            label: linux
+            dir: linux-deb
+            pattern: '*.deb'
+          - name: Linux (rpm)
+            label: linux
+            dir: linux-rpm
+            pattern: '*.rpm'
+    steps:
+      - name: Setup (manual trigger)
+        id: setup
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "releaseTag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+      - name: Setup (release trigger)
+        id: setup
+        if: github.event_name == 'release'
+        run: |
+          echo "releaseTag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+      - name: Download release file
+        run: |
+          gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
+      - name: Upload
+        uses: Oval-Tutu/publish-to-itch-with-butler@v1
+        with:
+          api-key: ${{ secrets.BUTLER_API_KEY }}
+          itch_user: dackmin
+          itch_game: gba-studio
+          channel: ${{ matrix.platform.label }}
+          package: ./release/${{ matrix.platform.dir }}
+          version: ${{ steps.setup.outputs.releaseTag }}
