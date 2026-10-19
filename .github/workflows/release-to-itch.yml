@@ -14,6 +14,9 @@ jobs:
   upload:
     name: Upload to itch.io
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     outputs:
       release_tag: ${{ steps.setup.outputs.releaseTag }}
     strategy:
