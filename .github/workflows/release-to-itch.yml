@@ -40,16 +40,14 @@ jobs:
             dir: linux-rpm
             pattern: '*.rpm'
     steps:
-      - name: Setup (manual trigger)
+      - name: Setup
         id: setup
-        if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "releaseTag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
-      - name: Setup (release trigger)
-        id: setup
-        if: github.event_name == 'release'
-        run: |
-          echo "releaseTag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "releaseTag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "releaseTag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          fi
       - name: Download release file
         run: |
           gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
