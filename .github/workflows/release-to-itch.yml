@@ -12,6 +12,7 @@ on:
 
 jobs:
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       releaseTag: ${{ steps.setup.outputs.releaseTag }}
@@ -69,9 +70,11 @@ jobs:
             ${{ runner.os }}-butler
       - name: Setup Butler
         run: |
-          gh release download --repo itchio/butler --pattern 'butler-linux-amd64.zip'
-          unzip butler-linux-amd64.zip -d ./butler
-          chmod +x ./butler/linux-amd64/butler
+          if [ ! -f ./butler/linux-amd64/butler ]; then
+            gh release download --repo itchio/butler --pattern 'butler-linux-amd64.zip'
+            unzip butler-linux-amd64.zip -d ./butler
+            chmod +x ./butler/linux-amd64/butler
+          fi
       - name: Download release file
         run: |
           gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.channel }} ${{ needs.setup.outputs.releaseTag }}
