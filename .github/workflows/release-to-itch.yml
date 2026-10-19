@@ -48,6 +48,10 @@ jobs:
           else
             echo "releaseTag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           fi
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Download release file
         run: |
           gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
