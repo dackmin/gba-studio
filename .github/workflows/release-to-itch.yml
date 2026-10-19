@@ -63,7 +63,7 @@ jobs:
         run: |
           gh release download --repo itchio/butler --pattern 'butler-linux-amd64.zip'
           unzip butler-linux-amd64.zip -d ./butler
-          chmod +x ./butler/butler
+          chmod +x ./butler/linux-amd64/butler
       - name: Download release file
         run: |
           gh release download --pattern '${{ matrix.platform.pattern }}' --dir ./release/${{ matrix.platform.dir }} ${{ steps.setup.outputs.releaseTag }}
@@ -71,4 +71,4 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          ./butler/butler push ./release/${{ matrix.platform.dir }} dackmin/gba-studio:${{ matrix.platform.label }}" --userversion ${{ steps.setup.outputs.releaseTag }}
+          ./butler/linux-amd64/butler push ./release/${{ matrix.platform.dir }} dackmin/gba-studio:${{ matrix.platform.label }}" --userversion ${{ steps.setup.outputs.releaseTag }}
