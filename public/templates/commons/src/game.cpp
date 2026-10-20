@@ -24,6 +24,7 @@
 #include "effects.h"
 #include "hud.h"
 #include "events.h"
+#include "projectile.h"
 
 namespace neo
 {
@@ -44,6 +45,7 @@ namespace neo
     actors_count = 0;
     sprites_count = 0;
     sensors_count = 0;
+    projectiles_count = 0;
     is_input_enabled = true;
   }
 
@@ -169,6 +171,18 @@ namespace neo
       sensors_count = 0;
     }
 
+    // Remove all active projectiles
+    if (projectiles_count > 0)
+    {
+      for (int i = 0; i < projectiles_count; ++i)
+      {
+        delete projectiles[i];
+      }
+
+      projectiles.clear();
+      projectiles_count = 0;
+    }
+
     set_background(active_scene->background, false);
     scene_changed = false;
 
@@ -209,6 +223,10 @@ namespace neo
         ));
       }
     }
+
+    // Enable projectiles
+    projectiles_count = 0;
+    projectiles.clear();
 
     // Actors
     BN_LOG("Actors count: ", active_scene->actors_count);
@@ -334,6 +352,10 @@ namespace neo
 
     while (!scene_changed)
     {
+      for (int i = 0; i < projectiles_count; ++i)
+      {
+        projectiles[i]->update();
+      }
 
       if (active_scene->has_player && player != nullptr)
       {
@@ -483,6 +505,24 @@ namespace neo
     return false;
   }
 
+  neo::actor* game::get_actor_by_id(bn::string_view id)
+  {
+    bn::string_view actor_reference = resolve_actor_reference(id);
+
+    for (int i = 0; i < actors_count; ++i)
+    {
+      if (
+        actors[i]->definition->name == actor_reference ||
+        actors[i]->definition->_id == actor_reference
+      )
+      {
+        return actors[i];
+      }
+    }
+
+    return nullptr;
+  }
+
   neo::actor* game::get_actor_at(int tile_x, int tile_y, neo::types::direction direction)
   {
     int next_x = tile_x;
@@ -560,5 +600,19 @@ namespace neo
     }
 
     return nullptr;
+  }
+
+  void game::remove_projectile(neo::projectile* projectile)
+  {
+    for (int i = 0; i < projectiles_count; ++i)
+    {
+      if (projectiles[i] == projectile)
+      {
+        delete projectiles[i];
+        projectiles.erase(projectiles.begin() + i);
+        --projectiles_count;
+        break;
+      }
+    }
   }
 }

@@ -1086,6 +1086,23 @@ namespace neo::events
     }
 
     /**
+     * @name shoot-projectile
+     */
+    else if (e->type == "shoot-projectile")
+    {
+      const neo::types::shoot_projectile_event* shoot_projectile_evt =
+        static_cast<const neo::types::shoot_projectile_event*>(e);
+
+      // Implement shooting logic here, e.g., create a new projectile and add it to the game's projectiles vector
+      if (game->projectiles_count < 100)
+      {
+        neo::projectile* new_projectile = new neo::projectile(game, shoot_projectile_evt);
+        game->projectiles.push_back(new_projectile);
+        ++game->projectiles_count;
+      }
+    }
+
+    /**
      * Unknown events are ignored
      */
     else

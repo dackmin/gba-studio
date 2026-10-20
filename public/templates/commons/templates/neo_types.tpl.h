@@ -74,6 +74,14 @@ namespace neo::types
     DECREMENT
   };
 
+  enum class gravity_style
+  {
+    NORMAL,
+    ARC,
+    SINUS,
+    CUSTOM
+  };
+
   struct event_value
   {
     bn::string_view type;
@@ -879,6 +887,59 @@ namespace neo::types
 
     void start(neo::game* game_);
     bool update() override;
+  };
+
+  struct shoot_projectile_event: event
+  {
+    bn::sprite_item sprite;
+    bn::string_view source_type;
+    bn::string_view actor;
+    bn::string_view animation;
+    neo::types::direction direction;
+
+    int speed; // pixels per frame
+    int lifetime; // frames until the projectile disappears
+    bool destroy_on_collision;
+    int collision_group;
+
+    bool has_gravity;
+    neo::types::gravity_style gravity_style;
+    bn::fixed gravity; // pixels per frame squared
+    int gravity_angle; // degrees
+    int terminal_velocity; // pixels per frame
+
+    shoot_projectile_event(
+      bn::string_view type_,
+      bn::sprite_item sprite_,
+      bn::string_view source_type_,
+      bn::string_view actor_,
+      bn::string_view animation_,
+      neo::types::direction direction_,
+      int speed_,
+      int lifetime_,
+      bool destroy_on_collision_,
+      int collision_group_,
+      bool has_gravity_,
+      neo::types::gravity_style gravity_style_,
+      bn::fixed gravity_,
+      int gravity_angle_,
+      int terminal_velocity_
+    ):
+      event(type_),
+      sprite(sprite_),
+      source_type(source_type_),
+      actor(actor_),
+      animation(animation_),
+      direction(direction_),
+      speed(speed_),
+      lifetime(lifetime_),
+      destroy_on_collision(destroy_on_collision_),
+      collision_group(collision_group_),
+      has_gravity(has_gravity_),
+      gravity_style(gravity_style_),
+      gravity(gravity_),
+      gravity_angle(gravity_angle_),
+      terminal_velocity(terminal_velocity_) {}
   };
 
   struct sensor

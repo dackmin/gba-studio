@@ -527,6 +527,31 @@ BN_DATA_EWRAM neo::types::set_sprite_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_sprite,
   bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.asset "sprite_default")}}
 );
+{{else if (eq this.type "shoot-projectile")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_type = "shoot-projectile";
+constexpr bn::sprite_item {{../prefix}}_{{@index}}_sprite = bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}};
+constexpr bn::string_view {{../prefix}}_{{@index}}_source_type = "{{this.sourceType}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{this.animation}}";
+constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
+constexpr neo::types::gravity_style {{../prefix}}_{{@index}}_gravity_style = neo::types::gravity_style::{{uppercase (valuedef this.gravityStyle 'normal')}};
+BN_DATA_EWRAM neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sprite,
+  {{../prefix}}_{{@index}}_source_type,
+  {{../prefix}}_{{@index}}_actor,
+  {{../prefix}}_{{@index}}_animation,
+  {{../prefix}}_{{@index}}_direction,
+  {{valuedef this.speed 0}},
+  {{valuedef this.lifetime 60}},
+  {{valuedef this.destroyOnCollision false}},
+  {{valuedef this.collisionGroup 0}},
+  {{valuedef this.hasGravity false}},
+  {{../prefix}}_{{@index}}_gravity_style,
+  {{valuedef this.gravity 0}},
+  {{valuedef this.gravityAngle 0}},
+  {{valuedef this.terminalVelocity 0}}
+);
 {{else}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 BN_DATA_EWRAM neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);

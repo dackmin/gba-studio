@@ -17,6 +17,7 @@
 #include "actor.h"
 #include "sprite.h"
 #include "sensor.h"
+#include "projectile.h"
 
 namespace neo
 {
@@ -44,6 +45,9 @@ namespace neo
 
       int sprites_count;
       bn::vector<neo::sprite*, 50> sprites;
+
+      int projectiles_count;
+      bn::vector<neo::projectile*, 100> projectiles;
 
       // Screen-fixed sprites of the active scene's HUD (no camera attached)
       bn::vector<bn::sprite_ptr, 30> hud_sprites;
@@ -93,9 +97,11 @@ namespace neo
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);
       bool has_collision(int tile_x, int tile_y);
+      neo::actor* get_actor_by_id(bn::string_view id);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
+      void remove_projectile(neo::projectile* projectile);
   };
 }
 
