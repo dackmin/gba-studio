@@ -42,6 +42,12 @@ namespace neo
       // being in a different collision group, touches this actor).
       void trigger_collide();
 
+      // Side of the other rect hit by the first one ("up" = the first rect
+      // is above the other), in the same pixel space
+      static bn::string_view get_collision_side(
+        int player_left, int player_top, int player_width, int player_height,
+        int other_left, int other_top, int other_width, int other_height);
+
       neo::types::sprite_animation* get_animation(bn::string_view type);
 
       // Player-only
@@ -81,9 +87,6 @@ namespace neo
       // models (top-down grid steps and side-scroller free movement).
       void check_collisions();
       bool try_interact();
-      static bn::string_view get_collision_side(
-        int player_left, int player_top, int player_width, int player_height,
-        int other_left, int other_top, int other_width, int other_height);
   };
 }
 
