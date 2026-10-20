@@ -212,7 +212,8 @@ constexpr neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_variable_name,
   {{int this.value}},
   {{bool this.value}},
-  {{../prefix}}_{{@index}}_string_value
+  {{../prefix}}_{{@index}}_string_value,
+  {{fixed this.value}}
 );
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
 BN_DATA_EWRAM neo::types::set_variable_event {{../prefix}}_{{@index}}(
