@@ -352,7 +352,7 @@ namespace neo
 
     while (!scene_changed)
     {
-      for (int i = 0; i < projectiles_count; ++i)
+      for (int i = projectiles_count - 1; i >= 0; --i)
       {
         projectiles[i]->update();
       }
