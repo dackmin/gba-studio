@@ -18,12 +18,14 @@ namespace neo::variables
     int int_value;
     bool bool_value;
     bn::string_view str_value;
+    bn::fixed fixed_value;
 
-    constexpr value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
+    constexpr value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_, bn::fixed fixed_val_):
       name(name_),
       int_value(val_),
       bool_value(bool_val_),
-      str_value(str_val_) {}
+      str_value(str_val_),
+      fixed_value(fixed_val_) {}
 
     constexpr int as_int () const
     {
@@ -39,6 +41,11 @@ namespace neo::variables
     {
       return str_value;
     }
+
+    constexpr bn::fixed as_fixed () const
+    {
+      return fixed_value;
+    }
   };
 
   // Registry-owned runtime variable: only these need a text buffer for computed ints
@@ -48,8 +55,13 @@ namespace neo::variables
     bn::string<6> computed_str;
     bool has_computed_str = false;
 
-    variable(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
-      value(name_, val_, bool_val_, str_val_) {}
+    variable(
+      bn::string_view name_,
+      int val_,
+      bool bool_val_,
+      bn::string_view str_val_,
+      bn::fixed fixed_val_
+    ): value(name_, val_, bool_val_, str_val_, fixed_val_) {}
 
     inline bn::string_view as_string () const
     {
@@ -61,8 +73,17 @@ namespace neo::variables
       val = bn::clamp(val, -99999, 999999);
       int_value = val;
       bool_value = val != 0;
+      fixed_value = bn::fixed(val);
       computed_str = bn::to_string<6>(val);
       has_computed_str = true;
+    }
+
+    inline void set_fixed (bn::fixed val)
+    {
+      fixed_value = val;
+      computed_str = bn::to_string<6>(fixed_value);
+      has_computed_str = true;
+      bool_value = fixed_value != 0;
     }
 
     inline void assign (const value& other)
@@ -70,6 +91,7 @@ namespace neo::variables
       int_value = other.int_value;
       bool_value = other.bool_value;
       str_value = other.str_value;
+      fixed_value = other.fixed_value;
       has_computed_str = false;
     }
 
@@ -78,6 +100,7 @@ namespace neo::variables
       int_value = other.int_value;
       bool_value = other.bool_value;
       str_value = other.str_value;
+      fixed_value = other.fixed_value;
       computed_str = other.computed_str;
       has_computed_str = other.has_computed_str;
     }
@@ -95,7 +118,8 @@ namespace neo::variables
         "{{this.name}}",
         {{int this.defaultValue}},
         {{bool this.defaultValue}},
-        "{{this.defaultValue}}"
+        "{{this.defaultValue}}",
+        {{fixed this.defaultValue}}
       );
       all.insert_or_assign(
         "{{this.name}}",
@@ -106,7 +130,7 @@ namespace neo::variables
       {{#each scripts}}
       {{#each this.parameters}}
       neo::variables::variable* script_parameter_{{@../index}}_{{@index}} = new neo::variables::variable(
-        "{{scriptParamKey this.id}}", 0, false, ""
+        "{{scriptParamKey this.id}}", 0, false, "", 0
       );
       all.insert_or_assign("{{scriptParamKey this.id}}", script_parameter_{{@../index}}_{{@index}});
       {{/each}}
@@ -150,17 +174,23 @@ namespace neo::variables
     {
       {{#each variables}}
       {{#each this.values}}
-      set_raw("{{this.name}}", {{int this.defaultValue}}, {{bool this.defaultValue}}, "{{this.defaultValue}}");
+      set_raw(
+        "{{this.name}}",
+        {{int this.defaultValue}},
+        {{bool this.defaultValue}},
+        "{{this.defaultValue}}",
+        {{fixed this.defaultValue}}
+      );
       {{/each}}
       {{/each}}
       {{#each scripts}}
       {{#each this.parameters}}
-      set_raw("{{scriptParamKey this.id}}", 0, false, "");
+      set_raw("{{scriptParamKey this.id}}", 0, false, "", 0);
       {{/each}}
       {{/each}}
     }
 
-    inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val)
+    inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val, bn::fixed fixed_val)
     {
       if (key.empty()) {
         BN_LOG("Empty variable key set_raw attempted");
@@ -173,6 +203,7 @@ namespace neo::variables
         it->second->int_value = int_val;
         it->second->bool_value = bool_val;
         it->second->str_value = str_val;
+        it->second->fixed_value = fixed_val;
         it->second->has_computed_str = false;
       }
     }

@@ -146,6 +146,25 @@ namespace neo::types
         return value->as_string();
       }
     }
+
+    inline bn::fixed as_fixed(neo::variables::registry& variables) const
+    {
+      if (type == "variable")
+      {
+        if (!variables.has(value->as_string()))
+        {
+          BN_LOG("Variable not found: ", value->as_string());
+          return 0;
+        }
+
+        neo::variables::variable& var_value = variables.get(value->as_string());
+        return var_value.as_fixed();
+      }
+      else
+      {
+        return value->as_fixed();
+      }
+    }
   };
 
   struct event

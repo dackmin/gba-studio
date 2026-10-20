@@ -27,6 +27,7 @@ namespace neo::save
     char name[40] = {};
     int int_value = 0;
     bool bool_value = false;
+    bn::fixed fixed_value = 0;
     char str_value[40] = {};
   };
 

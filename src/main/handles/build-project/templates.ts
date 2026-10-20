@@ -22,6 +22,7 @@ export const setupHandlebars = async () => {
     Array.isArray(arr) && arr.length > 0);
   Handlebars.registerHelper('slug', (str: string) => toSlug(str || ''));
   Handlebars.registerHelper('int', (v: any) => parseInt(v, 10) || 0);
+  Handlebars.registerHelper('fixed', (v: any) => parseFloat(v) || 0);
   Handlebars.registerHelper('isInt', (v: any) => Number.isInteger(parseInt(v, 10)));
   Handlebars.registerHelper('bool', (v: any) =>
     typeof v === 'string' ? v === 'true' : !!v);

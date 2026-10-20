@@ -656,7 +656,8 @@ namespace neo::events
             parameter_name,
             argument->as_int(game->variables),
             argument->as_bool(game->variables),
-            argument->as_string(game->variables)
+            argument->as_string(game->variables),
+            argument->as_fixed(game->variables)
           );
         }
       }

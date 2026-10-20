@@ -102,6 +102,7 @@ namespace neo::save
       {
         data.variables[data.variables_count].int_value = item.second->as_int();
         data.variables[data.variables_count].bool_value = item.second->as_bool();
+        data.variables[data.variables_count].fixed_value = item.second->as_fixed();
         copy_string(data.variables[data.variables_count].str_value, item.second->as_string(), sizeof(data.variables[data.variables_count].str_value));
       }
       data.variables_count++;
@@ -209,7 +210,13 @@ namespace neo::save
     for (int i = 0; i < pending.variables_count; ++i)
     {
       const auto& var = pending.variables[i];
-      game->variables.set_raw(var.name, var.int_value, var.bool_value, var.str_value);
+      game->variables.set_raw(
+        var.name,
+        var.int_value,
+        var.bool_value,
+        var.str_value,
+        var.fixed_value
+      );
     }
 
     BN_LOG("Loading saved game from SRAM: scene=", pending.scene_id, ", vars=", pending.variables_count);

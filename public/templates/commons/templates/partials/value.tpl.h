@@ -14,7 +14,8 @@ constexpr neo::variables::value {{prefix}}_raw_value(
   {{prefix}}_string_value
   {{else}}
   bn::string_view()
-  {{/if}}
+  {{/if}},
+  {{fixed (valuedef value.value value)}}
 );
 constexpr bn::string_view {{prefix}}_type = "{{valuedef value.type 'value'}}";
 constexpr neo::types::event_value {{prefix}}_value(
