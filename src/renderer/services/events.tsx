@@ -29,6 +29,7 @@ import {
   SpeakerLoudIcon,
   StopIcon,
   TextIcon,
+  Crosshair2Icon,
 } from '@radix-ui/react-icons';
 import { get } from '@junipero/react';
 
@@ -190,6 +191,28 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
     construct: () => ({
       type: 'set-background',
       background: '',
+    }),
+  }],
+}, {
+  name: 'Arcade',
+  items: [{
+    icon: Crosshair2Icon,
+    name: 'Shoot Projectile',
+    value: 'shoot-projectile',
+    keywords: ['shoot', 'projectile', 'bullet', 'fire'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'shoot-projectile',
+      sourceType: 'player',
+      sprite: '',
+      actor: '',
+      speed: 3,
+      hasGravity: false,
+      gravity: 0.2,
+      lifetime: 120,
+      collisionGroup: 0,
+      animation: '',
+      direction: 'from_player',
     }),
   }],
 }, {

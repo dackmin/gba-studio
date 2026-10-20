@@ -18,8 +18,12 @@ export interface EventValueFieldProps
   onValueChange?: (value: EventValue) => void;
 }
 
-const HUD_EXCLUDED_TYPES = [
+export const HUD_EXCLUDED_TYPES = [
   'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene', 'actor',
+];
+
+export const EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES = [
+  'saved-game', 'scene', 'actor', 'player-attribute', 'direction', 'collision-side',
 ];
 
 const EventValueField = ({

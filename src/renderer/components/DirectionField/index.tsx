@@ -64,13 +64,20 @@ const DirectionField = ({
           <TriangleDownIcon className="rotate-[-45deg]" />
         </SegmentedControl.Item>
       ) }
-      { !exclude.includes('player') && (
-        <SegmentedControl.Item title="Player" value="player">
+      { !exclude.includes('towards_player') && (
+        <SegmentedControl.Item title="Towards Player" value="towards_player">
           <Tooltip content="Towards Player">
             <span>P</span>
           </Tooltip>
         </SegmentedControl.Item>
       ) }
+      { !exclude.includes('from_player') && (
+        <SegmentedControl.Item title="Player Facing Direction" value="from_player">
+          <Tooltip content="Player Facing Direction">
+            <span>F</span>
+          </Tooltip>
+        </SegmentedControl.Item>
+      )}
     </SegmentedControl.Root>
   );
 };

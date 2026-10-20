@@ -784,6 +784,24 @@ export interface SetSpriteEvent extends SceneEvent {
   asset: string;
 }
 
+export interface ShootProjectileEvent extends SceneEvent {
+  type: 'shoot-projectile';
+  sourceType: 'actor' | 'player';
+  sprite: string;
+  actor?: string;
+  speed?: number;
+  hasGravity?: boolean;
+  gravity?: number;
+  gravityStyle?: 'normal' | 'arc' | 'sinus' | 'custom';
+  gravityAngle?: number;
+  terminalVelocity?: number;
+  lifetime?: number;
+  collisionGroup?: number;
+  animation?: string;
+  direction?: Direction | ActorDirection;
+  destroyOnCollision?: boolean;
+}
+
 export type AnimationType = 'idle' | 'moving';
 
 export type FramesDefinition = {

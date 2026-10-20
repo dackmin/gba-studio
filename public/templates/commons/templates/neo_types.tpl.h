@@ -42,7 +42,9 @@ namespace neo::types
     UP_RIGHT,
     DOWN_LEFT,
     DOWN_RIGHT,
-    PLAYER
+    PLAYER, // Compat, same as TOWARDS_PLAYER
+    TOWARDS_PLAYER,
+    FROM_PLAYER
   };
 
   enum class text_speed

@@ -1,8 +1,10 @@
-import { Select, Text } from '@radix-ui/themes';
+import { SegmentedControl } from '@radix-ui/themes';
+import { classNames } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
 
-export interface CollisionGroupFieldProps {
+export interface CollisionGroupFieldProps
+  extends Omit<SegmentedControl.RootProps, 'value' | 'onValueChange'> {
   value?: number;
   sceneType?: GameScene['sceneType'];
   onValueChange?: (value: number) => void;
@@ -17,30 +19,32 @@ export interface CollisionGroupFieldProps {
 const CollisionGroupField = ({
   value,
   sceneType,
+  className,
   onValueChange,
 }: CollisionGroupFieldProps) => {
   const current = value ?? 0;
   const topDown = sceneType === '2d-top-down';
 
   return (
-    <Select.Root
-      size="1"
-      value={String(current)}
-      onValueChange={(v: string) => onValueChange?.(Number(v))}
+    <SegmentedControl.Root
+      value={'' + current}
+      className={classNames(
+        '[&_span]:!px-0',
+        className,
+      )}
     >
-      <Select.Trigger className="w-full" />
-      <Select.Content>
-        {[0, 1, 2, 3, 4].map(group => (
-          <Select.Item key={group} value={String(group)}>
-            <Text>
-              { group === 0
-                ? (topDown ? 'None (solid)' : 'None')
-                : `Group ${group}` }
-            </Text>
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select.Root>
+      { [0, 1, 2, 3, 4].map(group => (
+        <SegmentedControl.Item
+          key={group}
+          value={'' + group}
+          onClick={onValueChange?.bind(null, group)}
+        >
+          { group === 0
+            ? (topDown ? 'None (solid)' : 'None')
+            : group }
+        </SegmentedControl.Item>
+      )) }
+    </SegmentedControl.Root>
   );
 };
 
