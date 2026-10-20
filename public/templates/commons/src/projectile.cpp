@@ -41,6 +41,21 @@ namespace neo
     }
 
     heading = direction_to_heading(resolve_direction());
+
+    // Arc
+    if (
+      definition->has_gravity &&
+      definition->gravity_style == neo::types::gravity_style::ARC &&
+      game->active_scene != nullptr &&
+      game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER
+    )
+    {
+      heading = bn::fixed_point(
+        bn::degrees_lut_cos(ARC_ANGLE) * horizontal_side(),
+        -bn::degrees_lut_sin(ARC_ANGLE)
+      );
+    }
+
     velocity = heading * definition->speed;
 
     sprite.set_horizontal_flip(heading.x() < 0);
@@ -89,35 +104,69 @@ namespace neo
     }
   }
 
-  void projectile::move()
-  {
-    position += velocity;
-    sprite.set_position(position);
-  }
-
   bool projectile::move_with_gravity()
   {
     switch (definition->gravity_style)
     {
       case neo::types::gravity_style::SINUS:
         return move_bouncing();
+      case neo::types::gravity_style::ARC:
+        return move_arc();
       default:
         move();
         return true;
     }
   }
 
+  void projectile::move()
+  {
+    position += velocity;
+    sprite.set_position(position);
+  }
+
+  // Grenade style
+  bool projectile::move_arc()
+  {
+    velocity.set_y(bn::min(velocity.y() + ARC_GRAVITY, ARC_MAX_FALL));
+
+    bn::fixed_point next = position + velocity;
+    int x = position.x().floor_integer();
+    int y = position.y().floor_integer();
+    int target_x = next.x().floor_integer();
+    int target_y = next.y().floor_integer();
+    int step_x = target_x > x ? 1 : -1;
+    int step_y = target_y > y ? 1 : -1;
+
+    while (x != target_x)
+    {
+      if (blocked_at(x + step_x, y))
+      {
+        return false;
+      }
+
+      x += step_x;
+    }
+
+    while (y != target_y)
+    {
+      if (blocked_at(x, y + step_y))
+      {
+        return false;
+      }
+
+      y += step_y;
+    }
+
+    position = next;
+    sprite.set_position(position);
+
+    return true;
+  }
+
+  // Mario fireball style
   bool projectile::move_bouncing()
   {
-    int step_x = heading.x() > 0 ? 1 : (heading.x() < 0 ? -1 : 0);
-
-    // Vertical shots still need to go somewhere, follow the shooter
-    if (step_x == 0)
-    {
-      step_x = actor != nullptr && actor->direction == neo::types::direction::LEFT
-        ? -1
-        : 1;
-    }
+    int step_x = horizontal_side();
 
     sprite.set_horizontal_flip(step_x < 0);
 
@@ -312,6 +361,18 @@ namespace neo
     }
 
     return false;
+  }
+
+  int projectile::horizontal_side()
+  {
+    if (heading.x() != 0)
+    {
+      return heading.x() < 0 ? -1 : 1;
+    }
+
+    return actor != nullptr && actor->direction == neo::types::direction::LEFT
+      ? -1
+      : 1;
   }
 
   neo::types::direction projectile::resolve_direction()
