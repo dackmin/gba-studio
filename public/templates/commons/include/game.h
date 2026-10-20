@@ -94,6 +94,7 @@ namespace neo
       // for as long as that other event blocks.
       void update_scripted_events();
       void update_frame();
+      void update_projectiles();
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);
       bool has_collision(int tile_x, int tile_y);

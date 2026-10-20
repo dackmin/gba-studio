@@ -174,13 +174,7 @@ namespace neo::variables
     {
       {{#each variables}}
       {{#each this.values}}
-      set_raw(
-        "{{this.name}}",
-        {{int this.defaultValue}},
-        {{bool this.defaultValue}},
-        "{{this.defaultValue}}",
-        {{fixed this.defaultValue}}
-      );
+      set_raw("{{this.name}}", {{int this.defaultValue}}, {{bool this.defaultValue}}, "{{this.defaultValue}}", {{fixed this.defaultValue}});
       {{/each}}
       {{/each}}
       {{#each scripts}}

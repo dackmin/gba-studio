@@ -352,10 +352,7 @@ namespace neo
 
     while (!scene_changed)
     {
-      for (int i = projectiles_count - 1; i >= 0; --i)
-      {
-        projectiles[i]->update();
-      }
+      update_projectiles();
 
       if (active_scene->has_player && player != nullptr)
       {
@@ -451,6 +448,17 @@ namespace neo
   void game::update_scripted_events()
   {
     neo::events::update_scripted_events(this);
+  }
+
+  void game::update_projectiles()
+  {
+    for (int i = projectiles_count - 1; i >= 0 && !scene_changed; --i)
+    {
+      if (i < projectiles_count)
+      {
+        projectiles[i]->update();
+      }
+    }
   }
 
   void game::update_frame()

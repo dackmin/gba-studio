@@ -11,10 +11,10 @@ constexpr neo::variables::value {{prefix}}_raw_value(
   {{int (valuedef value.value value)}},
   {{bool (valuedef value.value value)}},
   {{#if (not (isInt value.value))}}
-  {{prefix}}_string_value
+  {{prefix}}_string_value,
   {{else}}
-  bn::string_view()
-  {{/if}},
+  bn::string_view(),
+  {{/if}}
   {{fixed (valuedef value.value value)}}
 );
 constexpr bn::string_view {{prefix}}_type = "{{valuedef value.type 'value'}}";

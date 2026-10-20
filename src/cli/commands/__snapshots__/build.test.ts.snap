@@ -87,7 +87,8 @@ namespace neo::scenes
     hud_0_text_0_content_name,
     0,
     true,
-    hud_0_text_0_content_string_value
+    hud_0_text_0_content_string_value,
+    0
   );
   constexpr bn::string_view hud_0_text_0_content_type = "variable";
   constexpr neo::types::event_value hud_0_text_0_content_value(
@@ -150,7 +151,8 @@ namespace neo::scenes
     scene_0_event_0_duration_name,
     200,
     true,
-    scene_0_event_0_duration_string_value
+    scene_0_event_0_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_0_duration_value(
@@ -167,7 +169,8 @@ namespace neo::scenes
     scene_0_event_1_duration_name,
     200,
     true,
-    scene_0_event_1_duration_string_value
+    scene_0_event_1_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_1_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_1_duration_value(
@@ -203,7 +206,8 @@ namespace neo::scenes
     scene_0_event_3_event_0_duration_name,
     200,
     true,
-    scene_0_event_3_event_0_duration_string_value
+    scene_0_event_3_event_0_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_3_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_3_event_0_duration_value(
@@ -250,7 +254,8 @@ namespace neo::scenes
     scene_0_event_6_duration_name,
     200,
     true,
-    scene_0_event_6_duration_string_value
+    scene_0_event_6_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_6_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_6_duration_value(
@@ -275,7 +280,8 @@ namespace neo::scenes
     scene_0_event_7_duration_name,
     200,
     true,
-    scene_0_event_7_duration_string_value
+    scene_0_event_7_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_7_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_7_duration_value(
@@ -302,7 +308,8 @@ namespace neo::scenes
     scene_0_event_8_x_name,
     10,
     true,
-    scene_0_event_8_x_string_value
+    scene_0_event_8_x_string_value,
+    10
   );
   constexpr bn::string_view scene_0_event_8_x_type = "value";
   constexpr neo::types::event_value scene_0_event_8_x_value(
@@ -316,7 +323,8 @@ namespace neo::scenes
     scene_0_event_8_y_name,
     5,
     true,
-    scene_0_event_8_y_string_value
+    scene_0_event_8_y_string_value,
+    5
   );
   constexpr bn::string_view scene_0_event_8_y_type = "value";
   constexpr neo::types::event_value scene_0_event_8_y_value(
@@ -330,7 +338,8 @@ namespace neo::scenes
     scene_0_event_8_duration_name,
     200,
     true,
-    scene_0_event_8_duration_string_value
+    scene_0_event_8_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_8_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_8_duration_value(
@@ -360,7 +369,8 @@ namespace neo::scenes
     scene_0_event_10_duration_name,
     100,
     true,
-    scene_0_event_10_duration_string_value
+    scene_0_event_10_duration_string_value,
+    100
   );
   constexpr bn::string_view scene_0_event_10_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_10_duration_value(
@@ -385,7 +395,8 @@ namespace neo::scenes
     scene_0_event_11_duration_name,
     0,
     true,
-    scene_0_event_11_duration_string_value
+    scene_0_event_11_duration_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_11_duration_type = "variable";
   constexpr neo::types::event_value scene_0_event_11_duration_value(
@@ -408,7 +419,8 @@ namespace neo::scenes
     scene_0_event_12_start_x_name,
     0,
     false,
-    scene_0_event_12_start_x_string_value
+    scene_0_event_12_start_x_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_12_start_x_type = "value";
   constexpr neo::types::event_value scene_0_event_12_start_x_value(
@@ -422,7 +434,8 @@ namespace neo::scenes
     scene_0_event_12_start_y_name,
     0,
     false,
-    scene_0_event_12_start_y_string_value
+    scene_0_event_12_start_y_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_12_start_y_type = "value";
   constexpr neo::types::event_value scene_0_event_12_start_y_value(
@@ -469,7 +482,8 @@ namespace neo::scenes
     scene_0_event_15_option_0_event_0_duration_name,
     200,
     true,
-    scene_0_event_15_option_0_event_0_duration_string_value
+    scene_0_event_15_option_0_event_0_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_15_option_0_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_15_option_0_event_0_duration_value(
@@ -497,7 +511,8 @@ namespace neo::scenes
     scene_0_event_15_option_1_event_0_duration_name,
     200,
     true,
-    scene_0_event_15_option_1_event_0_duration_string_value
+    scene_0_event_15_option_1_event_0_duration_string_value,
+    200
   );
   constexpr bn::string_view scene_0_event_15_option_1_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_15_option_1_event_0_duration_value(
@@ -547,7 +562,8 @@ namespace neo::scenes
     scene_0_event_18_x_name,
     0,
     false,
-    scene_0_event_18_x_string_value
+    scene_0_event_18_x_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_18_x_type = "value";
   constexpr neo::types::event_value scene_0_event_18_x_value(
@@ -561,7 +577,8 @@ namespace neo::scenes
     scene_0_event_18_y_name,
     0,
     false,
-    scene_0_event_18_y_string_value
+    scene_0_event_18_y_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_18_y_type = "value";
   constexpr neo::types::event_value scene_0_event_18_y_value(
@@ -575,7 +592,8 @@ namespace neo::scenes
     scene_0_event_18_speed_name,
     2,
     true,
-    scene_0_event_18_speed_string_value
+    scene_0_event_18_speed_string_value,
+    2
   );
   constexpr bn::string_view scene_0_event_18_speed_type = "value";
   constexpr neo::types::event_value scene_0_event_18_speed_value(
@@ -602,7 +620,8 @@ namespace neo::scenes
     scene_0_event_19_x_name,
     0,
     false,
-    scene_0_event_19_x_string_value
+    scene_0_event_19_x_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_19_x_type = "value";
   constexpr neo::types::event_value scene_0_event_19_x_value(
@@ -616,7 +635,8 @@ namespace neo::scenes
     scene_0_event_19_y_name,
     0,
     false,
-    scene_0_event_19_y_string_value
+    scene_0_event_19_y_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_19_y_type = "value";
   constexpr neo::types::event_value scene_0_event_19_y_value(
@@ -658,7 +678,8 @@ namespace neo::scenes
     scene_0_event_23_x_name,
     0,
     false,
-    scene_0_event_23_x_string_value
+    scene_0_event_23_x_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_23_x_type = "value";
   constexpr neo::types::event_value scene_0_event_23_x_value(
@@ -672,7 +693,8 @@ namespace neo::scenes
     scene_0_event_23_y_name,
     0,
     false,
-    scene_0_event_23_y_string_value
+    scene_0_event_23_y_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_23_y_type = "value";
   constexpr neo::types::event_value scene_0_event_23_y_value(
@@ -726,7 +748,8 @@ namespace neo::scenes
     scene_0_event_28_variable_name,
     500,
     false,
-    scene_0_event_28_string_value
+    scene_0_event_28_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_28_type = "set-variable";
   BN_DATA_EWRAM neo::types::set_variable_event scene_0_event_28(
@@ -743,7 +766,8 @@ namespace neo::scenes
     scene_0_event_29_event_0_duration_name,
     500,
     false,
-    scene_0_event_29_event_0_duration_string_value
+    scene_0_event_29_event_0_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_29_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_29_event_0_duration_value(
@@ -771,7 +795,8 @@ namespace neo::scenes
     scene_0_event_30_content_name,
     0,
     false,
-    scene_0_event_30_content_string_value
+    scene_0_event_30_content_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_30_content_type = "value";
   constexpr neo::types::event_value scene_0_event_30_content_value(
@@ -820,7 +845,8 @@ namespace neo::scenes
     scene_0_event_34_duration_name,
     500,
     false,
-    scene_0_event_34_duration_string_value
+    scene_0_event_34_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_34_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_34_duration_value(
@@ -838,7 +864,8 @@ namespace neo::scenes
     scene_0_event_35_then_0_duration_name,
     500,
     false,
-    scene_0_event_35_then_0_duration_string_value
+    scene_0_event_35_then_0_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_35_then_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_35_then_0_duration_value(
@@ -858,7 +885,8 @@ namespace neo::scenes
     scene_0_event_35_else_0_duration_name,
     500,
     false,
-    scene_0_event_35_else_0_duration_string_value
+    scene_0_event_35_else_0_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_35_else_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_35_else_0_duration_value(
@@ -941,7 +969,8 @@ namespace neo::scenes
     scene_0_event_36_event_0_x_name,
     0,
     false,
-    scene_0_event_36_event_0_x_string_value
+    scene_0_event_36_event_0_x_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_36_event_0_x_type = "value";
   constexpr neo::types::event_value scene_0_event_36_event_0_x_value(
@@ -955,7 +984,8 @@ namespace neo::scenes
     scene_0_event_36_event_0_y_name,
     0,
     false,
-    scene_0_event_36_event_0_y_string_value
+    scene_0_event_36_event_0_y_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_36_event_0_y_type = "value";
   constexpr neo::types::event_value scene_0_event_36_event_0_y_value(
@@ -969,7 +999,8 @@ namespace neo::scenes
     scene_0_event_36_event_0_duration_name,
     500,
     false,
-    scene_0_event_36_event_0_duration_string_value
+    scene_0_event_36_event_0_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_36_event_0_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_36_event_0_duration_value(
@@ -994,7 +1025,8 @@ namespace neo::scenes
     scene_0_event_36_event_1_duration_name,
     500,
     false,
-    scene_0_event_36_event_1_duration_string_value
+    scene_0_event_36_event_1_duration_string_value,
+    500
   );
   constexpr bn::string_view scene_0_event_36_event_1_duration_type = "value";
   constexpr neo::types::event_value scene_0_event_36_event_1_duration_value(
@@ -1021,7 +1053,8 @@ namespace neo::scenes
     scene_0_event_37_argument_0_name,
     0,
     true,
-    scene_0_event_37_argument_0_string_value
+    scene_0_event_37_argument_0_string_value,
+    0
   );
   constexpr bn::string_view scene_0_event_37_argument_0_type = "actor";
   constexpr neo::types::event_value scene_0_event_37_argument_0_value(
@@ -1156,7 +1189,8 @@ namespace neo::scenes
     scene_0_map_grid_size_name,
     16,
     true,
-    scene_0_map_grid_size_string_value
+    scene_0_map_grid_size_string_value,
+    16
   );
   constexpr bn::string_view scene_0_map_grid_size_type = "value";
   constexpr neo::types::event_value scene_0_map_grid_size_value(
@@ -1181,7 +1215,8 @@ namespace neo::scenes
     scene_0_actor_0_x_name,
     5,
     true,
-    scene_0_actor_0_x_string_value
+    scene_0_actor_0_x_string_value,
+    5
   );
   constexpr bn::string_view scene_0_actor_0_x_type = "value";
   constexpr neo::types::event_value scene_0_actor_0_x_value(
@@ -1195,7 +1230,8 @@ namespace neo::scenes
     scene_0_actor_0_y_name,
     5,
     true,
-    scene_0_actor_0_y_string_value
+    scene_0_actor_0_y_string_value,
+    5
   );
   constexpr bn::string_view scene_0_actor_0_y_type = "value";
   constexpr neo::types::event_value scene_0_actor_0_y_value(
@@ -1209,7 +1245,8 @@ namespace neo::scenes
     scene_0_actor_0_z_name,
     2,
     true,
-    scene_0_actor_0_z_string_value
+    scene_0_actor_0_z_string_value,
+    2
   );
   constexpr bn::string_view scene_0_actor_0_z_type = "value";
   constexpr neo::types::event_value scene_0_actor_0_z_value(
@@ -1254,7 +1291,8 @@ namespace neo::scenes
     scene_0_player_x_name,
     4,
     true,
-    scene_0_player_x_string_value
+    scene_0_player_x_string_value,
+    4
   );
   constexpr bn::string_view scene_0_player_x_type = "value";
   constexpr neo::types::event_value scene_0_player_x_value(
@@ -1268,7 +1306,8 @@ namespace neo::scenes
     scene_0_player_y_name,
     3,
     true,
-    scene_0_player_y_string_value
+    scene_0_player_y_string_value,
+    3
   );
   constexpr bn::string_view scene_0_player_y_type = "value";
   constexpr neo::types::event_value scene_0_player_y_value(
@@ -1282,7 +1321,8 @@ namespace neo::scenes
     scene_0_player_z_name,
     1,
     true,
-    scene_0_player_z_string_value
+    scene_0_player_z_string_value,
+    1
   );
   constexpr bn::string_view scene_0_player_z_type = "value";
   constexpr neo::types::event_value scene_0_player_z_value(
@@ -1373,7 +1413,8 @@ namespace neo::scenes
     actor_dialogs_script_event_0_x_name,
     0,
     false,
-    actor_dialogs_script_event_0_x_string_value
+    actor_dialogs_script_event_0_x_string_value,
+    0
   );
   constexpr bn::string_view actor_dialogs_script_event_0_x_type = "value";
   constexpr neo::types::event_value actor_dialogs_script_event_0_x_value(
@@ -1387,7 +1428,8 @@ namespace neo::scenes
     actor_dialogs_script_event_0_y_name,
     0,
     false,
-    actor_dialogs_script_event_0_y_string_value
+    actor_dialogs_script_event_0_y_string_value,
+    0
   );
   constexpr bn::string_view actor_dialogs_script_event_0_y_type = "value";
   constexpr neo::types::event_value actor_dialogs_script_event_0_y_value(
@@ -1401,7 +1443,8 @@ namespace neo::scenes
     actor_dialogs_script_event_0_speed_name,
     2,
     true,
-    actor_dialogs_script_event_0_speed_string_value
+    actor_dialogs_script_event_0_speed_string_value,
+    2
   );
   constexpr bn::string_view actor_dialogs_script_event_0_speed_type = "value";
   constexpr neo::types::event_value actor_dialogs_script_event_0_speed_value(
@@ -1511,7 +1554,9 @@ namespace neo::types
     UP_RIGHT,
     DOWN_LEFT,
     DOWN_RIGHT,
-    PLAYER
+    PLAYER, // Compat, same as TOWARDS_PLAYER
+    TOWARDS_PLAYER,
+    FROM_PLAYER
   };
 
   enum class text_speed
@@ -1539,6 +1584,14 @@ namespace neo::types
     SET,
     INCREMENT,
     DECREMENT
+  };
+
+  enum class gravity_style
+  {
+    NORMAL,
+    ARC,
+    SINUS,
+    CUSTOM
   };
 
   struct event_value
@@ -1603,6 +1656,25 @@ namespace neo::types
       else
       {
         return value->as_string();
+      }
+    }
+
+    inline bn::fixed as_fixed(neo::variables::registry& variables) const
+    {
+      if (type == "variable")
+      {
+        if (!variables.has(value->as_string()))
+        {
+          BN_LOG("Variable not found: ", value->as_string());
+          return 0;
+        }
+
+        neo::variables::variable& var_value = variables.get(value->as_string());
+        return var_value.as_fixed();
+      }
+      else
+      {
+        return value->as_fixed();
       }
     }
   };
@@ -2348,6 +2420,59 @@ namespace neo::types
     bool update() override;
   };
 
+  struct shoot_projectile_event: event
+  {
+    bn::sprite_item sprite;
+    bn::string_view source_type;
+    bn::string_view actor;
+    bn::string_view animation;
+    neo::types::direction direction;
+
+    const event_value* speed; // pixels per frame
+    const event_value* lifetime; // frames until the projectile disappears
+    bool destroy_on_collision;
+    int collision_group;
+
+    bool has_gravity;
+    neo::types::gravity_style gravity_style;
+    const event_value* gravity; // pixels per frame squared
+    const event_value* gravity_angle; // degrees
+    const event_value* terminal_velocity; // pixels per frame
+
+    shoot_projectile_event(
+      bn::string_view type_,
+      bn::sprite_item sprite_,
+      bn::string_view source_type_,
+      bn::string_view actor_,
+      bn::string_view animation_,
+      neo::types::direction direction_,
+      const event_value* speed_,
+      const event_value* lifetime_,
+      bool destroy_on_collision_,
+      int collision_group_,
+      bool has_gravity_,
+      neo::types::gravity_style gravity_style_,
+      const event_value* gravity_,
+      const event_value* gravity_angle_,
+      const event_value* terminal_velocity_
+    ):
+      event(type_),
+      sprite(sprite_),
+      source_type(source_type_),
+      actor(actor_),
+      animation(animation_),
+      direction(direction_),
+      speed(speed_),
+      lifetime(lifetime_),
+      destroy_on_collision(destroy_on_collision_),
+      collision_group(collision_group_),
+      has_gravity(has_gravity_),
+      gravity_style(gravity_style_),
+      gravity(gravity_),
+      gravity_angle(gravity_angle_),
+      terminal_velocity(terminal_velocity_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;
@@ -2668,12 +2793,14 @@ namespace neo::variables
     int int_value;
     bool bool_value;
     bn::string_view str_value;
+    bn::fixed fixed_value;
 
-    constexpr value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
+    constexpr value(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_, bn::fixed fixed_val_):
       name(name_),
       int_value(val_),
       bool_value(bool_val_),
-      str_value(str_val_) {}
+      str_value(str_val_),
+      fixed_value(fixed_val_) {}
 
     constexpr int as_int () const
     {
@@ -2689,6 +2816,11 @@ namespace neo::variables
     {
       return str_value;
     }
+
+    constexpr bn::fixed as_fixed () const
+    {
+      return fixed_value;
+    }
   };
 
   // Registry-owned runtime variable: only these need a text buffer for computed ints
@@ -2698,8 +2830,13 @@ namespace neo::variables
     bn::string<6> computed_str;
     bool has_computed_str = false;
 
-    variable(bn::string_view name_, int val_, bool bool_val_, bn::string_view str_val_):
-      value(name_, val_, bool_val_, str_val_) {}
+    variable(
+      bn::string_view name_,
+      int val_,
+      bool bool_val_,
+      bn::string_view str_val_,
+      bn::fixed fixed_val_
+    ): value(name_, val_, bool_val_, str_val_, fixed_val_) {}
 
     inline bn::string_view as_string () const
     {
@@ -2711,8 +2848,17 @@ namespace neo::variables
       val = bn::clamp(val, -99999, 999999);
       int_value = val;
       bool_value = val != 0;
+      fixed_value = bn::fixed(val);
       computed_str = bn::to_string<6>(val);
       has_computed_str = true;
+    }
+
+    inline void set_fixed (bn::fixed val)
+    {
+      fixed_value = val;
+      computed_str = bn::to_string<6>(fixed_value);
+      has_computed_str = true;
+      bool_value = fixed_value != 0;
     }
 
     inline void assign (const value& other)
@@ -2720,6 +2866,7 @@ namespace neo::variables
       int_value = other.int_value;
       bool_value = other.bool_value;
       str_value = other.str_value;
+      fixed_value = other.fixed_value;
       has_computed_str = false;
     }
 
@@ -2728,6 +2875,7 @@ namespace neo::variables
       int_value = other.int_value;
       bool_value = other.bool_value;
       str_value = other.str_value;
+      fixed_value = other.fixed_value;
       computed_str = other.computed_str;
       has_computed_str = other.has_computed_str;
     }
@@ -2743,7 +2891,8 @@ namespace neo::variables
         "ForegroundDrawingPriority",
         1,
         false,
-        "1"
+        "1",
+        1
       );
       all.insert_or_assign(
         "ForegroundDrawingPriority",
@@ -2753,14 +2902,15 @@ namespace neo::variables
         "GlobalFadeDuration",
         200,
         false,
-        "200"
+        "200",
+        200
       );
       all.insert_or_assign(
         "GlobalFadeDuration",
         value_0_globalfadeduration_1
       );
       neo::variables::variable* script_parameter_0_0 = new neo::variables::variable(
-        "__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", 0, false, ""
+        "__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", 0, false, "", 0
       );
       all.insert_or_assign("__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", script_parameter_0_0);
     }
@@ -2800,12 +2950,12 @@ namespace neo::variables
 
     inline void reset()
     {
-      set_raw("ForegroundDrawingPriority", 1, false, "1");
-      set_raw("GlobalFadeDuration", 200, false, "200");
-      set_raw("__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", 0, false, "");
+      set_raw("ForegroundDrawingPriority", 1, false, "1", 1);
+      set_raw("GlobalFadeDuration", 200, false, "200", 200);
+      set_raw("__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", 0, false, "", 0);
     }
 
-    inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val)
+    inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val, bn::fixed fixed_val)
     {
       if (key.empty()) {
         BN_LOG("Empty variable key set_raw attempted");
@@ -2818,6 +2968,7 @@ namespace neo::variables
         it->second->int_value = int_val;
         it->second->bool_value = bool_val;
         it->second->str_value = str_val;
+        it->second->fixed_value = fixed_val;
         it->second->has_computed_str = false;
       }
     }

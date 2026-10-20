@@ -842,6 +842,7 @@ namespace neo
 
     if (map_data->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
     {
+      game->update_projectiles();
       game->update_frame();
 
       return;
@@ -876,6 +877,7 @@ namespace neo
         anim->play(sprite, &tiles_item, game->variables);
       }
 
+      game->update_projectiles();
       game->update_frame();
 
       if (bn::keypad::a_pressed())
@@ -923,6 +925,7 @@ namespace neo
         anim->play(sprite, &tiles_item, game->variables);
       }
 
+      game->update_projectiles();
       game->update_frame();
 
       return;
