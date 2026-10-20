@@ -28,6 +28,9 @@ namespace neo
       inline constexpr static bn::fixed ARC_MAX_FALL = 4;
       inline constexpr static int ARC_ANGLE = 60;
 
+      inline constexpr static bn::fixed NORMAL_GRAVITY = 0.001;
+      inline constexpr static bn::fixed NORMAL_MAX_FALL = 4;
+
       neo::game* game;
       const neo::types::shoot_projectile_event* definition;
       neo::actor* actor;
@@ -39,7 +42,7 @@ namespace neo
       bn::fixed_point velocity;
 
       void update();
-      void move();
+      bool move();
       bool move_with_gravity();
       bool move_bouncing();
       bool move_arc();
@@ -61,6 +64,7 @@ namespace neo
         bool& touching
       );
       bool blocked_at(int x, int y);
+      bool gravity_enabled();
       int horizontal_side();
       neo::types::direction resolve_direction();
       static bn::fixed_point direction_to_heading(neo::types::direction direction);

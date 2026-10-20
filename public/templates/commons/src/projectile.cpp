@@ -44,10 +44,8 @@ namespace neo
 
     // Arc
     if (
-      definition->has_gravity &&
-      definition->gravity_style == neo::types::gravity_style::ARC &&
-      game->active_scene != nullptr &&
-      game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER
+      gravity_enabled() &&
+      definition->gravity_style == neo::types::gravity_style::ARC
     )
     {
       heading = bn::fixed_point(
@@ -81,16 +79,13 @@ namespace neo
 
     bool alive = true;
 
-    if (
-      definition->has_gravity &&
-      game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER
-    )
+    if (gravity_enabled())
     {
       alive = move_with_gravity();
     }
     else
     {
-      move();
+      alive = move();
     }
 
     if (alive)
@@ -113,15 +108,49 @@ namespace neo
       case neo::types::gravity_style::ARC:
         return move_arc();
       default:
-        move();
-        return true;
+        return move();
     }
   }
 
-  void projectile::move()
+  bool projectile::move()
   {
-    position += velocity;
+    if (gravity_enabled())
+    {
+      velocity.set_y(bn::min(velocity.y() + NORMAL_GRAVITY, NORMAL_MAX_FALL));
+    }
+
+    bn::fixed_point next = position + velocity;
+    int x = position.x().floor_integer();
+    int y = position.y().floor_integer();
+    int target_x = next.x().floor_integer();
+    int target_y = next.y().floor_integer();
+    int step_x = target_x > x ? 1 : -1;
+    int step_y = target_y > y ? 1 : -1;
+
+    while (x != target_x)
+    {
+      if (blocked_at(x + step_x, y))
+      {
+        return false;
+      }
+
+      x += step_x;
+    }
+
+    while (y != target_y)
+    {
+      if (blocked_at(x, y + step_y))
+      {
+        return false;
+      }
+
+      y += step_y;
+    }
+
+    position = next;
     sprite.set_position(position);
+
+    return true;
   }
 
   // Grenade style
@@ -334,6 +363,11 @@ namespace neo
   {
     const neo::types::map* map_data = game->active_scene->map_data;
 
+    if (map_data == nullptr)
+    {
+      return false;
+    }
+
     int sprite_width = sprite.dimensions().width();
     int sprite_height = sprite.dimensions().height();
     int left = x + map_data->pixel_width(game->variables) / 2 - sprite_width / 2;
@@ -361,6 +395,13 @@ namespace neo
     }
 
     return false;
+  }
+
+  bool projectile::gravity_enabled()
+  {
+    return definition->has_gravity &&
+      game->active_scene != nullptr &&
+      game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER;
   }
 
   int projectile::horizontal_side()
