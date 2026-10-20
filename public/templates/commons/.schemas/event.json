@@ -3,7 +3,7 @@
   "$id": "event.json",
   "definitions": {
     "ActorDirection": {
-      "enum": ["up", "down", "left", "right", "player"],
+      "enum": ["up", "down", "left", "right", "from_player", "towards_player"],
       "type": "string"
     },
     "CharacterDirection": {
@@ -14,6 +14,14 @@
       "enum": [
         "up", "down", "left", "right",
         "up_left", "up_right", "down_left", "down_right"
+      ],
+      "type": "string"
+    },
+    "ProjectileDirection": {
+      "enum": [
+        "up", "down", "left", "right",
+        "up_left", "up_right", "down_left", "down_right",
+        "from_player", "towards_player"
       ],
       "type": "string"
     },
@@ -992,6 +1000,64 @@
       ],
       "type": "object"
     },
+    "ShootProjectileEvent": {
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": ["player", "actor"]
+        },
+        "sprite": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "speed": {
+          "type": "number"
+        },
+        "hasGravity": {
+          "type": "boolean"
+        },
+        "gravity": {
+          "type": "number"
+        },
+        "gravityStyle": {
+          "type": "string",
+          "enum": ["normal", "arc", "sinus", "custom"]
+        },
+        "gravityAngle": {
+          "type": "number"
+        },
+        "terminalVelocity": {
+          "type": "number"
+        },
+        "lifetime": {
+          "type": "number"
+        },
+        "collisionGroup": {
+          "type": "number"
+        },
+        "destroyOnCollision": {
+          "type": "boolean"
+        },
+        "animation": {
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/definitions/ProjectileDirection"
+        },
+        "type": {
+          "const": "shoot-projectile",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceType",
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -1036,7 +1102,8 @@
         { "$ref": "#/definitions/ResetGameEvent" },
         { "$ref": "#/definitions/SetPaletteEffectEvent" },
         { "$ref": "#/definitions/WaveEffectEvent" },
-        { "$ref": "#/definitions/ParallelEventsEvent" }
+        { "$ref": "#/definitions/ParallelEventsEvent" },
+        { "$ref": "#/definitions/ShootProjectileEvent" }
       ]
     }
   },
