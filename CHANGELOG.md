@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.4.0](https://github.com/dackmin/gba-studio/compare/v0.3.3...v0.4.0) (2026-10-20)
+
+### Features
+
+* add custom projectile gravity ([a6461ef](https://github.com/dackmin/gba-studio/commit/a6461ef5af09ec586f73376c8a585906e875cf56))
+* add grenade-style projectiles ([806b707](https://github.com/dackmin/gba-studio/commit/806b707c21e223d4fdbfba5ff342af3df84ac30b))
+* add mario-style projectiles ([98febb0](https://github.com/dackmin/gba-studio/commit/98febb03191bec908c5e7a3d4b9270e163ea0c74))
+* add projectiles ([c7e189f](https://github.com/dackmin/gba-studio/commit/c7e189f45e6a1d696bb4b57ae566ba6677140d67))
+* add shoot-projectile event type ([4157dc5](https://github.com/dackmin/gba-studio/commit/4157dc555b0a6c07aab7dd007032aa6c347803ee))
+* allow event values to be fixed ([6d40e88](https://github.com/dackmin/gba-studio/commit/6d40e884ac9078a4fc387ae670773643e21af1f0))
+* also apply gravity to normal shooters (like snipers) ([5f72a2d](https://github.com/dackmin/gba-studio/commit/5f72a2d552821044aa870a78f18cd8201a62c9e9))
+
+### Bug Fixes
+
+* missing fixed event value ([f960fbd](https://github.com/dackmin/gba-studio/commit/f960fbd227ff2d1bb92e1a01c6868858b3eda772))
+* prevent skipping projectiles frames when one is deleted ([9d13df0](https://github.com/dackmin/gba-studio/commit/9d13df00ecb6f39f88269803abebc6b1a6a1e8eb))
+* projectiles should also be updated inside other loops ([f476f77](https://github.com/dackmin/gba-studio/commit/f476f775de4801a2cb1aa806b356c88ee419ab38))
+* update butano ([f8d929e](https://github.com/dackmin/gba-studio/commit/f8d929e221bf648f33bcf6c5e90f27aadf0d6681))
+
 ## [0.3.3](https://github.com/dackmin/gba-studio/compare/v0.3.2...v0.3.3) (2026-10-17)
 
 ### Bug Fixes
