@@ -1098,6 +1098,106 @@ namespace neo::scenes
   BN_DATA_EWRAM neo::types::reset_game_event scene_0_event_42(
     scene_0_event_42_type
   );
+  // Event 43: shoot-projectile
+  constexpr bn::string_view scene_0_event_43_type = "shoot-projectile";
+  constexpr bn::sprite_item scene_0_event_43_sprite = bn::sprite_items::sprite_default;
+  constexpr bn::string_view scene_0_event_43_source_type = "player";
+  constexpr bn::string_view scene_0_event_43_actor = "";
+  constexpr bn::string_view scene_0_event_43_animation = "";
+  constexpr neo::types::direction scene_0_event_43_direction = neo::types::direction::FROM_PLAYER;
+  constexpr neo::types::gravity_style scene_0_event_43_gravity_style = neo::types::gravity_style::CUSTOM;
+  constexpr bn::string_view scene_0_event_43_speed_name = "";
+  constexpr bn::string_view scene_0_event_43_speed_string_value = "3";
+  constexpr neo::variables::value scene_0_event_43_speed_raw_value(
+    scene_0_event_43_speed_name,
+    3,
+    true,
+    scene_0_event_43_speed_string_value,
+    3
+  );
+  constexpr bn::string_view scene_0_event_43_speed_type = "value";
+  constexpr neo::types::event_value scene_0_event_43_speed_value(
+    scene_0_event_43_speed_type,
+    &scene_0_event_43_speed_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_43_lifetime_name = "";
+  constexpr bn::string_view scene_0_event_43_lifetime_string_value = "120";
+  constexpr neo::variables::value scene_0_event_43_lifetime_raw_value(
+    scene_0_event_43_lifetime_name,
+    120,
+    true,
+    scene_0_event_43_lifetime_string_value,
+    120
+  );
+  constexpr bn::string_view scene_0_event_43_lifetime_type = "value";
+  constexpr neo::types::event_value scene_0_event_43_lifetime_value(
+    scene_0_event_43_lifetime_type,
+    &scene_0_event_43_lifetime_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_43_gravity_name = "";
+  constexpr bn::string_view scene_0_event_43_gravity_string_value = "0.2";
+  constexpr neo::variables::value scene_0_event_43_gravity_raw_value(
+    scene_0_event_43_gravity_name,
+    0,
+    true,
+    scene_0_event_43_gravity_string_value,
+    0.2
+  );
+  constexpr bn::string_view scene_0_event_43_gravity_type = "value";
+  constexpr neo::types::event_value scene_0_event_43_gravity_value(
+    scene_0_event_43_gravity_type,
+    &scene_0_event_43_gravity_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_43_gravity_angle_name = "";
+  constexpr bn::string_view scene_0_event_43_gravity_angle_string_value = "0";
+  constexpr neo::variables::value scene_0_event_43_gravity_angle_raw_value(
+    scene_0_event_43_gravity_angle_name,
+    0,
+    false,
+    scene_0_event_43_gravity_angle_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_event_43_gravity_angle_type = "value";
+  constexpr neo::types::event_value scene_0_event_43_gravity_angle_value(
+    scene_0_event_43_gravity_angle_type,
+    &scene_0_event_43_gravity_angle_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_43_terminal_velocity_name = "";
+  constexpr bn::string_view scene_0_event_43_terminal_velocity_string_value = "10";
+  constexpr neo::variables::value scene_0_event_43_terminal_velocity_raw_value(
+    scene_0_event_43_terminal_velocity_name,
+    10,
+    true,
+    scene_0_event_43_terminal_velocity_string_value,
+    10
+  );
+  constexpr bn::string_view scene_0_event_43_terminal_velocity_type = "value";
+  constexpr neo::types::event_value scene_0_event_43_terminal_velocity_value(
+    scene_0_event_43_terminal_velocity_type,
+    &scene_0_event_43_terminal_velocity_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::shoot_projectile_event scene_0_event_43(
+    scene_0_event_43_type,
+    scene_0_event_43_sprite,
+    scene_0_event_43_source_type,
+    scene_0_event_43_actor,
+    scene_0_event_43_animation,
+    scene_0_event_43_direction,
+    &scene_0_event_43_speed_value,
+    &scene_0_event_43_lifetime_value,
+    true,
+    0,
+    false,
+    scene_0_event_43_gravity_style,
+    &scene_0_event_43_gravity_value,
+    &scene_0_event_43_gravity_angle_value,
+    &scene_0_event_43_terminal_velocity_value
+  );
   constexpr neo::types::event* scene_0_events[] = {
     &scene_0_event_0,
     &scene_0_event_1,
@@ -1142,6 +1242,7 @@ namespace neo::scenes
     &scene_0_event_40,
     &scene_0_event_41,
     &scene_0_event_42,
+    &scene_0_event_43,
   };
 
   // Map collisions
@@ -1365,7 +1466,7 @@ namespace neo::scenes
     scene_0_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
     bn::regular_bg_items::map,
-    43,
+    44,
     scene_0_events,
     true,
     &scene_0_player_actor,

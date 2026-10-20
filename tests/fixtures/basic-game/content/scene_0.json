@@ -323,6 +323,24 @@
     {
       "type": "reset-game",
       "id": "i890607d-6f49-4229-b14b-8ea3216c9739"
+    },
+    {
+      "type": "shoot-projectile",
+      "id": "i890607d-6f49-4229-b14b-8ea3216c9740",
+      "sourceType": "player",
+      "sprite": "",
+      "actor": "",
+      "speed": 3,
+      "hasGravity": false,
+      "gravity": 0.2,
+      "gravityStyle": "custom",
+      "gravityAngle": 0,
+      "terminalVelocity": 10,
+      "lifetime": 120,
+      "collisionGroup": 0,
+      "destroyOnCollision": true,
+      "animation": "",
+      "direction": "from_player"
     }
   ],
   "id": "d2a023cc-364d-4caf-9638-78937f593e4d",
