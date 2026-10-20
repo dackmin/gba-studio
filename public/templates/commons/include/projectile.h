@@ -46,6 +46,7 @@ namespace neo
       bool move_with_gravity();
       bool move_bouncing();
       bool move_arc();
+      bool move_custom();
 
     private:
       bool touching_player = false;

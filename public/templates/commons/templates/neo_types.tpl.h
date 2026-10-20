@@ -916,16 +916,16 @@ namespace neo::types
     bn::string_view animation;
     neo::types::direction direction;
 
-    int speed; // pixels per frame
-    int lifetime; // frames until the projectile disappears
+    const event_value* speed; // pixels per frame
+    const event_value* lifetime; // frames until the projectile disappears
     bool destroy_on_collision;
     int collision_group;
 
     bool has_gravity;
     neo::types::gravity_style gravity_style;
-    bn::fixed gravity; // pixels per frame squared
-    int gravity_angle; // degrees
-    int terminal_velocity; // pixels per frame
+    const event_value* gravity; // pixels per frame squared
+    const event_value* gravity_angle; // degrees
+    const event_value* terminal_velocity; // pixels per frame
 
     shoot_projectile_event(
       bn::string_view type_,
@@ -934,15 +934,15 @@ namespace neo::types
       bn::string_view actor_,
       bn::string_view animation_,
       neo::types::direction direction_,
-      int speed_,
-      int lifetime_,
+      const event_value* speed_,
+      const event_value* lifetime_,
       bool destroy_on_collision_,
       int collision_group_,
       bool has_gravity_,
       neo::types::gravity_style gravity_style_,
-      bn::fixed gravity_,
-      int gravity_angle_,
-      int terminal_velocity_
+      const event_value* gravity_,
+      const event_value* gravity_angle_,
+      const event_value* terminal_velocity_
     ):
       event(type_),
       sprite(sprite_),

@@ -54,7 +54,7 @@ namespace neo
       );
     }
 
-    velocity = heading * definition->speed;
+    velocity = heading * definition->speed->as_int(game->variables);
 
     sprite.set_horizontal_flip(heading.x() < 0);
     sprite.set_position(position);
@@ -65,7 +65,7 @@ namespace neo
   {
     ++lifetime;
 
-    if (lifetime > definition->lifetime)
+    if (lifetime > definition->lifetime->as_int(game->variables))
     {
       game->remove_projectile(this);
 
@@ -107,9 +107,81 @@ namespace neo
         return move_bouncing();
       case neo::types::gravity_style::ARC:
         return move_arc();
+      case neo::types::gravity_style::CUSTOM:
+        return move_custom();
       default:
         return move();
     }
+  }
+
+  /**
+   * User-defined gravity: pulled each frame by `gravity` pixels per frame
+   * squared towards `gravity_angle` (degrees, clockwise from the right:
+   * 90 = down, 270 = up), until moving at `terminal_velocity` pixels per
+   * frame in that direction (0 = no limit). Touching the map destroys it.
+   */
+  bool projectile::move_custom()
+  {
+    int angle = definition->gravity_angle->as_int(game->variables) % 360;
+
+    if (angle < 0)
+    {
+      angle += 360;
+    }
+
+    bn::fixed_point direction(
+      bn::degrees_lut_cos(angle),
+      bn::degrees_lut_sin(angle)
+    );
+
+    velocity += direction * definition->gravity->as_fixed(game->variables);
+
+    bn::fixed terminal_velocity = definition->terminal_velocity->as_fixed(game->variables);
+
+    // Only cap the speed along the gravity, the rest of the throw is kept
+    if (terminal_velocity > 0)
+    {
+      bn::fixed along = velocity.x() * direction.x() + velocity.y() * direction.y();
+      bn::fixed excess = along - terminal_velocity;
+
+      if (excess > 0)
+      {
+        velocity -= direction * excess;
+      }
+    }
+
+    bn::fixed_point next = position + velocity;
+    int x = position.x().floor_integer();
+    int y = position.y().floor_integer();
+    int target_x = next.x().floor_integer();
+    int target_y = next.y().floor_integer();
+    int step_x = target_x > x ? 1 : -1;
+    int step_y = target_y > y ? 1 : -1;
+
+    while (x != target_x)
+    {
+      if (blocked_at(x + step_x, y))
+      {
+        return false;
+      }
+
+      x += step_x;
+    }
+
+    while (y != target_y)
+    {
+      if (blocked_at(x, y + step_y))
+      {
+        return false;
+      }
+
+      y += step_y;
+    }
+
+    position = next;
+    sprite.set_position(position);
+
+    return true;
   }
 
   bool projectile::move()
@@ -202,7 +274,9 @@ namespace neo
     int x = position.x().round_integer();
     int y = position.y().floor_integer();
 
-    for (int moved = 0; moved < definition->speed; ++moved)
+    int speed = definition->speed->as_int(game->variables);
+
+    for (int moved = 0; moved < speed; ++moved)
     {
       if (blocked_at(x + step_x, y))
       {

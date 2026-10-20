@@ -535,6 +535,11 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{this.animation}}";
 constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
 constexpr neo::types::gravity_style {{../prefix}}_{{@index}}_gravity_style = neo::types::gravity_style::{{uppercase (valuedef this.gravityStyle 'normal')}};
+{{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 3)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_lifetime") value=(valuedef this.lifetime 120)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_gravity") value=(valuedef this.gravity 0.2)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_gravity_angle") value=(valuedef this.gravityAngle 45)}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_terminal_velocity") value=(valuedef this.terminalVelocity 100)}}
 BN_DATA_EWRAM neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_sprite,
@@ -542,15 +547,15 @@ BN_DATA_EWRAM neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_actor,
   {{../prefix}}_{{@index}}_animation,
   {{../prefix}}_{{@index}}_direction,
-  {{valuedef this.speed 0}},
-  {{valuedef this.lifetime 60}},
+  &{{../prefix}}_{{@index}}_speed_value,
+  &{{../prefix}}_{{@index}}_lifetime_value,
   {{valuedef this.destroyOnCollision false}},
   {{valuedef this.collisionGroup 0}},
   {{valuedef this.hasGravity false}},
   {{../prefix}}_{{@index}}_gravity_style,
-  {{valuedef this.gravity 0}},
-  {{valuedef this.gravityAngle 0}},
-  {{valuedef this.terminalVelocity 0}}
+  &{{../prefix}}_{{@index}}_gravity_value,
+  &{{../prefix}}_{{@index}}_gravity_angle_value,
+  &{{../prefix}}_{{@index}}_terminal_velocity_value
 );
 {{else}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
