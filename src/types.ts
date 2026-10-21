@@ -302,7 +302,31 @@ export interface ProjectSettings {
   emulatorType?: 'internal' | 'external';
   emulatorCommand?: string;
   logsEnabled?: boolean;
+  // Texts
   font?: string;
+  textColor?: string;
+  // Dialogs
+  dialogSprite?: string;
+  dialogPaddingTop?: number;
+  dialogPaddingBottom?: number;
+  dialogPaddingLeft?: number;
+  dialogPaddingRight?: number;
+  dialogMarginTop?: number;
+  dialogMarginBottom?: number;
+  dialogMarginLeft?: number;
+  dialogMarginRight?: number;
+  dialogPortraitGap?: number;
+  // Menus
+  menuSprite?: string;
+  menuPaddingTop?: number;
+  menuPaddingBottom?: number;
+  menuPaddingLeft?: number;
+  menuPaddingRight?: number;
+  menuMarginTop?: number;
+  menuMarginBottom?: number;
+  menuMarginLeft?: number;
+  menuMarginRight?: number;
+  menuArrowGap?: number;
 }
 
 export interface ProjectConfiguration {

@@ -101,6 +101,8 @@ export const setupHandlebars = async () => {
       return '0, 0, 0';
     }
 
+    base = typeof base === 'number' ? base : 31;
+
     const [r = 0, g = 0, b = 0] = hexToRgb(color);
 
     return `${Math.round(r/255 * base)}, ${Math.round(g/255 * base)}, ${Math.round(b/255 * base)}`;
@@ -129,6 +131,11 @@ export const setupHandlebars = async () => {
   });
   Handlebars.registerHelper('hasFont', (fonts: GameFontFile[], id: string) => {
     return !!findFont(fonts, id);
+  });
+  Handlebars.registerHelper('getFontSize', (fonts: GameFontFile[], id: string) => {
+    const font = findFont(fonts, id);
+
+    return font?.height || 8;
   });
   Handlebars.registerHelper('getSoundName', (sounds: any[], id: string) => {
     return findSound(sounds, id)
@@ -210,28 +217,13 @@ export const buildSingleTemplate = async (
     templateName
   ), 'utf-8');
 
-  const data = await prepareTemplateData(build);
-
-  const result = await compileTemplate(template, data);
+  const result = await compileTemplate(template, build.data);
 
   await fse.outputFile(
     path.join(getBuildDir(build), './build', templateName.replace('.tpl', '')),
     result,
     'utf-8',
   );
-};
-
-const prepareTemplateData = async (build: Build) => {
-  const data: any = { ...build.data };
-  const fontId = build.data?.project?.settings?.font;
-  const font = findFont(build.data?.fonts, fontId);
-
-  data.fontName = font
-    ? font._file?.replace(/\.json$/, '').replace(/^font_/, '') || ''
-    : '';
-  data.glyphHeight = font?.height || 8;
-
-  return data;
 };
 
 export const buildTemplates = async (
@@ -249,9 +241,9 @@ export const buildTemplates = async (
   await buildSingleTemplate('neo_types.tpl.h', build);
   build.events.onSuccess('neo_types.h built');
 
-  build.events.onLog('Building font...');
-  await buildSingleTemplate('neo_font.tpl.h', build);
-  build.events.onSuccess('neo_font.h built');
+  build.events.onLog('Building settings...');
+  await buildSingleTemplate('neo_settings.tpl.h', build);
+  build.events.onSuccess('neo_settings.h built');
 
   build.events.onLog('Building variables...');
   await buildSingleTemplate('neo_variables.tpl.h', build);

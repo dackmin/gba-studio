@@ -10,7 +10,7 @@
 #include <bn_algorithm.h>
 
 #include <neo_types.h>
-#include <neo_font.h>
+#include <neo_settings.h>
 
 #include "hud.h"
 #include "game.h"
@@ -86,7 +86,7 @@ namespace neo::hud
 
         const bn::sprite_item& font_item = definition->font != nullptr
           ? *definition->font
-          : neo::font::default_font;
+          : neo::settings::default_font;
         bn::sprite_text_generator text_generator{bn::sprite_font(font_item)};
         text_generator.set_left_alignment();
         text_generator.set_bg_priority(0);

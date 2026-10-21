@@ -28,7 +28,6 @@ namespace neo::types
 {
   static constexpr int SCREEN_WIDTH = 240;
   static constexpr int SCREEN_HEIGHT = 160;
-  static constexpr bn::color DEFAULT_TEXT_COLOR = { 0, 0, 0 };
 
   struct sprite_animation;
 

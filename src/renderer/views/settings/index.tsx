@@ -1,7 +1,14 @@
 import { type ChangeEvent, useCallback, useReducer } from 'react';
 import { Button, Card, Heading, Tabs, Text, TextField } from '@radix-ui/themes';
 import { cloneDeep, mockState, set } from '@junipero/react';
-import { PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
+import {
+  PlusCircledIcon,
+  TrashIcon,
+  TriangleDownIcon,
+  TriangleLeftIcon,
+  TriangleRightIcon,
+  TriangleUpIcon,
+} from '@radix-ui/react-icons';
 import { v4 as uuid } from 'uuid';
 
 import type {
@@ -11,6 +18,8 @@ import { useApp } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 import ConfigurationForm from './ConfigurationForm';
 import FontsListField from '../../components/FontsListField';
+import SpritesListField from '../../components/SpritesListField';
+import ColorField from '../../components/ColorField';
 
 export interface SettingsState {
   project: GameProject;
@@ -41,7 +50,8 @@ const Settings = () => {
   ) => {
     set(state.project, name, e.target.value);
     dispatch({ project: state.project });
-  }, [state.project]);
+    onProjectChange?.(state.project);
+  }, [state.project, onProjectChange]);
 
   const onValueChange = useCallback((
     name: string,
@@ -156,6 +166,11 @@ const Settings = () => {
                 onBlur={onProjectChange?.bind(null, state.project)}
               />
             </div>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-3">
+          <Heading size="3">Texts</Heading>
+          <Card className="!flex flex-col gap-4">
             <div className="flex flex-col items-start gap-2">
               <Text>Default Font</Text>
               <FontsListField
@@ -164,9 +179,309 @@ const Settings = () => {
                 value={state.project?.settings?.font || ''}
                 onValueChange={onValueChange.bind(null, 'settings.font')}
               />
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Default Text Color</Text>
+              <ColorField
+                className="w-96!"
+                value={state.project?.settings?.textColor || '#000'}
+                placeholder="#000"
+                onValueChange={onValueChange.bind(null, 'settings.textColor')}
+              />
+            </div>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-3">
+          <Heading size="3">Dialogs</Heading>
+          <Card className="!flex flex-col gap-4">
+            <div className="flex flex-col items-start gap-2">
+              <Text>Default Dialog Sprite</Text>
+              <SpritesListField
+                className="w-96!"
+                nullable={true}
+                value={state.project?.settings?.dialogSprite || ''}
+                onValueChange={onValueChange.bind(null, 'settings.dialogSprite')}
+              />
               <Text size="1" color="gray">
-                Font used to draw in-game texts (dialogs, menus, HUD texts)
+                Only use 16px vertical spritesheets.
               </Text>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Dialog Paddings</Text>
+              <div className="flex items-center gap-1 w-96">
+                <TextField.Root
+                  value={state.project?.settings?.dialogPaddingTop || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogPaddingTop')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleUpIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogPaddingRight || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogPaddingRight')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleRightIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogPaddingBottom || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogPaddingBottom')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleDownIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogPaddingLeft || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogPaddingLeft')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleLeftIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Dialog Margins</Text>
+              <div className="flex items-center gap-1 w-96">
+                <TextField.Root
+                  value={state.project?.settings?.dialogMarginTop || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogMarginTop')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleUpIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogMarginRight || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogMarginRight')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleRightIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogMarginBottom || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogMarginBottom')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleDownIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.dialogMarginLeft || ''}
+                  onChange={onTextChange.bind(null, 'settings.dialogMarginLeft')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleLeftIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Portrait Gap</Text>
+              <TextField.Root
+                value={state.project?.settings?.dialogPortraitGap || ''}
+                onChange={onTextChange.bind(null, 'settings.dialogPortraitGap')}
+                placeholder="8"
+                className="w-96!"
+              >
+                <TextField.Slot side="right">
+                  px
+                </TextField.Slot>
+              </TextField.Root>
+              <Text size="1" color="gray">
+                Gap between the portrait and the dialog text, when portrait is displayed.
+              </Text>
+            </div>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-3">
+          <Heading size="3">Menus</Heading>
+          <Card className="!flex flex-col gap-4">
+            <div className="flex flex-col items-start gap-2">
+              <Text>Default Menu Sprite</Text>
+              <SpritesListField
+                className="w-96!"
+                nullable={true}
+                value={state.project?.settings?.menuSprite || ''}
+                onValueChange={onValueChange.bind(null, 'settings.menuSprite')}
+              />
+              <Text size="1" color="gray">
+                Only use 16px vertical spritesheets.
+              </Text>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Menu Paddings</Text>
+              <div className="flex items-center gap-1 w-96">
+                <TextField.Root
+                  value={state.project?.settings?.menuPaddingTop || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuPaddingTop')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleUpIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuPaddingRight || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuPaddingRight')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleRightIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuPaddingBottom || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuPaddingBottom')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleDownIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuPaddingLeft || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuPaddingLeft')}
+                  placeholder="8"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleLeftIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Menu Arrow Gap</Text>
+              <TextField.Root
+                value={state.project?.settings?.menuArrowGap || ''}
+                onChange={onTextChange.bind(null, 'settings.menuArrowGap')}
+                placeholder="4"
+                className="w-96"
+              >
+                <TextField.Slot side="right">
+                  px
+                </TextField.Slot>
+              </TextField.Root>
+              <Text size="1" color="gray">
+                Gap between menu items and the arrow indicator.
+              </Text>
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <Text>Menu Margins</Text>
+              <div className="flex items-center gap-1 w-96">
+                <TextField.Root
+                  value={state.project?.settings?.menuMarginTop || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuMarginTop')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleUpIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuMarginRight || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuMarginRight')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleRightIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuMarginBottom || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuMarginBottom')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleDownIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+                <TextField.Root
+                  value={state.project?.settings?.menuMarginLeft || ''}
+                  onChange={onTextChange.bind(null, 'settings.menuMarginLeft')}
+                  placeholder="4"
+                  className="flex-auto w-auto"
+                >
+                  <TextField.Slot side="left">
+                    <TriangleLeftIcon />
+                  </TextField.Slot>
+                  <TextField.Slot side="right">
+                    px
+                  </TextField.Slot>
+                </TextField.Root>
+              </div>
             </div>
           </Card>
         </div>

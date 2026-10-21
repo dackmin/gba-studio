@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { Card, DropdownMenu, Text } from '@radix-ui/themes';
+import { Card, CardProps, DropdownMenu, Text } from '@radix-ui/themes';
+import { classNames } from '@junipero/react';
 
 import { useApp } from '../../services/hooks';
 import { findSprite, getGraphicName } from '../../../helpers';
 import Sprite from '../Sprite';
 
-export interface SpritesListFieldProps {
+export interface SpritesListFieldProps extends CardProps {
   value?: string;
   defaultValue?: string;
   nullable?: boolean;
@@ -15,6 +16,7 @@ export interface SpritesListFieldProps {
 const SpritesListField = ({
   value,
   defaultValue,
+  className,
   nullable = false,
   onValueChange,
 }: SpritesListFieldProps) => {
@@ -28,7 +30,7 @@ const SpritesListField = ({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <Card className="!cursor-pointer select-none">
+        <Card className={classNames('!cursor-pointer select-none', className)}>
           <div className="flex items-center gap-2">
             { nullable && !val ? (
               <Text className="text-slate">None</Text>
@@ -81,6 +83,7 @@ const SpritesListField = ({
                 sprite={sprite}
                 className="w-6 h-6"
                 keepAspectRatio
+                transparencyColor={sprite.transparentColor}
               />
               <Text>{ sprite.name || getGraphicName(sprite._file) }</Text>
             </div>

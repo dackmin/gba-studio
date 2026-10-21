@@ -14,7 +14,7 @@
 #include <bn_sprite_items_textbox.h>
 
 #include <neo_types.h>
-#include <neo_font.h>
+#include <neo_settings.h>
 
 #include "dialog.h"
 #include "dialog_bg.h"
@@ -38,33 +38,48 @@ namespace neo
     font = font_;
   }
 
+  void dialog::set_textbox (const bn::sprite_item* textbox_)
+  {
+    textbox = textbox_;
+  }
+
   void dialog::show ()
   {
     BN_LOG("Showing dialog");
-    const bn::sprite_item& font_item = font != nullptr ? *font : neo::font::default_font;
+
+    const bn::sprite_item& font_item = font != nullptr
+      ? *font : neo::settings::default_font;
+    const bn::sprite_item& textbox_item = textbox != nullptr
+      ? *textbox : neo::settings::default_textbox;
+
     int line_height = font_item.shape_size().height();
-    int total_width = bn::display::width() - MARGIN * 2;
+    int total_width = bn::display::width() - neo::settings::DIALOG_MARGIN_LEFT -
+      neo::settings::DIALOG_MARGIN_RIGHT;
     int portrait_width = portrait != nullptr ? portrait->shape_size().width() : 0;
     int portrait_height = portrait != nullptr ? portrait->shape_size().height() : 0;
     bool portrait_left = portrait_position == neo::types::dialog_portrait_position::LEFT;
-    int text_offset = portrait != nullptr && portrait_left ? portrait_width + PORTRAIT_GAP : 0;
+    int text_offset = portrait != nullptr && portrait_left
+      ? portrait_width + neo::settings::DIALOG_PORTRAIT_GAP : 0;
     int total_height = bn::max(
-      line_height * lines_count,
-      portrait_height
-    ) + PADDING_TOP + PADDING_BOTTOM;
+      bn::max(
+        line_height * lines_count,
+        portrait_height
+      ) + neo::settings::DIALOG_PADDING_TOP + neo::settings::DIALOG_PADDING_BOTTOM,
+      line_height * 2 + 7 // 1 line + 2*8 padding, minimum height
+    );
     int x = 0;
     int y = 0;
 
     switch (direction)
     {
       case neo::types::direction::UP:
-        x = MARGIN;
-        y = MARGIN;
+        x = neo::settings::DIALOG_MARGIN_LEFT;
+        y = neo::settings::DIALOG_MARGIN_TOP;
         break;
 
       case neo::types::direction::DOWN:
-        x = MARGIN;
-        y = bn::display::height() - total_height - MARGIN;
+        x = neo::settings::DIALOG_MARGIN_LEFT;
+        y = bn::display::height() - total_height - neo::settings::DIALOG_MARGIN_BOTTOM;
         break;
 
       default:
@@ -73,7 +88,7 @@ namespace neo
 
     bn::unique_ptr<neo::dialog_bg> bg_storage = bn::make_unique<neo::dialog_bg>(
       game,
-      &bn::sprite_items::textbox,
+      &textbox_item,
       x,
       y,
       total_width,
@@ -90,9 +105,9 @@ namespace neo
       portrait_sprite->set_z_order(text_z_order);
       portrait_sprite->set_top_left_position(
         portrait_left
-          ? x + PADDING_LEFT
-          : x + total_width - PADDING_RIGHT - portrait_width,
-        y + PADDING_TOP
+          ? x + neo::settings::DIALOG_PADDING_LEFT
+          : x + total_width - neo::settings::DIALOG_PADDING_RIGHT - portrait_width,
+        y + neo::settings::DIALOG_PADDING_TOP
       );
     }
 
@@ -110,8 +125,8 @@ namespace neo
     for (int i = 0; i < lines_count; ++i)
     {
       bn::string_view line = lines.at(i);
-      bn::fixed text_x = x + PADDING_LEFT + text_offset;
-      bn::fixed text_y = y + PADDING_TOP + (i * line_height);
+      bn::fixed text_x = x + neo::settings::DIALOG_PADDING_LEFT + text_offset;
+      bn::fixed text_y = y + neo::settings::DIALOG_PADDING_TOP + (i * line_height);
 
       text_generator.generate_top_left(
         text_x,
@@ -125,7 +140,7 @@ namespace neo
 
     for (int c = 1; c < 16; ++c)
     {
-      palette.set_color(c, neo::types::DEFAULT_TEXT_COLOR);
+      palette.set_color(c, neo::settings::TEXT_COLOR);
     }
 
     // Hide the sprites first

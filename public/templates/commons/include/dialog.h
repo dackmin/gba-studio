@@ -7,7 +7,7 @@
 #include <bn_vector.h>
 
 #include <neo_types.h>
-#include <neo_font.h>
+#include <neo_settings.h>
 
 namespace neo
 {
@@ -18,12 +18,6 @@ namespace neo
     static constexpr int MAX_LENGTH = 27;
     static constexpr int MAX_LINES = 5;
     static constexpr int CHAR_WIDTH = 8;
-    static constexpr int PADDING_LEFT = 8;
-    static constexpr int PADDING_RIGHT = 8;
-    static constexpr int PADDING_TOP = 8;
-    static constexpr int PADDING_BOTTOM = 8;
-    static constexpr int MARGIN = 4;
-    static constexpr int PORTRAIT_GAP = 8;
 
     public:
       dialog(neo::game* game, const bn::vector<bn::string_view, MAX_LINES>& lines);
@@ -34,6 +28,7 @@ namespace neo
       void set_speed(neo::types::text_speed speed_);
       void set_portrait(const bn::sprite_item* portrait_, neo::types::dialog_portrait_position position_);
       void set_font(const bn::sprite_item* font_);
+      void set_textbox(const bn::sprite_item* textbox_);
 
       neo::game* game;
       bn::vector<bn::string_view, MAX_LINES> lines;
@@ -42,6 +37,7 @@ namespace neo
       const bn::sprite_item* portrait = nullptr;
       neo::types::dialog_portrait_position portrait_position = neo::types::dialog_portrait_position::LEFT;
       const bn::sprite_item* font = nullptr;
+      const bn::sprite_item* textbox = nullptr;
       int lines_count;
       int bg_z_order;
       int text_z_order;

@@ -19,7 +19,7 @@ namespace neo
     y(y_),
     width(width_),
     height(height_),
-    padding_left(12),
+    padding_left(8),
     padding_right(8),
     padding_top(8),
     padding_bottom(8),
