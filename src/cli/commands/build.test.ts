@@ -16,7 +16,7 @@ describe('cli/build', () => {
     // @ts-expect-error Mock electron resourcesPath
     process.resourcesPath = path.resolve();
 
-    await build({ projectPath });
+    await build({ projectPath, configurationName: process.platform });
 
     await expect(readBuiltFile('neo_scenes.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_types.h')).resolves.toMatchSnapshot();

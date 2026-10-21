@@ -37,8 +37,8 @@ export function getBuildConfiguration (
   }
 
   return build?.data?.project?.configurations?.find(conf =>
-    conf.id === confName
-  );
+    conf.id === confName || conf.name === confName
+  ) || { settings: build?.data?.project?.settings };
 }
 
 export function getCustomPythonPath (
