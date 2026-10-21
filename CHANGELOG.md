@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.5.0](https://github.com/dackmin/gba-studio/compare/v0.4.0...v0.5.0) (2026-10-21)
+
+### Features
+
+* allow to customize dialogs & menus ([5f08d4b](https://github.com/dackmin/gba-studio/commit/5f08d4b650237fa4553fd1206d99b21f3292e420))
+* also allow to customize dialogs & menus at event level ([7e1bb1e](https://github.com/dackmin/gba-studio/commit/7e1bb1e0fe8975ca07470969db046d151a4676f7))
+
+### Bug Fixes
+
+* correctly fallback to default settings on unknown config name ([e0e4738](https://github.com/dackmin/gba-studio/commit/e0e47389e215a9c2e2fa3e75403d03a9cbbd9176))
+* missing shoot-projectile event schema ([784d5d8](https://github.com/dackmin/gba-studio/commit/784d5d8dae000ac87b90a1bea79eaa8f5b7abd36))
+
 ## [0.4.0](https://github.com/dackmin/gba-studio/compare/v0.3.3...v0.4.0) (2026-10-20)
 
 ### Features
