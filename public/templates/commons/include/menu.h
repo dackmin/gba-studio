@@ -29,11 +29,13 @@ namespace neo
       void set_z_order(int z_order_);
       void set_font(const bn::sprite_item* font_);
       void set_textbox(const bn::sprite_item* textbox_);
+      void set_text_color(const bn::color* text_color_);
 
       neo::game* game;
       bn::vector<neo::types::menu_choice, MAX_ITEMS> choices;
       neo::types::direction direction;
       const bn::sprite_item* font = nullptr;
+      const bn::color* text_color = nullptr;
       const bn::sprite_item* textbox = nullptr;
       int bg_z_order;
       int text_z_order;

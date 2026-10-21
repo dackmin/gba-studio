@@ -96,6 +96,9 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
 {{#each (truncate this.text (dialogLineLength this.portrait))}}
 constexpr bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{escapeCpp this}}";
 {{/each}}
+{{#if (isset this.textColor)}}
+constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
+{{/if}}
 BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
@@ -109,6 +112,16 @@ BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   neo::types::dialog_portrait_position::{{uppercase (valuedef this.portraitPosition 'left')}},
   {{#if (hasFont @root/fonts this.font)}}
   &bn::sprite_items::{{getFontName @root/fonts this.font}},
+  {{else}}
+  nullptr,
+  {{/if}}
+  {{#if (isset this.textColor)}}
+  &{{../prefix}}_{{@index}}_text_color,
+  {{else}}
+  nullptr,
+  {{/if}}
+  {{#if (isset this.background)}}
+  &bn::sprite_items::{{getSpriteName @root/sprites this.background}},
   {{else}}
   nullptr,
   {{/if}}
@@ -155,6 +168,9 @@ BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@i
   {{/if}}
 );
 {{/each}}
+{{#if (isset this.textColor)}}
+constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
+{{/if}}
 BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef (len (longestMenuChoice this.choices)) 0}},
@@ -163,6 +179,16 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
   {{valuedef this.z 1}},
   {{#if (hasFont @root/fonts this.font)}}
   &bn::sprite_items::{{getFontName @root/fonts this.font}},
+  {{else}}
+  nullptr,
+  {{/if}}
+  {{#if (isset this.textColor)}}
+  &{{../prefix}}_{{@index}}_text_color,
+  {{else}}
+  nullptr,
+  {{/if}}
+  {{#if (isset this.background)}}
+  &bn::sprite_items::{{getSpriteName @root/sprites this.background}},
   {{else}}
   nullptr,
   {{/if}}

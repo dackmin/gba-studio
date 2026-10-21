@@ -309,6 +309,8 @@ namespace neo::events
       d->set_speed(dialog_evt->speed);
       d->set_portrait(dialog_evt->portrait, dialog_evt->portrait_position);
       d->set_font(dialog_evt->font);
+      d->set_text_color(dialog_evt->text_color);
+      d->set_textbox(dialog_evt->background);
       d->show();
       delete d;
     }
@@ -356,6 +358,8 @@ namespace neo::events
       m->set_direction(menu_evt->direction);
       m->set_z_order(menu_evt->z);
       m->set_font(menu_evt->font);
+      m->set_text_color(menu_evt->text_color);
+      m->set_textbox(menu_evt->background);
       BN_LOG("Opening menu");
       int selected = m->show();
       delete m;

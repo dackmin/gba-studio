@@ -126,10 +126,11 @@ namespace neo
     }
 
     bn::sprite_palette_ptr palette = font_item.palette_item().create_new_palette();
+    bn::color final_text_color = text_color != nullptr ? *text_color : neo::settings::TEXT_COLOR;
 
     for (int c = 1; c < 16; ++c)
     {
-      palette.set_color(c, neo::settings::TEXT_COLOR);
+      palette.set_color(c, final_text_color);
     }
 
     for (bn::sprite_ptr& sprite : text_sprites)
@@ -221,5 +222,10 @@ namespace neo
   void menu::set_textbox (const bn::sprite_item* textbox_)
   {
     textbox = textbox_;
+  }
+
+  void menu::set_text_color (const bn::color* text_color_)
+  {
+    text_color = text_color_;
   }
 }

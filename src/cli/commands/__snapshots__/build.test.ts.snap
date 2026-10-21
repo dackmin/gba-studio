@@ -469,6 +469,8 @@ namespace neo::scenes
     nullptr,
     neo::types::dialog_portrait_position::LEFT,
     nullptr,
+    nullptr,
+    nullptr,
     make_dialog_vector(
       scene_0_event_14_line_0
     )
@@ -539,6 +541,8 @@ namespace neo::scenes
     2,
     neo::types::direction::DOWN_RIGHT,
     1,
+    nullptr,
+    nullptr,
     nullptr,
     make_menu_vector(
       scene_0_event_15_option_0_choice,
@@ -1940,9 +1944,11 @@ namespace neo::types
     const bn::sprite_item* portrait;
     neo::types::dialog_portrait_position portrait_position;
     const bn::sprite_item* font;
+    const bn::color* text_color;
+    const bn::sprite_item* background;
     bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::sprite_item* font_, const bn::vector<bn::string_view, 5>& lines_):
-      event(type_), direction(direction_), z(z_), speed(speed_), portrait(portrait_), portrait_position(portrait_position_), font(font_), lines(lines_) {}
+    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, const bn::vector<bn::string_view, 5>& lines_):
+      event(type_), direction(direction_), z(z_), speed(speed_), portrait(portrait_), portrait_position(portrait_position_), font(font_), text_color(text_color_), background(background_), lines(lines_) {}
   };
 
   struct if_condition;
@@ -1966,9 +1972,11 @@ namespace neo::types
     neo::types::direction direction;
     int z;
     const bn::sprite_item* font;
+    const bn::color* text_color;
+    const bn::sprite_item* background;
     bn::vector<menu_choice, 5> choices;
-    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::sprite_item* font_, const bn::vector<menu_choice, 5>& choices_):
-      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), font(font_), choices(choices_) {}
+    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, const bn::vector<menu_choice, 5>& choices_):
+      event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), font(font_), text_color(text_color_), background(background_), choices(choices_) {}
   };
 
   struct variable_change_event: event
@@ -3080,19 +3088,47 @@ namespace neo::variables
 `;
 
 exports[`cli/build > should build a basic project successfully 4`] = `
-"#ifndef NEO_FONT_H
-#define NEO_FONT_H
+"#ifndef NEO_SETTINGS_H
+#define NEO_SETTINGS_H
 
 #include <bn_sprite_font.h>
 #include <bn_sprite_text_generator.h>
 #include <bn_sprite_palette_ptr.h>
 
 #include <bn_sprite_items_font_default.h>
+#include <bn_sprite_items_textbox.h>
+#include <bn_sprite_items_textbox.h>
 
-namespace neo::font
+namespace neo::settings
 {
-  constexpr int GLYPH_HEIGHT = 8;
+  static constexpr int GLYPH_HEIGHT = 8;
+  static constexpr bn::color TEXT_COLOR = { 0, 0, 0 };
+
   inline constexpr const bn::sprite_item& default_font = bn::sprite_items::font_default;
+
+  static constexpr int DIALOG_PADDING_LEFT = 8;
+  static constexpr int DIALOG_PADDING_TOP = 8;
+  static constexpr int DIALOG_PADDING_RIGHT = 8;
+  static constexpr int DIALOG_PADDING_BOTTOM = 8;
+  static constexpr int DIALOG_MARGIN_LEFT = 4;
+  static constexpr int DIALOG_MARGIN_TOP = 4;
+  static constexpr int DIALOG_MARGIN_RIGHT = 4;
+  static constexpr int DIALOG_MARGIN_BOTTOM = 4;
+  static constexpr int DIALOG_PORTRAIT_GAP = 8;
+
+  inline constexpr const bn::sprite_item& default_textbox = bn::sprite_items::textbox;
+
+  static constexpr int MENU_PADDING_LEFT = 8;
+  static constexpr int MENU_PADDING_TOP = 8;
+  static constexpr int MENU_PADDING_RIGHT = 8;
+  static constexpr int MENU_PADDING_BOTTOM = 8;
+  static constexpr int MENU_MARGIN_LEFT = 4;
+  static constexpr int MENU_MARGIN_TOP = 4;
+  static constexpr int MENU_MARGIN_RIGHT = 4;
+  static constexpr int MENU_MARGIN_BOTTOM = 4;
+  static constexpr int MENU_ARROW_GAP = 4;
+
+  inline constexpr const bn::sprite_item& default_menu_textbox = bn::sprite_items::textbox;
 }
 
 #endif

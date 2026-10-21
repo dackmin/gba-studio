@@ -29,6 +29,7 @@ namespace neo
       void set_portrait(const bn::sprite_item* portrait_, neo::types::dialog_portrait_position position_);
       void set_font(const bn::sprite_item* font_);
       void set_textbox(const bn::sprite_item* textbox_);
+      void set_text_color(const bn::color* text_color_);
 
       neo::game* game;
       bn::vector<bn::string_view, MAX_LINES> lines;
@@ -37,6 +38,7 @@ namespace neo
       const bn::sprite_item* portrait = nullptr;
       neo::types::dialog_portrait_position portrait_position = neo::types::dialog_portrait_position::LEFT;
       const bn::sprite_item* font = nullptr;
+      const bn::color* text_color = nullptr;
       const bn::sprite_item* textbox = nullptr;
       int lines_count;
       int bg_z_order;

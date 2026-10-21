@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { Card, CardProps, DropdownMenu, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
@@ -10,6 +10,7 @@ export interface SpritesListFieldProps extends CardProps {
   value?: string;
   defaultValue?: string;
   nullable?: boolean;
+  nullableLabel?: ReactNode;
   onValueChange?: (value: string) => void;
 }
 
@@ -18,6 +19,7 @@ const SpritesListField = ({
   defaultValue,
   className,
   nullable = false,
+  nullableLabel = 'None',
   onValueChange,
 }: SpritesListFieldProps) => {
   const { sprites } = useApp();
@@ -33,7 +35,7 @@ const SpritesListField = ({
         <Card className={classNames('!cursor-pointer select-none', className)}>
           <div className="flex items-center gap-2">
             { nullable && !val ? (
-              <Text className="text-slate">None</Text>
+              <Text className="text-slate">{ nullableLabel }</Text>
             ) : (
               <>
                 <Sprite
@@ -57,7 +59,7 @@ const SpritesListField = ({
           onClick={() => onValueChange?.('')}
         >
           { nullable ? (
-            <Text>None</Text>
+            <Text>{nullableLabel}</Text>
           ) : (
             <>
               <Sprite

@@ -11,6 +11,9 @@ import { useApp, useCanvas } from '../../../services/hooks';
 import DirectionField from '../../DirectionField';
 import FontsListField from '../../FontsListField';
 import Choice from './Choice';
+import Collapsible from '../../Collapsible';
+import ColorField from '../../ColorField';
+import SpritesListField from '../../SpritesListField';
 
 export interface EventShowMenuProps {
   event: ShowMenuEvent;
@@ -22,7 +25,7 @@ const EventShowMenu = ({
   onValueChange,
 }: EventShowMenuProps) => {
   const { selectedScene } = useCanvas();
-  const { fonts } = useApp();
+  const { fonts, project } = useApp();
   const font = useMemo(() => (
     event.font ? findFont(fonts, event.font) : undefined
   ), [fonts, event.font]);
@@ -133,6 +136,38 @@ const EventShowMenu = ({
               </div>
             </Inset>
           </Card>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Collapsible.Root>
+            <Collapsible.Trigger className="px-0! py-0! text-sm! text-slate">
+              Advanced
+            </Collapsible.Trigger>
+            <Collapsible.Content className="mt-4! flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Text size="1" className="text-slate">Font</Text>
+                <FontsListField
+                  value={event.font || ''}
+                  onValueChange={onValueChange_.bind(null, 'font')}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Text size="1" className="text-slate">Text Color</Text>
+                <ColorField
+                  value={event.textColor || ''}
+                  placeholder={project?.settings?.textColor}
+                  onValueChange={onValueChange_.bind(null, 'textColor')}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Text size="1" className="text-slate">Background Sprite</Text>
+                <SpritesListField
+                  nullable={true}
+                  value={event.background || ''}
+                  onValueChange={onValueChange_.bind(null, 'background')}
+                />
+              </div>
+            </Collapsible.Content>
+          </Collapsible.Root>
         </div>
       </div>
     </SceneFormContext>

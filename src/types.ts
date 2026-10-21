@@ -635,6 +635,8 @@ export interface ShowDialogEvent extends SceneEvent {
   portrait?: string;
   portraitPosition?: 'left' | 'right';
   font?: string;
+  textColor?: string;
+  background?: string;
 }
 
 export interface DisableActorEvent extends SceneEvent {
@@ -764,6 +766,8 @@ export interface ShowMenuEvent extends SceneEvent {
   direction?: Direction;
   z?: number;
   font?: string;
+  textColor?: string;
+  background?: string;
 }
 
 export interface IfEventCondition {

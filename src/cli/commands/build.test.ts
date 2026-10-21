@@ -21,7 +21,7 @@ describe('cli/build', () => {
     await expect(readBuiltFile('neo_scenes.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_types.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_variables.h')).resolves.toMatchSnapshot();
-    await expect(readBuiltFile('neo_font.h')).resolves.toMatchSnapshot();
+    await expect(readBuiltFile('neo_settings.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_logs.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_utils.h')).resolves.toMatchSnapshot();
   });
