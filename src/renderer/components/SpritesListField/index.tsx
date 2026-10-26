@@ -11,6 +11,7 @@ export interface SpritesListFieldProps extends CardProps {
   defaultValue?: string;
   nullable?: boolean;
   nullableLabel?: ReactNode;
+  defaultGraphic?: string;
   onValueChange?: (value: string) => void;
 }
 
@@ -20,10 +21,12 @@ const SpritesListField = ({
   className,
   nullable = false,
   nullableLabel = 'None',
+  defaultGraphic = 'sprite_default',
   onValueChange,
 }: SpritesListFieldProps) => {
   const { sprites } = useApp();
   const val = value ?? defaultValue ?? '';
+  const defaultPath = `resources://public/templates/commons/graphics/${defaultGraphic}.bmp`;
 
   const selected = useMemo(() => (
     findSprite(sprites, val)
@@ -40,7 +43,7 @@ const SpritesListField = ({
               <>
                 <Sprite
                   sprite={selected ?? {
-                    path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+                    path: defaultPath,
                     width: 16,
                     height: 16,
                   }}
@@ -48,7 +51,7 @@ const SpritesListField = ({
                   keepAspectRatio
                   transparencyColor={selected?.transparentColor}
                 />
-                <Text>{ selected?.name ?? 'sprite_default' }</Text>
+                <Text>{ selected?.name ?? defaultGraphic }</Text>
               </>
             ) }
           </div>
@@ -64,7 +67,7 @@ const SpritesListField = ({
             <>
               <Sprite
                 sprite={{
-                  path: 'resources://public/templates/commons/graphics/sprite_default.bmp',
+                  path: defaultPath,
                   width: 16,
                   height: 16,
                 }}

@@ -34,6 +34,12 @@ import type {
   SpriteAnimations,
   SpriteAnimationState,
 } from '../types';
+import {
+  findBackground,
+  getMapSize,
+  getStaticGridSize,
+  resizeCollisions,
+} from '../helpers';
 import { getResourcesDir } from './utils';
 
 export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
@@ -267,46 +273,57 @@ export const sanitizeScene = async (
     scene.map = { type: 'map', width: 0, height: 0, gridSize: 16 };
   }
 
-  // If width/height not set, try to get it from background image
-  if (!scene.map.width || !scene.map.height) {
-    try {
-      const size = await imageSizeFromFile(
-        !scene.background || scene.background === 'bg_default'
-          ? path.join(getResourcesDir(), 'bg_default.bmp')
+  if (!scene.map.gridSize) {
+    scene.map.gridSize = 16;
+  }
+
+  const gridSize = getStaticGridSize(scene.map.gridSize);
+
+  try {
+    if (!gridSize) {
+      throw new Error('Dynamic grid size');
+    }
+
+    const background = findBackground(opts?.backgrounds, scene.background);
+    const size = await imageSizeFromFile(
+      !scene.background || scene.background === 'bg_default'
+        ? path.join(getResourcesDir(), 'bg_default.bmp')
+        : background?.path
+          ? path.join(path.dirname(opts?.projectPath || ''), background.path)
           : path.join(
             path.dirname(opts?.projectPath || ''),
             'graphics',
             `${scene.background}.bmp`
           )
-      );
+    );
 
-      if (!scene.map.width) {
-        scene.map.width = Math.round(size.width / scene.map.gridSize!);
-      }
+    const { width, height } = getMapSize(size.width, size.height, gridSize);
 
-      if (!scene.map.height) {
-        scene.map.height = Math.round(size.height / scene.map.gridSize!);
-      }
-    } catch {}
-  }
+    if (scene.map.collisions?.length) {
+      scene.map.collisions = resizeCollisions(
+        scene.map.collisions, width, height);
+    }
 
-  if (!scene.map.gridSize) {
-    scene.map.gridSize = 16;
-  }
+    scene.map.width = width;
+    scene.map.height = height;
+  } catch {}
 
   for (const sensor of scene.map?.sensors ?? []) {
     await sanitizeSensor(sensor);
   }
 
   // Ensure player exists for map-based scenes & has type "player"
-  if (scene.sceneType === '2d-top-down' || scene.sceneType === 'side-scroller') {
+  if (['2d-top-down', 'side-scroller'].includes(scene.sceneType)) {
     scene.player = scene.player || { type: 'player', x: 0, y: 0 };
-    scene.player.type = 'player';
+  }
 
-    if (scene.map?.collisions) {
-      scene.map.width = scene.map.width || scene.map.collisions[0]?.length || 0;
-      scene.map.height = scene.map.height || scene.map.collisions.length || 0;
-    }
+  if (scene.player) {
+    scene.player.type = 'player';
+  }
+
+  if (scene.sceneType !== 'logos' && scene.map?.collisions) {
+    scene.map.width = scene.map.width || scene.map.collisions[0]?.length || 0;
+    scene.map.height = scene.map.height || scene.map.collisions.length || 0;
   }
 
   return scene;
@@ -600,6 +617,7 @@ export const sanitizeProject = async (project: GameProject, opts?: {
 
 export interface SanitizeOptions {
   projectPath?: string;
+  backgrounds?: GameBackgroundFile[];
 }
 
 export const sanitize = async (
@@ -608,7 +626,10 @@ export const sanitize = async (
 ): Promise<Partial<AppPayload>> => {
   // Scenes
   data.scenes = await Promise
-    .all((data.scenes || []).map(scene => sanitizeScene(scene, opts)));
+    .all((data.scenes || []).map(scene => sanitizeScene(scene, {
+      ...opts,
+      backgrounds: opts?.backgrounds ?? data.backgrounds,
+    })));
 
   // Huds
   data.huds = await Promise

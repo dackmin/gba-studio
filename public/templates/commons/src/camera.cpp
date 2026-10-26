@@ -41,6 +41,19 @@ namespace neo::camera
       max_x = bg_pixel_width / 2 - neo::types::SCREEN_WIDTH / 2;
       min_y = -(bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2);
       max_y = bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2;
+
+      if (active_scene.scene_type == neo::types::scene_type::POINT_AND_CLICK)
+      {
+        if (min_x > max_x)
+        {
+          min_x = max_x = 0;
+        }
+
+        if (min_y > max_y)
+        {
+          min_y = max_y = 0;
+        }
+      }
     }
 
     void animate_to(

@@ -61,6 +61,12 @@ namespace neo
 
       bool is_input_enabled;
 
+      // Point-and-click
+      inline constexpr static int CURSOR_SPEED = 3;
+      inline constexpr static int CURSOR_EDGE_MARGIN = 4;
+      bn::optional<bn::sprite_ptr> cursor_sprite;
+      bn::fixed_point cursor_position;
+
       neo::actor* player;
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
@@ -94,6 +100,12 @@ namespace neo
       void update_scripted_events();
       void update_frame();
       void update_projectiles();
+
+      // Point-and-click
+      void update_cursor();
+      void set_cursor_sprite_position();
+      void click_at(int pixel_x, int pixel_y);
+
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);
       bool has_collision(int tile_x, int tile_y);

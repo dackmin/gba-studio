@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { SegmentedControl } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
@@ -11,8 +12,8 @@ export interface CollisionGroupFieldProps
 }
 
 // Collision group picker: 0 = no group, 1-4 = groups. The behavior of 0
-// depends on the scene type: in top-down scenes actors in no group are
-// solid by default (the historical behavior), in side-scroller scenes
+// depends on the scene type: in top-down and point-and-click scenes actors
+// in no group are solid by default (the historical behavior), in side-scroller scenes
 // they are pass-through (groups are opt-in obstacles/enemies). In both
 // types, an actor in the same group as the player is pass-through, and
 // different groups are solid and fire their collide events on touch.
@@ -23,7 +24,9 @@ const CollisionGroupField = ({
   onValueChange,
 }: CollisionGroupFieldProps) => {
   const current = value ?? 0;
-  const topDown = sceneType === '2d-top-down';
+  const topDown = useMemo(() => (
+    ['2d-top-down', 'point-and-click'].includes(sceneType || 'logos')
+  ), [sceneType]);
 
   return (
     <SegmentedControl.Root

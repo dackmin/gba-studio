@@ -19,6 +19,7 @@
 {{/each}}
 {{/each}}
 #include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_cursor_default.h>
 {{#each sprites}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites this.id}}.h>
 {{/each}}
@@ -26,6 +27,9 @@
 #include <bn_sprite_items_{{getFontName @root/fonts this.id}}.h>
 {{/each}}
 {{#each scenes}}
+{{#if this.cursor}}
+#include <bn_sprite_items_{{getSpriteName @root/sprites this.cursor}}.h>
+{{/if}}
 {{#if this.player.sprite}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}.h>
 {{else}}
@@ -556,6 +560,8 @@ namespace neo::scenes
     {{slug this.name}}_scene_name,
     {{#if (eq this.sceneType 'side-scroller')}}
     neo::types::scene_type::SIDE_SCROLLER,
+    {{else if (eq this.sceneType 'point-and-click')}}
+    neo::types::scene_type::POINT_AND_CLICK,
     {{else if (eq this.sceneType '2d-top-down')}}
     neo::types::scene_type::TOP_DOWN,
     {{else}}
@@ -600,9 +606,14 @@ namespace neo::scenes
     nullptr,
     {{/if}}
     {{#if (gte (getHudIndex @root/huds this.hud) 0)}}
-    &hud_{{getHudIndex @root/huds this.hud}}
+    &hud_{{getHudIndex @root/huds this.hud}},
     {{else}}
-    nullptr
+    nullptr,
+    {{/if}}
+    {{#if this.cursor}}
+    bn::sprite_items::{{getSpriteName @root/sprites this.cursor}}
+    {{else}}
+    bn::sprite_items::cursor_default
     {{/if}}
   };
   //////////////////////////
@@ -625,7 +636,8 @@ namespace neo::scenes
     nullptr,
     0,
     nullptr,
-    nullptr
+    nullptr,
+    bn::sprite_items::cursor_default
   };
 
   neo::types::scene get_scene(bn::string_view name)

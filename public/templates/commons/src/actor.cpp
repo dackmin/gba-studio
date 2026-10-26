@@ -4,6 +4,7 @@
 #include <bn_keypad.h>
 #include <bn_sprite_ptr.h>
 #include <bn_log.h>
+#include <bn_math.h>
 
 #include <neo_types.h>
 
@@ -325,6 +326,12 @@ namespace neo
       return;
     }
 
+    if (game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK)
+    {
+      check_input_point_and_click();
+      return;
+    }
+
     if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
     {
       return;
@@ -576,6 +583,178 @@ namespace neo
     check_collisions();
   }
 
+  void actor::walk_to(int pixel_x, int pixel_y)
+  {
+    if (!sprite.visible())
+    {
+      return;
+    }
+
+    walk_target = bn::fixed_point(pixel_x - width() / 2, pixel_y - height());
+
+    int delta_x = (int)walk_target.x() - (int)position.x();
+    int delta_y = (int)walk_target.y() - (int)position.y();
+
+    if (delta_x == 0 && delta_y == 0)
+    {
+      return;
+    }
+
+    neo::types::direction new_direction = abs(delta_x) >= abs(delta_y)
+      ? (delta_x >= 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
+      : (delta_y >= 0 ? neo::types::direction::DOWN : neo::types::direction::UP);
+
+    walking_to_target = true;
+    moving = true;
+    set_direction(new_direction);
+
+    neo::types::sprite_animation* anim = definition->animations_count > 0
+      ? get_animation(definition->animations[0]->_id)
+      : nullptr;
+
+    if (anim != nullptr)
+    {
+      bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+      anim->reset(sprite, &tiles_item);
+    }
+  }
+
+  void actor::stop_walking()
+  {
+    if (!walking_to_target)
+    {
+      return;
+    }
+
+    walking_to_target = false;
+    moving = false;
+    set_direction(direction);
+  }
+
+  bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    int feet_x = (int)pixel_position.x() + width() / 2;
+    int feet_y = (int)pixel_position.y() + height() - 1;
+    int tile_x = feet_x < 0 ? -1 : map_data->to_tile_x(game->variables, feet_x);
+    int tile_y = feet_y < 0 ? -1 : map_data->to_tile_y(game->variables, feet_y);
+
+    return map_data->has_collision(tile_x, tile_y) ||
+      game->has_collision(tile_x, tile_y);
+  }
+
+  void actor::check_input_point_and_click()
+  {
+    if (!walking_to_target)
+    {
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+
+    bn::fixed delta_x = walk_target.x() - position.x();
+    bn::fixed delta_y = walk_target.y() - position.y();
+    bn::fixed distance = bn::max(bn::abs(delta_x), bn::abs(delta_y));
+    bn::fixed step_x = delta_x;
+    bn::fixed step_y = delta_y;
+    bool arrived = true;
+
+    if (distance > PLAYER_SPEED)
+    {
+      step_x = delta_x * PLAYER_SPEED / distance;
+      step_y = delta_y * PLAYER_SPEED / distance;
+      arrived = false;
+    }
+
+    bn::fixed_point next_position = position + bn::fixed_point(step_x, step_y);
+    bool stuck = false;
+
+    if (!point_and_click_blocked_at(next_position))
+    {
+      set_position(next_position);
+    }
+    else
+    {
+      arrived = false;
+
+      bn::fixed_point next_x_position(position.x() + step_x, position.y());
+      bn::fixed_point next_y_position(position.x(), position.y() + step_y);
+
+      if (step_x != 0 && !point_and_click_blocked_at(next_x_position))
+      {
+        set_position(next_x_position);
+      }
+      else if (step_y != 0 && !point_and_click_blocked_at(next_y_position))
+      {
+        set_position(next_y_position);
+      }
+      else
+      {
+        stuck = true;
+      }
+    }
+
+    if (!stuck && !arrived)
+    {
+      neo::types::sprite_animation* anim = definition->animations_count > 0
+        ? get_animation(definition->animations[0]->_id)
+        : nullptr;
+
+      if (anim != nullptr)
+      {
+        anim->play(sprite, &tiles_item, game->variables);
+      }
+    }
+
+    update_sensors(
+      game->active_scene->map_data->to_tile_x(game->variables, (int)position.x() + width() / 2),
+      game->active_scene->map_data->to_tile_y(game->variables, (int)position.y() + height() - 1)
+    );
+
+    check_collisions();
+
+    if (arrived || stuck)
+    {
+      stop_walking();
+    }
+  }
+
+  void actor::update_sensors(int tile_x, int tile_y)
+  {
+    neo::sensor* sensor = game->get_sensor_at(tile_x, tile_y);
+
+    for (int i = 0; i < game->sensors_count; ++i)
+    {
+      neo::sensor* other = game->sensors[i];
+
+      if (other == sensor)
+      {
+        continue;
+      }
+
+      if (other->player_inside)
+      {
+        other->player_inside = false;
+
+        if (other->definition->leave_events != nullptr)
+        {
+          other->trigger_leave();
+        }
+      }
+    }
+
+    if (
+      sensor != nullptr &&
+      sensor->definition->enter_events != nullptr &&
+      !sensor->player_inside
+    )
+    {
+      sensor->player_inside = true;
+      sensor->trigger_enter();
+    }
+  }
+
   void actor::apply_side_scroller_gravity()
   {
     int step = vertical_velocity + SIDE_SCROLL_GRAVITY;
@@ -705,8 +884,9 @@ namespace neo
     // top-down scenes group 0 (the default) is solid like it always
     // was, in side-scroller scenes group 0 is pass-through and groups
     // 1-4 are solid when different from the player's.
-    bool top_down = game->active_scene->scene_type ==
-      neo::types::scene_type::TOP_DOWN;
+    bool top_down =
+      game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
+      game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK;
 
     // Player rect, in map pixel coordinates (its position is already
     // tracked in pixels)
@@ -969,6 +1149,8 @@ namespace neo
       return;
     }
 
+    // A scripted move takes over from any point-and-click walk
+    walking_to_target = false;
     moving = true;
 
     const neo::types::map* map_data = game->active_scene->map_data;

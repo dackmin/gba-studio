@@ -1,4 +1,4 @@
-import { findSprite } from '../../../helpers';
+import { findBackground, findSprite } from '../../../helpers';
 import { getBackgroundLayoutFromFile } from './assets';
 import type { Build, InternalSpriteAnimation, SpriteAnimation } from '../../../types';
 
@@ -56,6 +56,21 @@ export async function prepareData (build: Build) {
   }
 
   for (const scene of build.data?.scenes || []) {
+    if (scene.sceneType !== 'logos') {
+      scene.map ??= { type: 'map', width: 0, height: 0, gridSize: 16 };
+      scene.map.gridSize ||= 16;
+
+      if (!scene.map.width || !scene.map.height) {
+        const layout = findBackground(
+          build.data?.backgrounds, scene.background)?._layout;
+        const width = layout?.width ?? 256;
+        const height = layout?.height ?? 256;
+
+        scene.map.width ||= Math.round(width / scene.map.gridSize);
+        scene.map.height ||= Math.round(height / scene.map.gridSize);
+      }
+    }
+
     for (const actor of scene.actors || []) {
       const sprite = findSprite(build.data?.sprites, actor.sprite);
 

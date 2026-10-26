@@ -66,3 +66,4 @@ This software is licensed under [GPL-3.0](https://github.com/dackmin/gba-studio/
   - [Retro RPG Characters](https://the-pixel-nook.itch.io/retro-rpg-character-pack) from [The Pixel Nook](https://the-pixel-nook.itch.io/)
   - [Pocket Valley Essentials](https://widseylabs.itch.io/pocket-valley-essentials) from [Widsey Labs](https://widseylabs.itch.io/)
   - [Pocket Valley Interiors](https://widseylabs.itch.io/pocket-valley-interiors) from [Widsey Labs](https://widseylabs.itch.io/)
+  - [Simple Pixel Cursors](https://gabl18.itch.io/simple-pixel-cursors) from [Gabl18](https://gabl18.itch.io/)

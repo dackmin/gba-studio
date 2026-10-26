@@ -6,6 +6,7 @@ import {
   ScrollArea,
   Select,
   Separator,
+  Switch,
   Tabs,
   Text,
   TextField,
@@ -20,12 +21,15 @@ import {
   getAssetUrl,
   getGraphicName,
   getImageSize,
-  pixelToTile,
+  getMapSize,
+  getStaticGridSize,
+  resizeCollisions,
 } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
 import BackgroundsListField from '../../components/BackgroundsListField';
+import SpritesListField from '../../components/SpritesListField';
 import EventsField from '../../components/EventsField';
 import EventValueField from '../../components/EventValueField';
 
@@ -107,11 +111,11 @@ const SceneForm = ({
     onChange?.(scene);
   }, [onChange, scene]);
 
-  const onBackgroundChange = useCallback(async (value: string) => {
-    const background = findBackground(backgrounds, value);
+  const syncMapSize = useCallback(async (backgroundId?: string) => {
+    const background = findBackground(backgrounds, backgroundId);
 
-    const [width, height] = await getImageSize(
-      !value || value === 'bg_default' || !background
+    const [pixelWidth, pixelHeight] = await getImageSize(
+      !backgroundId || backgroundId === 'bg_default' || !background
         ? `resources://public/templates/commons/graphics/bg_default.bmp`
         : getAssetUrl(background)
     );
@@ -123,16 +127,31 @@ const SceneForm = ({
       height: 0,
     };
 
-    if (scene.sceneType !== 'logos') {
-      scene.map.gridSize = scene.map.gridSize || 16;
-      scene.map.width = pixelToTile(width,
-        scene.map.gridSize);
-      scene.map.height = pixelToTile(height,
-        scene.map.gridSize);
-    }
+    const gridSize = getStaticGridSize(scene.map.gridSize ?? 16);
 
+    if (scene.sceneType !== 'logos' && gridSize) {
+      const { width, height } = getMapSize(pixelWidth, pixelHeight, gridSize);
+
+      if (scene.map.collisions?.length) {
+        scene.map.collisions = resizeCollisions(
+          scene.map.collisions, width, height);
+      }
+
+      scene.map.width = width;
+      scene.map.height = height;
+    }
+  }, [scene, backgrounds]);
+
+  const onBackgroundChange = useCallback(async (value: string) => {
+    await syncMapSize(value);
     onValueChange('background', getGraphicName(value || 'bg_default'));
-  }, [scene, backgrounds, onValueChange]);
+  }, [syncMapSize, onValueChange]);
+
+  const onGridSizeChange = useCallback(async (value: any) => {
+    onValueChange('map.gridSize', value);
+    await syncMapSize(scene.background);
+    onChange?.(scene);
+  }, [scene, syncMapSize, onValueChange, onChange]);
 
   const onHudChange = useCallback((value: string) => {
     if (value === 'none') {
@@ -149,7 +168,7 @@ const SceneForm = ({
     if (value !== scene.sceneType) {
       set(scene, name, value);
 
-      if (value !== 'logos' && !scene.player) {
+      if (!['logos', 'point-and-click'].includes(value) && !scene.player) {
         scene.player = { type: 'player', x: 0, y: 0 };
       }
 
@@ -159,6 +178,27 @@ const SceneForm = ({
       onChange?.(scene);
     }
   }, [onBackgroundChange, onChange, scene]);
+
+  const onCursorChange = useCallback((value: string) => {
+    if (!value) {
+      delete scene.cursor;
+      onChange?.(scene);
+
+      return;
+    }
+
+    onValueChange('cursor', value);
+  }, [onChange, onValueChange, scene]);
+
+  const onPlayerToggle = useCallback((checked: boolean) => {
+    if (checked) {
+      scene.player = scene.player || { type: 'player', x: 0, y: 0 };
+    } else {
+      delete scene.player;
+    }
+
+    onChange?.(scene);
+  }, [onChange, scene]);
 
   const onNameKeyDown = (e: KeyboardEvent<HTMLHeadingElement>) => {
     e.stopPropagation();
@@ -234,6 +274,7 @@ const SceneForm = ({
                   <Select.Item value="logos">Logos</Select.Item>
                   <Select.Item value="2d-top-down">Top Down 2D</Select.Item>
                   <Select.Item value="side-scroller">Side Scroller</Select.Item>
+                  <Select.Item value="point-and-click">Point & Click</Select.Item>
                 </Select.Content>
               </Select.Root>
             </div>
@@ -261,13 +302,33 @@ const SceneForm = ({
                 </Select.Content>
               </Select.Root>
             </div>
+            { scene.sceneType === 'point-and-click' && (
+              <>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Cursor sprite</Text>
+                  <SpritesListField
+                    value={scene.cursor ?? ''}
+                    defaultGraphic="cursor_default"
+                    onValueChange={onCursorChange}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <Text className="block text-slate" size="1">Has player</Text>
+                  <Switch
+                    size="1"
+                    checked={!!scene.player}
+                    onCheckedChange={onPlayerToggle}
+                  />
+                </div>
+              </>
+            ) }
             { scene.sceneType !== 'logos' && (
               <div className="flex flex-col gap-2">
                 <Text className="block text-slate" size="1">Grid size</Text>
                 <EventValueField
                   type="number"
                   value={scene.map?.gridSize ?? 16}
-                  onValueChange={onValueChange.bind(null, 'map.gridSize')}
+                  onValueChange={onGridSizeChange}
                 >
                   <TextField.Slot side="right">px</TextField.Slot>
                 </EventValueField>

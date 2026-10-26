@@ -81,7 +81,8 @@ namespace neo::types
   {
     LOGOS,
     TOP_DOWN,
-    SIDE_SCROLLER
+    SIDE_SCROLLER,
+    POINT_AND_CLICK
   };
 
   enum class variable_operation
@@ -1269,6 +1270,7 @@ namespace neo::types
     int sprites_count;
     const sprite* const* sprites;
     const hud* hud_data;
+    bn::sprite_item cursor;
 
     inline bool is (bn::string_view name_) const
     {

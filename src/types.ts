@@ -147,12 +147,15 @@ export interface GamePlayer {
   _spriteHasAnimations?: boolean;
 }
 
+export type GameSceneType = 'logos' | '2d-top-down' | 'side-scroller' | 'point-and-click';
+
 export interface GameScene {
   type: 'scene';
-  sceneType: 'logos' | '2d-top-down' | 'side-scroller';
+  sceneType: GameSceneType;
   name: string;
   background?: string;
   player?: GamePlayer;
+  cursor?: string;
   map?: GameMap;
   events?: SceneEvent[];
   actors?: GameActor[];

@@ -22,6 +22,39 @@ export const tileToPixel = (tile: number, gridSize: number) =>
 export const pixelToTile = (pixel: number, gridSize: number) =>
   Math.floor(pixel / gridSize);
 
+export const getMapSize = (
+  pixelWidth: number,
+  pixelHeight: number,
+  gridSize: number = 16,
+) => ({
+  width: Math.max(1, Math.round(pixelWidth / gridSize)),
+  height: Math.max(1, Math.round(pixelHeight / gridSize)),
+});
+
+export const getStaticGridSize = (gridSize: unknown) => {
+  const size = typeof gridSize === 'object' ? NaN : Number(gridSize);
+
+  return Number.isFinite(size) && size > 0 ? size : undefined;
+};
+
+export const resizeCollisions = (
+  collisions: string[][],
+  width: number,
+  height: number,
+) => {
+  const resized = collisions
+    .slice(0, height)
+    .map(row => row.slice(0, width));
+
+  while (resized.length < height) {
+    resized.push([]);
+  }
+
+  return resized.map(row => (
+    row.concat(new Array(width - row.length).fill('0'))
+  ));
+};
+
 export const getSceneName = (filePath?: string) => {
   if (!filePath) {
     return 'unknown';

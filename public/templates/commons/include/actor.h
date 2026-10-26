@@ -38,6 +38,10 @@ namespace neo
       void disable();
       void enable();
 
+      // Point-and-click
+      void walk_to(int pixel_x, int pixel_y);
+      void stop_walking();
+
       // Executes this actor's collide events (fired when the player,
       // being in a different collision group, touches this actor).
       void trigger_collide();
@@ -75,11 +79,18 @@ namespace neo
       // of on every frame of contact.
       bool player_touching = false;
       bool a_buffered = false;
+      // Point-and-click
+      bool walking_to_target = false;
+      bn::fixed_point walk_target;
 
     private:
       void move(neo::types::sprite_animation* anim);
       void check_input_side_scroller();
       void apply_side_scroller_gravity();
+      void check_input_point_and_click();
+
+      bool point_and_click_blocked_at(bn::fixed_point pixel_position);
+      void update_sensors(int tile_x, int tile_y);
       bool side_scroller_blocked_at(int pixel_x, int pixel_y);
       // Resolves solid actors/sprites the player's footprint overlaps
       // (different collision group), firing their collide events on the

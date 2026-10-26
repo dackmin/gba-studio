@@ -265,10 +265,13 @@
           "type": "string"
         },
         "sceneType": {
-          "enum": ["logos", "2d-top-down", "side-scroller"],
+          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click"],
           "type": "string"
         },
         "background": {
+          "type": "string"
+        },
+        "cursor": {
           "type": "string"
         },
         "events": {
