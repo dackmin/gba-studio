@@ -87,6 +87,7 @@ const Scene = ({
   const moveableRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLCanvasElement>(null);
   const backgroundImageRef = useRef<HTMLImageElement>(null);
+  const lastTileRef = useRef<[number, number] | null>(null);
   const { zoom, offsetX, offsetY } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { eventEmitter, project, backgrounds } = useApp();
@@ -197,8 +198,13 @@ const Scene = ({
       backgroundImageRef.current = await loadImage(backgroundPath);
     }
 
-    canvas.width = state.size[0];
-    canvas.height = state.size[1];
+    if (canvas.width !== state.size[0]) {
+      canvas.width = state.size[0];
+    }
+
+    if (canvas.height !== state.size[1]) {
+      canvas.height = state.size[1];
+    }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
@@ -359,6 +365,13 @@ const Scene = ({
     const x = pixelToTile((realMouseX - (sceneConfig?.x ?? 0)), gridSize);
     const y = pixelToTile((realMouseY - (sceneConfig?.y ?? 0)), gridSize);
 
+    const last = lastTileRef.current;
+
+    if (last && last[0] === x && last[1] === y) {
+      return;
+    }
+
+    lastTileRef.current = [x, y];
     setTilePosition(x, y);
 
     if (state.isMouseDown && scene.map && tool === 'collisions') {
@@ -375,11 +388,17 @@ const Scene = ({
 
       // mousemove uses .buttons because it does not have a source button
       // and uses active buttons during the event
-      c[y][x] = e.buttons === 1 // Left button -> add collision
+      const value = e.buttons === 1 // Left button -> add collision
         ? '1'
         : e.buttons === 2 // Right button -> remove collision
           ? '0'
           : c[y][x];
+
+      if (value === c[y][x]) {
+        return;
+      }
+
+      c[y][x] = value;
 
       if (!scene.map?.width) {
         scene.map!.width = tileWidth;
@@ -404,6 +423,7 @@ const Scene = ({
   }, []);
 
   const onMouseOut = useCallback(() => {
+    lastTileRef.current = null;
     setTilePosition();
     dispatch({ isMouseOver: false });
   }, [setTilePosition]);
@@ -433,11 +453,19 @@ const Scene = ({
       return;
     }
 
-    c[y][x] = e.button === 0 // Left button
+    const value = e.button === 0 // Left button
       ? '1'
       : e.button === 2 // Right button
         ? '0'
         : c[y][x];
+
+    lastTileRef.current = [x, y];
+
+    if (value === c[y][x]) {
+      return;
+    }
+
+    c[y][x] = value;
 
     if (!scene.map?.width) {
       scene.map!.width = tileWidth;
