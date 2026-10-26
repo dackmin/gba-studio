@@ -3,6 +3,7 @@
 
 #include <bn_core.h>
 #include <bn_sprite_ptr.h>
+#include <bn_optional.h>
 
 #include <neo_types.h>
 
@@ -17,6 +18,7 @@ namespace neo
       ~actor();
 
       inline constexpr static int PLAYER_SPEED = 2; // slow: 1, faster: 2
+      inline constexpr static bn::fixed ADVENTURE_SPEED = 2;
       inline constexpr static int SIDE_SCROLL_SPEED = 2;
       inline constexpr static int SIDE_SCROLL_JUMP = 9;
       inline constexpr static int SIDE_SCROLL_GRAVITY = 1;
@@ -41,6 +43,8 @@ namespace neo
       // Point-and-click
       void walk_to(int pixel_x, int pixel_y);
       void stop_walking();
+      void trigger_hit();
+      void end_attack();
 
       // Executes this actor's collide events (fired when the player,
       // being in a different collision group, touches this actor).
@@ -82,12 +86,22 @@ namespace neo
       // Point-and-click
       bool walking_to_target = false;
       bn::fixed_point walk_target;
+      // Adventure
+      bool was_moving_adventure = false;
+      int attack_frames_left = 0;
+      bn::optional<bn::sprite_ptr> weapon_sprite;
+      bool hit_this_swing = false;
 
     private:
       void move(neo::types::sprite_animation* anim);
       void check_input_side_scroller();
       void apply_side_scroller_gravity();
       void check_input_point_and_click();
+      void check_input_adventure();
+      bool adventure_blocked_at(int pixel_x, int pixel_y);
+      bool interact_ahead();
+      void start_attack();
+      void update_attack();
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);
       void update_sensors(int tile_x, int tile_y);

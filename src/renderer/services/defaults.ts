@@ -34,6 +34,7 @@ export const DEFAULT_ACTOR: GameActor = {
     interact: [],
     update: [],
     collide: [],
+    hit: [],
   },
 };
 

@@ -105,6 +105,7 @@ namespace neo
       void update_cursor();
       void set_cursor_sprite_position();
       void click_at(int pixel_x, int pixel_y);
+      bool interact_at(int pixel_x, int pixel_y);
 
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);

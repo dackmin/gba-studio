@@ -82,7 +82,8 @@ namespace neo::types
     LOGOS,
     TOP_DOWN,
     SIDE_SCROLLER,
-    POINT_AND_CLICK
+    POINT_AND_CLICK,
+    ADVENTURE
   };
 
   enum class variable_operation
@@ -1176,6 +1177,8 @@ namespace neo::types
     event* const* interact_events;
     int collide_events_count;
     event* const* collide_events;
+    int hit_events_count;
+    event* const* hit_events;
     int update_events_count;
     event* const* update_events;
     int animations_count;
@@ -1271,6 +1274,9 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
+    bool has_weapon;
+    bn::sprite_item weapon;
+    int weapon_duration;
 
     inline bool is (bn::string_view name_) const
     {

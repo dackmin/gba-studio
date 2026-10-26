@@ -370,6 +370,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.events.hit)}}
+  {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_hit_event") events=this.events.hit}}
+  constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_hit_events[] = {
+    {{#each this.events.hit}}
+    &{{slug ../../this.name}}_actor_{{@../index}}_hit_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
   {{#if (hasItems this.events.update)}}
   {{>eventsPartial prefix=(concat (slug ../this.name) "_actor_" @index "_update_event") events=this.events.update}}
   constexpr neo::types::event* {{slug ../this.name}}_actor_{{@index}}_update_events[] = {
@@ -412,6 +420,13 @@ namespace neo::scenes
     {{#if (hasItems this.events.collide)}}
     {{this.events.collide.length}},
     {{slug ../this.name}}_actor_{{@index}}_collide_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    {{#if (hasItems this.events.hit)}}
+    {{this.events.hit.length}},
+    {{slug ../this.name}}_actor_{{@index}}_hit_events,
     {{else}}
     0,
     nullptr,
@@ -542,6 +557,8 @@ namespace neo::scenes
     nullptr,
     0,
     nullptr,
+    0,
+    nullptr,
     {{#if this.player._spriteHasAnimations}}
     {{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}_animations_count,
     {{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}_animations
@@ -562,6 +579,8 @@ namespace neo::scenes
     neo::types::scene_type::SIDE_SCROLLER,
     {{else if (eq this.sceneType 'point-and-click')}}
     neo::types::scene_type::POINT_AND_CLICK,
+    {{else if (eq this.sceneType 'adventure')}}
+    neo::types::scene_type::ADVENTURE,
     {{else if (eq this.sceneType '2d-top-down')}}
     neo::types::scene_type::TOP_DOWN,
     {{else}}
@@ -611,9 +630,18 @@ namespace neo::scenes
     nullptr,
     {{/if}}
     {{#if this.cursor}}
-    bn::sprite_items::{{getSpriteName @root/sprites this.cursor}}
+    bn::sprite_items::{{getSpriteName @root/sprites this.cursor}},
     {{else}}
-    bn::sprite_items::cursor_default
+    bn::sprite_items::cursor_default,
+    {{/if}}
+    {{#if (and (eq this.sceneType 'adventure') (isset this.player) this.player.weapon)}}
+    true,
+    bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.weapon.sprite "sprite_default")}},
+    {{valuedef this.player.weapon.duration 200}}
+    {{else}}
+    false,
+    bn::sprite_items::sprite_default,
+    200
     {{/if}}
   };
   //////////////////////////
@@ -637,7 +665,10 @@ namespace neo::scenes
     0,
     nullptr,
     nullptr,
-    bn::sprite_items::cursor_default
+    bn::sprite_items::cursor_default,
+    false,
+    bn::sprite_items::sprite_default,
+    200
   };
 
   neo::types::scene get_scene(bn::string_view name)

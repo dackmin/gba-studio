@@ -1,5 +1,12 @@
 import { useCallback } from 'react';
-import { Heading, Inset, ScrollArea, Separator, Text } from '@radix-ui/themes';
+import {
+  Heading,
+  Inset,
+  ScrollArea,
+  Separator,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene, GamePlayer } from '../../../types';
@@ -22,6 +29,16 @@ const PlayerForm = ({
 
   const onValueChange = useCallback((name: string, value: any) => {
     set(player, name, value);
+    onChange?.(selectedScene);
+  }, [onChange, player, selectedScene]);
+
+  const onWeaponSpriteChange = useCallback((value: string) => {
+    if (!value) {
+      delete player.weapon;
+    } else {
+      player.weapon = { ...player.weapon, sprite: value };
+    }
+
     onChange?.(selectedScene);
   }, [onChange, player, selectedScene]);
 
@@ -91,9 +108,39 @@ const PlayerForm = ({
             <Text className="block text-slate" size="1">Collision group</Text>
             <CollisionGroupField
               value={player.collisionGroup}
+              sceneType={selectedScene?.sceneType}
               onValueChange={onValueChange.bind(null, 'collisionGroup')}
             />
           </div>
+          { selectedScene?.sceneType === 'adventure' && (
+            <>
+              <div className="flex flex-col gap-2">
+                <Text className="block text-slate" size="1">
+                  Weapon (B button)
+                </Text>
+                <SpritesListField
+                  nullable
+                  value={player.weapon?.sprite ?? ''}
+                  onValueChange={onWeaponSpriteChange}
+                />
+              </div>
+              { player.weapon && (
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">
+                    Weapon duration
+                  </Text>
+                  <EventValueField
+                    type="number"
+                    min={16}
+                    value={player.weapon.duration ?? 200}
+                    onValueChange={onValueChange.bind(null, 'weapon.duration')}
+                  >
+                    <TextField.Slot side="right">ms</TextField.Slot>
+                  </EventValueField>
+                </div>
+              ) }
+            </>
+          ) }
         </div>
       </div>
     </ScrollArea>

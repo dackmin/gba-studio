@@ -134,6 +134,10 @@ export const sanitizeActor = async (actor: GameActor): Promise<GameActor> => {
     await sanitizeEvent(event);
   }
 
+  for (const event of actor.events?.hit ?? []) {
+    await sanitizeEvent(event);
+  }
+
   return actor;
 };
 
@@ -313,7 +317,7 @@ export const sanitizeScene = async (
   }
 
   // Ensure player exists for map-based scenes & has type "player"
-  if (['2d-top-down', 'side-scroller'].includes(scene.sceneType)) {
+  if (['2d-top-down', 'side-scroller', 'adventure'].includes(scene.sceneType)) {
     scene.player = scene.player || { type: 'player', x: 0, y: 0 };
   }
 

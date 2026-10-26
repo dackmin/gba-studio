@@ -530,6 +530,14 @@ namespace neo
 
   void game::click_at(int pixel_x, int pixel_y)
   {
+    if (!interact_at(pixel_x, pixel_y) && player != nullptr && player->sprite.visible())
+    {
+      player->walk_to(pixel_x, pixel_y);
+    }
+  }
+
+  bool game::interact_at(int pixel_x, int pixel_y)
+  {
     const neo::types::map* map_data = active_scene->map_data;
     int tile_x = pixel_x < 0 ? -1 : map_data->to_tile_x(variables, pixel_x);
     int tile_y = pixel_y < 0 ? -1 : map_data->to_tile_y(variables, pixel_y);
@@ -559,7 +567,7 @@ namespace neo
           exec_event(actor_->definition->interact_events[j], true);
         }
 
-        return;
+        return true;
       }
     }
 
@@ -583,7 +591,7 @@ namespace neo
           exec_event(sprite_->definition->interact_events[j], true);
         }
 
-        return;
+        return true;
       }
     }
 
@@ -598,13 +606,10 @@ namespace neo
 
       sensor_->trigger_interact();
 
-      return;
+      return true;
     }
 
-    if (player != nullptr && player->sprite.visible())
-    {
-      player->walk_to(pixel_x, pixel_y);
-    }
+    return false;
   }
 
   void game::exec_event (const neo::types::event* e, bool is_loop) {
@@ -693,14 +698,15 @@ namespace neo
   bool game::has_collision(int tile_x, int tile_y)
   {
     // Solidity depends on the collision group and the scene type:
-    // - top-down & point-and-click: group 0 (the default) is solid like it
-    //   always was;
+    // - top-down, point-and-click & adventure: group 0 (the default) is
+    //   solid like it always was;
     //   same-group actors are pass-through (e.g. teammates)
     // - side-scroller: group 0 is pass-through, groups 1-4 are solid
     //   when different from the player's (opt-in obstacles/enemies)
     bool top_down = active_scene != nullptr && (
       active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
-      active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK
+      active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
+      active_scene->scene_type == neo::types::scene_type::ADVENTURE
     );
     int player_group = player != nullptr
       ? player->definition->collision_group : 1;

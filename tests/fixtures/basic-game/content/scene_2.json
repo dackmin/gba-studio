@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/scene.json",
+  "type": "scene",
+  "name": "Adventure",
+  "sceneType": "adventure",
+  "background": "95458cca-f5fb-49e0-ab08-3e24a77c7703",
+  "player": {
+    "type": "player",
+    "x": 2,
+    "y": 3,
+    "weapon": {
+      "sprite": "",
+      "duration": 240
+    }
+  },
+  "events": [
+    {
+      "type": "fade-in",
+      "duration": 200,
+      "id": "b1c2d3e4-0001-4a52-9c9d-0f7d5b2b6a31"
+    }
+  ],
+  "actors": [
+    {
+      "id": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32",
+      "type": "actor",
+      "name": "Target",
+      "sprite": "",
+      "x": 6,
+      "y": 6,
+      "width": 1,
+      "height": 1,
+      "collisionGroup": 0,
+      "events": {
+        "hit": [
+          {
+            "type": "disable-actor",
+            "id": "b1c2d3e4-0003-4a52-9c9d-0f7d5b2b6a33",
+            "actor": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32"
+          }
+        ]
+      }
+    }
+  ],
+  "map": {
+    "type": "map",
+    "width": 64,
+    "height": 32,
+    "gridSize": 16
+  },
+  "id": "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21"
+}

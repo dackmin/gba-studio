@@ -203,6 +203,22 @@ const ActorForm = ({
                   <Tabs.Trigger value="collide">
                     On Collide
                   </Tabs.Trigger>
+                  { selectedScene?.sceneType === 'adventure' && (
+                    <Tabs.Trigger value="hit">
+                      <div className="flex items-center gap-1">
+                        <Text>On Hit</Text>
+                        <Tooltip
+                          content="Executed when the player's weapon hits this actor"
+                        >
+                          <InfoCircledIcon
+                            width={12}
+                            height={12}
+                            className="[&_path]:fill-(--accent-9)"
+                          />
+                        </Tooltip>
+                      </div>
+                    </Tabs.Trigger>
+                  ) }
                   <Tabs.Trigger value="init">
                     On Init
                   </Tabs.Trigger>
@@ -234,6 +250,13 @@ const ActorForm = ({
                     key={actor.id}
                     value={actor.events?.collide ?? []}
                     onValueChange={onValueChange.bind(null, 'events.collide')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="hit">
+                  <EventsField
+                    key={actor.id}
+                    value={actor.events?.hit ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.hit')}
                   />
                 </Tabs.Content>
                 <Tabs.Content value="init">

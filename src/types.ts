@@ -131,6 +131,11 @@ export interface GameMap {
   sensors?: GameSensor[];
 }
 
+export interface GameWeapon {
+  sprite?: string;
+  duration?: number;
+}
+
 export interface GamePlayer {
   type: 'player';
   x: number;
@@ -143,11 +148,18 @@ export interface GamePlayer {
   // Collision group (1-4, 0 = none): actors/sprites in a different
   // group are solid and fire their collide events on touch.
   collisionGroup?: number;
+  // Adventure scenes only
+  weapon?: GameWeapon;
   // Internals
   _spriteHasAnimations?: boolean;
 }
 
-export type GameSceneType = 'logos' | '2d-top-down' | 'side-scroller' | 'point-and-click';
+export type GameSceneType =
+  | 'logos'
+  | '2d-top-down'
+  | 'side-scroller'
+  | 'point-and-click'
+  | 'adventure';
 
 export interface GameScene {
   type: 'scene';
@@ -205,6 +217,7 @@ export interface GameActor {
     update?: SceneEvent[];
     // Fired when the player touches this actor (different collision group)
     collide?: SceneEvent[];
+    hit?: SceneEvent[];
   };
   // Internals
   _spriteHasAnimations?: boolean;

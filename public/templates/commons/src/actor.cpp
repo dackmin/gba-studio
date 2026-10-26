@@ -202,8 +202,17 @@ namespace neo
     }
   }
 
+  void actor::trigger_hit()
+  {
+    for (int i = 0; i < definition->hit_events_count && !game->scene_changed; ++i)
+    {
+      game->exec_event(definition->hit_events[i], true);
+    }
+  }
+
   void actor::disable()
   {
+    end_attack();
     sprite.set_visible(false);
     sprite.remove_camera();
   }
@@ -329,6 +338,12 @@ namespace neo
     if (game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK)
     {
       check_input_point_and_click();
+      return;
+    }
+
+    if (game->active_scene->scene_type == neo::types::scene_type::ADVENTURE)
+    {
+      check_input_adventure();
       return;
     }
 
@@ -631,6 +646,306 @@ namespace neo
     set_direction(direction);
   }
 
+  bool actor::adventure_blocked_at(int pixel_x, int pixel_y)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    int sprite_width = width();
+    int sprite_height = height();
+    int inset = sprite_width > 8 ? 2 : 0;
+
+    int left = pixel_x + inset;
+    int right = pixel_x + sprite_width - 1 - inset;
+    int top = pixel_y + sprite_height / 2;
+    int bottom = pixel_y + sprite_height - 1;
+
+    int min_tile_x = left < 0 ? -1 : map_data->to_tile_x(game->variables, left);
+    int max_tile_x = right < 0 ? -1 : map_data->to_tile_x(game->variables, right);
+    int min_tile_y = top < 0 ? -1 : map_data->to_tile_y(game->variables, top);
+    int max_tile_y = bottom < 0 ? -1 : map_data->to_tile_y(game->variables, bottom);
+
+    for (int tile_y = min_tile_y; tile_y <= max_tile_y; ++tile_y)
+    {
+      for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+      {
+        if (map_data->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
+        {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  bool actor::interact_ahead()
+  {
+    int sprite_width = width();
+    int sprite_height = height();
+    int inset = sprite_width > 8 ? 2 : 0;
+    int pixel_x = (int)position.x();
+    int pixel_y = (int)position.y();
+    int center_x = pixel_x + sprite_width / 2;
+    int center_y = pixel_y + sprite_height * 3 / 4;
+
+    switch (direction)
+    {
+      case neo::types::direction::LEFT:
+        return game->interact_at(pixel_x + inset - 4, center_y);
+      case neo::types::direction::RIGHT:
+        return game->interact_at(pixel_x + sprite_width - 1 - inset + 4, center_y);
+      case neo::types::direction::UP:
+        return game->interact_at(center_x, pixel_y + sprite_height / 2 - 4);
+      default:
+        return game->interact_at(center_x, pixel_y + sprite_height - 1 + 4);
+    }
+  }
+
+  void actor::check_input_adventure()
+  {
+    // The player can't move or interact while swinging the weapon
+    if (attack_frames_left > 0)
+    {
+      update_attack();
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+
+    if (game->active_scene->has_weapon && bn::keypad::b_pressed())
+    {
+      start_attack();
+      return;
+    }
+
+    if (bn::keypad::a_pressed() && interact_ahead())
+    {
+      return;
+    }
+
+    int dx = (bn::keypad::right_held() ? 1 : 0) - (bn::keypad::left_held() ? 1 : 0);
+    int dy = (bn::keypad::down_held() ? 1 : 0) - (bn::keypad::up_held() ? 1 : 0);
+
+    neo::types::direction facing = direction;
+
+    if (dx != 0 || dy != 0)
+    {
+      bool facing_held =
+        (facing == neo::types::direction::LEFT && dx < 0) ||
+        (facing == neo::types::direction::RIGHT && dx > 0) ||
+        (facing == neo::types::direction::UP && dy < 0) ||
+        (facing == neo::types::direction::DOWN && dy > 0);
+
+      if (bn::keypad::left_pressed() && dx < 0)
+      {
+        facing = neo::types::direction::LEFT;
+      }
+      else if (bn::keypad::right_pressed() && dx > 0)
+      {
+        facing = neo::types::direction::RIGHT;
+      }
+      else if (bn::keypad::up_pressed() && dy < 0)
+      {
+        facing = neo::types::direction::UP;
+      }
+      else if (bn::keypad::down_pressed() && dy > 0)
+      {
+        facing = neo::types::direction::DOWN;
+      }
+      else if (!facing_held)
+      {
+        facing = dx != 0
+          ? (dx < 0 ? neo::types::direction::LEFT : neo::types::direction::RIGHT)
+          : (dy < 0 ? neo::types::direction::UP : neo::types::direction::DOWN);
+      }
+    }
+
+    bn::fixed speed = (dx != 0 && dy != 0)
+      ? ADVENTURE_SPEED * bn::fixed(0.707)
+      : ADVENTURE_SPEED;
+    bn::fixed_point next_position = position;
+
+    if (dx != 0 && !adventure_blocked_at((int)(next_position.x() + dx * speed), (int)next_position.y()))
+    {
+      next_position.set_x(next_position.x() + dx * speed);
+    }
+
+    if (dy != 0 && !adventure_blocked_at((int)next_position.x(), (int)(next_position.y() + dy * speed)))
+    {
+      next_position.set_y(next_position.y() + dy * speed);
+    }
+
+    bool moved = next_position != position;
+    bool restart = facing != direction || moved != was_moving_adventure;
+
+    moving = moved;
+
+    if (restart)
+    {
+      set_direction(facing);
+    }
+
+    if (moved)
+    {
+      set_position(next_position);
+
+      neo::types::sprite_animation* anim = definition->animations_count > 0
+        ? get_animation(definition->animations[0]->_id)
+        : nullptr;
+
+      if (anim != nullptr)
+      {
+        if (restart)
+        {
+          anim->reset(sprite, &tiles_item);
+        }
+        else
+        {
+          anim->play(sprite, &tiles_item, game->variables);
+        }
+      }
+    }
+
+    was_moving_adventure = moved;
+
+    update_sensors(
+      game->active_scene->map_data->to_tile_x(game->variables, (int)position.x() + width() / 2),
+      game->active_scene->map_data->to_tile_y(game->variables, (int)position.y() + height() * 3 / 4)
+    );
+
+    check_collisions();
+  }
+
+  void actor::start_attack()
+  {
+    const neo::types::scene* scene = game->active_scene;
+
+    attack_frames_left = bn::max(1, scene->weapon_duration / 16);
+    moving = false;
+    was_moving_adventure = false;
+    set_direction(direction);
+
+    for (int i = 0; i < game->actors_count; ++i)
+    {
+      game->actors[i]->hit_this_swing = false;
+    }
+
+    bn::sprite_tiles_item tiles_item = scene->weapon.tiles_item();
+    weapon_sprite = scene->weapon.create_sprite(0, 0);
+    weapon_sprite->set_camera(game->camera);
+    weapon_sprite->set_bg_priority(1);
+    weapon_sprite->set_z_order(
+      direction == neo::types::direction::UP ? sprite.z_order() + 1 : sprite.z_order() - 1);
+
+    if (direction == neo::types::direction::LEFT)
+    {
+      weapon_sprite->set_tiles(get_direction_tiles(tiles_item, neo::tileindex::LEFT));
+      weapon_sprite->set_horizontal_flip(true);
+    }
+    else if (direction == neo::types::direction::RIGHT)
+    {
+      weapon_sprite->set_tiles(get_direction_tiles(tiles_item, neo::tileindex::RIGHT));
+    }
+    else if (direction == neo::types::direction::UP)
+    {
+      weapon_sprite->set_tiles(get_direction_tiles(tiles_item, neo::tileindex::UP));
+    }
+    else
+    {
+      weapon_sprite->set_tiles(get_direction_tiles(tiles_item, neo::tileindex::DOWN));
+    }
+
+    update_attack();
+  }
+
+  void actor::update_attack()
+  {
+    if (!weapon_sprite.has_value())
+    {
+      attack_frames_left = 0;
+      return;
+    }
+
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int player_width = width();
+    int player_height = height();
+    int weapon_width = weapon_sprite->dimensions().width();
+    int weapon_height = weapon_sprite->dimensions().height();
+
+    int center_x = (int)position.x() + player_width / 2;
+    int center_y = (int)position.y() + player_height / 2;
+
+    switch (direction)
+    {
+      case neo::types::direction::LEFT:
+        center_x -= player_width / 2 + weapon_width / 2 - 2;
+        break;
+      case neo::types::direction::RIGHT:
+        center_x += player_width / 2 + weapon_width / 2 - 2;
+        break;
+      case neo::types::direction::UP:
+        center_y -= player_height / 2 + weapon_height / 2 - 2;
+        break;
+      default:
+        center_y += player_height / 2 + weapon_height / 2 - 2;
+        break;
+    }
+
+    weapon_sprite->set_position(
+      center_x - map_data->pixel_width(game->variables) / 2,
+      center_y - map_data->pixel_height(game->variables) / 2
+    );
+
+    int weapon_left = center_x - weapon_width / 2;
+    int weapon_top = center_y - weapon_height / 2;
+
+    for (int i = 0; i < game->actors_count && !game->scene_changed; ++i)
+    {
+      neo::actor* other = game->actors[i];
+
+      if (
+        other->hit_this_swing ||
+        other->definition->hit_events_count == 0 ||
+        !other->sprite.visible()
+      )
+      {
+        continue;
+      }
+
+      int other_left = map_data->to_pixel_x(
+        game->variables, other->position.x().right_shift_integer());
+      int other_top = map_data->to_pixel_y(
+        game->variables, other->position.y().right_shift_integer());
+
+      if (
+        weapon_left < other_left + other->width() &&
+        weapon_left + weapon_width > other_left &&
+        weapon_top < other_top + other->height() &&
+        weapon_top + weapon_height > other_top
+      )
+      {
+        other->hit_this_swing = true;
+        other->trigger_hit();
+
+        if (!weapon_sprite.has_value())
+        {
+          return;
+        }
+      }
+    }
+
+    if (game->scene_changed || --attack_frames_left <= 0)
+    {
+      end_attack();
+    }
+  }
+
+  void actor::end_attack()
+  {
+    attack_frames_left = 0;
+    weapon_sprite.reset();
+  }
+
   bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
   {
     const neo::types::map* map_data = game->active_scene->map_data;
@@ -886,7 +1201,8 @@ namespace neo
     // 1-4 are solid when different from the player's.
     bool top_down =
       game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
-      game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK;
+      game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
+      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE;
 
     // Player rect, in map pixel coordinates (its position is already
     // tracked in pixels)

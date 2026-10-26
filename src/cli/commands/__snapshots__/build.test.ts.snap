@@ -22,6 +22,8 @@ exports[`cli/build > should build a basic project successfully 1`] = `
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_sprite_default.h>
 
 namespace neo::backgrounds
 {
@@ -1403,6 +1405,8 @@ namespace neo::scenes
     nullptr,
     0,
     nullptr,
+    0,
+    nullptr,
     // Animations
     0,
     nullptr
@@ -1483,6 +1487,8 @@ namespace neo::scenes
     0,
     nullptr,
     0,
+    nullptr,
+    0,
     nullptr
   };
 
@@ -1502,35 +1508,38 @@ namespace neo::scenes
     scene_0_actors,
     0,
     nullptr,
-    nullptr,
-    bn::sprite_items::cursor_default
+    &hud_0,
+    bn::sprite_items::cursor_default,
+    false,
+    bn::sprite_items::sprite_default,
+    200
   };
   //////////////////////////
   //////////////////////////
-  // Scene: Scene 1 //
+  // Scene: Point & Click //
   //////////////////////////
 
   // Scene Events
   // Event 0: fade-in
-  constexpr bn::string_view scene_1_event_0_duration_name = "";
-  constexpr bn::string_view scene_1_event_0_duration_string_value = "200";
-  constexpr neo::variables::value scene_1_event_0_duration_raw_value(
-    scene_1_event_0_duration_name,
+  constexpr bn::string_view point_and_click_event_0_duration_name = "";
+  constexpr bn::string_view point_and_click_event_0_duration_string_value = "200";
+  constexpr neo::variables::value point_and_click_event_0_duration_raw_value(
+    point_and_click_event_0_duration_name,
     200,
     true,
-    scene_1_event_0_duration_string_value,
+    point_and_click_event_0_duration_string_value,
     200
   );
-  constexpr bn::string_view scene_1_event_0_duration_type = "value";
-  constexpr neo::types::event_value scene_1_event_0_duration_value(
-    scene_1_event_0_duration_type,
-    &scene_1_event_0_duration_raw_value
+  constexpr bn::string_view point_and_click_event_0_duration_type = "value";
+  constexpr neo::types::event_value point_and_click_event_0_duration_value(
+    point_and_click_event_0_duration_type,
+    &point_and_click_event_0_duration_raw_value
   );
   
-  constexpr bn::string_view scene_1_event_0_type = "fade-in";
-  BN_DATA_EWRAM neo::types::fade_event scene_1_event_0(scene_1_event_0_type, &scene_1_event_0_duration_value);
-  constexpr neo::types::event* scene_1_events[] = {
-    &scene_1_event_0,
+  constexpr bn::string_view point_and_click_event_0_type = "fade-in";
+  BN_DATA_EWRAM neo::types::fade_event point_and_click_event_0(point_and_click_event_0_type, &point_and_click_event_0_duration_value);
+  constexpr neo::types::event* point_and_click_events[] = {
+    &point_and_click_event_0,
   };
 
   // Map collisions
@@ -1538,25 +1547,25 @@ namespace neo::scenes
   // Map sensors
 
   // Map
-  constexpr bn::string_view scene_1_map_grid_size_name = "";
-  constexpr bn::string_view scene_1_map_grid_size_string_value = "16";
-  constexpr neo::variables::value scene_1_map_grid_size_raw_value(
-    scene_1_map_grid_size_name,
+  constexpr bn::string_view point_and_click_map_grid_size_name = "";
+  constexpr bn::string_view point_and_click_map_grid_size_string_value = "16";
+  constexpr neo::variables::value point_and_click_map_grid_size_raw_value(
+    point_and_click_map_grid_size_name,
     16,
     true,
-    scene_1_map_grid_size_string_value,
+    point_and_click_map_grid_size_string_value,
     16
   );
-  constexpr bn::string_view scene_1_map_grid_size_type = "value";
-  constexpr neo::types::event_value scene_1_map_grid_size_value(
-    scene_1_map_grid_size_type,
-    &scene_1_map_grid_size_raw_value
+  constexpr bn::string_view point_and_click_map_grid_size_type = "value";
+  constexpr neo::types::event_value point_and_click_map_grid_size_value(
+    point_and_click_map_grid_size_type,
+    &point_and_click_map_grid_size_raw_value
   );
   
-  constexpr neo::types::map scene_1_map_data = {
+  constexpr neo::types::map point_and_click_map_data = {
     64,
     32,
-    &scene_1_map_grid_size_value,
+    &point_and_click_map_grid_size_value,
     nullptr,
     0, nullptr
   };
@@ -1564,61 +1573,61 @@ namespace neo::scenes
 
 
   // Scene
-  constexpr bn::string_view scene_1_player_x_name = "";
-  constexpr bn::string_view scene_1_player_x_string_value = "2";
-  constexpr neo::variables::value scene_1_player_x_raw_value(
-    scene_1_player_x_name,
+  constexpr bn::string_view point_and_click_player_x_name = "";
+  constexpr bn::string_view point_and_click_player_x_string_value = "2";
+  constexpr neo::variables::value point_and_click_player_x_raw_value(
+    point_and_click_player_x_name,
     2,
     true,
-    scene_1_player_x_string_value,
+    point_and_click_player_x_string_value,
     2
   );
-  constexpr bn::string_view scene_1_player_x_type = "value";
-  constexpr neo::types::event_value scene_1_player_x_value(
-    scene_1_player_x_type,
-    &scene_1_player_x_raw_value
+  constexpr bn::string_view point_and_click_player_x_type = "value";
+  constexpr neo::types::event_value point_and_click_player_x_value(
+    point_and_click_player_x_type,
+    &point_and_click_player_x_raw_value
   );
   
-  constexpr bn::string_view scene_1_player_y_name = "";
-  constexpr bn::string_view scene_1_player_y_string_value = "2";
-  constexpr neo::variables::value scene_1_player_y_raw_value(
-    scene_1_player_y_name,
+  constexpr bn::string_view point_and_click_player_y_name = "";
+  constexpr bn::string_view point_and_click_player_y_string_value = "2";
+  constexpr neo::variables::value point_and_click_player_y_raw_value(
+    point_and_click_player_y_name,
     2,
     true,
-    scene_1_player_y_string_value,
+    point_and_click_player_y_string_value,
     2
   );
-  constexpr bn::string_view scene_1_player_y_type = "value";
-  constexpr neo::types::event_value scene_1_player_y_value(
-    scene_1_player_y_type,
-    &scene_1_player_y_raw_value
+  constexpr bn::string_view point_and_click_player_y_type = "value";
+  constexpr neo::types::event_value point_and_click_player_y_value(
+    point_and_click_player_y_type,
+    &point_and_click_player_y_raw_value
   );
   
-  constexpr bn::string_view scene_1_player_z_name = "";
-  constexpr bn::string_view scene_1_player_z_string_value = "1";
-  constexpr neo::variables::value scene_1_player_z_raw_value(
-    scene_1_player_z_name,
+  constexpr bn::string_view point_and_click_player_z_name = "";
+  constexpr bn::string_view point_and_click_player_z_string_value = "1";
+  constexpr neo::variables::value point_and_click_player_z_raw_value(
+    point_and_click_player_z_name,
     1,
     true,
-    scene_1_player_z_string_value,
+    point_and_click_player_z_string_value,
     1
   );
-  constexpr bn::string_view scene_1_player_z_type = "value";
-  constexpr neo::types::event_value scene_1_player_z_value(
-    scene_1_player_z_type,
-    &scene_1_player_z_raw_value
+  constexpr bn::string_view point_and_click_player_z_type = "value";
+  constexpr neo::types::event_value point_and_click_player_z_value(
+    point_and_click_player_z_type,
+    &point_and_click_player_z_raw_value
   );
   
 
   // Player
-  constexpr bn::string_view scene_1_player_id = "player";
-  constexpr bn::string_view scene_1_player_name = "player";
-  constexpr neo::types::actor scene_1_player_actor = {
-    scene_1_player_id,
-    scene_1_player_name,
-    &scene_1_player_x_value,
-    &scene_1_player_y_value,
-    &scene_1_player_z_value,
+  constexpr bn::string_view point_and_click_player_id = "player";
+  constexpr bn::string_view point_and_click_player_name = "player";
+  constexpr neo::types::actor point_and_click_player_actor = {
+    point_and_click_player_id,
+    point_and_click_player_name,
+    &point_and_click_player_x_value,
+    &point_and_click_player_y_value,
+    &point_and_click_player_z_value,
     neo::types::direction::DOWN,
     bn::sprite_items::sprite_default,
     false,
@@ -1634,27 +1643,276 @@ namespace neo::scenes
     0,
     nullptr,
     0,
+    nullptr,
+    0,
     nullptr
   };
 
-  constexpr bn::string_view scene_1_scene_id = "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12";
-  constexpr bn::string_view scene_1_scene_name = "Scene 1";
-  BN_DATA_EWRAM neo::types::scene scene_scene_1 = {
-    scene_1_scene_id,
-    scene_1_scene_name,
+  constexpr bn::string_view point_and_click_scene_id = "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12";
+  constexpr bn::string_view point_and_click_scene_name = "Point & Click";
+  BN_DATA_EWRAM neo::types::scene scene_point_and_click = {
+    point_and_click_scene_id,
+    point_and_click_scene_name,
     neo::types::scene_type::POINT_AND_CLICK,
     neo::backgrounds::map,
     1,
-    scene_1_events,
+    point_and_click_events,
     true,
-    &scene_1_player_actor,
-    &scene_1_map_data,
+    &point_and_click_player_actor,
+    &point_and_click_map_data,
     0,
     nullptr,
     0,
     nullptr,
     nullptr,
-    bn::sprite_items::cursor_default
+    bn::sprite_items::cursor_default,
+    false,
+    bn::sprite_items::sprite_default,
+    200
+  };
+  //////////////////////////
+  //////////////////////////
+  // Scene: Adventure //
+  //////////////////////////
+
+  // Scene Events
+  // Event 0: fade-in
+  constexpr bn::string_view adventure_event_0_duration_name = "";
+  constexpr bn::string_view adventure_event_0_duration_string_value = "200";
+  constexpr neo::variables::value adventure_event_0_duration_raw_value(
+    adventure_event_0_duration_name,
+    200,
+    true,
+    adventure_event_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view adventure_event_0_duration_type = "value";
+  constexpr neo::types::event_value adventure_event_0_duration_value(
+    adventure_event_0_duration_type,
+    &adventure_event_0_duration_raw_value
+  );
+  
+  constexpr bn::string_view adventure_event_0_type = "fade-in";
+  BN_DATA_EWRAM neo::types::fade_event adventure_event_0(adventure_event_0_type, &adventure_event_0_duration_value);
+  constexpr neo::types::event* adventure_events[] = {
+    &adventure_event_0,
+  };
+
+  // Map collisions
+
+  // Map sensors
+
+  // Map
+  constexpr bn::string_view adventure_map_grid_size_name = "";
+  constexpr bn::string_view adventure_map_grid_size_string_value = "16";
+  constexpr neo::variables::value adventure_map_grid_size_raw_value(
+    adventure_map_grid_size_name,
+    16,
+    true,
+    adventure_map_grid_size_string_value,
+    16
+  );
+  constexpr bn::string_view adventure_map_grid_size_type = "value";
+  constexpr neo::types::event_value adventure_map_grid_size_value(
+    adventure_map_grid_size_type,
+    &adventure_map_grid_size_raw_value
+  );
+  
+  constexpr neo::types::map adventure_map_data = {
+    64,
+    32,
+    &adventure_map_grid_size_value,
+    nullptr,
+    0, nullptr
+  };
+
+  // Actors
+  // -- Actor events
+  // Event 0: disable-actor
+  constexpr bn::string_view adventure_actor_0_hit_event_0_type = "disable-actor";
+  constexpr bn::string_view adventure_actor_0_hit_event_0_actor = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
+  BN_DATA_EWRAM neo::types::disable_actor_event adventure_actor_0_hit_event_0(
+    adventure_actor_0_hit_event_0_type,
+    adventure_actor_0_hit_event_0_actor
+  );
+  constexpr neo::types::event* adventure_actor_0_hit_events[] = {
+    &adventure_actor_0_hit_event_0,
+  };
+
+  constexpr bn::string_view adventure_actor_0_x_name = "";
+  constexpr bn::string_view adventure_actor_0_x_string_value = "6";
+  constexpr neo::variables::value adventure_actor_0_x_raw_value(
+    adventure_actor_0_x_name,
+    6,
+    true,
+    adventure_actor_0_x_string_value,
+    6
+  );
+  constexpr bn::string_view adventure_actor_0_x_type = "value";
+  constexpr neo::types::event_value adventure_actor_0_x_value(
+    adventure_actor_0_x_type,
+    &adventure_actor_0_x_raw_value
+  );
+  
+  constexpr bn::string_view adventure_actor_0_y_name = "";
+  constexpr bn::string_view adventure_actor_0_y_string_value = "6";
+  constexpr neo::variables::value adventure_actor_0_y_raw_value(
+    adventure_actor_0_y_name,
+    6,
+    true,
+    adventure_actor_0_y_string_value,
+    6
+  );
+  constexpr bn::string_view adventure_actor_0_y_type = "value";
+  constexpr neo::types::event_value adventure_actor_0_y_value(
+    adventure_actor_0_y_type,
+    &adventure_actor_0_y_raw_value
+  );
+  
+  constexpr bn::string_view adventure_actor_0_z_name = "";
+  constexpr bn::string_view adventure_actor_0_z_string_value = "2";
+  constexpr neo::variables::value adventure_actor_0_z_raw_value(
+    adventure_actor_0_z_name,
+    2,
+    true,
+    adventure_actor_0_z_string_value,
+    2
+  );
+  constexpr bn::string_view adventure_actor_0_z_type = "value";
+  constexpr neo::types::event_value adventure_actor_0_z_value(
+    adventure_actor_0_z_type,
+    &adventure_actor_0_z_raw_value
+  );
+  
+  constexpr bn::string_view adventure_actor_0_id = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
+  constexpr bn::string_view adventure_actor_0_name = "Target";
+  constexpr neo::types::actor adventure_actor_0 = {
+    adventure_actor_0_id,
+    adventure_actor_0_name,
+    &adventure_actor_0_x_value,
+    &adventure_actor_0_y_value,
+    &adventure_actor_0_z_value,
+    neo::types::direction::DOWN,
+    bn::sprite_items::sprite_default,
+    false,
+    0,
+    // Events
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    1,
+    adventure_actor_0_hit_events,
+    0,
+    nullptr,
+    // Animations
+    0,
+    nullptr
+  };
+  constexpr const neo::types::actor* adventure_actors[] = {
+    &adventure_actor_0
+  };
+
+
+  // Scene
+  constexpr bn::string_view adventure_player_x_name = "";
+  constexpr bn::string_view adventure_player_x_string_value = "2";
+  constexpr neo::variables::value adventure_player_x_raw_value(
+    adventure_player_x_name,
+    2,
+    true,
+    adventure_player_x_string_value,
+    2
+  );
+  constexpr bn::string_view adventure_player_x_type = "value";
+  constexpr neo::types::event_value adventure_player_x_value(
+    adventure_player_x_type,
+    &adventure_player_x_raw_value
+  );
+  
+  constexpr bn::string_view adventure_player_y_name = "";
+  constexpr bn::string_view adventure_player_y_string_value = "3";
+  constexpr neo::variables::value adventure_player_y_raw_value(
+    adventure_player_y_name,
+    3,
+    true,
+    adventure_player_y_string_value,
+    3
+  );
+  constexpr bn::string_view adventure_player_y_type = "value";
+  constexpr neo::types::event_value adventure_player_y_value(
+    adventure_player_y_type,
+    &adventure_player_y_raw_value
+  );
+  
+  constexpr bn::string_view adventure_player_z_name = "";
+  constexpr bn::string_view adventure_player_z_string_value = "1";
+  constexpr neo::variables::value adventure_player_z_raw_value(
+    adventure_player_z_name,
+    1,
+    true,
+    adventure_player_z_string_value,
+    1
+  );
+  constexpr bn::string_view adventure_player_z_type = "value";
+  constexpr neo::types::event_value adventure_player_z_value(
+    adventure_player_z_type,
+    &adventure_player_z_raw_value
+  );
+  
+
+  // Player
+  constexpr bn::string_view adventure_player_id = "player";
+  constexpr bn::string_view adventure_player_name = "player";
+  constexpr neo::types::actor adventure_player_actor = {
+    adventure_player_id,
+    adventure_player_name,
+    &adventure_player_x_value,
+    &adventure_player_y_value,
+    &adventure_player_z_value,
+    neo::types::direction::DOWN,
+    bn::sprite_items::sprite_default,
+    false,
+    0,
+    // Events: the player has no event arrays (its interactions live on the
+    // other actors/sprites/sensors)
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr
+  };
+
+  constexpr bn::string_view adventure_scene_id = "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21";
+  constexpr bn::string_view adventure_scene_name = "Adventure";
+  BN_DATA_EWRAM neo::types::scene scene_adventure = {
+    adventure_scene_id,
+    adventure_scene_name,
+    neo::types::scene_type::ADVENTURE,
+    neo::backgrounds::map,
+    1,
+    adventure_events,
+    true,
+    &adventure_player_actor,
+    &adventure_map_data,
+    1,
+    adventure_actors,
+    0,
+    nullptr,
+    nullptr,
+    bn::sprite_items::cursor_default,
+    true,
+    bn::sprite_items::sprite_default,
+    240
   };
   //////////////////////////
 
@@ -1676,14 +1934,18 @@ namespace neo::scenes
     0,
     nullptr,
     nullptr,
-    bn::sprite_items::cursor_default
+    bn::sprite_items::cursor_default,
+    false,
+    bn::sprite_items::sprite_default,
+    200
   };
 
   neo::types::scene get_scene(bn::string_view name)
   {
     if (name == "") return scene_default;
     if (name == "Scene 0" || name == "d2a023cc-364d-4caf-9638-78937f593e4d") return scene_scene_0;
-    if (name == "Scene 1" || name == "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12") return scene_scene_1;
+    if (name == "Point & Click" || name == "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12") return scene_point_and_click;
+    if (name == "Adventure" || name == "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21") return scene_adventure;
     return scene_default;
   }
 
@@ -1876,7 +2138,8 @@ namespace neo::types
     LOGOS,
     TOP_DOWN,
     SIDE_SCROLLER,
-    POINT_AND_CLICK
+    POINT_AND_CLICK,
+    ADVENTURE
   };
 
   enum class variable_operation
@@ -2970,6 +3233,8 @@ namespace neo::types
     event* const* interact_events;
     int collide_events_count;
     event* const* collide_events;
+    int hit_events_count;
+    event* const* hit_events;
     int update_events_count;
     event* const* update_events;
     int animations_count;
@@ -3065,6 +3330,9 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
+    bool has_weapon;
+    bn::sprite_item weapon;
+    int weapon_duration;
 
     inline bool is (bn::string_view name_) const
     {

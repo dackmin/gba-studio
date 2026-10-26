@@ -59,6 +59,12 @@
                 "$ref": "event.json#/definitions/Event"
               }
             },
+            "hit": {
+              "type": "array",
+              "items": {
+                "$ref": "event.json#/definitions/Event"
+              }
+            },
             "interact": {
               "type": "array",
               "items": {
@@ -252,6 +258,17 @@
           "maximum": 4,
           "minimum": 0,
           "type": "number"
+        },
+        "weapon": {
+          "type": "object",
+          "properties": {
+            "sprite": {
+              "type": "string"
+            },
+            "duration": {
+              "type": "number"
+            }
+          }
         }
       },
       "required": [
@@ -265,7 +282,7 @@
           "type": "string"
         },
         "sceneType": {
-          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click"],
+          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click", "adventure"],
           "type": "string"
         },
         "background": {

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/scene.json",
   "type": "scene",
-  "name": "Scene 1",
+  "name": "Point & Click",
   "sceneType": "point-and-click",
   "background": "95458cca-f5fb-49e0-ab08-3e24a77c7703",
   "player": {
