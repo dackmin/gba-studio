@@ -1277,6 +1277,7 @@ namespace neo::types
     bool has_weapon;
     bn::sprite_item weapon;
     int weapon_duration;
+    bool has_gravity;
 
     inline bool is (bn::string_view name_) const
     {

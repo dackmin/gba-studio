@@ -637,12 +637,13 @@ namespace neo::scenes
     {{#if (and (eq this.sceneType 'adventure') (isset this.player) this.player.weapon)}}
     true,
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.weapon.sprite "sprite_default")}},
-    {{valuedef this.player.weapon.duration 200}}
+    {{valuedef this.player.weapon.duration 200}},
     {{else}}
     false,
     bn::sprite_items::sprite_default,
-    200
+    200,
     {{/if}}
+    {{#if (and (eq this.sceneType 'point-and-click') this.gravity)}}true{{else}}false{{/if}}
   };
   //////////////////////////
   {{/each}}
@@ -668,7 +669,8 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     bn::sprite_items::sprite_default,
-    200
+    200,
+    false
   };
 
   neo::types::scene get_scene(bn::string_view name)

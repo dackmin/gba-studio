@@ -1512,7 +1512,8 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     bn::sprite_items::sprite_default,
-    200
+    200,
+    false
   };
   //////////////////////////
   //////////////////////////
@@ -1668,7 +1669,8 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     bn::sprite_items::sprite_default,
-    200
+    200,
+    false
   };
   //////////////////////////
   //////////////////////////
@@ -1912,7 +1914,8 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     true,
     bn::sprite_items::sprite_default,
-    240
+    240,
+    false
   };
   //////////////////////////
 
@@ -1937,7 +1940,8 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     bn::sprite_items::sprite_default,
-    200
+    200,
+    false
   };
 
   neo::types::scene get_scene(bn::string_view name)
@@ -3333,6 +3337,8 @@ namespace neo::types
     bool has_weapon;
     bn::sprite_item weapon;
     int weapon_duration;
+    // Point-and-click scenes only: the player falls & only walks horizontally
+    bool has_gravity;
 
     inline bool is (bn::string_view name_) const
     {

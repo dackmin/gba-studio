@@ -168,6 +168,7 @@ export interface GameScene {
   background?: string;
   player?: GamePlayer;
   cursor?: string;
+  gravity?: boolean;
   map?: GameMap;
   events?: SceneEvent[];
   actors?: GameActor[];

@@ -607,6 +607,11 @@ namespace neo
 
     walk_target = bn::fixed_point(pixel_x - width() / 2, pixel_y - height());
 
+    if (game->active_scene->has_gravity)
+    {
+      walk_target.set_y(position.y());
+    }
+
     int delta_x = (int)walk_target.x() - (int)position.x();
     int delta_y = (int)walk_target.y() - (int)position.y();
 
@@ -948,6 +953,11 @@ namespace neo
 
   bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
   {
+    if (game->active_scene->has_gravity)
+    {
+      return side_scroller_blocked_at((int)pixel_position.x(), (int)pixel_position.y());
+    }
+
     const neo::types::map* map_data = game->active_scene->map_data;
 
     int feet_x = (int)pixel_position.x() + width() / 2;

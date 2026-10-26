@@ -321,6 +321,18 @@ const SceneForm = ({
                     onCheckedChange={onPlayerToggle}
                   />
                 </div>
+                { !!scene.player && (
+                  <div className="flex items-center justify-between gap-2">
+                    <Text className="block text-slate" size="1">
+                      Player reacts to gravity
+                    </Text>
+                    <Switch
+                      size="1"
+                      checked={!!scene.gravity}
+                      onCheckedChange={onValueChange.bind(null, 'gravity')}
+                    />
+                  </div>
+                ) }
               </>
             ) }
             { scene.sceneType !== 'logos' && (

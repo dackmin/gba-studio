@@ -291,6 +291,9 @@
         "cursor": {
           "type": "string"
         },
+        "gravity": {
+          "type": "boolean"
+        },
         "events": {
           "items": {
             "$ref": "event.json#/definitions/Event"
