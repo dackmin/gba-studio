@@ -65,7 +65,7 @@ const isWayland = process.platform === 'linux' &&
   );
 
 if (isWayland) {
-  app.commandLine.appendSwitch('use-angle', 'vulkan');
+  app.commandLine.appendSwitch('use-angle', process.env.WAYLAND_ANGLE ?? 'vulkan');
 }
 
 if (started) {
