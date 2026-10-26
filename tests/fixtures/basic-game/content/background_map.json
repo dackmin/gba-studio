@@ -1,7 +1,7 @@
 {
   "type": "background",
   "name": "map",
-  "width": 512,
+  "width": 1024,
   "height": 512,
   "path": "graphics/map.bmp",
   "id": "95458cca-f5fb-49e0-ab08-3e24a77c7703",

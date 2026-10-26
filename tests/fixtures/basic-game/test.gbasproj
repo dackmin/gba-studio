@@ -11,17 +11,26 @@
   "romName": "MY AWESOME GAME",
   "romCode": "MAG",
   "id": "40462bc0-cb50-4bb6-88f4-3ac3ad3f13b1",
-  "huds": [],
+  "huds": [
+    {
+      "x": -305,
+      "y": 9,
+      "id": "6be3d29c-8619-49d6-b313-e9d9b78b0b3f",
+      "_file": "hud_0.json"
+    }
+  ],
   "settings": {
     "pythonPath": "$root/../../../node_modules/.cache/gba-studio/vendors/python/bin/python3",
     "devkitProPath": "$root/../../../node_modules/.cache/gba-studio/vendors/devkitPro"
   },
-  "configurations": [{
-    "id": "40462bc0-cb50-4bb6-88f4-3ac3ad3f13b2",
-    "name": "win32",
-    "settings": {
-      "pythonPath": "$root/../../../node_modules/.cache/gba-studio/vendors/python/bin/python.exe",
-      "devkitProPath": "$root/../../../node_modules/.cache/gba-studio/vendors/devkitPro"
+  "configurations": [
+    {
+      "id": "40462bc0-cb50-4bb6-88f4-3ac3ad3f13b2",
+      "name": "win32",
+      "settings": {
+        "pythonPath": "$root/../../../node_modules/.cache/gba-studio/vendors/python/bin/python.exe",
+        "devkitProPath": "$root/../../../node_modules/.cache/gba-studio/vendors/devkitPro"
+      }
     }
-  }]
+  ]
 }
