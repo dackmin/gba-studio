@@ -5,9 +5,25 @@ import fs from 'node:fs/promises';
 import { pick } from '@junipero/react';
 import fse from 'fs-extra';
 import { Jimp } from 'jimp';
+import { imageSizeFromFile } from 'image-size/fromFile';
 
-import type { Build, GameSpriteFile } from '../../../types';
-import { toBmp } from '../../images';
+import type {
+  BackgroundLayout,
+  Build,
+  GameBackgroundFile,
+  GameSpriteFile,
+} from '../../../types';
+import {
+  countBackgroundTiles,
+  countUniqueTiles,
+  cropIndexedImage,
+  decodeIndexedBmp,
+  encodeIndexedBmp,
+  getBackgroundLayoutForImage,
+  toBmp,
+  getBackgroundLayout,
+} from '../../images';
+import { BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
 import { getBuildDir } from './utils';
 
 export async function getShasum (filePath: string) {
@@ -26,6 +42,102 @@ export async function isSame (source: string, destination: string) {
     return sourceShasum === destinationShasum;
   } catch {
     return false;
+  }
+}
+
+export async function getBackgroundLayoutFromFile (
+  build: Build,
+  background: GameBackgroundFile,
+): Promise<BackgroundLayout> {
+  const source = path.join(path.dirname(build.projectPath), background.path);
+  const fileName = path.basename(background.path, path.extname(background.path));
+  const { width, height } = await imageSizeFromFile(source);
+  const layout = getBackgroundLayout(fileName, width, height);
+
+  return layout.mode === 'single'
+    ? layout
+    : getBackgroundLayoutForImage(fileName, decodeIndexedBmp(await fs.readFile(source)));
+}
+
+async function cutBackground (
+  build: Build,
+  background: GameBackgroundFile,
+  layout: BackgroundLayout,
+  graphicsOutputDir: string,
+) {
+  const source = path.join(path.dirname(build.projectPath), background.path);
+  const image = decodeIndexedBmp(await fs.readFile(source));
+  const fileName = path.basename(background.path, path.extname(background.path));
+  const expected = new Set<string>();
+  const jsonContent = JSON.stringify({ type: 'regular_bg' }, null, 2);
+  let written = 0;
+
+  for (const tile of layout.tiles) {
+    const cropped = cropIndexedImage(image, tile.x, tile.y, tile.width, tile.height);
+
+    if (countUniqueTiles(cropped.indices, cropped.width, cropped.height, { limit: 1024 }) > 1024) {
+      build.events.onError(
+        `Background ${background.name} is too detailed: it has more than 1024 different ` +
+        `8x8px tiles in the ${tile.width}x${tile.height}px area at ${tile.x},${tile.y}. ` +
+        `Game may build but it will crash or not display correctly. ` +
+        'Simplify the image (repeated patterns, flat colors, less dithering) or make it smaller.'
+      );
+    }
+
+    const bmp = encodeIndexedBmp(cropped);
+    const bmpPath = path.join(graphicsOutputDir, tile.name + '.bmp');
+    const jsonPath = path.join(graphicsOutputDir, tile.name + '.json');
+
+    expected.add(tile.name + '.bmp').add(tile.name + '.json');
+
+    const current = await fs.readFile(bmpPath).catch(() => null);
+
+    if (!current?.equals(bmp)) {
+      await fs.writeFile(bmpPath, bmp);
+      written++;
+    }
+
+    const currentJson = await fs.readFile(jsonPath, 'utf-8').catch(() => null);
+
+    if (currentJson !== jsonContent) {
+      await fs.writeFile(jsonPath, jsonContent, 'utf-8');
+    }
+  }
+
+  await removeStaleBackgroundFiles(graphicsOutputDir, fileName, expected);
+
+  if (written === 0) {
+    build.events.onLog(`Skipping ${background.name}, cached`);
+  } else {
+    build.events.onLog(
+      layout.mode === 'tiles'
+        ? `Cut background: ${background.name} into ${layout.tiles.length} tiles (${fileName})`
+        : `Prepared background: ${background.name} (${fileName})`
+    );
+
+    const { loaded } = countBackgroundTiles(image, layout);
+
+    if (layout.mode === 'tiles' && loaded > BACKGROUND_VRAM_TILES_BUDGET) {
+      build.events.onLog(
+        `Warning: ${background.name} needs up to ${loaded} tiles in memory at once, ` +
+        `the limit is about ${BACKGROUND_VRAM_TILES_BUDGET}. Some parts of it won't be ` +
+        'displayed. Reduce its detail (repeated patterns, fewer unique 8x8 tiles) or its size.'
+      );
+    }
+  }
+}
+
+async function removeStaleBackgroundFiles (
+  graphicsOutputDir: string,
+  fileName: string,
+  expected: Set<string>,
+) {
+  const pattern = new RegExp(`^${fileName}(_tile_\\d+_\\d+)?\\.(bmp|json)$`);
+
+  for (const file of await fs.readdir(graphicsOutputDir)) {
+    if (pattern.test(file) && !expected.has(file)) {
+      await fs.rm(path.join(graphicsOutputDir, file), { force: true });
+    }
   }
 }
 
@@ -74,6 +186,22 @@ export async function copyAssets (
     const source = path.join(projectDir, background.path);
     const fileName = path.basename(background.path, path.extname(background.path));
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
+    const layout = await getBackgroundLayoutFromFile(build, background);
+
+    background._layout = layout;
+    const [tile] = layout.tiles;
+
+    if (
+      layout.tiles.length > 1 ||
+      tile.width !== layout.width ||
+      tile.height !== layout.height
+    ) {
+      await cutBackground(build, background, layout, graphicsOutputDir);
+      continue;
+    }
+
+    await removeStaleBackgroundFiles(
+      graphicsOutputDir, fileName, new Set([fileName + '.bmp', fileName + '.json']));
 
     if (await isSame(source, destination)) {
       build.events.onLog(`Skipping ${background.name}, cached`);

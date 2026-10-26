@@ -2,13 +2,13 @@
 
 #include <bn_core.h>
 #include <bn_blending_actions.h>
-#include <bn_regular_bg_ptr.h>
 
 #include "fade.h"
+#include "scene_bg.h"
 
 namespace neo::fade
 {
-  void enter(neo::game* game, bn::regular_bg_ptr& bg, int duration)
+  void enter(neo::game* game, neo::scene_bg& bg, int duration)
   {
     if (duration <= 0)
     {
@@ -36,7 +36,7 @@ namespace neo::fade
     bg.set_blending_enabled(false);
   }
 
-  void exit(neo::game* game, bn::regular_bg_ptr& bg, int duration)
+  void exit(neo::game* game, neo::scene_bg& bg, int duration)
   {
     if (duration <= 0)
     {

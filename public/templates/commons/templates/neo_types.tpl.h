@@ -13,6 +13,7 @@
 #include <bn_sprite_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_tiles_ptr.h>
+#include <bn_span.h>
 #include <bn_vector.h>
 
 #include <neo_utils.h>
@@ -22,6 +23,7 @@ namespace neo
 {
   class game;
   class actor;
+  class scene_bg;
 }
 
 namespace neo::types
@@ -30,6 +32,22 @@ namespace neo::types
   static constexpr int SCREEN_HEIGHT = 160;
 
   struct sprite_animation;
+
+  struct background_tile
+  {
+    bn::regular_bg_item item;
+    int x;
+    int y;
+    int width;
+    int height;
+  };
+
+  struct background
+  {
+    bn::span<const background_tile> tiles;
+    int width;
+    int height;
+  };
 
   enum class direction
   {
@@ -193,13 +211,13 @@ namespace neo::types
     const event_value* duration;
 
     neo::game* game_ref = nullptr;
-    bn::optional<bn::regular_bg_ptr> bg;
+    neo::scene_bg* bg = nullptr;
     bn::optional<bn::blending_fade_alpha_to_action> action;
 
     fade_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
 
-    void start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms);
+    void start(neo::game* game_, neo::scene_bg& bg_, int duration_ms);
     bool update() override;
   };
 
@@ -814,10 +832,10 @@ namespace neo::types
 
   struct set_background_event: event
   {
-    bn::regular_bg_item background;
+    neo::types::background background;
     set_background_event(
       bn::string_view type_,
-      bn::regular_bg_item background_
+      neo::types::background background_
     ):
       event(type_),
       background(background_) {}
@@ -1034,7 +1052,7 @@ namespace neo::types
         return true;
       }
 
-      return collisions[tile_index(tile_x, tile_y)] == 1;
+      return collisions != nullptr && collisions[tile_index(tile_x, tile_y)] == 1;
     }
   };
 
@@ -1236,7 +1254,7 @@ namespace neo::types
     bn::string_view _id;
     bn::string_view name;
     neo::types::scene_type scene_type;
-    bn::regular_bg_item background;
+    neo::types::background background;
     int event_count;
     event* const* events;
     // Player

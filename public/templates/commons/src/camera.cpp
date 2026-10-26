@@ -33,9 +33,8 @@ namespace neo::camera
       }
       else
       {
-        // Butano map cells are 8px wide/tall.
-        bg_pixel_width = active_scene.background.map_item().dimensions().width() * 8;
-        bg_pixel_height = active_scene.background.map_item().dimensions().height() * 8;
+        bg_pixel_width = active_scene.background.width;
+        bg_pixel_height = active_scene.background.height;
       }
 
       min_x = -(bg_pixel_width / 2 - neo::types::SCREEN_WIDTH / 2);

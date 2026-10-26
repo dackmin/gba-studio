@@ -14,6 +14,7 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, SpriteBitmap } from '../../../types';
+import {  BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
 import { findBackground, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import ChecklistItem from '../../components/ChecklistItem';
@@ -116,10 +117,7 @@ const BackgroundImportForm = ({
   const background = useDelayedValue(background_, { delay: 400 });
 
   const checklist = useMemo(() => ([
-    (state.preview?.width || 0) > 0 &&
-      (state.preview?.height || 0) > 0 &&
-      [256, 512].includes(state.preview?.width || 0) &&
-      [256, 512].includes(state.preview?.height || 0),
+    (state.preview?.width || 0) > 0 && (state.preview?.height || 0) > 0,
   ]), [state.preview]);
 
   const canSubmit = useCallback(() => (
@@ -169,6 +167,9 @@ const BackgroundImportForm = ({
 
     await window.electron.openParentFolder(projectPath, state.path);
   }, [state.path, projectPath]);
+
+  const layout = state.preview?.layout;
+  const isCut = layout?.mode === 'tiles';
 
   return (
     <div className="flex flex-col gap-4">
@@ -264,25 +265,62 @@ const BackgroundImportForm = ({
               <ChecklistItem
                 condition={checklist[0]}
               >
-                <Text>Sizes are multiples of each other</Text>
+                { isCut ? (
+                  <Text>
+                    Too many different tiles for a single big background, it will be cut into
+                    { ' ' }{ layout?.tiles.length } tiles of 256x256px at build time
+                  </Text>
+                ) : layout?.mode === 'big' ? (
+                  <Text>Background is a single big background</Text>
+                ) : (
+                  <Text>Background fits in a single tile</Text>
+                ) }
               </ChecklistItem>
               <ChecklistItem warn condition={(state.preview?.tiles || 0) <= 1024}>
-                <Text>Image has { state.preview?.tiles ?? 0 } tiles</Text>
+                <Text>
+                  { isCut ? 'Biggest tile has' : 'Image has' }
+                  { ' ' }{ state.preview?.tiles ?? 0 } tiles
+                </Text>
                 <Tooltip
                   content={(
                     <Text>
                       This is an approximation.
                       Butano/grit cut images into 8x8px tiles to reuse memory. To limit
-                      the memory footprint, an image cannot have more than 1024 tiles.
+                      the memory footprint, an image (or each of the tiles a big image is cut
+                      into) cannot have more than 1024 tiles. A big image with less than
+                      { ' ' + BACKGROUND_VRAM_TILES_BUDGET } tiles is kept as a single big
+                      background, which is much cheaper.
                     </Text>
                   )}
                 >
                   <InfoCircledIcon />
                 </Tooltip>
               </ChecklistItem>
+              { isCut && (
+                <ChecklistItem
+                  warn
+                  condition={(state.preview?.loadedTiles ?? 0) <= BACKGROUND_VRAM_TILES_BUDGET}
+                >
+                  <Text>
+                    Up to { state.preview?.loadedTiles ?? 0 } tiles in memory at once
+                  </Text>
+                  <Tooltip
+                    content={(
+                      <Text>
+                        Only the parts of the background seen by the camera are loaded, but
+                        the GBA background memory fits about { BACKGROUND_VRAM_TILES_BUDGET } tiles
+                        in total. Detailed images (photos, gradients) quickly exceed it, and the
+                        parts that do not fit will not be displayed. Repeated patterns are cheap.
+                      </Text>
+                    )}
+                  >
+                    <InfoCircledIcon />
+                  </Tooltip>
+                </ChecklistItem>
+              ) }
               <ChecklistItem warn condition={state.preview?.isResized !== true}>
                 { state.preview?.isResized === true ? (
-                  <Text>Image was resized to fit the screen</Text>
+                  <Text>Image was padded to a multiple of 8px</Text>
                 ) : (
                   <Text>No resizing needed</Text>
                 ) }

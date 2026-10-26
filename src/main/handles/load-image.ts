@@ -2,7 +2,13 @@ import type { IpcMainInvokeEvent } from 'electron';
 import { Jimp } from 'jimp';
 
 import type { SpriteBitmap } from '../../types';
-import { toBmp, resizeToFit } from '../images';
+import {
+  countBackgroundTiles,
+  decodeIndexedBmp,
+  getBackgroundLayoutForImage,
+  resizeToFit,
+  toBmp,
+} from '../images';
 
 export default async function (
   _: IpcMainInvokeEvent,
@@ -28,7 +34,19 @@ export default async function (
     : { transparentColor: opts?.transparencyColor };
 
   // @ts-expect-error - jimp is weird
-  const { buffer: bmpBuffer, tiles, transparentColor } = await toBmp(image, bmpOptions);
+  const { buffer: bmpBuffer, tiles: totalTiles, transparentColor } = await toBmp(image, bmpOptions);
+
+  let layout;
+  let backgroundTiles;
+
+  if (mode === 'background') {
+    const indexed = decodeIndexedBmp(bmpBuffer);
+
+    layout = getBackgroundLayoutForImage('', indexed);
+    backgroundTiles = countBackgroundTiles(indexed, layout);
+  }
+
+  const tiles = backgroundTiles?.largest ?? totalTiles;
 
   return {
     width: image.bitmap.width,
@@ -39,6 +57,8 @@ export default async function (
     data: `data:image/bmp;base64,${bmpBuffer.toString('base64')}`,
     isResized: resized,
     tiles,
+    layout,
+    loadedTiles: backgroundTiles?.loaded,
     transparentColor,
   } satisfies SpriteBitmap;
 }

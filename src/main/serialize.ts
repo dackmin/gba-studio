@@ -53,6 +53,7 @@ export const serializeBackground = async (
 
   delete background._realWidth;
   delete background._realHeight;
+  delete background._layout;
   delete background._fileName;
   delete background._version;
 

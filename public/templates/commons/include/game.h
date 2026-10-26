@@ -5,8 +5,6 @@
 #include <bn_vector.h>
 #include <bn_optional.h>
 #include <bn_span.h>
-#include <bn_regular_bg_ptr.h>
-#include <bn_regular_bg_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_camera_actions.h>
 
@@ -18,6 +16,7 @@
 #include "sprite.h"
 #include "sensor.h"
 #include "projectile.h"
+#include "scene_bg.h"
 
 namespace neo
 {
@@ -34,7 +33,7 @@ namespace neo
       neo::variables::registry variables;
 
       neo::types::scene* active_scene;
-      bn::optional<bn::regular_bg_ptr> scene_bg;
+      neo::scene_bg scene_bg;
       neo::types::scene_event* last_goto_event;
 
       int scripted_events_count;
@@ -80,7 +79,7 @@ namespace neo
       void set_scene(bn::string_view scene_name);
       void reset();
       bn::string_view resolve_actor_reference(bn::string_view actor_reference);
-      void set_background(bn::regular_bg_item background, bool visible = false);
+      void set_background(const neo::types::background& background, bool visible = false);
       void exec_event(const neo::types::event* e, bool is_loop);
       void run();
       void enable_blending();

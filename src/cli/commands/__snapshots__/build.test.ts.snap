@@ -16,10 +16,31 @@ exports[`cli/build > should build a basic project successfully 1`] = `
 
 // Assets
 #include <bn_regular_bg_items_bg_default.h>
-#include <bn_sprite_items_sprite_default.h>
 #include <bn_regular_bg_items_map.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_sprite_default.h>
+
+namespace neo::backgrounds
+{
+  constexpr neo::types::background_tile bg_default_tiles[] = {
+    { bn::regular_bg_items::bg_default, 0, 0, 256, 256 },
+  };
+  constexpr neo::types::background bg_default = {
+    bn::span<const neo::types::background_tile>(bg_default_tiles),
+    256,
+    256,
+  };
+
+  constexpr neo::types::background_tile map_tiles[] = {
+    { bn::regular_bg_items::map, 0, 0, 512, 512 },
+  };
+  constexpr neo::types::background map = {
+    bn::span<const neo::types::background_tile>(map_tiles),
+    512,
+    512,
+  };
+}
 
 namespace neo::scenes
 {
@@ -456,7 +477,7 @@ namespace neo::scenes
   constexpr bn::string_view scene_0_event_13_type = "set-background";
   BN_DATA_EWRAM neo::types::set_background_event scene_0_event_13(
     scene_0_event_13_type,
-    bn::regular_bg_items::map
+    neo::backgrounds::map
   );
   // Event 14: show-dialog
   constexpr bn::string_view scene_0_event_14_type = "show-dialog";
@@ -1469,7 +1490,7 @@ namespace neo::scenes
     scene_0_scene_id,
     scene_0_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
-    bn::regular_bg_items::map,
+    neo::backgrounds::map,
     44,
     scene_0_events,
     true,
@@ -1490,7 +1511,7 @@ namespace neo::scenes
     default_scene_id,
     default_scene_name,
     neo::types::scene_type::LOGOS,
-    bn::regular_bg_items::bg_default,
+    neo::backgrounds::bg_default,
     0,
     nullptr,
     false,
@@ -1630,6 +1651,7 @@ exports[`cli/build > should build a basic project successfully 2`] = `
 #include <bn_sprite_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_tiles_ptr.h>
+#include <bn_span.h>
 #include <bn_vector.h>
 
 #include <neo_utils.h>
@@ -1639,6 +1661,7 @@ namespace neo
 {
   class game;
   class actor;
+  class scene_bg;
 }
 
 namespace neo::types
@@ -1647,6 +1670,22 @@ namespace neo::types
   static constexpr int SCREEN_HEIGHT = 160;
 
   struct sprite_animation;
+
+  struct background_tile
+  {
+    bn::regular_bg_item item;
+    int x;
+    int y;
+    int width;
+    int height;
+  };
+
+  struct background
+  {
+    bn::span<const background_tile> tiles;
+    int width;
+    int height;
+  };
 
   enum class direction
   {
@@ -1810,13 +1849,13 @@ namespace neo::types
     const event_value* duration;
 
     neo::game* game_ref = nullptr;
-    bn::optional<bn::regular_bg_ptr> bg;
+    neo::scene_bg* bg = nullptr;
     bn::optional<bn::blending_fade_alpha_to_action> action;
 
     fade_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
 
-    void start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms);
+    void start(neo::game* game_, neo::scene_bg& bg_, int duration_ms);
     bool update() override;
   };
 
@@ -2431,10 +2470,10 @@ namespace neo::types
 
   struct set_background_event: event
   {
-    bn::regular_bg_item background;
+    neo::types::background background;
     set_background_event(
       bn::string_view type_,
-      bn::regular_bg_item background_
+      neo::types::background background_
     ):
       event(type_),
       background(background_) {}
@@ -2651,7 +2690,7 @@ namespace neo::types
         return true;
       }
 
-      return collisions[tile_index(tile_x, tile_y)] == 1;
+      return collisions != nullptr && collisions[tile_index(tile_x, tile_y)] == 1;
     }
   };
 
@@ -2853,7 +2892,7 @@ namespace neo::types
     bn::string_view _id;
     bn::string_view name;
     neo::types::scene_type scene_type;
-    bn::regular_bg_item background;
+    neo::types::background background;
     int event_count;
     event* const* events;
     // Player

@@ -37,7 +37,6 @@ namespace neo::effects
     int wave_total_frames = 0;
     int wave_elapsed_frames = 0;
     bn::fixed wave_deltas[160] = {};
-    bn::optional<bn::regular_bg_position_hbe_ptr> wave_hbe;
 
     void update_wave_deltas()
     {
@@ -234,16 +233,14 @@ namespace neo::effects
 
     if (!wants_bg)
     {
-      wave_hbe.reset();
+      game->scene_bg.clear_wave();
     }
-    else if (!wave_hbe.has_value())
+    else if (!game->scene_bg.has_wave())
     {
       wave_phase = 0;
       update_wave_deltas();
-      wave_hbe = bn::regular_bg_position_hbe_ptr::create_horizontal_optional(
-        *game->scene_bg, bn::span<const bn::fixed>(wave_deltas, 160));
 
-      if (!wave_hbe.has_value())
+      if (!game->scene_bg.set_wave(bn::span<const bn::fixed>(wave_deltas, 160)))
       {
         BN_LOG("effects::start_wave_effect: couldn't allocate the H-Blank effect");
       }
@@ -252,7 +249,7 @@ namespace neo::effects
 
   void stop_wave_effect(neo::game* game)
   {
-    wave_hbe.reset();
+    game->scene_bg.clear_wave();
 
     // Sprites are faked (see update_wave_effect): undo exactly the offset
     // that's currently baked into each rendered sprite's x, regardless of
@@ -316,10 +313,10 @@ namespace neo::effects
       wave_phase += 360;
     }
 
-    if (wave_hbe.has_value())
+    if (game->scene_bg.has_wave())
     {
       update_wave_deltas();
-      wave_hbe->reload_deltas_ref();
+      game->scene_bg.reload_wave();
     }
 
     if (wave_target == "sprite" || wave_target == "both")

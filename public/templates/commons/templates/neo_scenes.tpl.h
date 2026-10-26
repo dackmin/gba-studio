@@ -13,6 +13,11 @@
 
 // Assets
 #include <bn_regular_bg_items_bg_default.h>
+{{#each backgrounds}}
+{{#each this._layout.tiles}}
+#include <bn_regular_bg_items_{{this.name}}.h>
+{{/each}}
+{{/each}}
 #include <bn_sprite_items_sprite_default.h>
 {{#each sprites}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites this.id}}.h>
@@ -21,7 +26,6 @@
 #include <bn_sprite_items_{{getFontName @root/fonts this.id}}.h>
 {{/each}}
 {{#each scenes}}
-#include <bn_regular_bg_items_{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}.h>
 {{#if this.player.sprite}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}}.h>
 {{else}}
@@ -34,6 +38,31 @@
 #include <bn_sprite_items_{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}.h>
 {{/each}}
 {{/each}}
+
+namespace neo::backgrounds
+{
+  constexpr neo::types::background_tile bg_default_tiles[] = {
+    { bn::regular_bg_items::bg_default, 0, 0, 256, 256 },
+  };
+  constexpr neo::types::background bg_default = {
+    bn::span<const neo::types::background_tile>(bg_default_tiles),
+    256,
+    256,
+  };
+  {{#each backgrounds}}
+
+  constexpr neo::types::background_tile {{getBackgroundName @root/backgrounds this.id}}_tiles[] = {
+    {{#each this._layout.tiles}}
+    { bn::regular_bg_items::{{this.name}}, {{this.x}}, {{this.y}}, {{this.width}}, {{this.height}} },
+    {{/each}}
+  };
+  constexpr neo::types::background {{getBackgroundName @root/backgrounds this.id}} = {
+    bn::span<const neo::types::background_tile>({{getBackgroundName @root/backgrounds this.id}}_tiles),
+    {{this._layout.width}},
+    {{this._layout.height}},
+  };
+  {{/each}}
+}
 
 namespace neo::scenes
 {
@@ -533,9 +562,9 @@ namespace neo::scenes
     neo::types::scene_type::LOGOS,
     {{/if}}
     {{#if this.background}}
-    bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}},
+    neo::backgrounds::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}},
     {{else}}
-    bn::regular_bg_items::bg_default,
+    neo::backgrounds::bg_default,
     {{/if}}
     {{#if (hasItems this.events)}}
     {{this.events.length}},
@@ -586,7 +615,7 @@ namespace neo::scenes
     default_scene_id,
     default_scene_name,
     neo::types::scene_type::LOGOS,
-    bn::regular_bg_items::bg_default,
+    neo::backgrounds::bg_default,
     0,
     nullptr,
     false,

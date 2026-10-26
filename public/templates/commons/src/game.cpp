@@ -34,7 +34,7 @@ namespace neo
     camera(camera_),
     variables(),
     active_scene(nullptr),
-    scene_bg(),
+    scene_bg(camera_),
     player(nullptr),
     camera_target(nullptr)
   {
@@ -94,14 +94,9 @@ namespace neo
     return actor_reference;
   }
 
-  void game::set_background(bn::regular_bg_item background, bool visible)
+  void game::set_background(const neo::types::background& background, bool visible)
   {
-    // prevent NO MORE VRAM errors by first releasing the previous background pointer
-    scene_bg.reset();
-    scene_bg = background.create_bg(0, 0);
-    scene_bg->set_camera(camera);
-    scene_bg->set_visible(visible);
-    scene_bg->set_priority(3);
+    scene_bg.set(background, visible);
   }
 
   void game::run () {
@@ -386,10 +381,7 @@ namespace neo
       update_frame();
     }
 
-    if (scene_bg.has_value())
-    {
-      scene_bg->set_visible(false);
-    }
+    scene_bg.set_visible(false);
 
     if (player != nullptr)
     {
@@ -467,6 +459,7 @@ namespace neo
     update_active_parallel_events();
     neo::effects::update_wave_effect(this);
     neo::hud::update(this);
+    scene_bg.update();
     bn::core::update();
   }
 

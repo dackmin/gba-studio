@@ -7,6 +7,14 @@ import {
 } from 'jimp';
 import { denormalizeRGBA, hsva2rgba, parseColor } from '@junipero/core';
 
+import type { BackgroundLayout, BackgroundTile } from '../types';
+import {
+  BACKGROUND_MAX_BIG_SIZE,
+  BACKGROUND_MAX_SINGLE_SIZE,
+  BACKGROUND_TILE_SIZE,
+  BACKGROUND_VRAM_TILES_BUDGET,
+} from '../commons';
+
 export type JimpImage = InstanceType<typeof Jimp>;
 
 export interface QuantizedImage {
@@ -169,7 +177,15 @@ export async function toBmp<T extends JimpImage> (
     opts?.matchTransparent ?? true,
   );
   const tiles = countUniqueTiles(indices, width, height, opts);
+  const buffer = encodeIndexedBmp({ width, height, indices, palette }, colors);
 
+  return { buffer, tiles, transparentColor: finalTransparentColor };
+}
+
+export function encodeIndexedBmp (
+  { width, height, indices, palette }: QuantizedImage,
+  colors: number = 256,
+): Buffer {
   // BMP scanlines are padded to 4-byte boundaries.
   const rowSize = (width + 3) & ~3;
   const pixelDataSize = rowSize * height;
@@ -235,7 +251,130 @@ export async function toBmp<T extends JimpImage> (
     }
   }
 
-  return { buffer: bmp, tiles, transparentColor: finalTransparentColor };
+  return bmp;
+}
+
+export function decodeIndexedBmp (bmp: Buffer): QuantizedImage {
+  if (bmp.length < 54 || bmp.readUInt16LE(0) !== 0x4d42) {
+    throw new Error('Not a BMP file');
+  }
+
+  const pixelOffset = bmp.readUInt32LE(10);
+  const headerSize = bmp.readUInt32LE(14);
+  const width = bmp.readInt32LE(18);
+  const rawHeight = bmp.readInt32LE(22);
+  const bitCount = bmp.readUInt16LE(28);
+  const compression = bmp.readUInt32LE(30);
+
+  if (bitCount !== 8 || compression !== 0) {
+    throw new Error('Only uncompressed 8bpp indexed BMP files are supported');
+  }
+
+  const topDown = rawHeight < 0;
+  const height = Math.abs(rawHeight);
+  const paletteOffset = 14 + headerSize;
+  const colors = Math.min(
+    256,
+    bmp.readUInt32LE(46) || (pixelOffset - paletteOffset) / 4,
+  );
+  const palette: [number, number, number][] = [];
+
+  for (let i = 0; i < colors; i++) {
+    const offset = paletteOffset + i * 4;
+
+    palette.push([bmp[offset + 2], bmp[offset + 1], bmp[offset]]);
+  }
+
+  const rowSize = (width + 3) & ~3;
+  const indices = new Uint8Array(width * height);
+
+  for (let y = 0; y < height; y++) {
+    const sourceOffset = pixelOffset + (topDown ? y : height - 1 - y) * rowSize;
+
+    indices.set(bmp.subarray(sourceOffset, sourceOffset + width), y * width);
+  }
+
+  return { width, height, indices, palette };
+}
+
+export interface BackgroundTilesCount {
+  largest: number;
+  loaded: number;
+}
+
+export function getBackgroundLayoutForImage (
+  fileName: string,
+  image: QuantizedImage,
+): BackgroundLayout {
+  const layout = getBackgroundLayout(fileName, image.width, image.height);
+
+  if (layout.mode === 'single') {
+    return layout;
+  }
+
+  const tiles = countUniqueTiles(image.indices, image.width, image.height, {
+    limit: BACKGROUND_VRAM_TILES_BUDGET,
+  });
+
+  return tiles <= BACKGROUND_VRAM_TILES_BUDGET
+    ? getBackgroundLayout(fileName, image.width, image.height, true)
+    : layout;
+}
+
+export function countBackgroundTiles (
+  image: QuantizedImage,
+  layout: BackgroundLayout,
+  opts?: Parameters<typeof countUniqueTiles>[3],
+): BackgroundTilesCount {
+  const { tiles } = layout;
+  const cols = Math.max(...tiles.map(tile => tile.col)) + 1;
+  const rows = Math.max(...tiles.map(tile => tile.row)) + 1;
+
+  const counts = tiles.map(tile => {
+    const cropped = cropIndexedImage(image, tile.x, tile.y, tile.width, tile.height);
+
+    return countUniqueTiles(cropped.indices, cropped.width, cropped.height, opts);
+  });
+
+  let loaded = 0;
+
+  for (let row = 0; row < Math.max(1, rows - 1); row++) {
+    for (let col = 0; col < Math.max(1, cols - 1); col++) {
+      let sum = 0;
+
+      for (let dy = 0; dy < Math.min(2, rows); dy++) {
+        for (let dx = 0; dx < Math.min(2, cols); dx++) {
+          sum += counts[(row + dy) * cols + col + dx];
+        }
+      }
+
+      loaded = Math.max(loaded, sum);
+    }
+  }
+
+  return { largest: Math.max(...counts), loaded };
+}
+
+export function cropIndexedImage (
+  image: QuantizedImage,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): QuantizedImage {
+  const indices = new Uint8Array(width * height);
+  const copyWidth = Math.max(0, Math.min(width, image.width - x));
+
+  for (let row = 0; row < height && y + row < image.height; row++) {
+    const sourceOffset = (y + row) * image.width + x;
+
+    indices.set(
+      image.indices.subarray(sourceOffset, sourceOffset + copyWidth),
+      row * width,
+    );
+  }
+
+  return { width, height, indices, palette: image.palette };
 }
 
 /**
@@ -252,6 +391,7 @@ export function countUniqueTiles (
   opts?: {
     repeatedTilesReduction?: boolean;
     flippedTilesReduction?: boolean;
+    limit?: number;
   },
 ): number {
   const repeatedTilesReduction = opts?.repeatedTilesReduction ?? true;
@@ -264,13 +404,18 @@ export function countUniqueTiles (
     return tilesX * tilesY;
   }
 
-  const seen = new Set<string>();
+  // Grit always keeps an empty tile first
+  const seen = new Set<string>([new Uint8Array(64).join(',')]);
 
   for (let ty = 0; ty < tilesY; ty++) {
     for (let tx = 0; tx < tilesX; tx++) {
       const tile = extractTile(indices, width, height, tx * 8, ty * 8);
 
       seen.add(tileKey(tile, flippedTilesReduction));
+
+      if (opts?.limit !== undefined && seen.size > opts.limit) {
+        return seen.size;
+      }
     }
   }
 
@@ -422,21 +567,14 @@ export function resizeToFit <T extends JimpImage> (
       break;
     }
     case 'background': {
-      // Butano background size chart
-      // https://gvaliente.github.io/butano/import.html#import_regular_bg
-      // Much simpler -> 256x256, 256x512, 512x256 or 512x512
-      const targetWidth = image.bitmap.width <= 256 ? 256 : 512;
-      const targetHeight = image.bitmap.height <= 256 ? 256 : 512;
+      const targetWidth = roundUpToTile(image.bitmap.width);
+      const targetHeight = roundUpToTile(image.bitmap.height);
 
       if (targetWidth !== image.bitmap.width || targetHeight !== image.bitmap.height) {
         resized = true;
-        image.contain({
-          w: targetWidth,
-          h: targetHeight,
-          // Pad on the bottom/right only, so existing frames keep their grid alignment.
-          align: HorizontalAlign.LEFT | VerticalAlign.TOP,
-          mode: ResizeStrategy.NEAREST_NEIGHBOR,
-        });
+        const padded = new Jimp({ width: targetWidth, height: targetHeight, color: 0x00000000 });
+        padded.composite(image, 0, 0);
+        image.bitmap = padded.bitmap;
       }
 
       break;
@@ -451,3 +589,69 @@ export function resizeToFit <T extends JimpImage> (
 function roundUpToTile (value: number, tileSize: number = 8): number {
   return Math.ceil(value / tileSize) * tileSize;
 }
+
+export const getBackgroundLayout = (
+  fileName: string,
+  width: number,
+  height: number,
+  big: boolean = false,
+): BackgroundLayout => {
+  if (width <= BACKGROUND_MAX_SINGLE_SIZE && height <= BACKGROUND_MAX_SINGLE_SIZE) {
+    return {
+      mode: 'single',
+      width,
+      height,
+      tiles: [{
+        name: fileName,
+        col: 0,
+        row: 0,
+        x: 0,
+        y: 0,
+        width: width <= BACKGROUND_TILE_SIZE ? BACKGROUND_TILE_SIZE : BACKGROUND_MAX_SINGLE_SIZE,
+        height: height <= BACKGROUND_TILE_SIZE ? BACKGROUND_TILE_SIZE : BACKGROUND_MAX_SINGLE_SIZE,
+      }],
+    };
+  }
+
+  const cols = Math.ceil(width / BACKGROUND_TILE_SIZE);
+  const rows = Math.ceil(height / BACKGROUND_TILE_SIZE);
+
+  if (
+    big &&
+    cols * BACKGROUND_TILE_SIZE <= BACKGROUND_MAX_BIG_SIZE &&
+    rows * BACKGROUND_TILE_SIZE <= BACKGROUND_MAX_BIG_SIZE
+  ) {
+    return {
+      mode: 'big',
+      width,
+      height,
+      tiles: [{
+        name: fileName,
+        col: 0,
+        row: 0,
+        x: 0,
+        y: 0,
+        width: cols * BACKGROUND_TILE_SIZE,
+        height: rows * BACKGROUND_TILE_SIZE,
+      }],
+    };
+  }
+
+  const tiles: BackgroundTile[] = [];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      tiles.push({
+        name: `${fileName}_tile_${col}_${row}`,
+        col,
+        row,
+        x: col * BACKGROUND_TILE_SIZE,
+        y: row * BACKGROUND_TILE_SIZE,
+        width: BACKGROUND_TILE_SIZE,
+        height: BACKGROUND_TILE_SIZE,
+      });
+    }
+  }
+
+  return { mode: 'tiles', width, height, tiles };
+};

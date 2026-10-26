@@ -115,7 +115,7 @@ namespace neo::events
       BN_LOG("Fade-in duration: ", duration);
 
       game->enable_blending();
-      neo::fade::enter(game, *game->scene_bg, duration);
+      neo::fade::enter(game, game->scene_bg, duration);
       game->disable_blending();
     }
 
@@ -129,7 +129,7 @@ namespace neo::events
         static_cast<const neo::types::fade_event*>(e);
 
       game->enable_blending();
-      neo::fade::exit(game, *game->scene_bg, fade_evt->duration->as_int(game->variables));
+      neo::fade::exit(game, game->scene_bg, fade_evt->duration->as_int(game->variables));
     }
 
     /**
@@ -1063,7 +1063,7 @@ namespace neo::events
       const neo::types::set_background_event* set_bg_evt =
         static_cast<const neo::types::set_background_event*>(e);
 
-      bool was_visible = game->scene_bg.has_value() && game->scene_bg->visible();
+      bool was_visible = game->scene_bg.has_value() && game->scene_bg.visible();
       game->set_background(set_bg_evt->background, was_visible);
     }
 
@@ -1145,10 +1145,10 @@ namespace neo::events
   }
 }
 
-void neo::types::fade_event::start(neo::game* game_, bn::regular_bg_ptr& bg_, int duration_ms)
+void neo::types::fade_event::start(neo::game* game_, neo::scene_bg& bg_, int duration_ms)
 {
   game_ref = game_;
-  bg = bg_;
+  bg = &bg_;
 
   bool is_fade_in = type == "fade-in";
   int frames = duration_ms / 16;
@@ -1189,8 +1189,8 @@ bool neo::types::fade_event::update()
 {
   if (!action.has_value())
   {
-    // instant (duration<=0) fade already applied by start(): drop our bg copy so it can be freed
-    bg.reset();
+    // instant (duration<=0) fade already applied by start()
+    bg = nullptr;
     return true;
   }
 
@@ -1212,7 +1212,7 @@ bool neo::types::fade_event::update()
 
   bg->set_blending_enabled(false);
   action.reset();
-  bg.reset();
+  bg = nullptr;
 
   if (is_fade_in)
   {
@@ -1238,7 +1238,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
       neo::types::fade_event* fade_evt =
         static_cast<neo::types::fade_event*>(sub_evt);
 
-      fade_evt->start(game, *game->scene_bg, fade_evt->duration->as_int(game->variables));
+      fade_evt->start(game, game->scene_bg, fade_evt->duration->as_int(game->variables));
 
       if (!fade_evt->update())
       {

@@ -1,4 +1,5 @@
 import { findSprite } from '../../../helpers';
+import { getBackgroundLayoutFromFile } from './assets';
 import type { Build, InternalSpriteAnimation, SpriteAnimation } from '../../../types';
 
 export const prepareAnimations = async (
@@ -44,6 +45,10 @@ export const prepareAnimations = async (
 };
 
 export async function prepareData (build: Build) {
+  for (const background of build.data?.backgrounds || []) {
+    background._layout ??= await getBackgroundLayoutFromFile(build, background);
+  }
+
   for (const sprite of build.data?.sprites || []) {
     if (sprite.animations) {
       sprite._animations = await prepareAnimations(sprite.animations);

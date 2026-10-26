@@ -544,7 +544,7 @@ BN_DATA_EWRAM neo::types::set_player_direction_event {{../prefix}}_{{@index}}(
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-background";
 BN_DATA_EWRAM neo::types::set_background_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
-  bn::regular_bg_items::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}
+  neo::backgrounds::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}
 );
 {{else if (eq this.type "set-sprite")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-sprite";

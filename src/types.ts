@@ -369,6 +369,23 @@ export interface GameSpriteFile {
   $schema?: string;
 }
 
+export interface BackgroundTile {
+  name: string;
+  col: number;
+  row: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface BackgroundLayout {
+  mode: 'single' | 'big' | 'tiles';
+  width: number;
+  height: number;
+  tiles: BackgroundTile[];
+}
+
 export interface GameBackgroundFile {
   type: 'background';
   name: string;
@@ -380,6 +397,7 @@ export interface GameBackgroundFile {
   id?: string;
   _realWidth?: number;
   _realHeight?: number;
+  _layout?: BackgroundLayout;
   _file?: string;
   _fileName?: string;
   _version?: number;
@@ -876,6 +894,8 @@ export interface SpriteBitmap {
   originalHeight: number;
   isResized: boolean;
   tiles: number;
+  layout?: BackgroundLayout;
+  loadedTiles?: number;
   transparentColor: [number, number, number];
   mime?: string;
 }
