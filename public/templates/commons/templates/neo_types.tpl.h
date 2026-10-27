@@ -1047,6 +1047,16 @@ namespace neo::types
       return tile_y * width + tile_x;
     }
 
+    inline int tile_value (int tile_x, int tile_y) const
+    {
+      if (tile_x < 0 || tile_x >= width || tile_y < 0 || tile_y >= height)
+      {
+        return 1;
+      }
+
+      return collisions != nullptr ? collisions[tile_index(tile_x, tile_y)] : 0;
+    }
+
     inline bool has_collision (int tile_x, int tile_y) const
     {
       if (tile_x < 0 || tile_x >= width || tile_y < 0 || tile_y >= height)

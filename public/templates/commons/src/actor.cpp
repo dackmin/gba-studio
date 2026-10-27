@@ -516,13 +516,7 @@ namespace neo
 
     if (walking)
     {
-      int next_x = (int)position.x() +
-        (walk_left ? -SIDE_SCROLL_SPEED : SIDE_SCROLL_SPEED);
-
-      if (!side_scroller_blocked_at(next_x, (int)position.y()))
-      {
-        set_position(bn::fixed_point(next_x, position.y()));
-      }
+      side_view_step_x(walk_left ? -SIDE_SCROLL_SPEED : SIDE_SCROLL_SPEED);
     }
 
     // A jumps when grounded (and doesn't re-trigger mid-air)
@@ -953,11 +947,6 @@ namespace neo
 
   bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
   {
-    if (game->active_scene->has_gravity)
-    {
-      return side_scroller_blocked_at((int)pixel_position.x(), (int)pixel_position.y());
-    }
-
     const neo::types::map* map_data = game->active_scene->map_data;
 
     int feet_x = (int)pixel_position.x() + width() / 2;
@@ -971,15 +960,33 @@ namespace neo
 
   void actor::check_input_point_and_click()
   {
+    bool gravity = game->active_scene->has_gravity;
+    bn::fixed_point position_before = position;
+
+    // Reuses the side-scroller physics: falls until something solid is hit
+    if (gravity)
+    {
+      apply_side_scroller_gravity();
+    }
+
     if (!walking_to_target)
     {
+      if (gravity && position != position_before)
+      {
+        update_sensors(
+          game->active_scene->map_data->to_tile_x(game->variables, (int)position.x() + width() / 2),
+          game->active_scene->map_data->to_tile_y(game->variables, (int)position.y() + height() - 1)
+        );
+        check_collisions();
+      }
+
       return;
     }
 
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     bn::fixed delta_x = walk_target.x() - position.x();
-    bn::fixed delta_y = walk_target.y() - position.y();
+    bn::fixed delta_y = gravity ? bn::fixed(0) : walk_target.y() - position.y();
     bn::fixed distance = bn::max(bn::abs(delta_x), bn::abs(delta_y));
     bn::fixed step_x = delta_x;
     bn::fixed step_y = delta_y;
@@ -995,7 +1002,15 @@ namespace neo
     bn::fixed_point next_position = position + bn::fixed_point(step_x, step_y);
     bool stuck = false;
 
-    if (!point_and_click_blocked_at(next_position))
+    if (gravity)
+    {
+      if (!side_view_step_x(step_x))
+      {
+        arrived = false;
+        stuck = true;
+      }
+    }
+    else if (!point_and_click_blocked_at(next_position))
     {
       set_position(next_position);
     }
@@ -1096,7 +1111,10 @@ namespace neo
     {
       int next_y = (int)position.y() + (step < 0 ? -1 : 1);
 
-      if (side_scroller_blocked_at((int)position.x(), next_y))
+      if (
+        side_scroller_blocked_at((int)position.x(), next_y) ||
+        (step > 0 && slope_embedded((int)position.x(), next_y))
+      )
       {
         break;
       }
@@ -1126,15 +1144,16 @@ namespace neo
     }
   }
 
-  bool actor::side_scroller_blocked_at(int pixel_x, int pixel_y)
+  bool actor::side_scroller_blocked_at(
+    int pixel_x, int pixel_y, int foot_clearance, int side_inset)
   {
     const neo::types::map* map_data = game->active_scene->map_data;
 
     int sprite_width = width();
-    int sprite_height = height();
+    int sprite_height = bn::max(1, height() - foot_clearance);
 
-    int min_tile_x = map_data->to_tile_x(game->variables, pixel_x);
-    int max_tile_x = map_data->to_tile_x(game->variables, pixel_x + sprite_width - 1);
+    int min_tile_x = map_data->to_tile_x(game->variables, pixel_x + side_inset);
+    int max_tile_x = map_data->to_tile_x(game->variables, pixel_x + sprite_width - 1 - side_inset);
     int min_tile_y = map_data->to_tile_y(game->variables, pixel_y);
     int max_tile_y = map_data->to_tile_y(game->variables, pixel_y + sprite_height - 1);
 
@@ -1155,6 +1174,158 @@ namespace neo
     }
 
     return false;
+  }
+
+  int actor::slope_surface_row(int center_x, int tile_y)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int grid_size = map_data->grid_size->as_int(game->variables);
+
+    if (center_x < 0 || tile_y < 0)
+    {
+      return -1;
+    }
+
+    int tile_x = map_data->to_tile_x(game->variables, center_x);
+    int value = map_data->tile_value(tile_x, tile_y);
+
+    if (value != 2 && value != 3)
+    {
+      return -1;
+    }
+
+    int local_x = center_x - tile_x * grid_size;
+    int local_y = value == 2 ? local_x : grid_size - 1 - local_x;
+
+    return tile_y * grid_size + local_y;
+  }
+
+  bool actor::slope_embedded(int pixel_x, int pixel_y)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int bottom = pixel_y + height() - 1;
+
+    if (bottom < 0)
+    {
+      return false;
+    }
+
+    int surface = slope_surface_row(
+      pixel_x + width() / 2, map_data->to_tile_y(game->variables, bottom));
+
+    return surface >= 0 && bottom >= surface;
+  }
+
+  bool actor::near_slope(int pixel_x, int pixel_y)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int bottom = pixel_y + height() - 1;
+
+    if (bottom < 0)
+    {
+      return false;
+    }
+
+    int center_x = pixel_x + width() / 2;
+    int tile_y = map_data->to_tile_y(game->variables, bottom);
+
+    return slope_surface_row(center_x, tile_y - 1) >= 0 ||
+      slope_surface_row(center_x, tile_y) >= 0 ||
+      slope_surface_row(center_x, tile_y + 1) >= 0;
+  }
+
+  bool actor::adjust_to_slope(bn::fixed_point& next, int side_inset)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int center_x = (int)next.x() + width() / 2;
+    int bottom = (int)next.y() + height() - 1;
+
+    if (bottom < 0)
+    {
+      return true;
+    }
+
+    int tile_y = map_data->to_tile_y(game->variables, bottom);
+    int surface = slope_surface_row(center_x, tile_y);
+
+    if (surface >= 0 && bottom >= surface)
+    {
+      if (bottom - (surface - 1) > SLOPE_MAX_STEP)
+      {
+        return false;
+      }
+
+      next.set_y(surface - height());
+
+      return !side_scroller_blocked_at(
+        (int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
+    }
+
+    int above = slope_surface_row(center_x, tile_y - 1);
+
+    if (above >= 0 && bottom - (above - 1) <= SLOPE_MAX_STEP)
+    {
+      next.set_y(above - height());
+
+      return !side_scroller_blocked_at(
+        (int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
+    }
+
+    if (grounded)
+    {
+      int below = surface >= 0
+        ? surface : slope_surface_row(center_x, tile_y + 1);
+      int gap = below - 1 - bottom;
+
+      if (below >= 0 && gap > 0 && gap <= SLOPE_MAX_STEP)
+      {
+        next.set_y(next.y() + gap);
+      }
+    }
+
+    return true;
+  }
+
+  bool actor::side_view_step_x(bn::fixed step_x)
+  {
+    bn::fixed_point next(position.x() + step_x, position.y());
+    bool on_slope = near_slope((int)position.x(), (int)position.y()) ||
+      near_slope((int)next.x(), (int)next.y());
+
+    int clearance = on_slope ? SLOPE_MAX_STEP : 0;
+    int side_inset = on_slope ? bn::max(0, width() / 2 - 4) : 0;
+
+    if (
+      side_scroller_blocked_at((int)next.x(), (int)next.y(), clearance, side_inset) ||
+      !adjust_to_slope(next, side_inset)
+    )
+    {
+      return false;
+    }
+
+    if (on_slope && !near_slope((int)next.x(), (int)next.y()))
+    {
+      int lift = 0;
+
+      while (
+        lift <= SLOPE_MAX_STEP &&
+        side_scroller_blocked_at((int)next.x(), (int)next.y() - lift)
+      )
+      {
+        ++lift;
+      }
+
+      if (lift > SLOPE_MAX_STEP)
+      {
+        return false;
+      }
+
+      next.set_y(next.y() - lift);
+    }
+
+    set_position(next);
+
+    return true;
   }
 
   /**

@@ -23,6 +23,7 @@ namespace neo
       inline constexpr static int SIDE_SCROLL_JUMP = 9;
       inline constexpr static int SIDE_SCROLL_GRAVITY = 1;
       inline constexpr static int SIDE_SCROLL_MAX_FALL = 4;
+      inline constexpr static int SLOPE_MAX_STEP = SIDE_SCROLL_SPEED + 1;
 
       void init();
       void update();
@@ -105,7 +106,13 @@ namespace neo
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);
       void update_sensors(int tile_x, int tile_y);
-      bool side_scroller_blocked_at(int pixel_x, int pixel_y);
+      bool side_scroller_blocked_at(
+        int pixel_x, int pixel_y, int foot_clearance = 0, int side_inset = 0);
+      int slope_surface_row(int center_x, int tile_y);
+      bool slope_embedded(int pixel_x, int pixel_y);
+      bool near_slope(int pixel_x, int pixel_y);
+      bool adjust_to_slope(bn::fixed_point& next, int side_inset);
+      bool side_view_step_x(bn::fixed step_x);
       // Resolves solid actors/sprites the player's footprint overlaps
       // (different collision group), firing their collide events on the
       // not-touching -> touching transition. Shared by both movement

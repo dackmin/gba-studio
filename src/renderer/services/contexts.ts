@@ -22,6 +22,7 @@ import type {
   SpriteAnimation,
   SpriteAnimationFrame,
   SpriteAnimationState,
+  CollisionBrush,
   SubToolType,
   ToolType,
   GameBackgroundFile,
@@ -110,6 +111,8 @@ export interface CanvasContextType {
     GameHudSprite | GameHudText | GameVariable;
   tool: ToolType;
   subTool?: SubToolType;
+  collisionBrush: CollisionBrush;
+  setCollisionBrush?(brush: CollisionBrush): void;
   setTool?(tool: ToolType, subTool?: SubToolType): void;
   resetTool?(): void;
   selectItem?(
@@ -133,6 +136,7 @@ export interface CanvasContextType {
 
 export const CanvasContext = createContext<CanvasContextType>({
   tool: 'default',
+  collisionBrush: 'normal',
 });
 
 export interface SceneFormContextType {

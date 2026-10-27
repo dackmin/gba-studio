@@ -7,6 +7,7 @@ import {
 import { mockState } from '@junipero/react';
 
 import type {
+  CollisionBrush,
   GameActor,
   GameHud,
   GameHudSprite,
@@ -31,6 +32,7 @@ export interface CanvasState {
   tool: ToolType;
   previousTool: ToolType;
   subTool?: SubToolType;
+  collisionBrush: CollisionBrush;
 }
 
 const Provider = ({
@@ -44,6 +46,7 @@ const Provider = ({
     selectedItem: undefined,
     tool: 'default',
     subTool: undefined,
+    collisionBrush: 'normal',
     previousTool: 'default',
   });
 
@@ -136,6 +139,10 @@ const Provider = ({
       subTool,
     });
   }, [state.tool]);
+
+  const setCollisionBrush = useCallback((collisionBrush: CollisionBrush) => {
+    dispatch({ collisionBrush });
+  }, []);
 
   const resetTool = useCallback(() => {
     dispatch({ tool: state.previousTool });
@@ -233,6 +240,8 @@ const Provider = ({
     selectedItem: state.selectedItem,
     tool: state.tool,
     subTool: state.subTool,
+    collisionBrush: state.collisionBrush,
+    setCollisionBrush,
     setTool,
     resetTool,
     selectItem,
@@ -251,7 +260,8 @@ const Provider = ({
     onVariableChange,
   }), [
     selectedScene, selectedHud,
-    state.selectedItem, state.tool, state.subTool,
+    state.selectedItem, state.tool, state.subTool, state.collisionBrush,
+    setCollisionBrush,
     selectScene, selectScript, onVariablesChange, onScriptsChange, setTool,
     resetTool, selectItem, resetSelection, onSceneChange, onScriptChange,
     onScenesChange, selectVariable, onVariableChange,

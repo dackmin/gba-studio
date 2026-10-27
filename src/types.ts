@@ -32,6 +32,8 @@ export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' |
   'hud-sprite' | 'hud-text';
 export type SubToolType = AddSubToolType;
 
+export type CollisionBrush = 'normal' | 'slope-left' | 'slope-right';
+
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
 
 export type ActorDirection = CharacterDirection | 'player';

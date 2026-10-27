@@ -59,7 +59,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
     >
       <IconButton
         className="!m-0"
-        size="2"
+        size="1"
         variant={tool === 'default' ? 'solid' : 'ghost'}
         onClick={onSelectTool_?.bind(null, 'default',)}
       >
@@ -72,8 +72,8 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           )}
         >
           <CursorArrowIcon
-            width={20}
-            height={20}
+            width={16}
+            height={16}
             className={classNames(
               '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
               { '[&_path]:!fill-seashell': tool === 'default' },
@@ -83,7 +83,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
       </IconButton>
       <IconButton
         className="!m-0"
-        size="2"
+        size="1"
         variant={tool === 'pan' ? 'solid' : 'ghost'}
         onClick={onSelectTool_?.bind(null, 'pan')}
       >
@@ -96,8 +96,8 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           )}
         >
           <HandIcon
-            width={20}
-            height={20}
+            width={16}
+            height={16}
             className={classNames(
               '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
               { '[&_path]:!fill-seashell': tool === 'pan' },
@@ -109,7 +109,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
         <DropdownMenu.Trigger>
           <IconButton
             className="!m-0"
-            size="2"
+            size="1"
             variant={tool === 'add' ? 'solid' : 'ghost'}
           >
             <Tooltip
@@ -121,8 +121,8 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
               )}
             >
               <PlusIcon
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 className={classNames(
                   '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
                   { '[&_path]:!fill-seashell': tool === 'add' },
@@ -158,7 +158,7 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
       </DropdownMenu.Root>
       <IconButton
         className="!m-0"
-        size="2"
+        size="1"
         variant={tool === 'collisions' ? 'solid' : 'ghost'}
         onClick={onSelectTool_?.bind(null, 'collisions')}
       >
@@ -171,8 +171,8 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           )}
         >
           <ComponentBooleanIcon
-            width={20}
-            height={20}
+            width={16}
+            height={16}
             className={classNames(
               '[&_path]:fill-onyx dark:[&_path]:fill-seashell',
               { '[&_path]:!fill-seashell': tool === 'collisions' },

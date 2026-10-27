@@ -1,3 +1,5 @@
+import type { CollisionBrush } from './types';
+
 // Butano regular backgrounds can only be 256x256, 256x512, 512x256 or 512x512.
 export const BACKGROUND_TILE_SIZE = 256;
 export const BACKGROUND_MAX_SINGLE_SIZE = 512;
@@ -9,3 +11,14 @@ export const BACKGROUND_VRAM_TILES_BUDGET = (64 * 1024 - 4 * 2048) / 64;
 // Butano big maps (regular backgrounds bigger than 512x512) are limited to 16384px and must be a
 // multiple of 256px.
 export const BACKGROUND_MAX_BIG_SIZE = 16384;
+
+export const COLLISION_EMPTY = '0';
+export const COLLISION_BLOCK = '1';
+export const COLLISION_SLOPE_LEFT = '2';
+export const COLLISION_SLOPE_RIGHT = '3';
+
+export const COLLISION_BRUSH_VALUES: Record<CollisionBrush, string> = {
+  normal: COLLISION_BLOCK,
+  'slope-left': COLLISION_SLOPE_LEFT,
+  'slope-right': COLLISION_SLOPE_RIGHT,
+};

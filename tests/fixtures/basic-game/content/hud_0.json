@@ -18,7 +18,7 @@
     "init": [
       {
         "type": "on-variable-change",
-        "variable": "604d86cb-db47-4c70-ae11-221156b64270",
+        "variable": "988e1070-3fca-40cf-b35f-e298484fdf02",
         "events": [],
         "id": "07524bc2-fd25-46a1-81b4-695cd0e99fbc"
       }

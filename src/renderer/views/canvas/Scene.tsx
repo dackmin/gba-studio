@@ -38,6 +38,13 @@ import {
   pixelToTile,
   tileToPixel,
 } from '../../../helpers';
+import {
+  COLLISION_BLOCK,
+  COLLISION_BRUSH_VALUES,
+  COLLISION_EMPTY,
+  COLLISION_SLOPE_LEFT,
+  COLLISION_SLOPE_RIGHT,
+} from '../../../commons';
 import Actor from './Actor';
 import Sensor from './Sensor';
 import PlayerStart from './PlayerStart';
@@ -91,7 +98,7 @@ const Scene = ({
   const { zoom, offsetX, offsetY } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { eventEmitter, project, backgrounds } = useApp();
-  const { selectedScene, selectedItem, tool } = useCanvas();
+  const { selectedScene, selectedItem, tool, collisionBrush } = useCanvas();
   const { tileX, tileY, setTilePosition } = useEditor();
   const [state, dispatch] = useReducer(mockState<SceneState>, {
     size: [240, 160],
@@ -219,13 +226,18 @@ const Scene = ({
 
       scene.map?.collisions?.forEach((line, y) => {
         line.forEach((cell, x) => {
-          if (cell === '1') {
-            ctx.fillRect(
-              x * gridSize,
-              y * gridSize,
-              gridSize,
-              gridSize
-            );
+          const left = x * gridSize;
+          const top = y * gridSize;
+
+          if (cell === COLLISION_BLOCK) {
+            ctx.fillRect(left, top, gridSize, gridSize);
+          } else if (cell === COLLISION_SLOPE_LEFT || cell === COLLISION_SLOPE_RIGHT) {
+            ctx.beginPath();
+            ctx.moveTo(cell === COLLISION_SLOPE_LEFT ? left : left + gridSize, top);
+            ctx.lineTo(left + gridSize, top + gridSize);
+            ctx.lineTo(left, top + gridSize);
+            ctx.closePath();
+            ctx.fill();
           }
         });
       });
@@ -338,7 +350,7 @@ const Scene = ({
 
     // Ensure correct height
     while (c.length < tileHeight) {
-      c.push(new Array(tileWidth).fill('0'));
+      c.push(new Array(tileWidth).fill(COLLISION_EMPTY));
     }
 
     while (c.length > tileHeight) {
@@ -348,7 +360,7 @@ const Scene = ({
     // Ensure correct width
     for (let y = 0; y < c.length; y++) {
       while (c[y].length < tileWidth) {
-        c[y].push('0');
+        c[y].push(COLLISION_EMPTY);
       }
 
       while (c[y].length > tileWidth) {
@@ -389,9 +401,9 @@ const Scene = ({
       // mousemove uses .buttons because it does not have a source button
       // and uses active buttons during the event
       const value = e.buttons === 1 // Left button -> add collision
-        ? '1'
+        ? COLLISION_BRUSH_VALUES[collisionBrush]
         : e.buttons === 2 // Right button -> remove collision
-          ? '0'
+          ? COLLISION_EMPTY
           : c[y][x];
 
       if (value === c[y][x]) {
@@ -413,6 +425,7 @@ const Scene = ({
     }
   }, [
     offsetX, offsetY, zoom, gridSize, sceneConfig, tool, tileWidth, tileHeight,
+    collisionBrush,
     setTilePosition, onChange, checkCollisionsArray, drawBackground,
     state.isMouseDown,
     scene,
@@ -454,9 +467,9 @@ const Scene = ({
     }
 
     const value = e.button === 0 // Left button
-      ? '1'
+      ? COLLISION_BRUSH_VALUES[collisionBrush]
       : e.button === 2 // Right button
-        ? '0'
+        ? COLLISION_EMPTY
         : c[y][x];
 
     lastTileRef.current = [x, y];
@@ -479,6 +492,7 @@ const Scene = ({
     onChange?.(scene);
   }, [
     gridSize, offsetX, offsetY, sceneConfig, tool, zoom, tileHeight, tileWidth,
+    collisionBrush,
     onChange, checkCollisionsArray, drawBackground,
     scene,
   ]);

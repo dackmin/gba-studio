@@ -54,6 +54,7 @@ import {
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Scene from './Scene';
 import Toolbar from './Toolbar';
+import CollisionsToolbar from './CollisionsToolbar';
 // import Arrows from './Arrows';
 import Actor from './Actor';
 import Sensor from './Sensor';
@@ -837,13 +838,26 @@ const Canvas = () => {
           '!fixed left-1/2 transform -translate-x-1/2 z-1000',
           {
             'transition-[bottom] duration-100': !resizingSidebar,
-            'bottom-8': isCollapsed('bottomBar'),
+            'bottom-4': isCollapsed('bottomBar'),
           },
         )}
         style={{
-          ...!isCollapsed('bottomBar') && { bottom: 32 /* bottom-8 */ + bottomBarHeight },
+          ...!isCollapsed('bottomBar') && { bottom: 16 /* bottom-4 */ + bottomBarHeight },
         }}
         onSelectTool={setTool}
+      />
+
+      <CollisionsToolbar
+        className={classNames(
+          '!fixed left-1/2 transform -translate-x-1/2 z-1000',
+          {
+            'transition-[bottom] duration-100': !resizingSidebar,
+            'bottom-16': isCollapsed('bottomBar'),
+          },
+        )}
+        style={{
+          ...!isCollapsed('bottomBar') && { bottom: 64 /* bottom-16 */ + bottomBarHeight },
+        }}
       />
     </FullscreenView>
   );
