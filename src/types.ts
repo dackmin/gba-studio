@@ -108,9 +108,7 @@ export interface InternalSpriteAnimation extends Omit<SpriteAnimationState, 'typ
   type: 'animation';
   animationType: SpriteAnimationType;
   name?: string;
-  moving?: boolean;
-  hitting?: boolean;
-  firing?: boolean;
+  state?: AnimationType;
   direction?: CharacterDirection;
 }
 

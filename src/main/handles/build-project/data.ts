@@ -15,9 +15,7 @@ export const prepareAnimations = async (
         type: 'animation',
         name: animation.name,
         animationType: animation.animationType,
-        moving: false,
-        hitting: false,
-        firing: false,
+        state: 'idle',
         direction: 'down',
       });
     }
@@ -36,9 +34,7 @@ export const prepareAnimations = async (
           type: 'animation',
           name: animation.name,
           animationType: animation.animationType,
-          moving: movement === 'moving',
-          hitting: movement === 'hitting',
-          firing: movement === 'firing',
+          state: movement,
           direction: direction,
         });
       }

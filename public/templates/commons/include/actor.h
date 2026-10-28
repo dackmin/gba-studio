@@ -29,6 +29,12 @@ namespace neo
       void update();
       bn::sprite_tiles_ptr get_direction_tiles(const bn::sprite_tiles_item& item, int index);
       void set_direction(neo::types::direction direction);
+
+      void set_anim_state(neo::types::animation_state state);
+      void set_anim_state(neo::types::animation_state state, bn::string_view animation);
+      void restart_animation();
+      void update_animation();
+      void update_action();
       void set_position(int tile_x, int tile_y);
       void set_position(bn::fixed_point pixel_position);
       // Sets the position from tile coordinates, instantly (no animation),
@@ -58,8 +64,6 @@ namespace neo
         int player_left, int player_top, int player_width, int player_height,
         int other_left, int other_top, int other_width, int other_height);
 
-      neo::types::sprite_animation* get_animation(bn::string_view type);
-
       // Player-only
       void check_input();
       neo::types::direction opposite_direction();
@@ -71,10 +75,7 @@ namespace neo
       bn::sprite_ptr sprite;
       bn::fixed_point position;
       neo::types::direction direction;
-      bool moving;
-      bool hitting = false;
-      int firing_frames_left = 0;
-      neo::types::sprite_animation* firing_animation = nullptr;
+      neo::types::animation_state anim_state = neo::types::animation_state::IDLE;
       bool is_player;
       // Wave-effect x offset currently baked into sprite's rendered
       // position (see game::update_wave_effect()), so it can be removed
@@ -82,7 +83,6 @@ namespace neo
       bn::fixed wave_offset = 0;
       int vertical_velocity = 0;
       bool grounded = false;
-      bool was_moving_side_scroller = false;
       // Whether the player is currently touching this actor (different
       // collision group), so collide events fire once per touch instead
       // of on every frame of contact.
@@ -92,13 +92,12 @@ namespace neo
       bool walking_to_target = false;
       bn::fixed_point walk_target;
       // Adventure
-      bool was_moving_adventure = false;
       int attack_frames_left = 0;
       bn::optional<bn::sprite_ptr> weapon_sprite;
       bool hit_this_swing = false;
 
     private:
-      void move(neo::types::sprite_animation* anim);
+      void move();
       void check_input_side_scroller();
       void apply_side_scroller_gravity();
       void check_input_point_and_click();
@@ -107,8 +106,7 @@ namespace neo
       bool interact_ahead();
       void start_attack();
       void update_attack();
-      void update_firing();
-      void end_firing(bool restore_tile = true);
+      void walk_while_held(neo::types::direction facing, bool (*held)());
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);
       void update_sensors(int tile_x, int tile_y);
@@ -125,6 +123,24 @@ namespace neo
       // models (top-down grid steps and side-scroller free movement).
       void check_collisions();
       bool try_interact();
+
+      neo::types::sprite_animation* find_animation(
+        neo::types::animation_state state, bn::string_view animation);
+      bn::string_view default_animation();
+      void show_direction_tile();
+      void start_action(neo::types::animation_state state);
+      void end_action(neo::types::animation_state state);
+
+      static bool is_action(neo::types::animation_state state)
+      {
+        return state == neo::types::animation_state::HITTING ||
+          state == neo::types::animation_state::FIRING;
+      }
+
+      neo::types::animation_state base_anim_state = neo::types::animation_state::IDLE;
+      bn::string_view base_animation;
+      neo::types::sprite_animation* current_animation = nullptr;
+      int action_frames_left = 0;
   };
 }
 

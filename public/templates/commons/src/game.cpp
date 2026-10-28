@@ -679,6 +679,17 @@ namespace neo
   {
     update_scripted_events();
     update_active_parallel_events();
+
+    for (int i = 0; i < actors.size(); ++i)
+    {
+      actors[i]->update_action();
+    }
+
+    if (player != nullptr)
+    {
+      player->update_action();
+    }
+
     neo::effects::update_wave_effect(this);
     neo::hud::update(this);
     scene_bg.update();

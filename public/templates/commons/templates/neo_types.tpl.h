@@ -64,6 +64,14 @@ namespace neo::types
     FROM_PLAYER
   };
 
+  enum class animation_state
+  {
+    IDLE,
+    MOVING,
+    HITTING,
+    FIRING
+  };
+
   enum class text_speed
   {
     SLOW,
@@ -699,7 +707,6 @@ namespace neo::types
     bool horizontal_pass = false; // Whether the current pass moves along the x axis
     int moved = 0;
     int step = 0; // Signed px_per_frame for the current pass
-    neo::types::sprite_animation* anim = nullptr;
 
     actor_move_event(
       bn::string_view type_,
@@ -731,7 +738,7 @@ namespace neo::types
 
     // Per-pass setup shared by begin_move() and update(): turns the actor
     // towards the axis being moved (unless moving backwards), then looks
-    // up and resets the animation for the new direction, skipping axes
+    // up and restarts the animation for the new direction, skipping axes
     // with nothing to move. Finalizes the event when no axis is left.
     void arm_pass();
     // End-of-move cleanup, like the tail of actor::move_to().
@@ -1081,9 +1088,7 @@ namespace neo::types
     bn::string_view name;
     bn::string_view type;
     neo::types::direction direction;
-    bool moving;
-    bool hitting;
-    bool firing;
+    neo::types::animation_state state;
     bool loop;
     int frames_count;
     const sprite_animation_frame* const* frames;
@@ -1096,9 +1101,7 @@ namespace neo::types
       bn::string_view name_,
       bn::string_view type_,
       neo::types::direction direction_,
-      bool moving_,
-      bool hitting_,
-      bool firing_,
+      neo::types::animation_state state_,
       bool loop_,
       int frames_count_,
       const sprite_animation_frame* const* frames_
@@ -1107,9 +1110,7 @@ namespace neo::types
       name(name_),
       type(type_),
       direction(direction_),
-      moving(moving_),
-      hitting(hitting_),
-      firing(firing_),
+      state(state_),
       loop(loop_),
       frames_count(frames_count_),
       frames(frames_) {}

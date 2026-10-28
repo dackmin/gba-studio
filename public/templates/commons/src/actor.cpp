@@ -23,7 +23,6 @@ namespace neo
       definition(actor_definition_),
       sprite(definition->sprite.create_sprite(0, 0)),
       position(0, 0),
-      moving(false),
       is_player(is_player_)
   {
     sprite.set_camera(game->camera);
@@ -98,22 +97,36 @@ namespace neo
 
     if (direction == neo::types::direction::LEFT)
     {
-      sprite.set_tiles(get_direction_tiles(definition->sprite.tiles_item(), neo::tileindex::LEFT));
       sprite.set_horizontal_flip(true);
     }
     else if (direction == neo::types::direction::RIGHT)
     {
-      sprite.set_tiles(get_direction_tiles(definition->sprite.tiles_item(), neo::tileindex::RIGHT));
       sprite.set_horizontal_flip(false);
     }
-    else if (direction == neo::types::direction::UP)
+
+    restart_animation();
+  }
+
+  void actor::show_direction_tile()
+  {
+    int index = neo::tileindex::DOWN;
+
+    switch (direction)
     {
-      sprite.set_tiles(get_direction_tiles(definition->sprite.tiles_item(), neo::tileindex::UP));
+      case neo::types::direction::LEFT:
+        index = neo::tileindex::LEFT;
+        break;
+      case neo::types::direction::RIGHT:
+        index = neo::tileindex::RIGHT;
+        break;
+      case neo::types::direction::UP:
+        index = neo::tileindex::UP;
+        break;
+      default:
+        break;
     }
-    else
-    {
-      sprite.set_tiles(get_direction_tiles(definition->sprite.tiles_item(), neo::tileindex::DOWN));
-    }
+
+    sprite.set_tiles(get_direction_tiles(definition->sprite.tiles_item(), index));
   }
 
   /**
@@ -213,7 +226,7 @@ namespace neo
   void actor::disable()
   {
     end_attack();
-    end_firing(false);
+    end_action(neo::types::animation_state::FIRING);
     sprite.set_visible(false);
     sprite.remove_camera();
   }
@@ -241,8 +254,6 @@ namespace neo
         check_input();
       }
 
-      update_firing();
-
       return;
     }
 
@@ -250,8 +261,6 @@ namespace neo
     {
       game->exec_event(definition->update_events[i], true);
     }
-
-    update_firing();
   }
 
   bool actor::try_interact()
@@ -332,8 +341,6 @@ namespace neo
 
   void actor::check_input()
   {
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-
     if (game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER)
     {
       check_input_side_scroller();
@@ -359,168 +366,65 @@ namespace neo
 
     if (bn::keypad::left_pressed() || bn::keypad::left_held())
     {
-      direction = neo::types::direction::LEFT;
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::LEFT));
-      sprite.set_horizontal_flip(true);
-
-      if (bn::keypad::left_held())
-      {
-        moving = true;
-        neo::types::sprite_animation* anim = definition->animations_count > 0
-          ? get_animation(definition->animations[0]->_id)
-          : nullptr;
-
-        if (anim != nullptr)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-
-        while (bn::keypad::left_held() && !game->scene_changed)
-        {
-          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
-          {
-            break;
-          }
-
-          move(anim);
-        }
-
-        moving = false;
-        set_direction(direction);
-      }
+      walk_while_held(neo::types::direction::LEFT, bn::keypad::left_held);
     }
     else if (bn::keypad::right_pressed() || bn::keypad::right_held())
     {
-      direction = neo::types::direction::RIGHT;
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::RIGHT));
-      sprite.set_horizontal_flip(false);
-
-      if (bn::keypad::right_held())
-      {
-        moving = true;
-        neo::types::sprite_animation* anim = definition->animations_count > 0
-          ? get_animation(definition->animations[0]->_id)
-          : nullptr;
-
-        if (anim != nullptr)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-
-        while (bn::keypad::right_held() && !game->scene_changed)
-        {
-          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
-          {
-            break;
-          }
-
-          move(anim);
-        }
-
-        moving = false;
-        set_direction(direction);
-      }
+      walk_while_held(neo::types::direction::RIGHT, bn::keypad::right_held);
     }
 
     if (bn::keypad::up_pressed() || bn::keypad::up_held())
     {
-      direction = neo::types::direction::UP;
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::UP));
-
-      if (bn::keypad::up_held())
-      {
-        moving = true;
-        neo::types::sprite_animation* anim = definition->animations_count > 0
-          ? get_animation(definition->animations[0]->_id)
-          : nullptr;
-
-        if (anim != nullptr)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-
-        while (bn::keypad::up_held() && !game->scene_changed)
-        {
-          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
-          {
-            break;
-          }
-
-          move(anim);
-        }
-
-        moving = false;
-        set_direction(direction);
-      }
+      walk_while_held(neo::types::direction::UP, bn::keypad::up_held);
     }
     else if (bn::keypad::down_pressed() || bn::keypad::down_held())
     {
-      direction = neo::types::direction::DOWN;
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::DOWN));
-
-      if (bn::keypad::down_held())
-      {
-        moving = true;
-        neo::types::sprite_animation* anim = definition->animations_count > 0
-          ? get_animation(definition->animations[0]->_id)
-          : nullptr;
-
-        if (anim != nullptr)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-
-        while (bn::keypad::down_held() && !game->scene_changed)
-        {
-          if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
-          {
-            break;
-          }
-
-          move(anim);
-        }
-
-        moving = false;
-        set_direction(direction);
-      }
+      walk_while_held(neo::types::direction::DOWN, bn::keypad::down_held);
     }
+  }
+
+  void actor::walk_while_held(neo::types::direction facing, bool (*held)())
+  {
+    set_direction(facing);
+
+    if (!held())
+    {
+      return;
+    }
+
+    set_anim_state(neo::types::animation_state::MOVING);
+
+    while (held() && !game->scene_changed)
+    {
+      if ((bn::keypad::a_pressed() || a_buffered) && try_interact())
+      {
+        break;
+      }
+
+      move();
+    }
+
+    set_anim_state(neo::types::animation_state::IDLE);
   }
 
   void actor::check_input_side_scroller()
   {
     const neo::types::map* map_data = game->active_scene->map_data;
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-
-    bool was_grounded = grounded;
 
     bool walk_left = bn::keypad::left_held();
     bool walk_right = bn::keypad::right_held();
     bool walking = walk_left || walk_right;
 
-    if (bn::keypad::left_pressed())
-    {
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::LEFT));
-      sprite.set_horizontal_flip(true);
-    }
-    else if (bn::keypad::right_pressed())
-    {
-      sprite.set_tiles(get_direction_tiles(tiles_item, neo::tileindex::RIGHT));
-      sprite.set_horizontal_flip(false);
-    }
-
     if (walking)
     {
-      direction = walk_left
+      neo::types::direction facing = walk_left
         ? neo::types::direction::LEFT : neo::types::direction::RIGHT;
-      moving = true;
-    }
-    else
-    {
-      moving = false;
-    }
 
-    if (walking)
-    {
+      if (facing != direction)
+      {
+        set_direction(facing);
+      }
+
       side_view_step_x(walk_left ? -SIDE_SCROLL_SPEED : SIDE_SCROLL_SPEED);
     }
 
@@ -533,30 +437,15 @@ namespace neo
 
     apply_side_scroller_gravity();
 
-    if (walking)
+    if (!walking)
     {
-      neo::types::sprite_animation* anim = definition->animations_count > 0
-        ? get_animation(definition->animations[0]->_id)
-        : nullptr;
-
-      if (grounded)
-      {
-        if ((!was_moving_side_scroller || !was_grounded) && anim != nullptr)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-        else if (anim != nullptr)
-        {
-          anim->play(sprite, &tiles_item, game->variables);
-        }
-      }
+      set_anim_state(neo::types::animation_state::IDLE);
     }
-    else if (was_moving_side_scroller)
+    else if (grounded)
     {
-      set_direction(direction);
+      set_anim_state(neo::types::animation_state::MOVING);
+      update_animation();
     }
-
-    was_moving_side_scroller = walking;
 
     int tile_x = map_data->to_tile_x(game->variables, (int)position.x());
     int tile_y = map_data->to_tile_y(game->variables, (int)position.y());
@@ -624,18 +513,8 @@ namespace neo
       : (delta_y >= 0 ? neo::types::direction::DOWN : neo::types::direction::UP);
 
     walking_to_target = true;
-    moving = true;
     set_direction(new_direction);
-
-    neo::types::sprite_animation* anim = definition->animations_count > 0
-      ? get_animation(definition->animations[0]->_id)
-      : nullptr;
-
-    if (anim != nullptr)
-    {
-      bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-      anim->reset(sprite, &tiles_item);
-    }
+    set_anim_state(neo::types::animation_state::MOVING);
   }
 
   void actor::stop_walking()
@@ -646,8 +525,7 @@ namespace neo
     }
 
     walking_to_target = false;
-    moving = false;
-    set_direction(direction);
+    set_anim_state(neo::types::animation_state::IDLE);
   }
 
   bool actor::adventure_blocked_at(int pixel_x, int pixel_y)
@@ -714,8 +592,6 @@ namespace neo
       return;
     }
 
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-
     if (game->active_scene->has_weapon && bn::keypad::b_pressed())
     {
       start_attack();
@@ -780,37 +656,21 @@ namespace neo
     }
 
     bool moved = next_position != position;
-    bool restart = facing != direction || moved != was_moving_adventure;
 
-    moving = moved;
-
-    if (restart)
+    if (facing != direction)
     {
       set_direction(facing);
     }
 
+    set_anim_state(moved
+      ? neo::types::animation_state::MOVING
+      : neo::types::animation_state::IDLE);
+
     if (moved)
     {
       set_position(next_position);
-
-      neo::types::sprite_animation* anim = definition->animations_count > 0
-        ? get_animation(definition->animations[0]->_id)
-        : nullptr;
-
-      if (anim != nullptr)
-      {
-        if (restart)
-        {
-          anim->reset(sprite, &tiles_item);
-        }
-        else
-        {
-          anim->play(sprite, &tiles_item, game->variables);
-        }
-      }
+      update_animation();
     }
-
-    was_moving_adventure = moved;
 
     update_sensors(
       game->active_scene->map_data->to_tile_x(game->variables, (int)position.x() + width() / 2),
@@ -825,20 +685,8 @@ namespace neo
     const neo::types::scene* scene = game->active_scene;
 
     attack_frames_left = bn::max(1, scene->weapon_duration / 16);
-    moving = false;
-    hitting = true;
-    was_moving_adventure = false;
-    set_direction(direction);
-
-    neo::types::sprite_animation* hit_anim = definition->animations_count > 0
-      ? get_animation(definition->animations[0]->_id)
-      : nullptr;
-
-    if (hit_anim != nullptr)
-    {
-      bn::sprite_tiles_item player_tiles = definition->sprite.tiles_item();
-      hit_anim->reset(sprite, &player_tiles);
-    }
+    set_anim_state(neo::types::animation_state::IDLE);
+    set_anim_state(neo::types::animation_state::HITTING);
 
     for (int i = 0; i < game->actors_count; ++i)
     {
@@ -884,17 +732,6 @@ namespace neo
     const neo::types::map* map_data = game->active_scene->map_data;
     int player_width = width();
     int player_height = height();
-
-    if (definition->animations_count > 0)
-    {
-      neo::types::sprite_animation* hit_anim = get_animation(definition->animations[0]->_id);
-
-      if (hit_anim != nullptr)
-      {
-        bn::sprite_tiles_item player_tiles = definition->sprite.tiles_item();
-        hit_anim->play(sprite, &player_tiles, game->variables);
-      }
-    }
 
     int weapon_width = weapon_sprite->dimensions().width();
     int weapon_height = weapon_sprite->dimensions().height();
@@ -969,96 +806,170 @@ namespace neo
 
   void actor::end_attack()
   {
-    bool was_hitting = hitting;
-
     attack_frames_left = 0;
-    hitting = false;
     weapon_sprite.reset();
-
-    if (was_hitting)
-    {
-      set_direction(direction);
-    }
+    end_action(neo::types::animation_state::HITTING);
   }
 
   void actor::start_firing()
   {
-    if (definition->animations_count <= 0 || !sprite.visible())
+    if (
+      !sprite.visible() ||
+      find_animation(neo::types::animation_state::FIRING, default_animation()) == nullptr
+    )
     {
       return;
     }
 
-    const bn::string_view& id = definition->animations[0]->_id;
-    neo::types::sprite_animation* found = nullptr;
+    set_anim_state(neo::types::animation_state::FIRING);
+  }
+
+  void actor::set_anim_state(neo::types::animation_state state)
+  {
+    set_anim_state(state, default_animation());
+  }
+
+  void actor::set_anim_state(neo::types::animation_state state, bn::string_view animation)
+  {
+    if (is_action(state))
+    {
+      start_action(state);
+      return;
+    }
+
+    bool unchanged = base_anim_state == state && base_animation == animation;
+
+    base_anim_state = state;
+    base_animation = animation;
+
+    if (is_action(anim_state) || (unchanged && anim_state == state))
+    {
+      return;
+    }
+
+    anim_state = state;
+    restart_animation();
+  }
+
+  void actor::start_action(neo::types::animation_state state)
+  {
+    anim_state = state;
+    action_frames_left = 0;
+    restart_animation();
+
+    if (state != neo::types::animation_state::FIRING)
+    {
+      return;
+    }
+
+    if (current_animation == nullptr)
+    {
+      end_action(state);
+      return;
+    }
+
+    for (int i = 0; i < current_animation->frames_count; ++i)
+    {
+      action_frames_left += bn::max(
+        1, current_animation->frames[i]->duration->as_int(game->variables) / 16);
+    }
+  }
+
+  void actor::end_action(neo::types::animation_state state)
+  {
+    if (anim_state != state)
+    {
+      return;
+    }
+
+    anim_state = base_anim_state;
+    action_frames_left = 0;
+    restart_animation();
+  }
+
+  void actor::restart_animation()
+  {
+    if (!sprite.visible())
+    {
+      return;
+    }
+
+    bn::string_view animation = is_action(anim_state) ? default_animation() : base_animation;
+
+    current_animation = find_animation(anim_state, animation);
+
+    if (current_animation == nullptr)
+    {
+      show_direction_tile();
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+    current_animation->reset(sprite, &tiles_item);
+  }
+
+  void actor::update_animation()
+  {
+    if (current_animation == nullptr || is_action(anim_state))
+    {
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+    current_animation->play(sprite, &tiles_item, game->variables);
+  }
+
+  void actor::update_action()
+  {
+    if (!is_action(anim_state))
+    {
+      return;
+    }
+
+    if (action_frames_left > 0 && --action_frames_left == 0)
+    {
+      end_action(anim_state);
+      return;
+    }
+
+    if (current_animation != nullptr)
+    {
+      bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+      current_animation->play(sprite, &tiles_item, game->variables);
+    }
+  }
+
+  bn::string_view actor::default_animation()
+  {
+    return definition->animations_count > 0
+      ? definition->animations[0]->_id
+      : bn::string_view();
+  }
+
+  neo::types::sprite_animation* actor::find_animation(
+    neo::types::animation_state state, bn::string_view animation)
+  {
+    if (state == neo::types::animation_state::IDLE || animation.empty())
+    {
+      return nullptr;
+    }
 
     for (int i = 0; i < definition->animations_count; ++i)
     {
-      neo::types::sprite_animation* animation = definition->animations[i];
+      neo::types::sprite_animation* candidate = definition->animations[i];
 
       if (
-        animation->_id == id &&
-        animation->firing &&
-        animation->direction == direction &&
-        animation->frames_count > 0
+        candidate->_id == animation &&
+        candidate->state == state &&
+        candidate->direction == direction &&
+        candidate->frames_count > 0
       )
       {
-        found = animation;
-        break;
+        return candidate;
       }
     }
 
-    if (found == nullptr)
-    {
-      return;
-    }
-
-    int total_frames = 0;
-
-    for (int i = 0; i < found->frames_count; ++i)
-    {
-      total_frames += bn::max(1, found->frames[i]->duration->as_int(game->variables) / 16);
-    }
-
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-
-    firing_animation = found;
-    firing_frames_left = total_frames;
-    firing_animation->reset(sprite, &tiles_item);
-  }
-
-  void actor::update_firing()
-  {
-    if (firing_animation == nullptr || game->scene_changed)
-    {
-      return;
-    }
-
-    if (firing_animation->direction != direction || --firing_frames_left <= 0)
-    {
-      end_firing();
-      return;
-    }
-
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-    firing_animation->play(sprite, &tiles_item, game->variables);
-  }
-
-  void actor::end_firing(bool restore_tile)
-  {
-    if (firing_animation == nullptr)
-    {
-      return;
-    }
-
-    firing_animation = nullptr;
-    firing_frames_left = 0;
-
-    if (restore_tile)
-    {
-      was_moving_adventure = false;
-      was_moving_side_scroller = false;
-      set_direction(direction);
-    }
+    return nullptr;
   }
 
   bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
@@ -1098,8 +1009,6 @@ namespace neo
 
       return;
     }
-
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     bn::fixed delta_x = walk_target.x() - position.x();
     bn::fixed delta_y = gravity ? bn::fixed(0) : walk_target.y() - position.y();
@@ -1153,14 +1062,7 @@ namespace neo
 
     if (!stuck && !arrived)
     {
-      neo::types::sprite_animation* anim = definition->animations_count > 0
-        ? get_animation(definition->animations[0]->_id)
-        : nullptr;
-
-      if (anim != nullptr)
-      {
-        anim->play(sprite, &tiles_item, game->variables);
-      }
+      update_animation();
     }
 
     update_sensors(
@@ -1606,10 +1508,9 @@ namespace neo
     }
   }
 
-  void actor::move(neo::types::sprite_animation* anim)
+  void actor::move()
   {
     const neo::types::map* map_data = game->active_scene->map_data;
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     int next_x = (int)position.x();
     int next_y = (int)position.y();
@@ -1665,10 +1566,7 @@ namespace neo
       set_position(pixel_position);
       delta += PLAYER_SPEED;
 
-      if (anim != nullptr)
-      {
-        anim->play(sprite, &tiles_item, game->variables);
-      }
+      update_animation();
 
       game->update_projectiles();
       game->update_frame();
@@ -1713,10 +1611,7 @@ namespace neo
       sensor->player_inside = true;
       sensor->trigger_enter();
 
-      if (anim != nullptr)
-      {
-        anim->play(sprite, &tiles_item, game->variables);
-      }
+      update_animation();
 
       game->update_projectiles();
       game->update_frame();
@@ -1764,7 +1659,7 @@ namespace neo
 
     // A scripted move takes over from any point-and-click walk
     walking_to_target = false;
-    moving = true;
+    set_anim_state(neo::types::animation_state::MOVING, animation);
 
     const neo::types::map* map_data = game->active_scene->map_data;
     int offset_x = -map_data->pixel_width(game->variables) / 2 + sprite.dimensions().width() / 2;
@@ -1781,7 +1676,6 @@ namespace neo
     int delta_x = target_x - origin_x;
     int delta_y = target_y - origin_y;
     bool horizontal_first = direction_priority != "vertical";
-    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
 
     // Move one axis at a time, one grid step at a time, updating the sprite every frame
     for (int pass = 0; pass < 2 && !game->scene_changed; ++pass)
@@ -1795,19 +1689,16 @@ namespace neo
       }
 
       // Backwards movement keeps the current facing instead of turning towards the target
+      // The animation depends on the (possibly just changed) direction, so it restarts per pass
       if (!backwards)
       {
         set_direction(is_horizontal_pass
           ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
           : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
       }
-
-      // Animation depends on the (possibly just changed) direction, so it's looked up per pass
-      neo::types::sprite_animation* anim = animation != "" ? get_animation(animation) : nullptr;
-
-      if (anim != nullptr)
+      else
       {
-        anim->reset(sprite, &tiles_item);
+        restart_animation();
       }
 
       int step = delta > 0 ? px_per_frame : -px_per_frame;
@@ -1836,11 +1727,7 @@ namespace neo
           neo::camera::track(game, *game->active_scene, this);
         }
 
-        // Play one animation frame
-        if (anim != nullptr)
-        {
-          anim->play(sprite, &tiles_item, game->variables);
-        }
+        update_animation();
 
         game->update_frame();
       }
@@ -1855,14 +1742,12 @@ namespace neo
       }
     }
 
-    moving = false;
-
     if (game->scene_changed)
     {
       return;
     }
 
-    set_direction(direction); // restore the idle tile for the final facing direction
+    set_anim_state(neo::types::animation_state::IDLE); // restores the idle tile for the final facing direction
     set_tile_position(tile_x, tile_y);
   }
 
@@ -1885,26 +1770,6 @@ namespace neo
     }
   }
 
-  neo::types::sprite_animation* actor::get_animation (bn::string_view id)
-  {
-    for (int i = 0; i < definition->animations_count; i++)
-    {
-      neo::types::sprite_animation* animation = definition->animations[i];
-
-      if (
-        animation->_id == id &&
-        animation->direction == direction &&
-        animation->moving == moving &&
-        animation->hitting == hitting &&
-        !animation->firing
-      )
-      {
-        return animation;
-      }
-    }
-
-    return nullptr;
-  }
 }
 
 void neo::types::actor_move_event::arm_pass()
@@ -1936,21 +1801,17 @@ void neo::types::actor_move_event::arm_pass()
       continue;
     }
 
-    // Backwards movement keeps the current facing instead of turning towards the target
+    // Backwards movement keeps the current facing instead of turning towards the target.
+    // The animation depends on the (possibly just changed) direction, so it restarts per pass
     if (!backwards)
     {
       target->set_direction(horizontal_pass
         ? (delta > 0 ? neo::types::direction::RIGHT : neo::types::direction::LEFT)
         : (delta > 0 ? neo::types::direction::DOWN : neo::types::direction::UP));
     }
-
-    // Animation depends on the (possibly just changed) direction, so it's looked up per pass
-    anim = animation != "" ? target->get_animation(animation) : nullptr;
-
-    if (anim != nullptr)
+    else
     {
-      bn::sprite_tiles_item tiles_item = target->definition->sprite.tiles_item();
-      anim->reset(target->sprite, &tiles_item);
+      target->restart_animation();
     }
 
     moved = 0;
@@ -1966,13 +1827,11 @@ void neo::types::actor_move_event::arm_pass()
 
 void neo::types::actor_move_event::finish()
 {
-  target->moving = false;
-  target->set_direction(target->direction); // restore the idle tile for the final facing direction
+  target->set_anim_state(neo::types::animation_state::IDLE); // restores the idle tile for the final facing direction
   target->set_tile_position(target_tile_x, target_tile_y);
 
   pass = 2;
   armed = false;
-  anim = nullptr;
 }
 
 void neo::types::actor_move_event::begin_move(neo::game* game_)
@@ -1980,7 +1839,6 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
   game_ref = game_;
   pass = 2;
   armed = false;
-  anim = nullptr;
 
   if (target == nullptr || !target->sprite.visible())
   {
@@ -2013,7 +1871,7 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
   origin_x = (int)target->sprite.x();
   origin_y = (int)target->sprite.y();
 
-  target->moving = true;
+  target->set_anim_state(neo::types::animation_state::MOVING, animation);
   pass = 0;
   arm_pass();
 }
@@ -2087,12 +1945,7 @@ bool neo::types::actor_move_event::update()
     neo::camera::track(game_ref, *game_ref->active_scene, target);
   }
 
-  // Play one animation frame
-  if (anim != nullptr)
-  {
-    bn::sprite_tiles_item tiles_item = target->definition->sprite.tiles_item();
-    anim->play(target->sprite, &tiles_item, game_ref->variables);
-  }
+  target->update_animation();
 
   if (abs(moved) < abs(delta))
   {
@@ -2111,7 +1964,6 @@ bool neo::types::actor_move_event::update()
 
   ++pass;
   armed = false;
-  anim = nullptr;
 
   if (pass >= 2)
   {
