@@ -85,6 +85,9 @@ export interface SpriteAnimation {
     hitting?: {
       [key in CharacterDirection]?: SpriteAnimationState;
     };
+    firing?: {
+      [key in CharacterDirection]?: SpriteAnimationState;
+    };
   };
   // Internals
   id: string;
@@ -107,6 +110,7 @@ export interface InternalSpriteAnimation extends Omit<SpriteAnimationState, 'typ
   name?: string;
   moving?: boolean;
   hitting?: boolean;
+  firing?: boolean;
   direction?: CharacterDirection;
 }
 
@@ -871,7 +875,7 @@ export interface ShootProjectileEvent extends SceneEvent {
   destroyOnCollision?: boolean;
 }
 
-export type AnimationType = 'idle' | 'moving' | 'hitting';
+export type AnimationType = 'idle' | 'moving' | 'hitting' | 'firing';
 
 export type FramesDefinition = {
   [key in AnimationType]: {

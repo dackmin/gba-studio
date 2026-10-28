@@ -1083,6 +1083,7 @@ namespace neo::types
     neo::types::direction direction;
     bool moving;
     bool hitting;
+    bool firing;
     bool loop;
     int frames_count;
     const sprite_animation_frame* const* frames;
@@ -1097,6 +1098,7 @@ namespace neo::types
       neo::types::direction direction_,
       bool moving_,
       bool hitting_,
+      bool firing_,
       bool loop_,
       int frames_count_,
       const sprite_animation_frame* const* frames_
@@ -1107,6 +1109,7 @@ namespace neo::types
       direction(direction_),
       moving(moving_),
       hitting(hitting_),
+      firing(firing_),
       loop(loop_),
       frames_count(frames_count_),
       frames(frames_) {}

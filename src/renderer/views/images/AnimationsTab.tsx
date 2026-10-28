@@ -233,6 +233,7 @@ const AnimationsTabContent = () => {
             <SegmentedControl.Item value="idle">Idle</SegmentedControl.Item>
             <SegmentedControl.Item value="moving">Moving</SegmentedControl.Item>
             <SegmentedControl.Item value="hitting">Hitting</SegmentedControl.Item>
+            <SegmentedControl.Item value="firing">Firing</SegmentedControl.Item>
           </SegmentedControl.Root>
         </div>
       ) }

@@ -213,6 +213,7 @@ namespace neo
   void actor::disable()
   {
     end_attack();
+    end_firing(false);
     sprite.set_visible(false);
     sprite.remove_camera();
   }
@@ -240,6 +241,8 @@ namespace neo
         check_input();
       }
 
+      update_firing();
+
       return;
     }
 
@@ -247,6 +250,8 @@ namespace neo
     {
       game->exec_event(definition->update_events[i], true);
     }
+
+    update_firing();
   }
 
   bool actor::try_interact()
@@ -972,6 +977,86 @@ namespace neo
 
     if (was_hitting)
     {
+      set_direction(direction);
+    }
+  }
+
+  void actor::start_firing()
+  {
+    if (definition->animations_count <= 0 || !sprite.visible())
+    {
+      return;
+    }
+
+    const bn::string_view& id = definition->animations[0]->_id;
+    neo::types::sprite_animation* found = nullptr;
+
+    for (int i = 0; i < definition->animations_count; ++i)
+    {
+      neo::types::sprite_animation* animation = definition->animations[i];
+
+      if (
+        animation->_id == id &&
+        animation->firing &&
+        animation->direction == direction &&
+        animation->frames_count > 0
+      )
+      {
+        found = animation;
+        break;
+      }
+    }
+
+    if (found == nullptr)
+    {
+      return;
+    }
+
+    int total_frames = 0;
+
+    for (int i = 0; i < found->frames_count; ++i)
+    {
+      total_frames += bn::max(1, found->frames[i]->duration->as_int(game->variables) / 16);
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+
+    firing_animation = found;
+    firing_frames_left = total_frames;
+    firing_animation->reset(sprite, &tiles_item);
+  }
+
+  void actor::update_firing()
+  {
+    if (firing_animation == nullptr || game->scene_changed)
+    {
+      return;
+    }
+
+    if (firing_animation->direction != direction || --firing_frames_left <= 0)
+    {
+      end_firing();
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+    firing_animation->play(sprite, &tiles_item, game->variables);
+  }
+
+  void actor::end_firing(bool restore_tile)
+  {
+    if (firing_animation == nullptr)
+    {
+      return;
+    }
+
+    firing_animation = nullptr;
+    firing_frames_left = 0;
+
+    if (restore_tile)
+    {
+      was_moving_adventure = false;
+      was_moving_side_scroller = false;
       set_direction(direction);
     }
   }
@@ -1810,7 +1895,8 @@ namespace neo
         animation->_id == id &&
         animation->direction == direction &&
         animation->moving == moving &&
-        animation->hitting == hitting
+        animation->hitting == hitting &&
+        !animation->firing
       )
       {
         return animation;

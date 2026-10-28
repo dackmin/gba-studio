@@ -17,11 +17,12 @@ export const prepareAnimations = async (
         animationType: animation.animationType,
         moving: false,
         hitting: false,
+        firing: false,
         direction: 'down',
       });
     }
 
-    for (const movement of ['idle', 'moving', 'hitting'] as const) {
+    for (const movement of ['idle', 'moving', 'hitting', 'firing'] as const) {
       for (const direction of ['up', 'down', 'left', 'right'] as const) {
         const state = animation.states[movement]?.[direction];
 
@@ -37,6 +38,7 @@ export const prepareAnimations = async (
           animationType: animation.animationType,
           moving: movement === 'moving',
           hitting: movement === 'hitting',
+          firing: movement === 'firing',
           direction: direction,
         });
       }

@@ -36,6 +36,7 @@ namespace neo
 
     if (actor != nullptr)
     {
+      actor->start_firing();
       position = bn::fixed_point(actor->sprite.x(), actor->sprite.y());
       sprite.set_z_order(actor->sprite.z_order());
     }

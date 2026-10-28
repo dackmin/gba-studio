@@ -46,6 +46,7 @@ namespace neo
       void stop_walking();
       void trigger_hit();
       void end_attack();
+      void start_firing();
 
       // Executes this actor's collide events (fired when the player,
       // being in a different collision group, touches this actor).
@@ -72,6 +73,8 @@ namespace neo
       neo::types::direction direction;
       bool moving;
       bool hitting = false;
+      int firing_frames_left = 0;
+      neo::types::sprite_animation* firing_animation = nullptr;
       bool is_player;
       // Wave-effect x offset currently baked into sprite's rendered
       // position (see game::update_wave_effect()), so it can be removed
@@ -104,6 +107,8 @@ namespace neo
       bool interact_ahead();
       void start_attack();
       void update_attack();
+      void update_firing();
+      void end_firing(bool restore_tile = true);
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);
       void update_sensors(int tile_x, int tile_y);
