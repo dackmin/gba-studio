@@ -139,11 +139,6 @@ export interface GameMap {
   sensors?: GameSensor[];
 }
 
-export interface GameWeapon {
-  sprite?: string;
-  duration?: number;
-}
-
 export interface GamePlayer {
   type: 'player';
   x: number;
@@ -157,7 +152,6 @@ export interface GamePlayer {
   // group are solid and fire their collide events on touch.
   collisionGroup?: number;
   // Adventure scenes only
-  weapon?: GameWeapon;
   // Internals
   _spriteHasAnimations?: boolean;
 }
@@ -871,6 +865,14 @@ export interface ShootProjectileEvent extends SceneEvent {
   animation?: string;
   direction?: Direction | ActorDirection;
   destroyOnCollision?: boolean;
+}
+
+export interface MeleeAttackEvent extends SceneEvent {
+  type: 'melee-attack';
+  sourceType: 'actor' | 'player';
+  sprite: string;
+  actor?: string;
+  duration?: EventValue;
 }
 
 export type AnimationType = 'idle' | 'moving' | 'hitting' | 'firing';

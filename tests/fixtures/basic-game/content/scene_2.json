@@ -7,17 +7,34 @@
   "player": {
     "type": "player",
     "x": 2,
-    "y": 3,
-    "weapon": {
-      "sprite": "",
-      "duration": 240
-    }
+    "y": 3
   },
   "events": [
     {
       "type": "fade-in",
       "duration": 200,
       "id": "b1c2d3e4-0001-4a52-9c9d-0f7d5b2b6a31"
+    },
+    {
+      "type": "on-button-press",
+      "buttons": ["B"],
+      "id": "b1c2d3e4-0004-4a52-9c9d-0f7d5b2b6a34",
+      "events": [
+        {
+          "type": "melee-attack",
+          "sourceType": "player",
+          "sprite": "",
+          "duration": 240,
+          "id": "b1c2d3e4-0005-4a52-9c9d-0f7d5b2b6a35"
+        },
+        {
+          "type": "melee-attack",
+          "sourceType": "actor",
+          "actor": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32",
+          "sprite": "",
+          "id": "b1c2d3e4-0006-4a52-9c9d-0f7d5b2b6a36"
+        }
+      ]
     }
   ],
   "actors": [

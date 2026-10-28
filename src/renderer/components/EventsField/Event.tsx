@@ -57,6 +57,7 @@ import type {
   WaitForButtonEvent,
   WaveEffectEvent,
   ShootProjectileEvent,
+  MeleeAttackEvent,
 } from '../../../types';
 import { ALL_EVENT_TYPES, getEventDefinition } from '../../services/events';
 import { useApp, useDraggable, useLocalData } from '../../services/hooks';
@@ -90,6 +91,7 @@ import EventParallel from './EventParallel';
 import EventSetPaletteEffect from './EventSetPaletteEffect';
 import EventWaveEffect from './EventWaveEffect';
 import EventShootProjectile from './EventShootProjectile';
+import EventMeleeAttack from './EventMeleeAttack';
 
 export interface EventProps {
   event: SceneEvent;
@@ -564,6 +566,12 @@ const Event = ({
                 <Switch.Case value="shoot-projectile">
                   <EventShootProjectile
                     event={event as ShootProjectileEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="melee-attack">
+                  <EventMeleeAttack
+                    event={event as MeleeAttackEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

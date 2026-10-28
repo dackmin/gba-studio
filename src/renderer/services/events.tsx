@@ -30,6 +30,7 @@ import {
   StopIcon,
   TextIcon,
   Crosshair2Icon,
+  HobbyKnifeIcon,
 } from '@radix-ui/react-icons';
 import { get } from '@junipero/react';
 
@@ -213,6 +214,19 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       collisionGroup: 0,
       animation: '',
       direction: 'from_player',
+    }),
+  }, {
+    icon: HobbyKnifeIcon,
+    name: 'Melee Attack',
+    value: 'melee-attack',
+    keywords: ['melee', 'attack', 'weapon', 'sword', 'hit', 'swing'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'melee-attack',
+      sourceType: 'player',
+      sprite: '',
+      actor: '',
+      duration: 200,
     }),
   }],
 }, {

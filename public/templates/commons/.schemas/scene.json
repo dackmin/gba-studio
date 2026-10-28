@@ -258,17 +258,6 @@
           "maximum": 4,
           "minimum": 0,
           "type": "number"
-        },
-        "weapon": {
-          "type": "object",
-          "properties": {
-            "sprite": {
-              "type": "string"
-            },
-            "duration": {
-              "type": "number"
-            }
-          }
         }
       },
       "required": [

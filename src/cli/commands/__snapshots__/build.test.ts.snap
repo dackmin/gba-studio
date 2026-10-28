@@ -1511,9 +1511,6 @@ namespace neo::scenes
     nullptr,
     &hud_0,
     bn::sprite_items::cursor_default,
-    false,
-    bn::sprite_items::sprite_default,
-    200,
     false
   };
   //////////////////////////
@@ -1702,9 +1699,6 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false,
-    bn::sprite_items::sprite_default,
-    200,
     true
   };
   //////////////////////////
@@ -1731,8 +1725,79 @@ namespace neo::scenes
   
   constexpr bn::string_view adventure_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event adventure_event_0(adventure_event_0_type, &adventure_event_0_duration_value);
+  // Event 1: on-button-press
+  // Event 0: melee-attack
+  constexpr bn::string_view adventure_event_1_event_0_type = "melee-attack";
+  constexpr bn::sprite_item adventure_event_1_event_0_sprite = bn::sprite_items::sprite_default;
+  constexpr bn::string_view adventure_event_1_event_0_source_type = "player";
+  constexpr bn::string_view adventure_event_1_event_0_actor = "";
+  constexpr bn::string_view adventure_event_1_event_0_duration_name = "";
+  constexpr bn::string_view adventure_event_1_event_0_duration_string_value = "240";
+  constexpr neo::variables::value adventure_event_1_event_0_duration_raw_value(
+    adventure_event_1_event_0_duration_name,
+    240,
+    true,
+    adventure_event_1_event_0_duration_string_value,
+    240
+  );
+  constexpr bn::string_view adventure_event_1_event_0_duration_type = "value";
+  constexpr neo::types::event_value adventure_event_1_event_0_duration_value(
+    adventure_event_1_event_0_duration_type,
+    &adventure_event_1_event_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::melee_attack_event adventure_event_1_event_0(
+    adventure_event_1_event_0_type,
+    adventure_event_1_event_0_sprite,
+    adventure_event_1_event_0_source_type,
+    adventure_event_1_event_0_actor,
+    &adventure_event_1_event_0_duration_value
+  );
+  // Event 1: melee-attack
+  constexpr bn::string_view adventure_event_1_event_1_type = "melee-attack";
+  constexpr bn::sprite_item adventure_event_1_event_1_sprite = bn::sprite_items::sprite_default;
+  constexpr bn::string_view adventure_event_1_event_1_source_type = "actor";
+  constexpr bn::string_view adventure_event_1_event_1_actor = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
+  constexpr bn::string_view adventure_event_1_event_1_duration_name = "";
+  constexpr bn::string_view adventure_event_1_event_1_duration_string_value = "200";
+  constexpr neo::variables::value adventure_event_1_event_1_duration_raw_value(
+    adventure_event_1_event_1_duration_name,
+    200,
+    true,
+    adventure_event_1_event_1_duration_string_value,
+    200
+  );
+  constexpr bn::string_view adventure_event_1_event_1_duration_type = "value";
+  constexpr neo::types::event_value adventure_event_1_event_1_duration_value(
+    adventure_event_1_event_1_duration_type,
+    &adventure_event_1_event_1_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::melee_attack_event adventure_event_1_event_1(
+    adventure_event_1_event_1_type,
+    adventure_event_1_event_1_sprite,
+    adventure_event_1_event_1_source_type,
+    adventure_event_1_event_1_actor,
+    &adventure_event_1_event_1_duration_value
+  );
+  constexpr neo::types::event* adventure_event_1_events[] = {
+    &adventure_event_1_event_0,
+    &adventure_event_1_event_1
+  };
+  constexpr bn::string_view adventure_event_1_type = "on-button-press";
+  constexpr bn::string_view adventure_event_1_button_0 = "B";
+  BN_DATA_EWRAM neo::types::button_event adventure_event_1(
+    adventure_event_1_type,
+    false,
+    make_button_vector(
+      adventure_event_1_button_0
+    ),
+    2,
+    adventure_event_1_events
+  );
   constexpr neo::types::event* adventure_events[] = {
     &adventure_event_0,
+    &adventure_event_1,
   };
 
   // Map collisions
@@ -1936,7 +2001,7 @@ namespace neo::scenes
     adventure_scene_name,
     neo::types::scene_type::ADVENTURE,
     neo::backgrounds::map,
-    1,
+    2,
     adventure_events,
     true,
     &adventure_player_actor,
@@ -1947,9 +2012,6 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    true,
-    bn::sprite_items::sprite_default,
-    240,
     false
   };
   //////////////////////////
@@ -2138,9 +2200,6 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false,
-    bn::sprite_items::sprite_default,
-    200,
     false
   };
   //////////////////////////
@@ -2164,9 +2223,6 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false,
-    bn::sprite_items::sprite_default,
-    200,
     false
   };
 
@@ -3278,6 +3334,27 @@ namespace neo::types
       terminal_velocity(terminal_velocity_) {}
   };
 
+  struct melee_attack_event: event
+  {
+    bn::sprite_item sprite; // the weapon
+    bn::string_view source_type;
+    bn::string_view actor;
+    const event_value* duration; // ms
+
+    melee_attack_event(
+      bn::string_view type_,
+      bn::sprite_item sprite_,
+      bn::string_view source_type_,
+      bn::string_view actor_,
+      const event_value* duration_
+    ):
+      event(type_),
+      sprite(sprite_),
+      source_type(source_type_),
+      actor(actor_),
+      duration(duration_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;
@@ -3578,9 +3655,6 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
-    bool has_weapon;
-    bn::sprite_item weapon;
-    int weapon_duration;
     bool has_gravity;
 
     inline bool is (bn::string_view name_) const

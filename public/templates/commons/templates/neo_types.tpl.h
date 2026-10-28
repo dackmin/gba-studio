@@ -991,6 +991,27 @@ namespace neo::types
       terminal_velocity(terminal_velocity_) {}
   };
 
+  struct melee_attack_event: event
+  {
+    bn::sprite_item sprite; // the weapon
+    bn::string_view source_type;
+    bn::string_view actor;
+    const event_value* duration; // ms
+
+    melee_attack_event(
+      bn::string_view type_,
+      bn::sprite_item sprite_,
+      bn::string_view source_type_,
+      bn::string_view actor_,
+      const event_value* duration_
+    ):
+      event(type_),
+      sprite(sprite_),
+      source_type(source_type_),
+      actor(actor_),
+      duration(duration_) {}
+  };
+
   struct sensor
   {
     bn::string_view _id;
@@ -1291,9 +1312,6 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
-    bool has_weapon;
-    bn::sprite_item weapon;
-    int weapon_duration;
     bool has_gravity;
 
     inline bool is (bn::string_view name_) const

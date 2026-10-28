@@ -51,6 +51,8 @@ namespace neo
       void walk_to(int pixel_x, int pixel_y);
       void stop_walking();
       void trigger_hit();
+
+      void start_attack(const neo::types::melee_attack_event* attack);
       void end_attack();
       void start_firing();
 
@@ -94,7 +96,11 @@ namespace neo
       // Adventure
       int attack_frames_left = 0;
       bn::optional<bn::sprite_ptr> weapon_sprite;
-      bool hit_this_swing = false;
+      const neo::types::melee_attack_event* attack_definition = nullptr;
+
+      int swing_id = 0;
+      int last_hit_swing = 0;
+      inline static int next_swing_id = 0;
 
     private:
       void move();
@@ -104,8 +110,10 @@ namespace neo
       void check_input_adventure();
       bool adventure_blocked_at(int pixel_x, int pixel_y);
       bool interact_ahead();
-      void start_attack();
       void update_attack();
+      void position_weapon(int& weapon_left, int& weapon_top);
+      int pixel_left();
+      int pixel_top();
       void walk_while_held(neo::types::direction facing, bool (*held)());
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);

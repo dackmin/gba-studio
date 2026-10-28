@@ -1070,6 +1070,33 @@
       ],
       "type": "object"
     },
+    "MeleeAttackEvent": {
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": ["player", "actor"]
+        },
+        "sprite": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "type": {
+          "const": "melee-attack",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceType",
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -1115,7 +1142,8 @@
         { "$ref": "#/definitions/SetPaletteEffectEvent" },
         { "$ref": "#/definitions/WaveEffectEvent" },
         { "$ref": "#/definitions/ParallelEventsEvent" },
-        { "$ref": "#/definitions/ShootProjectileEvent" }
+        { "$ref": "#/definitions/ShootProjectileEvent" },
+        { "$ref": "#/definitions/MeleeAttackEvent" }
       ]
     }
   },

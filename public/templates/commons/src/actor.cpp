@@ -247,6 +247,11 @@ namespace neo
 
   void actor::update()
   {
+    if (attack_frames_left > 0)
+    {
+      update_attack();
+    }
+
     if (is_player)
     {
       if (game->is_input_enabled)
@@ -588,13 +593,6 @@ namespace neo
     // The player can't move or interact while swinging the weapon
     if (attack_frames_left > 0)
     {
-      update_attack();
-      return;
-    }
-
-    if (game->active_scene->has_weapon && bn::keypad::b_pressed())
-    {
-      start_attack();
       return;
     }
 
@@ -680,21 +678,26 @@ namespace neo
     check_collisions();
   }
 
-  void actor::start_attack()
+  void actor::start_attack(const neo::types::melee_attack_event* attack)
   {
-    const neo::types::scene* scene = game->active_scene;
-
-    attack_frames_left = bn::max(1, scene->weapon_duration / 16);
-    set_anim_state(neo::types::animation_state::IDLE);
-    set_anim_state(neo::types::animation_state::HITTING);
-
-    for (int i = 0; i < game->actors_count; ++i)
+    if (attack_frames_left > 0 || !sprite.visible())
     {
-      game->actors[i]->hit_this_swing = false;
+      return;
     }
 
-    bn::sprite_tiles_item tiles_item = scene->weapon.tiles_item();
-    weapon_sprite = scene->weapon.create_sprite(0, 0);
+    attack_definition = attack;
+    attack_frames_left = bn::max(1, attack->duration->as_int(game->variables) / 16);
+    swing_id = ++next_swing_id;
+
+    if (is_player)
+    {
+      set_anim_state(neo::types::animation_state::IDLE);
+    }
+
+    set_anim_state(neo::types::animation_state::HITTING);
+
+    bn::sprite_tiles_item tiles_item = attack->sprite.tiles_item();
+    weapon_sprite = attack->sprite.create_sprite(0, 0);
     weapon_sprite->set_camera(game->camera);
     weapon_sprite->set_bg_priority(1);
     weapon_sprite->set_z_order(
@@ -718,40 +721,52 @@ namespace neo
       weapon_sprite->set_tiles(get_direction_tiles(tiles_item, neo::tileindex::DOWN));
     }
 
-    update_attack();
+    int weapon_left = 0;
+    int weapon_top = 0;
+    position_weapon(weapon_left, weapon_top);
   }
 
-  void actor::update_attack()
+  int actor::pixel_left()
   {
-    if (!weapon_sprite.has_value())
-    {
-      attack_frames_left = 0;
-      return;
-    }
+    return is_player
+      ? (int)position.x()
+      : game->active_scene->map_data->to_pixel_x(
+        game->variables, position.x().right_shift_integer());
+  }
 
+  int actor::pixel_top()
+  {
+    return is_player
+      ? (int)position.y()
+      : game->active_scene->map_data->to_pixel_y(
+        game->variables, position.y().right_shift_integer());
+  }
+
+  void actor::position_weapon(int& weapon_left, int& weapon_top)
+  {
     const neo::types::map* map_data = game->active_scene->map_data;
-    int player_width = width();
-    int player_height = height();
+    int actor_width = width();
+    int actor_height = height();
 
     int weapon_width = weapon_sprite->dimensions().width();
     int weapon_height = weapon_sprite->dimensions().height();
 
-    int center_x = (int)position.x() + player_width / 2;
-    int center_y = (int)position.y() + player_height / 2;
+    int center_x = pixel_left() + actor_width / 2;
+    int center_y = pixel_top() + actor_height / 2;
 
     switch (direction)
     {
       case neo::types::direction::LEFT:
-        center_x -= player_width / 2 + weapon_width / 2 - 2;
+        center_x -= actor_width / 2 + weapon_width / 2 - 2;
         break;
       case neo::types::direction::RIGHT:
-        center_x += player_width / 2 + weapon_width / 2 - 2;
+        center_x += actor_width / 2 + weapon_width / 2 - 2;
         break;
       case neo::types::direction::UP:
-        center_y -= player_height / 2 + weapon_height / 2 - 2;
+        center_y -= actor_height / 2 + weapon_height / 2 - 2;
         break;
       default:
-        center_y += player_height / 2 + weapon_height / 2 - 2;
+        center_y += actor_height / 2 + weapon_height / 2 - 2;
         break;
     }
 
@@ -760,15 +775,32 @@ namespace neo
       center_y - map_data->pixel_height(game->variables) / 2
     );
 
-    int weapon_left = center_x - weapon_width / 2;
-    int weapon_top = center_y - weapon_height / 2;
+    weapon_left = center_x - weapon_width / 2;
+    weapon_top = center_y - weapon_height / 2;
+  }
+
+  void actor::update_attack()
+  {
+    if (!weapon_sprite.has_value())
+    {
+      end_attack();
+      return;
+    }
+
+    int weapon_left = 0;
+    int weapon_top = 0;
+    position_weapon(weapon_left, weapon_top);
+
+    int weapon_width = weapon_sprite->dimensions().width();
+    int weapon_height = weapon_sprite->dimensions().height();
 
     for (int i = 0; i < game->actors_count && !game->scene_changed; ++i)
     {
       neo::actor* other = game->actors[i];
 
       if (
-        other->hit_this_swing ||
+        other == this ||
+        other->last_hit_swing == swing_id ||
         other->definition->hit_events_count == 0 ||
         !other->sprite.visible()
       )
@@ -776,10 +808,8 @@ namespace neo
         continue;
       }
 
-      int other_left = map_data->to_pixel_x(
-        game->variables, other->position.x().right_shift_integer());
-      int other_top = map_data->to_pixel_y(
-        game->variables, other->position.y().right_shift_integer());
+      int other_left = other->pixel_left();
+      int other_top = other->pixel_top();
 
       if (
         weapon_left < other_left + other->width() &&
@@ -788,7 +818,7 @@ namespace neo
         weapon_top + weapon_height > other_top
       )
       {
-        other->hit_this_swing = true;
+        other->last_hit_swing = swing_id;
         other->trigger_hit();
 
         if (!weapon_sprite.has_value())
@@ -807,6 +837,7 @@ namespace neo
   void actor::end_attack()
   {
     attack_frames_left = 0;
+    attack_definition = nullptr;
     weapon_sprite.reset();
     end_action(neo::types::animation_state::HITTING);
   }

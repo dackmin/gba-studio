@@ -1108,6 +1108,24 @@ namespace neo::events
     }
 
     /**
+     * @name melee-attack
+     */
+    else if (e->type == "melee-attack")
+    {
+      const neo::types::melee_attack_event* melee_attack_evt =
+        static_cast<const neo::types::melee_attack_event*>(e);
+
+      neo::actor* attacker = melee_attack_evt->source_type == "player"
+        ? game->player
+        : game->get_actor_by_id(melee_attack_evt->actor);
+
+      if (attacker != nullptr)
+      {
+        attacker->start_attack(melee_attack_evt);
+      }
+    }
+
+    /**
      * Unknown events are ignored
      */
     else

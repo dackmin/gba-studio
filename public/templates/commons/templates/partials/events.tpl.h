@@ -584,6 +584,19 @@ BN_DATA_EWRAM neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
   &{{../prefix}}_{{@index}}_gravity_angle_value,
   &{{../prefix}}_{{@index}}_terminal_velocity_value
 );
+{{else if (eq this.type "melee-attack")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_type = "melee-attack";
+constexpr bn::sprite_item {{../prefix}}_{{@index}}_sprite = bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}};
+constexpr bn::string_view {{../prefix}}_{{@index}}_source_type = "{{this.sourceType}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
+BN_DATA_EWRAM neo::types::melee_attack_event {{../prefix}}_{{@index}}(
+  {{../prefix}}_{{@index}}_type,
+  {{../prefix}}_{{@index}}_sprite,
+  {{../prefix}}_{{@index}}_source_type,
+  {{../prefix}}_{{@index}}_actor,
+  &{{../prefix}}_{{@index}}_duration_value
+);
 {{else}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
 BN_DATA_EWRAM neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
