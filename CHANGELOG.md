@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.6.1](https://github.com/dackmin/gba-studio/compare/v0.6.0...v0.6.1) (2026-10-28)
+
+### Bug Fixes
+
+* add missing sprite firing animation state ([33c2c22](https://github.com/dackmin/gba-studio/commit/33c2c22b55f8e2407de9d12234d4067efec71f66))
+* add missing sprite hitting animation state ([e06e649](https://github.com/dackmin/gba-studio/commit/e06e6490a60e014d2e4b5fa74acf7fae45d0055a))
+* move melee weapon attack to a standalone event ([0ece655](https://github.com/dackmin/gba-studio/commit/0ece655d6327767360ee7e316d06b03b91e65158))
+
 ## [0.6.0](https://github.com/dackmin/gba-studio/compare/v0.5.0...v0.6.0) (2026-10-28)
 
 ### Features
