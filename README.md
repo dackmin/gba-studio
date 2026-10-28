@@ -26,8 +26,8 @@ Download the latest build for your platform from the [build action pipeline](htt
 - [x] CLI
 - [x] Side scroller scene type
 - [x] Auto updater
+- [x] Point & click scene type
 - [ ] Shooter scene type
-- [ ] Point & click scene type
 - [ ] Parallax backgrounds
 - [ ] Sound editor
 - [ ] Plugins
