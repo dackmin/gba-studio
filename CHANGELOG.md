@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.6.0](https://github.com/dackmin/gba-studio/compare/v0.5.0...v0.6.0) (2026-10-28)
+
+### Features
+
+* add adventure scenes with melee weapons ([d242b74](https://github.com/dackmin/gba-studio/commit/d242b74af40edc672f83a58729a307f9c2bb7695))
+* add gravity to point & clicks ([bd69b72](https://github.com/dackmin/gba-studio/commit/bd69b7268c27f63d1780f932abcff1925a5ed21d))
+* add point & click scenes ([1ca95af](https://github.com/dackmin/gba-studio/commit/1ca95af4b4cd4c88caa099eea97c5915f613abce))
+* add slopes ([27962d0](https://github.com/dackmin/gba-studio/commit/27962d09ce5a43cecbe18867582ee9184d782e06))
+* allow bigger backgrounds ([2a2e387](https://github.com/dackmin/gba-studio/commit/2a2e38772b77b8dd74214d3f6fafb041a2e52de7))
+
+### Bug Fixes
+
+* allow to use opengl on wayland ([501d441](https://github.com/dackmin/gba-studio/commit/501d441c3bc1acd5dabe592d50eb2aa2dc3d7949))
+* collisions painting performances on big backgrounds ([082f5f1](https://github.com/dackmin/gba-studio/commit/082f5f1e10477df20c667493d395233e7f41463a))
+
 ## [0.5.0](https://github.com/dackmin/gba-studio/compare/v0.4.0...v0.5.0) (2026-10-21)
 
 ### Features
