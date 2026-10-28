@@ -24,6 +24,12 @@ export const SPRITE_HORIZONTAL_FRAMES: FramesDefinition = {
       { index: 2 }, { index: 8 }, { index: 2 }, { index: 9 },
     ],
   },
+  hitting: {
+    down: [],
+    up: [],
+    left: [],
+    right: [],
+  },
 };
 
 export const AUTO_FRAMES_TEMPLATES: Record<string, FramesDefinition> = {

@@ -71,6 +71,7 @@ namespace neo
       bn::fixed_point position;
       neo::types::direction direction;
       bool moving;
+      bool hitting = false;
       bool is_player;
       // Wave-effect x offset currently baked into sprite's rendered
       // position (see game::update_wave_effect()), so it can be removed

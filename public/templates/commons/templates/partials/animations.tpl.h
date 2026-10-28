@@ -24,6 +24,7 @@ BN_DATA_EWRAM neo::types::sprite_animation {{../prefix}}_{{@index}} = {
   {{../prefix}}_{{@index}}_type,
   {{../prefix}}_{{@index}}_direction,
   {{valuedef this.moving false}},
+  {{valuedef this.hitting false}},
   {{valuedef this.loop true}},
   {{#if (hasItems this.frames)}}
   {{this.frames.length}},

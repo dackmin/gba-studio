@@ -465,7 +465,7 @@ export const sanitizeAnimation = async (
   await sanitizeAnimationState(animation.states.fixed);
 
   if (animation.animationType !== 'fixed') {
-    for (const stateName of ['idle', 'moving'] as (
+    for (const stateName of ['idle', 'moving', 'hitting'] as (
       keyof Omit<typeof animation.states, 'fixed'>
     )[]) {
       if (!animation.states[stateName]) {

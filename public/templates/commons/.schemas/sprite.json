@@ -90,6 +90,16 @@
                 "left": { "$ref": "#/definitions/AnimationState" },
                 "right": { "$ref": "#/definitions/AnimationState" }
               }
+            },
+            "hitting": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "up": { "$ref": "#/definitions/AnimationState" },
+                "down": { "$ref": "#/definitions/AnimationState" },
+                "left": { "$ref": "#/definitions/AnimationState" },
+                "right": { "$ref": "#/definitions/AnimationState" }
+              }
             }
           }
         },

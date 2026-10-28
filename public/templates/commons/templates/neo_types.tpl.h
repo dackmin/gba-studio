@@ -1082,6 +1082,7 @@ namespace neo::types
     bn::string_view type;
     neo::types::direction direction;
     bool moving;
+    bool hitting;
     bool loop;
     int frames_count;
     const sprite_animation_frame* const* frames;
@@ -1095,6 +1096,7 @@ namespace neo::types
       bn::string_view type_,
       neo::types::direction direction_,
       bool moving_,
+      bool hitting_,
       bool loop_,
       int frames_count_,
       const sprite_animation_frame* const* frames_
@@ -1104,6 +1106,7 @@ namespace neo::types
       type(type_),
       direction(direction_),
       moving(moving_),
+      hitting(hitting_),
       loop(loop_),
       frames_count(frames_count_),
       frames(frames_) {}

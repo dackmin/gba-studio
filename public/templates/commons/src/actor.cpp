@@ -821,8 +821,19 @@ namespace neo
 
     attack_frames_left = bn::max(1, scene->weapon_duration / 16);
     moving = false;
+    hitting = true;
     was_moving_adventure = false;
     set_direction(direction);
+
+    neo::types::sprite_animation* hit_anim = definition->animations_count > 0
+      ? get_animation(definition->animations[0]->_id)
+      : nullptr;
+
+    if (hit_anim != nullptr)
+    {
+      bn::sprite_tiles_item player_tiles = definition->sprite.tiles_item();
+      hit_anim->reset(sprite, &player_tiles);
+    }
 
     for (int i = 0; i < game->actors_count; ++i)
     {
@@ -868,6 +879,18 @@ namespace neo
     const neo::types::map* map_data = game->active_scene->map_data;
     int player_width = width();
     int player_height = height();
+
+    if (definition->animations_count > 0)
+    {
+      neo::types::sprite_animation* hit_anim = get_animation(definition->animations[0]->_id);
+
+      if (hit_anim != nullptr)
+      {
+        bn::sprite_tiles_item player_tiles = definition->sprite.tiles_item();
+        hit_anim->play(sprite, &player_tiles, game->variables);
+      }
+    }
+
     int weapon_width = weapon_sprite->dimensions().width();
     int weapon_height = weapon_sprite->dimensions().height();
 
@@ -941,8 +964,16 @@ namespace neo
 
   void actor::end_attack()
   {
+    bool was_hitting = hitting;
+
     attack_frames_left = 0;
+    hitting = false;
     weapon_sprite.reset();
+
+    if (was_hitting)
+    {
+      set_direction(direction);
+    }
   }
 
   bool actor::point_and_click_blocked_at(bn::fixed_point pixel_position)
@@ -1775,7 +1806,12 @@ namespace neo
     {
       neo::types::sprite_animation* animation = definition->animations[i];
 
-      if (animation->_id == id && animation->direction == direction && animation->moving == moving)
+      if (
+        animation->_id == id &&
+        animation->direction == direction &&
+        animation->moving == moving &&
+        animation->hitting == hitting
+      )
       {
         return animation;
       }
