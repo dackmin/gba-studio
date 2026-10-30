@@ -170,6 +170,10 @@ const ActorForm = ({
               <Text className="block text-slate" size="1">Direction</Text>
               <DirectionField
                 value={actor.direction || 'down'}
+                exclude={[
+                  'towards_player', 'from_player', 'player', 'up_left', 'up_right',
+                  'down_left', 'down_right',
+                ]}
                 onValueChange={onValueChange.bind(null, 'direction')}
               />
             </div>
