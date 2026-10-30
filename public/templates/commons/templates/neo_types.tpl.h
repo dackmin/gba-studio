@@ -1356,7 +1356,10 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
+    // Gravity
     bool has_gravity;
+    const event_value* gravity_force;
+    const event_value* jump_height;
 
     inline bool is (bn::string_view name_) const
     {

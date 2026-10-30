@@ -192,11 +192,12 @@ export interface GameScene {
   player?: GamePlayer;
   cursor?: string;
   gravity?: boolean;
+  gravityForce?: EventValue;
+  jumpHeight?: EventValue;
   map?: GameMap;
   events?: SceneEvent[];
   actors?: GameActor[];
   sprites?: GameSprite[];
-  // Id of the HUD displayed over this scene
   hud?: string;
   // Internals
   id: string;
@@ -232,14 +233,13 @@ export interface GameActor {
   height?: number;
   sprite: string;
   disableDirectionOnInteract?: boolean;
-  // Collision group (1-4, 0 = none): actors/sprites in a different
-  // group than the player are solid and fire collide events on touch.
+  // Collision group (1-4, 0 = none): actors/sprites in a different group than the player are solid
+  // and fire collide events on touch.
   collisionGroup?: number;
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];
     update?: SceneEvent[];
-    // Fired when the player touches this actor (different collision group)
     collide?: SceneEvent[];
     hit?: SceneEvent[];
   };
@@ -257,21 +257,18 @@ export interface GameSprite {
   x: number;
   y: number;
   z?: number;
-  // Collision group (1-4, 0 = none): actors/sprites in a different
-  // group than the player are solid and fire collide events on touch.
+  // Collision group (1-4, 0 = none): actors/sprites in a different group than the player are solid
+  // and fire collide events on touch.
   collisionGroup?: number;
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];
-    // Fired when the player touches this sprite (different collision group)
     collide?: SceneEvent[];
   };
   // Internals
   id: string;
 }
 
-// A HUD is a fixed GBA-screen-sized layer (240x160) that only holds sprites
-// and texts. It is displayed over a scene and never moves with the camera.
 export interface GameHud {
   type: 'hud';
   name: string;
@@ -380,7 +377,6 @@ export interface GameProject {
   romName: string;
   romCode: string;
   scenes: ProjectSceneData[];
-  // Canvas positions of the HUDs
   huds?: ProjectSceneData[];
   settings?: ProjectSettings;
   configurations?: ProjectConfiguration[];

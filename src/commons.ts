@@ -38,3 +38,6 @@ export const COLLISION_BRUSH_VALUES: Record<CollisionBrush, string> = {
 
 export const COLLISION_COLOR = 'rgba(255, 0, 0, 0.4)';
 export const COLLISION_ONE_WAY_COLOR = 'rgba(0, 255, 0, 0.4)';
+
+export const DEFAULT_GRAVITY_FORCE = 1;
+export const DEFAULT_JUMP_HEIGHT = 36;

@@ -570,6 +570,8 @@ namespace neo::scenes
   {{/if}}
   {{/if}}
 
+  {{>valuePartial prefix=(concat (slug this.name) "_gravity_force") value=(valuedef this.gravityForce 1)}}
+  {{>valuePartial prefix=(concat (slug this.name) "_jump_height") value=(valuedef this.jumpHeight 36)}}
   constexpr bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
   constexpr bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
   BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
@@ -634,12 +636,16 @@ namespace neo::scenes
     {{else}}
     bn::sprite_items::cursor_default,
     {{/if}}
-    {{#if (and (eq this.sceneType 'point-and-click') this.gravity)}}true{{else}}false{{/if}}
+    {{#if (and (eq this.sceneType 'point-and-click') this.gravity)}}true{{else}}false{{/if}},
+    &{{slug this.name}}_gravity_force_value,
+    &{{slug this.name}}_jump_height_value
   };
   //////////////////////////
   {{/each}}
 
   // Default scene
+  {{>valuePartial prefix="default_gravity_force" value=1}}
+  {{>valuePartial prefix="default_jump_height" value=36}}
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
   BN_DATA_EWRAM neo::types::scene scene_default = {
@@ -658,7 +664,9 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false
+    false,
+    &default_gravity_force_value,
+    &default_jump_height_value
   };
 
   neo::types::scene get_scene(bn::string_view name)

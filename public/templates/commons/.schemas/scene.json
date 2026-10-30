@@ -283,6 +283,12 @@
         "gravity": {
           "type": "boolean"
         },
+        "gravityForce": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "jumpHeight": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
         "events": {
           "items": {
             "$ref": "event.json#/definitions/Event"

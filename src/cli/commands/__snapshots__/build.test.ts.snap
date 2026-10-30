@@ -1493,6 +1493,36 @@ namespace neo::scenes
     nullptr
   };
 
+  constexpr bn::string_view scene_0_gravity_force_name = "";
+  constexpr bn::string_view scene_0_gravity_force_string_value = "1";
+  constexpr neo::variables::value scene_0_gravity_force_raw_value(
+    scene_0_gravity_force_name,
+    1,
+    true,
+    scene_0_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view scene_0_gravity_force_type = "value";
+  constexpr neo::types::event_value scene_0_gravity_force_value(
+    scene_0_gravity_force_type,
+    &scene_0_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_jump_height_name = "";
+  constexpr bn::string_view scene_0_jump_height_string_value = "36";
+  constexpr neo::variables::value scene_0_jump_height_raw_value(
+    scene_0_jump_height_name,
+    36,
+    true,
+    scene_0_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view scene_0_jump_height_type = "value";
+  constexpr neo::types::event_value scene_0_jump_height_value(
+    scene_0_jump_height_type,
+    &scene_0_jump_height_raw_value
+  );
+  
   constexpr bn::string_view scene_0_scene_id = "d2a023cc-364d-4caf-9638-78937f593e4d";
   constexpr bn::string_view scene_0_scene_name = "Scene 0";
   BN_DATA_EWRAM neo::types::scene scene_scene_0 = {
@@ -1511,7 +1541,9 @@ namespace neo::scenes
     nullptr,
     &hud_0,
     bn::sprite_items::cursor_default,
-    false
+    false,
+    &scene_0_gravity_force_value,
+    &scene_0_jump_height_value
   };
   //////////////////////////
   //////////////////////////
@@ -1681,6 +1713,36 @@ namespace neo::scenes
     nullptr
   };
 
+  constexpr bn::string_view point_and_click_gravity_force_name = "";
+  constexpr bn::string_view point_and_click_gravity_force_string_value = "1";
+  constexpr neo::variables::value point_and_click_gravity_force_raw_value(
+    point_and_click_gravity_force_name,
+    1,
+    true,
+    point_and_click_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view point_and_click_gravity_force_type = "value";
+  constexpr neo::types::event_value point_and_click_gravity_force_value(
+    point_and_click_gravity_force_type,
+    &point_and_click_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view point_and_click_jump_height_name = "";
+  constexpr bn::string_view point_and_click_jump_height_string_value = "36";
+  constexpr neo::variables::value point_and_click_jump_height_raw_value(
+    point_and_click_jump_height_name,
+    36,
+    true,
+    point_and_click_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view point_and_click_jump_height_type = "value";
+  constexpr neo::types::event_value point_and_click_jump_height_value(
+    point_and_click_jump_height_type,
+    &point_and_click_jump_height_raw_value
+  );
+  
   constexpr bn::string_view point_and_click_scene_id = "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12";
   constexpr bn::string_view point_and_click_scene_name = "Point & Click";
   BN_DATA_EWRAM neo::types::scene scene_point_and_click = {
@@ -1699,7 +1761,9 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    true
+    true,
+    &point_and_click_gravity_force_value,
+    &point_and_click_jump_height_value
   };
   //////////////////////////
   //////////////////////////
@@ -1994,6 +2058,36 @@ namespace neo::scenes
     nullptr
   };
 
+  constexpr bn::string_view adventure_gravity_force_name = "";
+  constexpr bn::string_view adventure_gravity_force_string_value = "1";
+  constexpr neo::variables::value adventure_gravity_force_raw_value(
+    adventure_gravity_force_name,
+    1,
+    true,
+    adventure_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view adventure_gravity_force_type = "value";
+  constexpr neo::types::event_value adventure_gravity_force_value(
+    adventure_gravity_force_type,
+    &adventure_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view adventure_jump_height_name = "";
+  constexpr bn::string_view adventure_jump_height_string_value = "36";
+  constexpr neo::variables::value adventure_jump_height_raw_value(
+    adventure_jump_height_name,
+    36,
+    true,
+    adventure_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view adventure_jump_height_type = "value";
+  constexpr neo::types::event_value adventure_jump_height_value(
+    adventure_jump_height_type,
+    &adventure_jump_height_raw_value
+  );
+  
   constexpr bn::string_view adventure_scene_id = "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21";
   constexpr bn::string_view adventure_scene_name = "Adventure";
   BN_DATA_EWRAM neo::types::scene scene_adventure = {
@@ -2012,7 +2106,9 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false
+    false,
+    &adventure_gravity_force_value,
+    &adventure_jump_height_value
   };
   //////////////////////////
   //////////////////////////
@@ -2182,6 +2278,36 @@ namespace neo::scenes
     nullptr
   };
 
+  constexpr bn::string_view side_scroller_gravity_force_name = "";
+  constexpr bn::string_view side_scroller_gravity_force_string_value = "1";
+  constexpr neo::variables::value side_scroller_gravity_force_raw_value(
+    side_scroller_gravity_force_name,
+    1,
+    true,
+    side_scroller_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view side_scroller_gravity_force_type = "value";
+  constexpr neo::types::event_value side_scroller_gravity_force_value(
+    side_scroller_gravity_force_type,
+    &side_scroller_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view side_scroller_jump_height_name = "";
+  constexpr bn::string_view side_scroller_jump_height_string_value = "36";
+  constexpr neo::variables::value side_scroller_jump_height_raw_value(
+    side_scroller_jump_height_name,
+    36,
+    true,
+    side_scroller_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view side_scroller_jump_height_type = "value";
+  constexpr neo::types::event_value side_scroller_jump_height_value(
+    side_scroller_jump_height_type,
+    &side_scroller_jump_height_raw_value
+  );
+  
   constexpr bn::string_view side_scroller_scene_id = "e6b9f8a1-4c58-4799-8a40-16eda41dda41";
   constexpr bn::string_view side_scroller_scene_name = "Side Scroller";
   BN_DATA_EWRAM neo::types::scene scene_side_scroller = {
@@ -2200,11 +2326,43 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false
+    false,
+    &side_scroller_gravity_force_value,
+    &side_scroller_jump_height_value
   };
   //////////////////////////
 
   // Default scene
+  constexpr bn::string_view default_gravity_force_name = "";
+  constexpr bn::string_view default_gravity_force_string_value = "1";
+  constexpr neo::variables::value default_gravity_force_raw_value(
+    default_gravity_force_name,
+    1,
+    true,
+    default_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view default_gravity_force_type = "value";
+  constexpr neo::types::event_value default_gravity_force_value(
+    default_gravity_force_type,
+    &default_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view default_jump_height_name = "";
+  constexpr bn::string_view default_jump_height_string_value = "36";
+  constexpr neo::variables::value default_jump_height_raw_value(
+    default_jump_height_name,
+    36,
+    true,
+    default_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view default_jump_height_type = "value";
+  constexpr neo::types::event_value default_jump_height_value(
+    default_jump_height_type,
+    &default_jump_height_raw_value
+  );
+  
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
   BN_DATA_EWRAM neo::types::scene scene_default = {
@@ -2223,7 +2381,9 @@ namespace neo::scenes
     nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
-    false
+    false,
+    &default_gravity_force_value,
+    &default_jump_height_value
   };
 
   neo::types::scene get_scene(bn::string_view name)
@@ -3699,7 +3859,10 @@ namespace neo::types
     const sprite* const* sprites;
     const hud* hud_data;
     bn::sprite_item cursor;
+    // Gravity
     bool has_gravity;
+    const event_value* gravity_force;
+    const event_value* jump_height;
 
     inline bool is (bn::string_view name_) const
     {

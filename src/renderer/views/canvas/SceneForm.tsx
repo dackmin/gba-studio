@@ -16,6 +16,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
+import { DEFAULT_GRAVITY_FORCE, DEFAULT_JUMP_HEIGHT } from '../../../commons';
 import {
   findBackground,
   getAssetUrl,
@@ -31,7 +32,10 @@ import { getEventsOfType } from '../../services/events';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import SpritesListField from '../../components/SpritesListField';
 import EventsField from '../../components/EventsField';
-import EventValueField from '../../components/EventValueField';
+import EventValueField, {
+  EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES,
+} from '../../components/EventValueField';
+import Collapsible from '../../components/Collapsible';
 
 export interface SceneFormProps {
   scene: GameScene;
@@ -200,6 +204,10 @@ const SceneForm = ({
     onChange?.(scene);
   }, [onChange, scene]);
 
+  const hasGravity = scene.sceneType === 'side-scroller' || (
+    scene.sceneType === 'point-and-click' && !!scene.player && !!scene.gravity
+  );
+
   const onNameKeyDown = (e: KeyboardEvent<HTMLHeadingElement>) => {
     e.stopPropagation();
 
@@ -286,65 +294,101 @@ const SceneForm = ({
                 onValueChange={onBackgroundChange}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Text className="block text-slate" size="1">HUD</Text>
-              <Select.Root
-                value={huds.some(h => h.id === scene.hud) ? scene.hud : 'none'}
-                onValueChange={onHudChange}
-              >
-                <Select.Trigger className="w-full" />
-                <Select.Content>
-                  <Select.Item value="none">None</Select.Item>
-                  { huds.map(hud => (
-                    <Select.Item key={hud.id} value={hud.id}>
-                      { hud.name }
-                    </Select.Item>
-                  )) }
-                </Select.Content>
-              </Select.Root>
-            </div>
-            { scene.sceneType === 'point-and-click' && (
-              <>
-                <div className="flex flex-col gap-2">
-                  <Text className="block text-slate" size="1">Cursor sprite</Text>
-                  <SpritesListField
-                    value={scene.cursor ?? ''}
-                    defaultGraphic="cursor_default"
-                    onValueChange={onCursorChange}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Text className="block text-slate" size="1">Has player</Text>
-                  <Switch
-                    checked={!!scene.player}
-                    onCheckedChange={onPlayerToggle}
-                  />
-                </div>
-                { !!scene.player && (
+            <Collapsible.Root>
+              <Collapsible.Trigger className="px-0! py-0! text-sm! text-slate">
+                Advanced
+              </Collapsible.Trigger>
+              <Collapsible.Content className="mt-4! flex flex-col gap-4">
+                { scene.sceneType !== 'logos' && (
                   <div className="flex flex-col gap-2">
-                    <Text className="block text-slate" size="1">
-                      Player reacts to gravity
-                    </Text>
-                    <Switch
-                      checked={!!scene.gravity}
-                      onCheckedChange={onValueChange.bind(null, 'gravity')}
-                    />
+                    <Text className="block text-slate" size="1">Grid size</Text>
+                    <EventValueField
+                      type="number"
+                      value={scene.map?.gridSize ?? 16}
+                      onValueChange={onGridSizeChange}
+                    >
+                      <TextField.Slot side="right">px</TextField.Slot>
+                    </EventValueField>
                   </div>
                 ) }
-              </>
-            ) }
-            { scene.sceneType !== 'logos' && (
-              <div className="flex flex-col gap-2">
-                <Text className="block text-slate" size="1">Grid size</Text>
-                <EventValueField
-                  type="number"
-                  value={scene.map?.gridSize ?? 16}
-                  onValueChange={onGridSizeChange}
-                >
-                  <TextField.Slot side="right">px</TextField.Slot>
-                </EventValueField>
-              </div>
-            ) }
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">HUD</Text>
+                  <Select.Root
+                    value={huds.some(h => h.id === scene.hud) ? scene.hud : 'none'}
+                    onValueChange={onHudChange}
+                  >
+                    <Select.Trigger className="w-full" />
+                    <Select.Content>
+                      <Select.Item value="none">None</Select.Item>
+                      { huds.map(hud => (
+                        <Select.Item key={hud.id} value={hud.id}>
+                          { hud.name }
+                        </Select.Item>
+                      )) }
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+                { scene.sceneType === 'point-and-click' && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Cursor sprite</Text>
+                      <SpritesListField
+                        value={scene.cursor ?? ''}
+                        defaultGraphic="cursor_default"
+                        onValueChange={onCursorChange}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Has player</Text>
+                      <Switch
+                        checked={!!scene.player}
+                        onCheckedChange={onPlayerToggle}
+                      />
+                    </div>
+                    { !!scene.player && (
+                      <div className="flex flex-col gap-2">
+                        <Text className="block text-slate" size="1">
+                          Player reacts to gravity
+                        </Text>
+                        <Switch
+                          checked={!!scene.gravity}
+                          onCheckedChange={onValueChange.bind(null, 'gravity')}
+                        />
+                      </div>
+                    ) }
+                  </>
+                ) }
+                { hasGravity && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Gravity</Text>
+                      <EventValueField
+                        type="number"
+                        step={0.1}
+                        excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                        value={scene.gravityForce ?? DEFAULT_GRAVITY_FORCE}
+                        onValueChange={onValueChange.bind(null, 'gravityForce')}
+                      >
+                        <TextField.Slot side="right">px/frame²</TextField.Slot>
+                      </EventValueField>
+                    </div>
+                    { scene.sceneType === 'side-scroller' && (
+                      <div className="flex flex-col gap-2">
+                        <Text className="block text-slate" size="1">Jump height</Text>
+                        <EventValueField
+                          type="number"
+                          excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                          value={scene.jumpHeight ?? DEFAULT_JUMP_HEIGHT}
+                          onValueChange={onValueChange.bind(null, 'jumpHeight')}
+                        >
+                          <TextField.Slot side="right">px</TextField.Slot>
+                        </EventValueField>
+                      </div>
+                    ) }
+                  </>
+                ) }
+              </Collapsible.Content>
+            </Collapsible.Root>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
           <div className="flex flex-col gap-4 pb-10">

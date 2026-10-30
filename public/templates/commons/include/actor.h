@@ -18,12 +18,11 @@ namespace neo
       ~actor();
 
       inline constexpr static int PLAYER_SPEED = 2; // slow: 1, faster: 2
-      inline constexpr static bn::fixed ADVENTURE_SPEED = 2;
-      inline constexpr static int SIDE_SCROLL_SPEED = 2;
-      inline constexpr static int SIDE_SCROLL_JUMP = 9;
-      inline constexpr static int SIDE_SCROLL_GRAVITY = 1;
-      inline constexpr static int SIDE_SCROLL_MAX_FALL = 4;
-      inline constexpr static int SLOPE_MAX_STEP = SIDE_SCROLL_SPEED + 1;
+      inline constexpr static int PLAYER_MAX_FALL_SPEED = 4;
+      inline constexpr static int SLOPE_MAX_STEP = PLAYER_SPEED + 1;
+
+      // Because adventure mode allows diagonals, speed needs to be a fixed
+      inline constexpr static bn::fixed ADVENTURE_PLAYER_SPEED = 2;
 
       void init();
       void update();
@@ -83,7 +82,9 @@ namespace neo
       // position (see game::update_wave_effect()), so it can be removed
       // without drift regardless of how position is set.
       bn::fixed wave_offset = 0;
-      int vertical_velocity = 0;
+      // Gravity
+      bn::fixed vertical_velocity = 0;
+      bn::fixed vertical_remaining = 0;
       bool grounded = false;
       // Whether the player is currently touching this actor (different
       // collision group), so collide events fire once per touch instead
@@ -106,6 +107,8 @@ namespace neo
       void move();
       void check_input_side_scroller();
       void apply_side_scroller_gravity();
+      bn::fixed scene_gravity();
+      bn::fixed jump_velocity();
       void check_input_point_and_click();
       void check_input_adventure();
       bool adventure_blocked_at(int pixel_x, int pixel_y);

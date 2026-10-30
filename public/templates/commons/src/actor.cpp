@@ -430,13 +430,14 @@ namespace neo
         set_direction(facing);
       }
 
-      side_view_step_x(walk_left ? -SIDE_SCROLL_SPEED : SIDE_SCROLL_SPEED);
+      side_view_step_x(walk_left ? -PLAYER_SPEED : PLAYER_SPEED);
     }
 
     // A jumps when grounded (and doesn't re-trigger mid-air)
     if (bn::keypad::a_pressed() && grounded)
     {
-      vertical_velocity = -SIDE_SCROLL_JUMP;
+      vertical_velocity = -jump_velocity();
+      vertical_remaining = 0;
       grounded = false;
     }
 
@@ -648,8 +649,8 @@ namespace neo
     }
 
     bn::fixed speed = (dx != 0 && dy != 0)
-      ? ADVENTURE_SPEED * bn::fixed(0.707)
-      : ADVENTURE_SPEED;
+      ? ADVENTURE_PLAYER_SPEED * bn::fixed(0.707)
+      : ADVENTURE_PLAYER_SPEED;
     bn::fixed_point next_position = position;
 
     if (dx != 0 && !adventure_blocked_at((int)(next_position.x() + dx * speed), (int)next_position.y()))
@@ -1158,21 +1159,43 @@ namespace neo
     }
   }
 
+  bn::fixed actor::scene_gravity()
+  {
+    return bn::max(
+      game->active_scene->gravity_force->as_fixed(game->variables), bn::fixed(0.1));
+  }
+
+  bn::fixed actor::jump_velocity()
+  {
+    bn::fixed gravity = scene_gravity();
+    bn::fixed height = bn::max(
+      game->active_scene->jump_height->as_fixed(game->variables),
+      bn::fixed(0)
+    );
+
+    // https://top10k.com/tool/jump-height-physics-game
+    return (gravity + bn::fixed(bn::sqrt(gravity * gravity + 8 * gravity * height))) / 2;
+  }
+
   void actor::apply_side_scroller_gravity()
   {
-    int step = vertical_velocity + SIDE_SCROLL_GRAVITY;
+    bn::fixed gravity = scene_gravity();
+    bn::fixed max_fall = PLAYER_MAX_FALL_SPEED * bn::max(bn::fixed(1), gravity);
+    bn::fixed step = vertical_velocity + gravity;
 
-    if (step > SIDE_SCROLL_MAX_FALL)
+    if (step > max_fall)
     {
-      step = SIDE_SCROLL_MAX_FALL;
+      step = max_fall;
     }
 
+    bn::fixed total = step + vertical_remaining;
+    int direction_y = total < 0 ? -1 : 1;
+    int goal = (total < 0 ? -total : total).integer();
     int moved = 0;
-    int goal = step < 0 ? -step : step;
 
     while (moved < goal)
     {
-      int next_y = (int)position.y() + (step < 0 ? -1 : 1);
+      int next_y = (int)position.y() + direction_y;
 
       if (
         side_scroller_blocked_at((int)position.x(), next_y) ||
@@ -1190,6 +1213,7 @@ namespace neo
     {
       // Hit a ceiling mid-jump or the ground mid-fall (or never left it)
       vertical_velocity = 0;
+      vertical_remaining = 0;
 
       if (step > 0)
       {
@@ -1199,8 +1223,10 @@ namespace neo
     else
     {
       vertical_velocity = step;
+      vertical_remaining = total - direction_y * goal;
 
-      if (step > 0)
+      // Slow gravity can take a few frames to cover a whole pixel
+      if (step > 0 && goal > 0)
       {
         grounded = false;
       }
