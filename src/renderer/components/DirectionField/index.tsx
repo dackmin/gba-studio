@@ -7,8 +7,10 @@ import {
 } from '@radix-ui/react-icons';
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
 
+import type { Direction } from '../../../types';
+
 export interface DirectionFieldProps extends SegmentedControl.RootProps {
-  exclude?: string[];
+  exclude?: Direction[];
 }
 
 const DirectionField = ({

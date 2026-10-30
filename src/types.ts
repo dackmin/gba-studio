@@ -36,10 +36,21 @@ export type CollisionBrush = 'normal' | 'slope-left' | 'slope-right';
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
 
-export type ActorDirection = CharacterDirection | 'player';
+export type ActorDirection =
+  | CharacterDirection
+  | 'towards_player'
+  | 'from_player'
+  // legacy
+  | 'player';
 
-export type Direction = 'up' | 'down' | 'left' | 'right' |
-  'up_left' | 'up_right' | 'down_left' | 'down_right';
+export type MenuDirection =
+  | CharacterDirection
+  | 'up_left'
+  | 'up_right'
+  | 'down_left'
+  | 'down_right';
+
+export type Direction = ActorDirection | MenuDirection;
 
 export interface ListItem {
   name: string;

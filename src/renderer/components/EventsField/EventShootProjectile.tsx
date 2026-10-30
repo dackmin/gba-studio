@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 import { set } from '@junipero/react';
 
-import type { ShootProjectileEvent } from '../../../types';
+import type { Direction, ShootProjectileEvent } from '../../../types';
 import { useApp } from '../../services/hooks';
 import { findSprite } from '../../../helpers';
 import ActorListField from '../ActorListField';
@@ -99,8 +99,8 @@ const EventShootProjectile = ({
         <DirectionField
           value={event.direction ?? 'right'}
           exclude={[
-            ...(event.sourceType === 'player' ? ['towards_player'] : []),
-            ...(event.sourceType === 'actor' ? ['from_player'] : []),
+            ...(event.sourceType === 'player' ? ['towards_player' as Direction] : []),
+            ...(event.sourceType === 'actor' ? ['from_player' as Direction] : []),
           ]}
           onValueChange={onValueChange_.bind(null, 'direction')}
         />
