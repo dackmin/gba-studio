@@ -1094,6 +1094,50 @@ namespace neo::types
 
       return collisions != nullptr && collisions[tile_index(tile_x, tile_y)] == 1;
     }
+
+    inline bool one_way_blocks (
+      neo::variables::registry& variables, int tile_x, int tile_y,
+      int old_left, int old_top, int old_right, int old_bottom
+    ) const
+    {
+      int value = tile_value(tile_x, tile_y);
+
+      if (value < 4 || value > 7)
+      {
+        return false;
+      }
+
+      int size = grid_size->as_int(variables);
+
+      switch (value)
+      {
+        case 4:
+          return old_bottom < tile_y * size;
+        case 5:
+          return old_top >= (tile_y + 1) * size;
+        case 6:
+          return old_right < tile_x * size;
+        default:
+          return old_left >= (tile_x + 1) * size;
+      }
+    }
+
+    inline bool one_way_blocks_step (int tile_x, int tile_y, int step_x, int step_y) const
+    {
+      switch (tile_value(tile_x, tile_y))
+      {
+        case 4:
+          return step_y > 0;
+        case 5:
+          return step_y < 0;
+        case 6:
+          return step_x > 0;
+        case 7:
+          return step_x < 0;
+        default:
+          return false;
+      }
+    }
   };
 
   struct sprite_animation_frame

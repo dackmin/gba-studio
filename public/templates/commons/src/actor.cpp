@@ -551,11 +551,20 @@ namespace neo
     int min_tile_y = top < 0 ? -1 : map_data->to_tile_y(game->variables, top);
     int max_tile_y = bottom < 0 ? -1 : map_data->to_tile_y(game->variables, bottom);
 
+    int move_x = pixel_x - (int)position.x();
+    int move_y = pixel_y - (int)position.y();
+
     for (int tile_y = min_tile_y; tile_y <= max_tile_y; ++tile_y)
     {
       for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
       {
-        if (map_data->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
+        if (
+          map_data->has_collision(tile_x, tile_y) ||
+          map_data->one_way_blocks(
+            game->variables, tile_x, tile_y,
+            left - move_x, top - move_y, right - move_x, bottom - move_y) ||
+          game->has_collision(tile_x, tile_y)
+        )
         {
           return true;
         }
@@ -1012,7 +1021,12 @@ namespace neo
     int tile_x = feet_x < 0 ? -1 : map_data->to_tile_x(game->variables, feet_x);
     int tile_y = feet_y < 0 ? -1 : map_data->to_tile_y(game->variables, feet_y);
 
+    int old_x = (int)position.x() + width() / 2;
+    int old_y = (int)position.y() + height() - 1;
+
     return map_data->has_collision(tile_x, tile_y) ||
+      map_data->one_way_blocks(
+        game->variables, tile_x, tile_y, old_x, old_y, old_x, old_y) ||
       game->has_collision(tile_x, tile_y);
   }
 
@@ -1206,11 +1220,24 @@ namespace neo
     int min_tile_y = map_data->to_tile_y(game->variables, pixel_y);
     int max_tile_y = map_data->to_tile_y(game->variables, pixel_y + sprite_height - 1);
 
+    int move_x = pixel_x - (int)position.x();
+    int move_y = pixel_y - (int)position.y();
+
     for (int tile_y = min_tile_y; tile_y <= max_tile_y; ++tile_y)
     {
       for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
       {
         if (map_data->has_collision(tile_x, tile_y))
+        {
+          return true;
+        }
+
+        if (map_data->one_way_blocks(
+          game->variables, tile_x, tile_y,
+          pixel_x + side_inset - move_x,
+          pixel_y - move_y,
+          pixel_x + sprite_width - 1 - side_inset - move_x,
+          pixel_y + sprite_height - 1 - move_y))
         {
           return true;
         }
@@ -1225,7 +1252,7 @@ namespace neo
     return false;
   }
 
-  int actor::slope_surface_row(int center_x, int tile_y)
+  int actor::slope_surface_row(int center_x, int tile_y, int tolerance)
   {
     const neo::types::map* map_data = game->active_scene->map_data;
     int grid_size = map_data->grid_size->as_int(game->variables);
@@ -1238,15 +1265,24 @@ namespace neo
     int tile_x = map_data->to_tile_x(game->variables, center_x);
     int value = map_data->tile_value(tile_x, tile_y);
 
-    if (value != 2 && value != 3)
+    bool one_way = value == 8 || value == 9;
+
+    if (value != 2 && value != 3 && !one_way)
     {
       return -1;
     }
 
+    bool left_slope = value == 2 || value == 8;
     int local_x = center_x - tile_x * grid_size;
-    int local_y = value == 2 ? local_x : grid_size - 1 - local_x;
+    int local_y = left_slope ? local_x : grid_size - 1 - local_x;
+    int surface = tile_y * grid_size + local_y;
 
-    return tile_y * grid_size + local_y;
+    if (one_way && (int)position.y() + height() - 1 >= surface + tolerance)
+    {
+      return -1;
+    }
+
+    return surface;
   }
 
   bool actor::slope_embedded(int pixel_x, int pixel_y)
@@ -1260,7 +1296,7 @@ namespace neo
     }
 
     int surface = slope_surface_row(
-      pixel_x + width() / 2, map_data->to_tile_y(game->variables, bottom));
+      pixel_x + width() / 2, map_data->to_tile_y(game->variables, bottom), 0);
 
     return surface >= 0 && bottom >= surface;
   }
@@ -1278,9 +1314,9 @@ namespace neo
     int center_x = pixel_x + width() / 2;
     int tile_y = map_data->to_tile_y(game->variables, bottom);
 
-    return slope_surface_row(center_x, tile_y - 1) >= 0 ||
-      slope_surface_row(center_x, tile_y) >= 0 ||
-      slope_surface_row(center_x, tile_y + 1) >= 0;
+    return slope_surface_row(center_x, tile_y - 1, SLOPE_MAX_STEP) >= 0 ||
+      slope_surface_row(center_x, tile_y, SLOPE_MAX_STEP) >= 0 ||
+      slope_surface_row(center_x, tile_y + 1, SLOPE_MAX_STEP) >= 0;
   }
 
   bool actor::adjust_to_slope(bn::fixed_point& next, int side_inset)
@@ -1295,7 +1331,7 @@ namespace neo
     }
 
     int tile_y = map_data->to_tile_y(game->variables, bottom);
-    int surface = slope_surface_row(center_x, tile_y);
+    int surface = slope_surface_row(center_x, tile_y, SLOPE_MAX_STEP);
 
     if (surface >= 0 && bottom >= surface)
     {
@@ -1310,7 +1346,7 @@ namespace neo
         (int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
     }
 
-    int above = slope_surface_row(center_x, tile_y - 1);
+    int above = slope_surface_row(center_x, tile_y - 1, SLOPE_MAX_STEP);
 
     if (above >= 0 && bottom - (above - 1) <= SLOPE_MAX_STEP)
     {
@@ -1323,7 +1359,7 @@ namespace neo
     if (grounded)
     {
       int below = surface >= 0
-        ? surface : slope_surface_row(center_x, tile_y + 1);
+        ? surface : slope_surface_row(center_x, tile_y + 1, SLOPE_MAX_STEP);
       int gap = below - 1 - bottom;
 
       if (below >= 0 && gap > 0 && gap <= SLOPE_MAX_STEP)
@@ -1565,7 +1601,12 @@ namespace neo
     int tile_x = map_data->to_tile_x(game->variables, next_x);
     int tile_y = map_data->to_tile_y(game->variables, next_y);
 
-    if (map_data->has_collision(tile_x, tile_y) || game->has_collision(tile_x, tile_y))
+    if (
+      map_data->has_collision(tile_x, tile_y) ||
+      map_data->one_way_blocks_step(
+        tile_x, tile_y, next_x - (int)position.x(), next_y - (int)position.y()) ||
+      game->has_collision(tile_x, tile_y)
+    )
     {
       game->update_projectiles();
       game->update_frame();

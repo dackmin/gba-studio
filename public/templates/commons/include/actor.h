@@ -120,7 +120,7 @@ namespace neo
       void update_sensors(int tile_x, int tile_y);
       bool side_scroller_blocked_at(
         int pixel_x, int pixel_y, int foot_clearance = 0, int side_inset = 0);
-      int slope_surface_row(int center_x, int tile_y);
+      int slope_surface_row(int center_x, int tile_y, int tolerance);
       bool slope_embedded(int pixel_x, int pixel_y);
       bool near_slope(int pixel_x, int pixel_y);
       bool adjust_to_slope(bn::fixed_point& next, int side_inset);

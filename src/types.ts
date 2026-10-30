@@ -32,7 +32,17 @@ export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' |
   'hud-sprite' | 'hud-text';
 export type SubToolType = AddSubToolType;
 
-export type CollisionBrush = 'normal' | 'slope-left' | 'slope-right';
+export type CollisionBrush =
+  | 'none' // 0
+  | 'normal' // 1
+  | 'slope-left' // 2
+  | 'slope-right' // 3
+  | 'one-way-top' // 4
+  | 'one-way-bottom' // 5
+  | 'one-way-left' // 6
+  | 'one-way-right' // 7
+  | 'one-way-slope-left' // 8
+  | 'one-way-slope-right'; // 9
 
 export type CharacterDirection = 'up' | 'down' | 'left' | 'right';
 

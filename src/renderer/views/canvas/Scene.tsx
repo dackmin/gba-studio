@@ -42,8 +42,16 @@ import {
   COLLISION_BLOCK,
   COLLISION_BRUSH_VALUES,
   COLLISION_EMPTY,
+  COLLISION_ONE_WAY_BOTTOM,
+  COLLISION_ONE_WAY_LEFT,
+  COLLISION_ONE_WAY_RIGHT,
+  COLLISION_ONE_WAY_SLOPE_LEFT,
+  COLLISION_ONE_WAY_SLOPE_RIGHT,
+  COLLISION_ONE_WAY_TOP,
   COLLISION_SLOPE_LEFT,
   COLLISION_SLOPE_RIGHT,
+  COLLISION_COLOR,
+  COLLISION_ONE_WAY_COLOR,
 } from '../../../commons';
 import Actor from './Actor';
 import Sensor from './Sensor';
@@ -222,22 +230,45 @@ const Scene = ({
       (scene.map?.collisions?.length || 0) > 0 &&
       scene.sceneType !== 'logos'
     ) {
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
-
       scene.map?.collisions?.forEach((line, y) => {
         line.forEach((cell, x) => {
           const left = x * gridSize;
           const top = y * gridSize;
 
           if (cell === COLLISION_BLOCK) {
+            ctx.fillStyle = COLLISION_COLOR;
             ctx.fillRect(left, top, gridSize, gridSize);
-          } else if (cell === COLLISION_SLOPE_LEFT || cell === COLLISION_SLOPE_RIGHT) {
+          } else if (
+            cell === COLLISION_SLOPE_LEFT ||
+            cell === COLLISION_SLOPE_RIGHT ||
+            cell === COLLISION_ONE_WAY_SLOPE_LEFT ||
+            cell === COLLISION_ONE_WAY_SLOPE_RIGHT
+          ) {
+            const isLeft = cell === COLLISION_SLOPE_LEFT ||
+              cell === COLLISION_ONE_WAY_SLOPE_LEFT;
+
+            ctx.fillStyle = cell === COLLISION_SLOPE_LEFT ||
+              cell === COLLISION_SLOPE_RIGHT
+              ? COLLISION_COLOR
+              : COLLISION_ONE_WAY_COLOR;
             ctx.beginPath();
-            ctx.moveTo(cell === COLLISION_SLOPE_LEFT ? left : left + gridSize, top);
+            ctx.moveTo(isLeft ? left : left + gridSize, top);
             ctx.lineTo(left + gridSize, top + gridSize);
             ctx.lineTo(left, top + gridSize);
             ctx.closePath();
             ctx.fill();
+          } else if (cell === COLLISION_ONE_WAY_TOP) {
+            ctx.fillStyle = COLLISION_ONE_WAY_COLOR;
+            ctx.fillRect(left, top, gridSize, gridSize / 2);
+          } else if (cell === COLLISION_ONE_WAY_BOTTOM) {
+            ctx.fillStyle = COLLISION_ONE_WAY_COLOR;
+            ctx.fillRect(left, top + gridSize / 2, gridSize, gridSize / 2);
+          } else if (cell === COLLISION_ONE_WAY_LEFT) {
+            ctx.fillStyle = COLLISION_ONE_WAY_COLOR;
+            ctx.fillRect(left, top, gridSize / 2, gridSize);
+          } else if (cell === COLLISION_ONE_WAY_RIGHT) {
+            ctx.fillStyle = COLLISION_ONE_WAY_COLOR;
+            ctx.fillRect(left + gridSize / 2, top, gridSize / 2, gridSize);
           }
         });
       });
