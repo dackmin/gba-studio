@@ -67,6 +67,10 @@ const EventGoToScene = ({
             <Text size="1" className="text-slate">Direction</Text>
             <DirectionField
               value={event.start?.direction ?? 'down'}
+              exclude={[
+                'towards_player', 'from_player', 'player', 'up_left', 'up_right',
+                'down_left', 'down_right',
+              ]}
               onValueChange={onValueChange_.bind(null, 'start.direction')}
             />
           </div>
