@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.7.0](https://github.com/dackmin/gba-studio/compare/v0.6.1...v0.7.0) (2026-10-30)
+
+### Features
+
+* add one way collisions ([44f49f4](https://github.com/dackmin/gba-studio/commit/44f49f43fd53945fdf6cdb19a3d172541edfffd5))
+
+### Bug Fixes
+
+* directions not excluded correctly on some events ([c45f2bd](https://github.com/dackmin/gba-studio/commit/c45f2bdc65566cfc55bea0089801e4554d6aa037))
+* exclude more bad directions ([41860fc](https://github.com/dackmin/gba-studio/commit/41860fc41168f0a6e10c007a7d969c54f15dfbfe))
+* exclude more bad directions ([2af41c6](https://github.com/dackmin/gba-studio/commit/2af41c6bc17fc24e557472ac9425870d4871fa77))
+
 ## [0.6.1](https://github.com/dackmin/gba-studio/compare/v0.6.0...v0.6.1) (2026-10-28)
 
 ### Bug Fixes
