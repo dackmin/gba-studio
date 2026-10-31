@@ -72,8 +72,10 @@ const LeftSidebar = ({
   ), [getSize]);
 
   const startBuild = useCallback(async (opts?: BuildOptions) => {
-    const startingScene = selectedScene?.id ??
-      findScene(scenes, getData('canvas.selectedScene'))?.id;
+    const startingScene = opts?.exportPath
+      ? undefined
+      : selectedScene?.id ??
+        findScene(scenes, getData('canvas.selectedScene'))?.id;
 
     await window.electron.startBuildProject(projectPath, {
       project: {
