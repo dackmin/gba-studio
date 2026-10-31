@@ -220,16 +220,6 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
           },
         },
         {
-          label: 'Export ROM...',
-          click: async () => {
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            if (focusedWindow) {
-              focusedWindow.webContents.send('export-rom');
-            }
-          },
-        },
-        {
           label: 'Clean Build Folder',
           click: async () => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -250,8 +240,19 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
             }
           },
         },
+        { type: 'separator' },
+        {
+          label: 'Export ROM...',
+          click: async () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+              focusedWindow.webContents.send('export-rom');
+            }
+          },
+        },
       ],
-    }] : [],
+    }] as MenuItemConstructorOptions[] : [],
     {
       label: 'View',
       submenu: [
