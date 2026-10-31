@@ -670,7 +670,7 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
-  BN_DATA_EWRAM neo::types::script script_{{slug this.name}} = {
+  constexpr neo::types::script script_{{slug this.name}} = {
     {{slug this.name}}_script_id,
     {{slug this.name}}_script_name,
     {{#if (hasItems this.events)}}
@@ -692,7 +692,7 @@ namespace neo::scenes
   // Default script
   constexpr bn::string_view script_default_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view script_default_name = "default";
-  BN_DATA_EWRAM neo::types::script script_default = {
+  constexpr neo::types::script script_default = {
     script_default_id,
     script_default_name,
     0,
