@@ -16,6 +16,9 @@
 #include <neo_types.h>
 #include <neo_variables.h>
 
+#include "conditions.h"
+#include "menu.h"
+
 // The generated neo_scenes.h defines namespace-scope data (scene, actor and
 // animation objects) plus get_scene()/get_script(), so only one translation
 // unit may include it (game.cpp). Declare the one function needed here so
@@ -68,7 +71,7 @@ namespace neo::events
     {
       const neo::types::event* registered = game->scripted_events[i];
 
-      if (!(registered->type == "on-variable-change"))
+      if (!(registered->type == neo::types::event_type::ON_VARIABLE_CHANGE))
       {
         continue;
       }
@@ -95,7 +98,7 @@ namespace neo::events
      * @name wait
      * @param duration number (default: 500)
      */
-    if (e->type == "wait")
+    if (e->type == neo::types::event_type::WAIT)
     {
       const neo::types::wait_event* wait_evt =
         static_cast<const neo::types::wait_event*>(e);
@@ -106,7 +109,7 @@ namespace neo::events
      * @name fade-in
      * @param duration number (default: 500)
      */
-    else if (e->type == "fade-in" && game->scene_bg.has_value())
+    else if (e->type == neo::types::event_type::FADE_IN && game->scene_bg.has_value())
     {
       const neo::types::fade_event* fade_evt =
         static_cast<const neo::types::fade_event*>(e);
@@ -123,7 +126,7 @@ namespace neo::events
      * @name fade-out
      * @param duration number (default: 500)
      */
-    else if (e->type == "fade-out" && game->scene_bg.has_value())
+    else if (e->type == neo::types::event_type::FADE_OUT && game->scene_bg.has_value())
     {
       const neo::types::fade_event* fade_evt =
         static_cast<const neo::types::fade_event*>(e);
@@ -136,7 +139,7 @@ namespace neo::events
      * @name wait-for-button
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "wait-for-button")
+    else if (e->type == neo::types::event_type::WAIT_FOR_BUTTON)
     {
       if (!game->is_input_enabled)
       {
@@ -157,7 +160,7 @@ namespace neo::events
      * @name disable-input
      * Disables player input until enabled again with enable-input event.
      */
-    else if (e->type == "disable-input")
+    else if (e->type == neo::types::event_type::DISABLE_INPUT)
     {
       game->is_input_enabled = false;
     }
@@ -166,7 +169,7 @@ namespace neo::events
      * @name enable-input
      * Enables player input if it was disabled with disable-input event.
      */
-    else if (e->type == "enable-input")
+    else if (e->type == neo::types::event_type::ENABLE_INPUT)
     {
       game->is_input_enabled = true;
     }
@@ -175,7 +178,7 @@ namespace neo::events
      * @name save-game
      * Saves variables, current scene id, player position, and actors position to SRAM/Flash.
      */
-    else if (e->type == "save-game")
+    else if (e->type == neo::types::event_type::SAVE_GAME)
     {
       neo::save::write(game);
     }
@@ -184,7 +187,7 @@ namespace neo::events
      * @name load-game
      * Loads variables, last saved scene, player position, and actors position from SRAM/Flash.
      */
-    else if (e->type == "load-game")
+    else if (e->type == neo::types::event_type::LOAD_GAME)
     {
       neo::save::load(game);
     }
@@ -193,7 +196,7 @@ namespace neo::events
      * @name save-state
      * Saves current scene id, player position, and actors position to RAM.
      */
-    else if (e->type == "save-state")
+    else if (e->type == neo::types::event_type::SAVE_STATE)
     {
       neo::save::save_state(game);
     }
@@ -202,7 +205,7 @@ namespace neo::events
      * @name load-state
      * Loads last saved state from RAM (scene, player position, actors position).
      */
-    else if (e->type == "load-state")
+    else if (e->type == neo::types::event_type::LOAD_STATE)
     {
       neo::save::load_state(game);
     }
@@ -211,7 +214,7 @@ namespace neo::events
      * @name reset-game
      * Puts every variable back to its default value, without changing scene.
      */
-    else if (e->type == "reset-game")
+    else if (e->type == neo::types::event_type::RESET_GAME)
     {
       game->reset();
     }
@@ -224,7 +227,7 @@ namespace neo::events
      *   y number (default: 0)
      *   direction string (default: "down")
      */
-    else if (e->type == "go-to-scene")
+    else if (e->type == neo::types::event_type::GO_TO_SCENE)
     {
       const neo::types::scene_event* scene_evt =
         static_cast<const neo::types::scene_event*>(e);
@@ -237,7 +240,7 @@ namespace neo::events
      * @name on-button-press
      * @param buttons array of button names (event is ignored if empty)
      */
-    else if (e->type == "on-button-press")
+    else if (e->type == neo::types::event_type::ON_BUTTON_PRESS)
     {
       const neo::types::button_event* button_evt =
         static_cast<const neo::types::button_event*>(e);
@@ -269,7 +272,7 @@ namespace neo::events
      * @param variable string — Variable name
      * Registers callbacks run when a set-variable event changes the variable.
      */
-    else if (e->type == "on-variable-change")
+    else if (e->type == neo::types::event_type::ON_VARIABLE_CHANGE)
     {
       // Registered once; the callbacks are dispatched by set-variable itself.
       if (!is_loop)
@@ -286,7 +289,7 @@ namespace neo::events
      * @param text string — HUD text id
      * @param value value, variable or player attribute — New content
      */
-    else if (e->type == "set-hud-text")
+    else if (e->type == neo::types::event_type::SET_HUD_TEXT)
     {
       const neo::types::set_hud_text_event* hud_text_evt =
         static_cast<const neo::types::set_hud_text_event*>(e);
@@ -299,7 +302,7 @@ namespace neo::events
      * @param speed string — Text reveal speed (slow, normal, fast)
      * @param font string — Project font used to render the text (empty = project font)
      */
-    else if (e->type == "show-dialog")
+    else if (e->type == neo::types::event_type::SHOW_DIALOG)
     {
       const neo::types::dialog_event* dialog_evt =
         static_cast<const neo::types::dialog_event*>(e);
@@ -320,7 +323,7 @@ namespace neo::events
      * @param choices array of menu choices — Menu choices
      * @param font string — Project font used to render the choices (empty = project font)
      */
-    else if (e->type == "show-menu")
+    else if (e->type == neo::types::event_type::SHOW_MENU)
     {
       const neo::types::menu_event* menu_evt =
         static_cast<const neo::types::menu_event*>(e);
@@ -383,7 +386,7 @@ namespace neo::events
      * @param value string — Variable value (amount for increment/decrement)
      * @param operation string — set (default), increment or decrement
      */
-    else if (e->type == "set-variable")
+    else if (e->type == neo::types::event_type::SET_VARIABLE)
     {
       const neo::types::set_variable_event* set_var_evt =
         static_cast<const neo::types::set_variable_event*>(e);
@@ -431,7 +434,7 @@ namespace neo::events
       }
     }
 
-    else if (e->type == "if")
+    else if (e->type == neo::types::event_type::IF)
     {
       const neo::types::if_event* if_evt =
         static_cast<const neo::types::if_event*>(e);
@@ -466,7 +469,7 @@ namespace neo::events
      * @name disable-actor
      * @param actor string — Actor name
      */
-    else if (e->type == "disable-actor")
+    else if (e->type == neo::types::event_type::DISABLE_ACTOR)
     {
       const neo::types::disable_actor_event* disable_actor_evt =
         static_cast<const neo::types::disable_actor_event*>(e);
@@ -489,7 +492,7 @@ namespace neo::events
      * @name enable-actor
      * @param actor string — Actor name
      */
-    else if (e->type == "enable-actor")
+    else if (e->type == neo::types::event_type::ENABLE_ACTOR)
     {
       const neo::types::enable_actor_event* enable_actor_evt =
         static_cast<const neo::types::enable_actor_event*>(e);
@@ -513,7 +516,7 @@ namespace neo::events
      * @name disable-sprite
      * @param sprite string — Sprite name
      */
-    else if (e->type == "disable-sprite")
+    else if (e->type == neo::types::event_type::DISABLE_SPRITE)
     {
       const neo::types::disable_sprite_event* disable_sprite_evt =
         static_cast<const neo::types::disable_sprite_event*>(e);
@@ -535,7 +538,7 @@ namespace neo::events
      * @name enable-sprite
      * @param sprite string — Sprite name
      */
-    else if (e->type == "enable-sprite")
+    else if (e->type == neo::types::event_type::ENABLE_SPRITE)
     {
       const neo::types::enable_sprite_event* enable_sprite_evt =
         static_cast<const neo::types::enable_sprite_event*>(e);
@@ -560,7 +563,7 @@ namespace neo::events
      * @param volume bn::fixed (default: 1.0) / range: [0..1]
      * @param loop boolean — Whether to loop the music (default: false)
      */
-    else if (e->type == "play-music")
+    else if (e->type == neo::types::event_type::PLAY_MUSIC)
     {
       const neo::types::play_music_event* music_evt =
         static_cast<const neo::types::play_music_event*>(e);
@@ -587,7 +590,7 @@ namespace neo::events
     /**
      * @name stop-music
      */
-    else if (e->type == "stop-music")
+    else if (e->type == neo::types::event_type::STOP_MUSIC)
     {
       BN_LOG("Stopping music");
       const auto& current_music = bn::music::playing_item();
@@ -614,7 +617,7 @@ namespace neo::events
      * @param panning bn::fixed (default: 0) / range: [-1..1]
      * @param priority int (default: 32767) / range: [-32767..32767]
      */
-    else if (e->type == "play-sound")
+    else if (e->type == neo::types::event_type::PLAY_SOUND)
     {
       const neo::types::play_sound_event* sound_evt =
         static_cast<const neo::types::play_sound_event*>(e);
@@ -641,7 +644,7 @@ namespace neo::events
      * @name execute-script
      * @param name string — Script name
      */
-    else if (e->type == "execute-script")
+    else if (e->type == neo::types::event_type::EXECUTE_SCRIPT)
     {
       const neo::types::execute_script_event* script_evt =
         static_cast<const neo::types::execute_script_event*>(e);
@@ -674,7 +677,7 @@ namespace neo::events
         {
           const neo::types::event* ev = script.events[i];
 
-          BN_LOG("Executing script event: ", ev->type);
+          BN_LOG("Executing script event: ", neo::types::event_type_name(ev->type));
           exec_event(game, ev, is_loop);
         }
       }
@@ -696,7 +699,7 @@ namespace neo::events
      * every one of them is done (i.e. as long as the longest-running one
      * takes).
      */
-    else if (e->type == "parallel-events")
+    else if (e->type == neo::types::event_type::PARALLEL_EVENTS)
     {
       neo::types::parallel_event* parallel_evt =
         const_cast<neo::types::parallel_event*>(
@@ -722,7 +725,7 @@ namespace neo::events
      * @param value number — Target value, in percent (default: 100)
      * @param duration number — Duration in milliseconds (default: 200)
      */
-    else if (e->type == "set-palette-effect")
+    else if (e->type == neo::types::event_type::SET_PALETTE_EFFECT)
     {
       const neo::types::set_palette_effect_event* palette_evt =
         static_cast<const neo::types::set_palette_effect_event*>(e);
@@ -758,7 +761,7 @@ namespace neo::events
      * @param duration number — Duration in milliseconds, 0 runs until the scene changes (default: 0)
      * @param envelope string — Amplitude ramp: "in" (0%->100%) or "in-out" (0%->100%->0%) (default: "in")
      */
-    else if (e->type == "wave-effect")
+    else if (e->type == neo::types::event_type::WAVE_EFFECT)
     {
       const neo::types::wave_effect_event* wave_evt =
         static_cast<const neo::types::wave_effect_event*>(e);
@@ -778,7 +781,7 @@ namespace neo::events
      * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
      * @param direction_priority string — Direction priority for movement (default: "horizontal")
      */
-    else if (e->type == "move-camera-to")
+    else if (e->type == neo::types::event_type::MOVE_CAMERA_TO)
     {
       const neo::types::move_camera_to_event* move_camera_evt =
         static_cast<const neo::types::move_camera_to_event*>(e);
@@ -803,7 +806,7 @@ namespace neo::events
      * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
      * @param direction_priority string — Direction priority for movement (default: "horizontal")
      */
-    else if (e->type == "follow-actor")
+    else if (e->type == neo::types::event_type::FOLLOW_ACTOR)
     {
       const neo::types::follow_actor_event* follow_actor_evt =
         static_cast<const neo::types::follow_actor_event*>(e);
@@ -840,7 +843,7 @@ namespace neo::events
      * @param allow_diagonal boolean — Whether to allow diagonal movement (default: false)
      * @param direction_priority string — Direction priority for movement (default: "horizontal")
      */
-    else if (e->type == "follow-player")
+    else if (e->type == neo::types::event_type::FOLLOW_PLAYER)
     {
       const neo::types::follow_player_event* follow_player_evt =
         static_cast<const neo::types::follow_player_event*>(e);
@@ -866,7 +869,7 @@ namespace neo::events
      * @name freeze-camera
      * Stops the camera from following any actor, leaving it at its current position.
      */
-    else if (e->type == "freeze-camera")
+    else if (e->type == neo::types::event_type::FREEZE_CAMERA)
     {
       BN_LOG("Freezing camera");
 
@@ -877,7 +880,7 @@ namespace neo::events
      * @name disable-player
      * Disables the player until enabled again with enable-player event.
      */
-    else if (e->type == "disable-player")
+    else if (e->type == neo::types::event_type::DISABLE_PLAYER)
     {
       if (game->player != nullptr)
       {
@@ -890,7 +893,7 @@ namespace neo::events
      * @name enable-player
      * Enables the player if it was disabled with disable-player event.
      */
-    else if (e->type == "enable-player")
+    else if (e->type == neo::types::event_type::ENABLE_PLAYER)
     {
       if (game->player != nullptr)
       {
@@ -909,7 +912,7 @@ namespace neo::events
      * @param animation string — Animation id (none if empty)
      * @param backwards boolean — Keep current facing direction instead of turning towards the target (default: false)
      */
-    else if (e->type == "move-actor-to")
+    else if (e->type == neo::types::event_type::MOVE_ACTOR_TO)
     {
       const neo::types::move_actor_to_event* move_actor_evt =
         static_cast<const neo::types::move_actor_to_event*>(e);
@@ -945,7 +948,7 @@ namespace neo::events
      * @param animation string — Animation id (none if empty)
      * @param backwards boolean — Keep current facing direction instead of turning towards the target (default: false)
      */
-    else if (e->type == "move-player-to")
+    else if (e->type == neo::types::event_type::MOVE_PLAYER_TO)
     {
       const neo::types::move_player_to_event* move_player_evt =
         static_cast<const neo::types::move_player_to_event*>(e);
@@ -970,7 +973,7 @@ namespace neo::events
      * @param x number — Target X position in tiles
      * @param y number — Target Y position in tiles
      */
-    else if (e->type == "set-actor-position")
+    else if (e->type == neo::types::event_type::SET_ACTOR_POSITION)
     {
       const neo::types::set_actor_position_event* set_actor_position_evt =
         static_cast<const neo::types::set_actor_position_event*>(e);
@@ -998,7 +1001,7 @@ namespace neo::events
      * @param x number — Target X position in tiles
      * @param y number — Target Y position in tiles
      */
-    else if (e->type == "set-player-position")
+    else if (e->type == neo::types::event_type::SET_PLAYER_POSITION)
     {
       const neo::types::set_player_position_event* set_player_position_evt =
         static_cast<const neo::types::set_player_position_event*>(e);
@@ -1018,7 +1021,7 @@ namespace neo::events
      * @param actor string — Actor name
      * @param direction string — Direction to set (up, down, left, right)
      */
-    else if (e->type == "set-actor-direction")
+    else if (e->type == neo::types::event_type::SET_ACTOR_DIRECTION)
     {
       const neo::types::set_actor_direction_event* set_actor_direction_evt =
         static_cast<const neo::types::set_actor_direction_event*>(e);
@@ -1042,7 +1045,7 @@ namespace neo::events
      * @name set-player-direction
      * @param direction string — Direction to set (up, down, left, right)
      */
-    else if (e->type == "set-player-direction")
+    else if (e->type == neo::types::event_type::SET_PLAYER_DIRECTION)
     {
       const neo::types::set_player_direction_event* set_player_direction_evt =
         static_cast<const neo::types::set_player_direction_event*>(e);
@@ -1058,7 +1061,7 @@ namespace neo::events
      * @name set-background
      * @param background bn::regular_bg_item — Background item to set
      */
-    else if (e->type == "set-background")
+    else if (e->type == neo::types::event_type::SET_BACKGROUND)
     {
       const neo::types::set_background_event* set_bg_evt =
         static_cast<const neo::types::set_background_event*>(e);
@@ -1072,7 +1075,7 @@ namespace neo::events
      * @param sprite string — Sprite name or id
      * @param item bn::sprite_item — Sprite item to display
      */
-    else if (e->type == "set-sprite")
+    else if (e->type == neo::types::event_type::SET_SPRITE)
     {
       const neo::types::set_sprite_event* set_sprite_evt =
         static_cast<const neo::types::set_sprite_event*>(e);
@@ -1093,7 +1096,7 @@ namespace neo::events
     /**
      * @name shoot-projectile
      */
-    else if (e->type == "shoot-projectile")
+    else if (e->type == neo::types::event_type::SHOOT_PROJECTILE)
     {
       const neo::types::shoot_projectile_event* shoot_projectile_evt =
         static_cast<const neo::types::shoot_projectile_event*>(e);
@@ -1110,7 +1113,7 @@ namespace neo::events
     /**
      * @name melee-attack
      */
-    else if (e->type == "melee-attack")
+    else if (e->type == neo::types::event_type::MELEE_ATTACK)
     {
       const neo::types::melee_attack_event* melee_attack_evt =
         static_cast<const neo::types::melee_attack_event*>(e);
@@ -1130,7 +1133,7 @@ namespace neo::events
      */
     else
     {
-      BN_LOG("Unknown event type: ", e->type);
+      BN_LOG("Unknown event type: ", neo::types::event_type_name(e->type));
     }
   }
 
@@ -1168,7 +1171,7 @@ void neo::types::fade_event::start(neo::game* game_, neo::scene_bg& bg_, int dur
   game_ref = game_;
   bg = &bg_;
 
-  bool is_fade_in = type == "fade-in";
+  bool is_fade_in = type == neo::types::event_type::FADE_IN;
   int frames = duration_ms / 16;
 
   game_ref->enable_blending();
@@ -1219,7 +1222,7 @@ bool neo::types::fade_event::update()
     return false;
   }
 
-  bool is_fade_in = type == "fade-in";
+  bool is_fade_in = type == neo::types::event_type::FADE_IN;
 
   bn::blending::set_fade_alpha(is_fade_in ? 0 : 1);
 
@@ -1251,7 +1254,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
     neo::types::event* sub_evt_rw = const_cast<neo::types::event*>(sub_evt);
 
     if (
-      (sub_evt->type == "fade-in" || sub_evt->type == "fade-out") &&
+      (sub_evt->type == neo::types::event_type::FADE_IN || sub_evt->type == neo::types::event_type::FADE_OUT) &&
       game->scene_bg.has_value()
     )
     {
@@ -1265,7 +1268,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
         pending.push_back(fade_evt);
       }
     }
-    else if (sub_evt->type == "move-camera-to")
+    else if (sub_evt->type == neo::types::event_type::MOVE_CAMERA_TO)
     {
       neo::types::move_camera_to_event* move_evt =
         static_cast<neo::types::move_camera_to_event*>(sub_evt_rw);
@@ -1277,7 +1280,10 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
         pending.push_back(move_evt);
       }
     }
-    else if (sub_evt->type == "move-actor-to" || sub_evt->type == "move-player-to")
+    else if (
+      sub_evt->type == neo::types::event_type::MOVE_ACTOR_TO ||
+      sub_evt->type == neo::types::event_type::MOVE_PLAYER_TO
+    )
     {
       neo::types::actor_move_event* move_evt =
         static_cast<neo::types::actor_move_event*>(sub_evt_rw);
@@ -1289,11 +1295,14 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
         pending.push_back(move_evt);
       }
     }
-    else if (sub_evt->type == "set-palette-effect" || sub_evt->type == "wave-effect")
+    else if (
+      sub_evt->type == neo::types::event_type::SET_PALETTE_EFFECT ||
+      sub_evt->type == neo::types::event_type::WAVE_EFFECT
+    )
     {
       neo::types::event* effect_evt = sub_evt_rw;
 
-      if (effect_evt->type == "set-palette-effect")
+      if (effect_evt->type == neo::types::event_type::SET_PALETTE_EFFECT)
       {
         neo::types::set_palette_effect_event* palette_evt =
           static_cast<neo::types::set_palette_effect_event*>(effect_evt);

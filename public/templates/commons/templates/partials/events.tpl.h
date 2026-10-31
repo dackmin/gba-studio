@@ -4,16 +4,13 @@
 {{#if (neq this.enabled false)}}
 {{#if (eq this.type "wait")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "wait";
-constexpr neo::types::wait_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+constexpr neo::types::wait_event {{../prefix}}_{{@index}}(neo::types::event_type::WAIT, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-in")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "fade-in";
-BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}(neo::types::event_type::FADE_IN, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (eq this.type "fade-out")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "fade-out";
-BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type, &{{../prefix}}_{{@index}}_duration_value);
+BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}(neo::types::event_type::FADE_OUT, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (or (eq this.type "wait-for-button") (eq this.type "on-button-press"))}}
 {{#if (eq this.type "on-button-press")}}
 {{#if this.events}}
@@ -25,7 +22,6 @@ constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "{{this.type}}";
 {{#if this.buttons.length}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_buttons[] = {
   {{#each this.buttons}}
@@ -34,7 +30,7 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_buttons[] = {
 };
 {{/if}}
 constexpr neo::types::button_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::{{#if (eq this.type "on-button-press")}}ON_BUTTON_PRESS{{else}}WAIT_FOR_BUTTON{{/if}},
   {{valuedef this.every false}},
   {{#if this.buttons.length}}
   bn::span<const bn::string_view>({{../prefix}}_{{@index}}_buttons),
@@ -50,54 +46,45 @@ constexpr neo::types::button_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "disable-input")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "disable-input";
 constexpr neo::types::input_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::DISABLE_INPUT
 );
 {{else if (eq this.type "enable-input")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "enable-input";
 constexpr neo::types::input_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::ENABLE_INPUT
 );
 {{else if (eq this.type "save-game")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "save-game";
 constexpr neo::types::save_game_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::SAVE_GAME
 );
 {{else if (eq this.type "load-game")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "load-game";
 constexpr neo::types::load_game_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::LOAD_GAME
 );
 {{else if (eq this.type "save-state")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "save-state";
 constexpr neo::types::save_state_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::SAVE_STATE
 );
 {{else if (eq this.type "reset-game")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "reset-game";
 constexpr neo::types::reset_game_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::RESET_GAME
 );
 {{else if (eq this.type "load-state")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "load-state";
 constexpr neo::types::load_state_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::LOAD_STATE
 );
 {{else if (eq this.type "go-to-scene")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_x") value=(valuedef this.start.x -1)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_start_y") value=(valuedef this.start.y -1)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "go-to-scene";
 constexpr bn::string_view {{../prefix}}_{{@index}}_target = "{{this.target}}";
 constexpr neo::types::scene_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::GO_TO_SCENE,
   {{../prefix}}_{{@index}}_target,
   &{{../prefix}}_{{@index}}_start_x_value,
   &{{../prefix}}_{{@index}}_start_y_value,
   neo::types::direction::{{uppercase (valuedef this.start.direction 'down')}}
 );
 {{else if (eq this.type "show-dialog")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
 {{#each (truncate this.text (dialogLineLength this.portrait))}}
 constexpr bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{escapeCpp this}}";
 {{/each}}
@@ -112,7 +99,7 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_lines[] = {
 constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
 {{/if}}
 constexpr neo::types::dialog_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SHOW_DIALOG,
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
   {{valuedef this.z 1}},
   neo::types::text_speed::{{uppercase (valuedef this.speed 'normal')}},
@@ -144,7 +131,6 @@ constexpr neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "show-menu")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
 {{#each this.choices}}
 {{#if this.events.length}}
 {{>eventsPartial prefix=(concat ../../prefix "_" @../index "_option_" @index "_event") events=this.events}}
@@ -190,7 +176,7 @@ constexpr neo::types::menu_choice {{../prefix}}_{{@index}}_choices[] = {
 constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
 {{/if}}
 constexpr neo::types::menu_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SHOW_MENU,
   {{valuedef (len (longestMenuChoice this.choices)) 0}},
   {{valuedef this.choices.length 0}},
   neo::types::direction::{{uppercase (valuedef this.direction 'down_right')}},
@@ -220,9 +206,8 @@ constexpr neo::types::menu_event {{../prefix}}_{{@index}}(
 {{>valuePartial prefix=(concat ../prefix "_" @index "_content") value=this.value}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_hud = "{{escapeCpp this.hud}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_text = "{{escapeCpp this.text}}";
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-hud-text";
 constexpr neo::types::set_hud_text_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_HUD_TEXT,
   {{../prefix}}_{{@index}}_hud,
   {{../prefix}}_{{@index}}_text,
   &{{../prefix}}_{{@index}}_content_value
@@ -237,9 +222,8 @@ constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
 };
 {{/if}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.variable) as | variable |}}"{{variable.name}}"{{else}}""{{/with}};
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "on-variable-change";
 constexpr neo::types::variable_change_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::ON_VARIABLE_CHANGE,
   {{../prefix}}_{{@index}}_variable_name,
   {{#if (hasItems this.events)}}
   {{this.events.length}},
@@ -259,9 +243,8 @@ constexpr neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_string_value,
   {{fixed this.value}}
 );
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-variable";
 constexpr neo::types::set_variable_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_VARIABLE,
   {{../prefix}}_{{@index}}_variable_name,
   &{{../prefix}}_{{@index}}_value,
   neo::types::variable_operation::{{uppercase (valuedef this.operation 'set')}}
@@ -291,9 +274,8 @@ constexpr const neo::types::if_condition* {{../prefix}}_{{@index}}_conditions[] 
   {{/each}}
 };
 {{/if}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "if";
 constexpr neo::types::if_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::IF,
   {{#if this.conditions.length}}
   {{this.conditions.length}},
   {{../prefix}}_{{@index}}_conditions,
@@ -317,52 +299,45 @@ constexpr neo::types::if_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "disable-actor")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "disable-actor";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr neo::types::disable_actor_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::DISABLE_ACTOR,
   {{../prefix}}_{{@index}}_actor
 );
 {{else if (eq this.type "enable-actor")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "enable-actor";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr neo::types::enable_actor_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::ENABLE_ACTOR,
   {{../prefix}}_{{@index}}_actor
 );
 {{else if (eq this.type "disable-sprite")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "disable-sprite";
 constexpr bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
 constexpr neo::types::disable_sprite_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::DISABLE_SPRITE,
   {{../prefix}}_{{@index}}_sprite
 );
 {{else if (eq this.type "enable-sprite")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "enable-sprite";
 constexpr bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
 constexpr neo::types::enable_sprite_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::ENABLE_SPRITE,
   {{../prefix}}_{{@index}}_sprite
 );
 {{else if (eq this.type "play-music")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "play-music";
 constexpr bn::string_view {{../prefix}}_{{@index}}_music_name = "{{getMusicName @root/music this.name}}";
 constexpr neo::types::play_music_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::PLAY_MUSIC,
   {{../prefix}}_{{@index}}_music_name,
   {{this.volume}},
   {{this.loop}}
 );
 {{else if (eq this.type "stop-music")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "stop-music";
 constexpr neo::types::stop_music_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::STOP_MUSIC
 );
 {{else if (eq this.type "play-sound")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "play-sound";
 constexpr bn::string_view {{../prefix}}_{{@index}}_sound_name = "{{getSoundName @root/sounds this.name}}";
 constexpr neo::types::play_sound_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::PLAY_SOUND,
   {{../prefix}}_{{@index}}_sound_name,
   {{this.volume}},
   {{this.speed}},
@@ -380,10 +355,9 @@ constexpr const neo::types::event_value* {{../prefix}}_{{@index}}_arguments[] = 
   {{/each}}
 };
 {{/if}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "execute-script";
 constexpr bn::string_view {{../prefix}}_{{@index}}_script_name = "{{this.script}}";
 constexpr neo::types::execute_script_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::EXECUTE_SCRIPT,
   {{../prefix}}_{{@index}}_script_name,
   {{valuedef this.parameters.length 0}},
   {{#if this.parameters.length}}
@@ -401,9 +375,8 @@ constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "parallel-events";
 BN_DATA_EWRAM neo::types::parallel_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::PARALLEL_EVENTS,
   {{valuedef this.events.length 0}},
   {{#if this.events.length}}
   {{../prefix}}_{{@index}}_events
@@ -413,11 +386,10 @@ BN_DATA_EWRAM neo::types::parallel_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "set-palette-effect")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-palette-effect";
 constexpr bn::string_view {{../prefix}}_{{@index}}_target = "{{valuedef this.target "both"}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_effect = "{{valuedef this.effect "grayscale"}}";
 BN_DATA_EWRAM neo::types::set_palette_effect_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_PALETTE_EFFECT,
   {{../prefix}}_{{@index}}_target,
   {{../prefix}}_{{@index}}_effect,
   {{valuedef this.value 100}},
@@ -425,11 +397,10 @@ BN_DATA_EWRAM neo::types::set_palette_effect_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "wave-effect")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 0)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "wave-effect";
 constexpr bn::string_view {{../prefix}}_{{@index}}_target = "{{valuedef this.target "both"}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_envelope = "{{valuedef this.envelope "in"}}";
 BN_DATA_EWRAM neo::types::wave_effect_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::WAVE_EFFECT,
   {{../prefix}}_{{@index}}_target,
   {{valuedef this.amplitude 4}},
   {{valuedef this.speed 4}},
@@ -441,10 +412,9 @@ BN_DATA_EWRAM neo::types::wave_effect_event {{../prefix}}_{{@index}}(
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "move-camera-to";
 constexpr bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 BN_DATA_EWRAM neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::MOVE_CAMERA_TO,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_duration_value,
@@ -453,11 +423,10 @@ BN_DATA_EWRAM neo::types::move_camera_to_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "follow-actor")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "follow-actor";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 constexpr neo::types::follow_actor_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::FOLLOW_ACTOR,
   {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_duration_value,
   {{valuedef this.allowDiagonal true}},
@@ -465,39 +434,34 @@ constexpr neo::types::follow_actor_event {{../prefix}}_{{@index}}(
 );
 {{else if (eq this.type "follow-player")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "follow-player";
 constexpr bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 constexpr neo::types::follow_player_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::FOLLOW_PLAYER,
   &{{../prefix}}_{{@index}}_duration_value,
   {{valuedef this.allowDiagonal true}},
   {{../prefix}}_{{@index}}_direction_priority
 );
 {{else if (eq this.type "freeze-camera")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "freeze-camera";
 constexpr neo::types::freeze_camera_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::FREEZE_CAMERA
 );
 {{else if (eq this.type "disable-player")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "disable-player";
 constexpr neo::types::player_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::DISABLE_PLAYER
 );
 {{else if (eq this.type "enable-player")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "enable-player";
 constexpr neo::types::player_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type
+  neo::types::event_type::ENABLE_PLAYER
 );
 {{else if (eq this.type "move-actor-to")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 2)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "move-actor-to";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
 BN_DATA_EWRAM neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::MOVE_ACTOR_TO,
   {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
@@ -510,11 +474,10 @@ BN_DATA_EWRAM neo::types::move_actor_to_event {{../prefix}}_{{@index}}(
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_speed") value=(valuedef this.speed 2)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "move-player-to";
 constexpr bn::string_view {{../prefix}}_{{@index}}_direction_priority = "{{valuedef this.directionPriority "horizontal"}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{valuedef this.animation ""}}";
 BN_DATA_EWRAM neo::types::move_player_to_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::MOVE_PLAYER_TO,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value,
   &{{../prefix}}_{{@index}}_speed_value,
@@ -525,10 +488,9 @@ BN_DATA_EWRAM neo::types::move_player_to_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "set-actor-position")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-position";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr neo::types::set_actor_position_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_ACTOR_POSITION,
   {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value
@@ -536,44 +498,38 @@ constexpr neo::types::set_actor_position_event {{../prefix}}_{{@index}}(
 {{else if (eq this.type "set-player-position")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_x") value=(valuedef this.x 0)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_y") value=(valuedef this.y 0)}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-player-position";
 constexpr neo::types::set_player_position_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_PLAYER_POSITION,
   &{{../prefix}}_{{@index}}_x_value,
   &{{../prefix}}_{{@index}}_y_value
 );
 {{else if (eq this.type "set-actor-direction")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-actor-direction";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
 constexpr neo::types::set_actor_direction_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_ACTOR_DIRECTION,
   {{../prefix}}_{{@index}}_actor,
   {{../prefix}}_{{@index}}_direction
 );
 {{else if (eq this.type "set-player-direction")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-player-direction";
 constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
 constexpr neo::types::set_player_direction_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_PLAYER_DIRECTION,
   {{../prefix}}_{{@index}}_direction
 );
 {{else if (eq this.type "set-background")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-background";
 constexpr neo::types::set_background_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_BACKGROUND,
   neo::backgrounds::{{getBackgroundName @root/backgrounds (valuedef this.background "bg_default")}}
 );
 {{else if (eq this.type "set-sprite")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "set-sprite";
 constexpr bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
 constexpr neo::types::set_sprite_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SET_SPRITE,
   {{../prefix}}_{{@index}}_sprite,
   bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.asset "sprite_default")}}
 );
 {{else if (eq this.type "shoot-projectile")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "shoot-projectile";
 constexpr bn::sprite_item {{../prefix}}_{{@index}}_sprite = bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_source_type = "{{this.sourceType}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
@@ -586,7 +542,7 @@ constexpr neo::types::gravity_style {{../prefix}}_{{@index}}_gravity_style = neo
 {{>valuePartial prefix=(concat ../prefix "_" @index "_gravity_angle") value=(valuedef this.gravityAngle 45)}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_terminal_velocity") value=(valuedef this.terminalVelocity 100)}}
 constexpr neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::SHOOT_PROJECTILE,
   {{../prefix}}_{{@index}}_sprite,
   {{../prefix}}_{{@index}}_source_type,
   {{../prefix}}_{{@index}}_actor,
@@ -603,24 +559,21 @@ constexpr neo::types::shoot_projectile_event {{../prefix}}_{{@index}}(
   &{{../prefix}}_{{@index}}_terminal_velocity_value
 );
 {{else if (eq this.type "melee-attack")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "melee-attack";
 constexpr bn::sprite_item {{../prefix}}_{{@index}}_sprite = bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_source_type = "{{this.sourceType}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 200)}}
 constexpr neo::types::melee_attack_event {{../prefix}}_{{@index}}(
-  {{../prefix}}_{{@index}}_type,
+  neo::types::event_type::MELEE_ATTACK,
   {{../prefix}}_{{@index}}_sprite,
   {{../prefix}}_{{@index}}_source_type,
   {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_duration_value
 );
 {{else}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "unknown:{{this.type}}";
-constexpr neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
+constexpr neo::types::event {{../prefix}}_{{@index}}(neo::types::event_type::UNKNOWN);
 {{/if}}
 {{else}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_type = "disabled:{{this.type}}";
-constexpr neo::types::event {{../prefix}}_{{@index}}({{../prefix}}_{{@index}}_type);
+constexpr neo::types::event {{../prefix}}_{{@index}}(neo::types::event_type::UNKNOWN);
 {{/if}}
 {{/each}}
