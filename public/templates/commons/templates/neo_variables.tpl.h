@@ -48,24 +48,56 @@ namespace neo::variables
     }
   };
 
-  // Registry-owned runtime variable: only these need a text buffer for computed ints
-  struct variable: value
+  struct variable
   {
-    // 6 chars fit -99999..999999, which set_int() clamps to.
-    bn::string<6> computed_str;
+    int int_value = 0;
+    bn::fixed fixed_value;
+    bn::string_view str_value;
+    bool bool_value = false;
     bool has_computed_str = false;
+    // 6 chars fit -99999..999999, which set_int() clamps to.
+    char computed_str[7] = {};
 
-    variable(
-      bn::string_view name_,
-      int val_,
-      bool bool_val_,
-      bn::string_view str_val_,
-      bn::fixed fixed_val_
-    ): value(name_, val_, bool_val_, str_val_, fixed_val_) {}
+    inline void init (int val_, bool bool_val_, bn::string_view str_val_, bn::fixed fixed_val_)
+    {
+      int_value = val_;
+      bool_value = bool_val_;
+      str_value = str_val_;
+      fixed_value = fixed_val_;
+      has_computed_str = false;
+    }
+
+    inline int as_int () const
+    {
+      return int_value;
+    }
+
+    inline bool as_bool () const
+    {
+      return bool_value;
+    }
+
+    inline bn::fixed as_fixed () const
+    {
+      return fixed_value;
+    }
 
     inline bn::string_view as_string () const
     {
       return has_computed_str ? bn::string_view(computed_str) : str_value;
+    }
+
+    inline void set_computed_str (bn::string_view text)
+    {
+      int size = bn::min(text.size(), 6);
+
+      for (int i = 0; i < size; ++i)
+      {
+        computed_str[i] = text[i];
+      }
+
+      computed_str[size] = 0;
+      has_computed_str = true;
     }
 
     inline void set_int (int val)
@@ -74,67 +106,64 @@ namespace neo::variables
       int_value = val;
       bool_value = val != 0;
       fixed_value = bn::fixed(val);
-      computed_str = bn::to_string<6>(val);
-      has_computed_str = true;
+      set_computed_str(bn::string_view(bn::to_string<6>(val)));
     }
 
     inline void set_fixed (bn::fixed val)
     {
       fixed_value = val;
-      computed_str = bn::to_string<6>(fixed_value);
-      has_computed_str = true;
+      set_computed_str(bn::string_view(bn::to_string<6>(fixed_value)));
       bool_value = fixed_value != 0;
     }
 
     inline void assign (const value& other)
     {
-      int_value = other.int_value;
-      bool_value = other.bool_value;
-      str_value = other.str_value;
-      fixed_value = other.fixed_value;
-      has_computed_str = false;
+      init(other.int_value, other.bool_value, other.str_value, other.fixed_value);
     }
 
     inline void assign (const variable& other)
     {
-      int_value = other.int_value;
-      bool_value = other.bool_value;
-      str_value = other.str_value;
-      fixed_value = other.fixed_value;
-      computed_str = other.computed_str;
-      has_computed_str = other.has_computed_str;
+      *this = other;
     }
   };
 
   struct registry
   {
-    bn::unordered_map<bn::string_view, neo::variables::variable*, {{max (powerOfTwo (add (valuesCount variables) (scriptParamsCount scripts))) 1}}> all;
+    static constexpr int COUNT = {{add (valuesCount variables) (scriptParamsCount scripts)}};
 
-    registry(): all()
+    bn::unordered_map<bn::string_view, neo::variables::variable*, {{max (powerOfTwo (add (valuesCount variables) (scriptParamsCount scripts))) 1}}> all;
+    neo::variables::variable* items;
+
+    registry(): all(), items(new neo::variables::variable[COUNT > 0 ? COUNT : 1])
     {
+      // those damn warnings
+      [[maybe_unused]] int next = 0;
+
       {{#each variables}}
       {{#each this.values}}
-      neo::variables::variable* value_{{@../index}}_{{slug this.name}}_{{@index}} = new neo::variables::variable(
-        "{{this.name}}",
+      items[next].init(
         {{int this.defaultValue}},
         {{bool this.defaultValue}},
         "{{this.defaultValue}}",
         {{fixed this.defaultValue}}
       );
-      all.insert_or_assign(
-        "{{this.name}}",
-        value_{{@../index}}_{{slug this.name}}_{{@index}}
-      );
+      all.insert_or_assign("{{this.name}}", &items[next++]);
       {{/each}}
       {{/each}}
       {{#each scripts}}
       {{#each this.parameters}}
-      neo::variables::variable* script_parameter_{{@../index}}_{{@index}} = new neo::variables::variable(
-        "{{scriptParamKey this.id}}", 0, false, "", 0
-      );
-      all.insert_or_assign("{{scriptParamKey this.id}}", script_parameter_{{@../index}}_{{@index}});
+      items[next].init(0, false, "", 0);
+      all.insert_or_assign("{{scriptParamKey this.id}}", &items[next++]);
       {{/each}}
       {{/each}}
+    }
+
+    registry(const registry&) = delete;
+    registry& operator=(const registry&) = delete;
+
+    ~registry()
+    {
+      delete[] items;
     }
 
     inline bool has(bn::string_view key)
