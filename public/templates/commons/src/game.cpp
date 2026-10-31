@@ -326,7 +326,7 @@ namespace neo
     for (int i = 0; i < active_scene->event_count && !scene_changed; ++i)
     {
       BN_LOG("Getting scene event ", i);
-      neo::types::event* e = active_scene->events[i];
+      const neo::types::event* e = active_scene->events[i];
       BN_LOG("Executing scene event: ", e->type);
       exec_event(e, false);
     }

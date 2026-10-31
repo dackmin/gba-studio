@@ -198,8 +198,8 @@ namespace neo::types
   {
     bn::string_view type;
 
-    event(bn::string_view type_): type(type_) {}
-    virtual ~event() = default;
+    constexpr event(bn::string_view type_): type(type_) {}
+    constexpr virtual ~event() = default;
 
     // Advances a resumable event by one frame, like bn::core::update().
     // Instant events don't override this: they're already done immediately.
@@ -212,7 +212,7 @@ namespace neo::types
   struct wait_event: event
   {
     const event_value* duration;
-    wait_event(bn::string_view type_, const event_value* duration_):
+    constexpr wait_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
   };
 
@@ -237,7 +237,7 @@ namespace neo::types
     const event_value* start_x;
     const event_value* start_y;
     neo::types::direction start_direction;
-    scene_event(bn::string_view type_, bn::string_view target_, const event_value* start_x_, const event_value* start_y_, neo::types::direction start_direction_):
+    constexpr scene_event(bn::string_view type_, bn::string_view target_, const event_value* start_x_, const event_value* start_y_, neo::types::direction start_direction_):
       event(type_), target(target_), start_x(start_x_), start_y(start_y_), start_direction(start_direction_) {}
   };
 
@@ -246,18 +246,18 @@ namespace neo::types
     bool every;
     bn::vector<bn::string_view, 10> buttons;
     int events_count;
-    event* const* events;
+    const event* const* events;
 
     button_event(
       bn::string_view type_,
       bool every_,
       bn::vector<bn::string_view, 10> buttons_,
       int events_count_,
-      event* const* events_
+      const event* const* events_
     ): event(type_), every(every_), buttons(buttons_), events_count(events_count_), events(events_) {}
 
     // Helper constructor for single button
-    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, event* const* events_):
+    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, const event* const* events_):
       event(type_), every(false), buttons(), events_count(events_count_), events(events_)
     {
       buttons.push_back(single_button);
@@ -272,10 +272,10 @@ namespace neo::types
   struct parallel_event: event
   {
     int events_count;
-    event* const* events;
+    const event* const* events;
     bn::vector<event*, 8> pending;
 
-    parallel_event(bn::string_view type_, int events_count_, event* const* events_):
+    parallel_event(bn::string_view type_, int events_count_, const event* const* events_):
       event(type_), events_count(events_count_), events(events_) {}
 
     // Runs instant sub-events immediately (delegated to game::exec_event)
@@ -301,49 +301,49 @@ namespace neo::types
 
   struct input_event: event
   {
-    input_event(bn::string_view type_):
+    constexpr input_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct freeze_camera_event: event
   {
-    freeze_camera_event(bn::string_view type_):
+    constexpr freeze_camera_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct player_event: event
   {
-    player_event(bn::string_view type_):
+    constexpr player_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct save_game_event: event
   {
-    save_game_event(bn::string_view type_):
+    constexpr save_game_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct load_game_event: event
   {
-    load_game_event(bn::string_view type_):
+    constexpr load_game_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct save_state_event: event
   {
-    save_state_event(bn::string_view type_):
+    constexpr save_state_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct load_state_event: event
   {
-    load_state_event(bn::string_view type_):
+    constexpr load_state_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct reset_game_event: event
   {
-    reset_game_event(bn::string_view type_):
+    constexpr reset_game_event(bn::string_view type_):
       event(type_) {}
   };
 
@@ -368,11 +368,11 @@ namespace neo::types
   {
     bn::string_view text;
     int events_count;
-    event* const* events;
+    const event* const* events;
     int conditions_count;
-    if_condition* const* conditions;
+    const if_condition* const* conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, event* const* events_, int conditions_count_, if_condition* const* conditions_):
+    menu_choice(bn::string_view text_, int events_count_, const event* const* events_, int conditions_count_, const if_condition* const* conditions_):
       text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
@@ -394,8 +394,8 @@ namespace neo::types
   {
     bn::string_view key;
     int events_count;
-    event* const* events;
-    variable_change_event(bn::string_view type_, bn::string_view key_, int events_count_, event* const* events_):
+    const event* const* events;
+    constexpr variable_change_event(bn::string_view type_, bn::string_view key_, int events_count_, const event* const* events_):
       event(type_), key(key_), events_count(events_count_), events(events_) {}
   };
 
@@ -404,7 +404,7 @@ namespace neo::types
     bn::string_view hud;
     bn::string_view text;
     const event_value* value;
-    set_hud_text_event(bn::string_view type_, bn::string_view hud_, bn::string_view text_, const event_value* value_):
+    constexpr set_hud_text_event(bn::string_view type_, bn::string_view hud_, bn::string_view text_, const event_value* value_):
       event(type_), hud(hud_), text(text_), value(value_) {}
   };
 
@@ -413,7 +413,7 @@ namespace neo::types
     bn::string_view key;
     const neo::variables::value* value;
     neo::types::variable_operation operation;
-    set_variable_event(bn::string_view type_, bn::string_view key_, const neo::variables::value* value_, neo::types::variable_operation operation_):
+    constexpr set_variable_event(bn::string_view type_, bn::string_view key_, const neo::variables::value* value_, neo::types::variable_operation operation_):
       event(type_), key(key_), value(value_), operation(operation_) {}
   };
 
@@ -426,7 +426,7 @@ namespace neo::types
   {
     bn::string_view name;
 
-    if_expression_variable(bn::string_view type_, bn::string_view name_):
+    constexpr if_expression_variable(bn::string_view type_, bn::string_view name_):
       if_expression(type_), name(name_) {}
   };
 
@@ -434,13 +434,13 @@ namespace neo::types
   {
     bn::string_view value;
 
-    if_expression_value(bn::string_view type_, bn::string_view value_):
+    constexpr if_expression_value(bn::string_view type_, bn::string_view value_):
       if_expression(type_), value(value_) {}
   };
 
   struct if_expression_saved_game: if_expression
   {
-    if_expression_saved_game(bn::string_view type_):
+    constexpr if_expression_saved_game(bn::string_view type_):
       if_expression(type_) {}
   };
 
@@ -448,7 +448,7 @@ namespace neo::types
   {
     bn::string_view attribute;
 
-    if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
+    constexpr if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
       if_expression(type_), attribute(attribute_) {}
   };
 
@@ -456,13 +456,13 @@ namespace neo::types
   {
     neo::types::direction value;
 
-    if_expression_direction(bn::string_view type_, neo::types::direction value_):
+    constexpr if_expression_direction(bn::string_view type_, neo::types::direction value_):
       if_expression(type_), value(value_) {}
   };
 
   struct if_expression_collision_side: if_expression
   {
-    if_expression_collision_side(bn::string_view type_):
+    constexpr if_expression_collision_side(bn::string_view type_):
       if_expression(type_) {}
   };
 
@@ -470,21 +470,21 @@ namespace neo::types
   {
     bn::string_view id;
 
-    if_expression_scene(bn::string_view type_, bn::string_view id_):
+    constexpr if_expression_scene(bn::string_view type_, bn::string_view id_):
       if_expression(type_), id(id_) {}
   };
 
   struct if_condition: if_expression
   {
     bn::string_view op;
-    neo::types::if_expression* left;
-    neo::types::if_expression* right;
+    const neo::types::if_expression* left;
+    const neo::types::if_expression* right;
 
-    if_condition(
+    constexpr if_condition(
       bn::string_view type_,
       bn::string_view op_,
-      neo::types::if_expression* left_,
-      neo::types::if_expression* right_
+      const neo::types::if_expression* left_,
+      const neo::types::if_expression* right_
     ): if_expression(type_),
        op(op_),
        left(left_),
@@ -494,20 +494,20 @@ namespace neo::types
   struct if_event: event
   {
     int conditions_count;
-    if_condition* const* conditions;
+    const if_condition* const* conditions;
     int then_events_count;
-    event* const* then_events;
+    const event* const* then_events;
     int else_events_count;
-    event* const* else_events;
+    const event* const* else_events;
 
-    if_event(
+    constexpr if_event(
       bn::string_view type_,
       int conditions_count_,
-      if_condition* const* conditions_,
+      const if_condition* const* conditions_,
       int then_events_count_,
-      event* const* then_events_,
+      const event* const* then_events_,
       int else_events_count_,
-      event* const* else_events_
+      const event* const* else_events_
     ): event(type_),
        conditions_count(conditions_count_),
        conditions(conditions_),
@@ -520,28 +520,28 @@ namespace neo::types
   struct disable_actor_event: event
   {
     bn::string_view actor;
-    disable_actor_event(bn::string_view type_, bn::string_view actor_):
+    constexpr disable_actor_event(bn::string_view type_, bn::string_view actor_):
       event(type_), actor(actor_) {}
   };
 
   struct enable_actor_event: event
   {
     bn::string_view actor;
-    enable_actor_event(bn::string_view type_, bn::string_view actor_):
+    constexpr enable_actor_event(bn::string_view type_, bn::string_view actor_):
       event(type_), actor(actor_) {}
   };
 
   struct disable_sprite_event: event
   {
     bn::string_view sprite;
-    disable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+    constexpr disable_sprite_event(bn::string_view type_, bn::string_view sprite_):
       event(type_), sprite(sprite_) {}
   };
 
   struct enable_sprite_event: event
   {
     bn::string_view sprite;
-    enable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+    constexpr enable_sprite_event(bn::string_view type_, bn::string_view sprite_):
       event(type_), sprite(sprite_) {}
   };
 
@@ -550,13 +550,13 @@ namespace neo::types
     bn::string_view music_name;
     bn::fixed volume;
     bool loop;
-    play_music_event(bn::string_view type_, bn::string_view music_name_, bn::fixed volume_, bool loop_):
+    constexpr play_music_event(bn::string_view type_, bn::string_view music_name_, bn::fixed volume_, bool loop_):
       event(type_), music_name(music_name_), volume(volume_), loop(loop_) {}
   };
 
   struct stop_music_event: event
   {
-    stop_music_event(bn::string_view type_):
+    constexpr stop_music_event(bn::string_view type_):
       event(type_) {}
   };
 
@@ -567,7 +567,7 @@ namespace neo::types
     bn::fixed speed;
     bn::fixed panning;
     int priority;
-    play_sound_event(
+    constexpr play_sound_event(
       bn::string_view type_,
       bn::string_view sound_name_,
       bn::fixed volume_,
@@ -588,7 +588,7 @@ namespace neo::types
     bn::string_view name;
     int arguments_count;
     const event_value* const* arguments;
-    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, const event_value* const* arguments_):
+    constexpr execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, const event_value* const* arguments_):
       event(type_), name(name_), arguments_count(arguments_count_), arguments(arguments_) {}
   };
 
@@ -641,7 +641,7 @@ namespace neo::types
     const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
-    follow_actor_event(
+    constexpr follow_actor_event(
       bn::string_view type_,
       bn::string_view actor_,
       const event_value* duration_,
@@ -660,7 +660,7 @@ namespace neo::types
     const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
-    follow_player_event(
+    constexpr follow_player_event(
       bn::string_view type_,
       const event_value* duration_,
       bool allow_diagonal_,
@@ -788,7 +788,7 @@ namespace neo::types
     bn::string_view actor;
     const event_value* x;
     const event_value* y;
-    set_actor_position_event(
+    constexpr set_actor_position_event(
       bn::string_view type_,
       bn::string_view actor_,
       const event_value* x_,
@@ -804,7 +804,7 @@ namespace neo::types
   {
     const event_value* x;
     const event_value* y;
-    set_player_position_event(
+    constexpr set_player_position_event(
       bn::string_view type_,
       const event_value* x_,
       const event_value* y_
@@ -818,7 +818,7 @@ namespace neo::types
   {
     bn::string_view actor;
     neo::types::direction direction;
-    set_actor_direction_event(
+    constexpr set_actor_direction_event(
       bn::string_view type_,
       bn::string_view actor_,
       neo::types::direction direction_
@@ -831,7 +831,7 @@ namespace neo::types
   struct set_player_direction_event: event
   {
     neo::types::direction direction;
-    set_player_direction_event(
+    constexpr set_player_direction_event(
       bn::string_view type_,
       neo::types::direction direction_
     ):
@@ -842,7 +842,7 @@ namespace neo::types
   struct set_background_event: event
   {
     neo::types::background background;
-    set_background_event(
+    constexpr set_background_event(
       bn::string_view type_,
       neo::types::background background_
     ):
@@ -854,7 +854,7 @@ namespace neo::types
   {
     bn::string_view sprite;
     bn::sprite_item item;
-    set_sprite_event(
+    constexpr set_sprite_event(
       bn::string_view type_,
       bn::string_view sprite_,
       bn::sprite_item item_
@@ -957,7 +957,7 @@ namespace neo::types
     const event_value* gravity_angle; // degrees
     const event_value* terminal_velocity; // pixels per frame
 
-    shoot_projectile_event(
+    constexpr shoot_projectile_event(
       bn::string_view type_,
       bn::sprite_item sprite_,
       bn::string_view source_type_,
@@ -998,7 +998,7 @@ namespace neo::types
     bn::string_view actor;
     const event_value* duration; // ms
 
-    melee_attack_event(
+    constexpr melee_attack_event(
       bn::string_view type_,
       bn::sprite_item sprite_,
       bn::string_view source_type_,
@@ -1020,11 +1020,11 @@ namespace neo::types
     int width;
     int height;
     int enter_events_count;
-    event* const* enter_events;
+    const event* const* enter_events;
     int leave_events_count;
-    event* const* leave_events;
+    const event* const* leave_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
 
     inline bool is_inside (int tile_x, int tile_y) const {
       return tile_x >= x && tile_x < (x + width) && tile_y >= y && tile_y < (y + height);
@@ -1258,15 +1258,15 @@ namespace neo::types
     int collision_width;
     int collision_height;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
     int collide_events_count;
-    event* const* collide_events;
+    const event* const* collide_events;
     int hit_events_count;
-    event* const* hit_events;
+    const event* const* hit_events;
     int update_events_count;
-    event* const* update_events;
+    const event* const* update_events;
     int animations_count;
     sprite_animation* const* animations;
   };
@@ -1285,11 +1285,11 @@ namespace neo::types
     int collision_width;
     int collision_height;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
     int collide_events_count;
-    event* const* collide_events;
+    const event* const* collide_events;
   };
 
   // Screen-fixed sprite of a HUD: x/y are pixels from the top-left corner
@@ -1327,9 +1327,9 @@ namespace neo::types
     int texts_count;
     const hud_text* const* texts;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int update_events_count;
-    event* const* update_events;
+    const event* const* update_events;
   };
 
   struct script
@@ -1337,7 +1337,7 @@ namespace neo::types
     bn::string_view _id;
     bn::string_view name;
     int events_count;
-    event* const* events;
+    const event* const* events;
     int parameters_count;
     const bn::string_view* parameters;
   };
@@ -1350,7 +1350,7 @@ namespace neo::types
     neo::types::scene_type scene_type;
     neo::types::background background;
     int event_count;
-    event* const* events;
+    const event* const* events;
     // Player
     bool has_player;
     const actor* player;

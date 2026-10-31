@@ -141,13 +141,13 @@ namespace neo::scenes
   // Event 0: on-variable-change
   constexpr bn::string_view hud_0_init_event_0_variable_name = "GlobalFadeDuration";
   constexpr bn::string_view hud_0_init_event_0_type = "on-variable-change";
-  BN_DATA_EWRAM neo::types::variable_change_event hud_0_init_event_0(
+  constexpr neo::types::variable_change_event hud_0_init_event_0(
     hud_0_init_event_0_type,
     hud_0_init_event_0_variable_name,
     0,
     nullptr
   );
-  constexpr neo::types::event* hud_0_init_events[] = {
+  constexpr const neo::types::event* hud_0_init_events[] = {
     &hud_0_init_event_0,
   };
   constexpr bn::string_view hud_0_id = "6be3d29c-8619-49d6-b313-e9d9b78b0b3f";
@@ -243,7 +243,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_3_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_3_event_0(scene_0_event_3_event_0_type, &scene_0_event_3_event_0_duration_value);
-  constexpr neo::types::event* scene_0_event_3_events[] = {
+  constexpr const neo::types::event* scene_0_event_3_events[] = {
     &scene_0_event_3_event_0
   };
   constexpr bn::string_view scene_0_event_3_type = "on-button-press";
@@ -265,12 +265,12 @@ namespace neo::scenes
   );
   // Event 4: disable-input
   constexpr bn::string_view scene_0_event_4_type = "disable-input";
-  BN_DATA_EWRAM neo::types::input_event scene_0_event_4(
+  constexpr neo::types::input_event scene_0_event_4(
     scene_0_event_4_type
   );
   // Event 5: enable-input
   constexpr bn::string_view scene_0_event_5_type = "enable-input";
-  BN_DATA_EWRAM neo::types::input_event scene_0_event_5(
+  constexpr neo::types::input_event scene_0_event_5(
     scene_0_event_5_type
   );
   // Event 6: set-palette-effect
@@ -385,7 +385,7 @@ namespace neo::scenes
   );
   // Event 9: freeze-camera
   constexpr bn::string_view scene_0_event_9_type = "freeze-camera";
-  BN_DATA_EWRAM neo::types::freeze_camera_event scene_0_event_9(
+  constexpr neo::types::freeze_camera_event scene_0_event_9(
     scene_0_event_9_type
   );
   // Event 10: follow-actor
@@ -407,7 +407,7 @@ namespace neo::scenes
   constexpr bn::string_view scene_0_event_10_type = "follow-actor";
   constexpr bn::string_view scene_0_event_10_actor = "d2a023cc-364d-4caf-9638-78937f593e4e";
   constexpr bn::string_view scene_0_event_10_direction_priority = "horizontal";
-  BN_DATA_EWRAM neo::types::follow_actor_event scene_0_event_10(
+  constexpr neo::types::follow_actor_event scene_0_event_10(
     scene_0_event_10_type,
     scene_0_event_10_actor,
     &scene_0_event_10_duration_value,
@@ -432,7 +432,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_11_type = "follow-player";
   constexpr bn::string_view scene_0_event_11_direction_priority = "horizontal";
-  BN_DATA_EWRAM neo::types::follow_player_event scene_0_event_11(
+  constexpr neo::types::follow_player_event scene_0_event_11(
     scene_0_event_11_type,
     &scene_0_event_11_duration_value,
     true,
@@ -471,7 +471,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_12_type = "go-to-scene";
   constexpr bn::string_view scene_0_event_12_target = "d2a023cc-364d-4caf-9638-78937f593e4d";
-  BN_DATA_EWRAM neo::types::scene_event scene_0_event_12(
+  constexpr neo::types::scene_event scene_0_event_12(
     scene_0_event_12_type,
     scene_0_event_12_target,
     &scene_0_event_12_start_x_value,
@@ -480,7 +480,7 @@ namespace neo::scenes
   );
   // Event 13: set-background
   constexpr bn::string_view scene_0_event_13_type = "set-background";
-  BN_DATA_EWRAM neo::types::set_background_event scene_0_event_13(
+  constexpr neo::types::set_background_event scene_0_event_13(
     scene_0_event_13_type,
     neo::backgrounds::map
   );
@@ -521,7 +521,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_15_option_0_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_15_option_0_event_0(scene_0_event_15_option_0_event_0_type, &scene_0_event_15_option_0_event_0_duration_value);
-  constexpr neo::types::event* scene_0_event_15_option_0_events[] = {
+  constexpr const neo::types::event* scene_0_event_15_option_0_events[] = {
     &scene_0_event_15_option_0_event_0
   };
   constexpr bn::string_view scene_0_event_15_option_0_text = "Choice 1";
@@ -550,7 +550,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_15_option_1_event_0_type = "fade-out";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_15_option_1_event_0(scene_0_event_15_option_1_event_0_type, &scene_0_event_15_option_1_event_0_duration_value);
-  constexpr neo::types::event* scene_0_event_15_option_1_events[] = {
+  constexpr const neo::types::event* scene_0_event_15_option_1_events[] = {
     &scene_0_event_15_option_1_event_0
   };
   constexpr bn::string_view scene_0_event_15_option_1_text = "Choice 2";
@@ -577,12 +577,12 @@ namespace neo::scenes
   );
   // Event 16: disable-player
   constexpr bn::string_view scene_0_event_16_type = "disable-player";
-  BN_DATA_EWRAM neo::types::player_event scene_0_event_16(
+  constexpr neo::types::player_event scene_0_event_16(
     scene_0_event_16_type
   );
   // Event 17: enable-player
   constexpr bn::string_view scene_0_event_17_type = "enable-player";
-  BN_DATA_EWRAM neo::types::player_event scene_0_event_17(
+  constexpr neo::types::player_event scene_0_event_17(
     scene_0_event_17_type
   );
   // Event 18: move-player-to
@@ -675,29 +675,29 @@ namespace neo::scenes
   );
   
   constexpr bn::string_view scene_0_event_19_type = "set-player-position";
-  BN_DATA_EWRAM neo::types::set_player_position_event scene_0_event_19(
+  constexpr neo::types::set_player_position_event scene_0_event_19(
     scene_0_event_19_type,
     &scene_0_event_19_x_value,
     &scene_0_event_19_y_value
   );
   // Event 20: set-player-direction
   constexpr bn::string_view scene_0_event_20_type = "set-player-direction";
-  BN_DATA_EWRAM neo::types::direction scene_0_event_20_direction = neo::types::direction::DOWN;
-  BN_DATA_EWRAM neo::types::set_player_direction_event scene_0_event_20(
+  constexpr neo::types::direction scene_0_event_20_direction = neo::types::direction::DOWN;
+  constexpr neo::types::set_player_direction_event scene_0_event_20(
     scene_0_event_20_type,
     scene_0_event_20_direction
   );
   // Event 21: disable-actor
   constexpr bn::string_view scene_0_event_21_type = "disable-actor";
   constexpr bn::string_view scene_0_event_21_actor = "d2a023cc-364d-4caf-9638-78937f593e4e";
-  BN_DATA_EWRAM neo::types::disable_actor_event scene_0_event_21(
+  constexpr neo::types::disable_actor_event scene_0_event_21(
     scene_0_event_21_type,
     scene_0_event_21_actor
   );
   // Event 22: enable-actor
   constexpr bn::string_view scene_0_event_22_type = "enable-actor";
   constexpr bn::string_view scene_0_event_22_actor = "d2a023cc-364d-4caf-9638-78937f593e4e";
-  BN_DATA_EWRAM neo::types::enable_actor_event scene_0_event_22(
+  constexpr neo::types::enable_actor_event scene_0_event_22(
     scene_0_event_22_type,
     scene_0_event_22_actor
   );
@@ -734,7 +734,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_23_type = "set-actor-position";
   constexpr bn::string_view scene_0_event_23_actor = "d2a023cc-364d-4caf-9638-78937f593e4e";
-  BN_DATA_EWRAM neo::types::set_actor_position_event scene_0_event_23(
+  constexpr neo::types::set_actor_position_event scene_0_event_23(
     scene_0_event_23_type,
     scene_0_event_23_actor,
     &scene_0_event_23_x_value,
@@ -743,8 +743,8 @@ namespace neo::scenes
   // Event 24: set-actor-direction
   constexpr bn::string_view scene_0_event_24_type = "set-actor-direction";
   constexpr bn::string_view scene_0_event_24_actor = "d2a023cc-364d-4caf-9638-78937f593e4e";
-  BN_DATA_EWRAM neo::types::direction scene_0_event_24_direction = neo::types::direction::DOWN;
-  BN_DATA_EWRAM neo::types::set_actor_direction_event scene_0_event_24(
+  constexpr neo::types::direction scene_0_event_24_direction = neo::types::direction::DOWN;
+  constexpr neo::types::set_actor_direction_event scene_0_event_24(
     scene_0_event_24_type,
     scene_0_event_24_actor,
     scene_0_event_24_direction
@@ -752,21 +752,21 @@ namespace neo::scenes
   // Event 25: disable-sprite
   constexpr bn::string_view scene_0_event_25_type = "disable-sprite";
   constexpr bn::string_view scene_0_event_25_sprite = "";
-  BN_DATA_EWRAM neo::types::disable_sprite_event scene_0_event_25(
+  constexpr neo::types::disable_sprite_event scene_0_event_25(
     scene_0_event_25_type,
     scene_0_event_25_sprite
   );
   // Event 26: enable-sprite
   constexpr bn::string_view scene_0_event_26_type = "enable-sprite";
   constexpr bn::string_view scene_0_event_26_sprite = "";
-  BN_DATA_EWRAM neo::types::enable_sprite_event scene_0_event_26(
+  constexpr neo::types::enable_sprite_event scene_0_event_26(
     scene_0_event_26_type,
     scene_0_event_26_sprite
   );
   // Event 27: set-sprite
   constexpr bn::string_view scene_0_event_27_type = "set-sprite";
   constexpr bn::string_view scene_0_event_27_sprite = "";
-  BN_DATA_EWRAM neo::types::set_sprite_event scene_0_event_27(
+  constexpr neo::types::set_sprite_event scene_0_event_27(
     scene_0_event_27_type,
     scene_0_event_27_sprite,
     bn::sprite_items::sprite_default
@@ -782,7 +782,7 @@ namespace neo::scenes
     500
   );
   constexpr bn::string_view scene_0_event_28_type = "set-variable";
-  BN_DATA_EWRAM neo::types::set_variable_event scene_0_event_28(
+  constexpr neo::types::set_variable_event scene_0_event_28(
     scene_0_event_28_type,
     scene_0_event_28_variable_name,
     &scene_0_event_28_value,
@@ -807,12 +807,12 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_29_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_29_event_0(scene_0_event_29_event_0_type, &scene_0_event_29_event_0_duration_value);
-  constexpr neo::types::event* scene_0_event_29_events[] = {
+  constexpr const neo::types::event* scene_0_event_29_events[] = {
     &scene_0_event_29_event_0
   };
   constexpr bn::string_view scene_0_event_29_variable_name = "GlobalFadeDuration";
   constexpr bn::string_view scene_0_event_29_type = "on-variable-change";
-  BN_DATA_EWRAM neo::types::variable_change_event scene_0_event_29(
+  constexpr neo::types::variable_change_event scene_0_event_29(
     scene_0_event_29_type,
     scene_0_event_29_variable_name,
     1,
@@ -837,7 +837,7 @@ namespace neo::scenes
   constexpr bn::string_view scene_0_event_30_hud = "";
   constexpr bn::string_view scene_0_event_30_text = "";
   constexpr bn::string_view scene_0_event_30_type = "set-hud-text";
-  BN_DATA_EWRAM neo::types::set_hud_text_event scene_0_event_30(
+  constexpr neo::types::set_hud_text_event scene_0_event_30(
     scene_0_event_30_type,
     scene_0_event_30_hud,
     scene_0_event_30_text,
@@ -846,7 +846,7 @@ namespace neo::scenes
   // Event 31: play-music
   constexpr bn::string_view scene_0_event_31_type = "play-music";
   constexpr bn::string_view scene_0_event_31_music_name = "";
-  BN_DATA_EWRAM neo::types::play_music_event scene_0_event_31(
+  constexpr neo::types::play_music_event scene_0_event_31(
     scene_0_event_31_type,
     scene_0_event_31_music_name,
     100,
@@ -854,13 +854,13 @@ namespace neo::scenes
   );
   // Event 32: stop-music
   constexpr bn::string_view scene_0_event_32_type = "stop-music";
-  BN_DATA_EWRAM neo::types::stop_music_event scene_0_event_32(
+  constexpr neo::types::stop_music_event scene_0_event_32(
     scene_0_event_32_type
   );
   // Event 33: play-sound
   constexpr bn::string_view scene_0_event_33_type = "play-sound";
   constexpr bn::string_view scene_0_event_33_sound_name = "";
-  BN_DATA_EWRAM neo::types::play_sound_event scene_0_event_33(
+  constexpr neo::types::play_sound_event scene_0_event_33(
     scene_0_event_33_type,
     scene_0_event_33_sound_name,
     100,
@@ -885,7 +885,7 @@ namespace neo::scenes
   );
   
   constexpr bn::string_view scene_0_event_34_type = "wait";
-  BN_DATA_EWRAM neo::types::wait_event scene_0_event_34(scene_0_event_34_type, &scene_0_event_34_duration_value);
+  constexpr neo::types::wait_event scene_0_event_34(scene_0_event_34_type, &scene_0_event_34_duration_value);
   // Event 35: if
   // Event 0: fade-in
   constexpr bn::string_view scene_0_event_35_then_0_duration_name = "";
@@ -905,7 +905,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_35_then_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_35_then_0(scene_0_event_35_then_0_type, &scene_0_event_35_then_0_duration_value);
-  constexpr neo::types::event* scene_0_event_35_then[] = {
+  constexpr const neo::types::event* scene_0_event_35_then[] = {
     &scene_0_event_35_then_0
   };
   // Event 0: fade-out
@@ -926,25 +926,25 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_35_else_0_type = "fade-out";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_35_else_0(scene_0_event_35_else_0_type, &scene_0_event_35_else_0_duration_value);
-  constexpr neo::types::event* scene_0_event_35_else[] = {
+  constexpr const neo::types::event* scene_0_event_35_else[] = {
     &scene_0_event_35_else_0
   };
   // If condition 0:
   constexpr bn::string_view scene_0_event_35_condition_0_left_left_type = "variable";
   constexpr bn::string_view scene_0_event_35_condition_0_left_left_name = "GlobalFadeDuration";
-  BN_DATA_EWRAM neo::types::if_expression_variable scene_0_event_35_condition_0_left_left(
+  constexpr neo::types::if_expression_variable scene_0_event_35_condition_0_left_left(
     scene_0_event_35_condition_0_left_left_type,
     scene_0_event_35_condition_0_left_left_name
   );
   constexpr bn::string_view scene_0_event_35_condition_0_left_right_type = "value";
   constexpr bn::string_view scene_0_event_35_condition_0_left_right_string_value = "true";
-  BN_DATA_EWRAM neo::types::if_expression_value scene_0_event_35_condition_0_left_right(
+  constexpr neo::types::if_expression_value scene_0_event_35_condition_0_left_right(
     scene_0_event_35_condition_0_left_right_type,
     scene_0_event_35_condition_0_left_right_string_value
   );
   constexpr bn::string_view scene_0_event_35_condition_0_left_type = "condition";
   constexpr bn::string_view scene_0_event_35_condition_0_left_operator = "==";
-  BN_DATA_EWRAM neo::types::if_condition scene_0_event_35_condition_0_left(
+  constexpr neo::types::if_condition scene_0_event_35_condition_0_left(
     scene_0_event_35_condition_0_left_type,
     scene_0_event_35_condition_0_left_operator,
     &scene_0_event_35_condition_0_left_left,
@@ -952,19 +952,19 @@ namespace neo::scenes
   );
   constexpr bn::string_view scene_0_event_35_condition_0_right_left_type = "value";
   constexpr bn::string_view scene_0_event_35_condition_0_right_left_string_value = "true";
-  BN_DATA_EWRAM neo::types::if_expression_value scene_0_event_35_condition_0_right_left(
+  constexpr neo::types::if_expression_value scene_0_event_35_condition_0_right_left(
     scene_0_event_35_condition_0_right_left_type,
     scene_0_event_35_condition_0_right_left_string_value
   );
   constexpr bn::string_view scene_0_event_35_condition_0_right_right_type = "value";
   constexpr bn::string_view scene_0_event_35_condition_0_right_right_string_value = "true";
-  BN_DATA_EWRAM neo::types::if_expression_value scene_0_event_35_condition_0_right_right(
+  constexpr neo::types::if_expression_value scene_0_event_35_condition_0_right_right(
     scene_0_event_35_condition_0_right_right_type,
     scene_0_event_35_condition_0_right_right_string_value
   );
   constexpr bn::string_view scene_0_event_35_condition_0_right_type = "condition";
   constexpr bn::string_view scene_0_event_35_condition_0_right_operator = "==";
-  BN_DATA_EWRAM neo::types::if_condition scene_0_event_35_condition_0_right(
+  constexpr neo::types::if_condition scene_0_event_35_condition_0_right(
     scene_0_event_35_condition_0_right_type,
     scene_0_event_35_condition_0_right_operator,
     &scene_0_event_35_condition_0_right_left,
@@ -972,17 +972,17 @@ namespace neo::scenes
   );
   constexpr bn::string_view scene_0_event_35_condition_0_type = "condition";
   constexpr bn::string_view scene_0_event_35_condition_0_operator = "&&";
-  BN_DATA_EWRAM neo::types::if_condition scene_0_event_35_condition_0(
+  constexpr neo::types::if_condition scene_0_event_35_condition_0(
     scene_0_event_35_condition_0_type,
     scene_0_event_35_condition_0_operator,
     &scene_0_event_35_condition_0_left,
     &scene_0_event_35_condition_0_right
   );
-  constexpr neo::types::if_condition* scene_0_event_35_conditions[] = {
+  constexpr const neo::types::if_condition* scene_0_event_35_conditions[] = {
     &scene_0_event_35_condition_0
   };
   constexpr bn::string_view scene_0_event_35_type = "if";
-  BN_DATA_EWRAM neo::types::if_event scene_0_event_35(
+  constexpr neo::types::if_event scene_0_event_35(
     scene_0_event_35_type,
     1,
     scene_0_event_35_conditions,
@@ -1066,7 +1066,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_event_36_event_1_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_36_event_1(scene_0_event_36_event_1_type, &scene_0_event_36_event_1_duration_value);
-  constexpr neo::types::event* scene_0_event_36_events[] = {
+  constexpr const neo::types::event* scene_0_event_36_events[] = {
     &scene_0_event_36_event_0,
     &scene_0_event_36_event_1
   };
@@ -1097,7 +1097,7 @@ namespace neo::scenes
   };
   constexpr bn::string_view scene_0_event_37_type = "execute-script";
   constexpr bn::string_view scene_0_event_37_script_name = "0db1c374-9a85-4e15-b816-631039d765f6";
-  BN_DATA_EWRAM neo::types::execute_script_event scene_0_event_37(
+  constexpr neo::types::execute_script_event scene_0_event_37(
     scene_0_event_37_type,
     scene_0_event_37_script_name,
     1,
@@ -1105,27 +1105,27 @@ namespace neo::scenes
   );
   // Event 38: save-game
   constexpr bn::string_view scene_0_event_38_type = "save-game";
-  BN_DATA_EWRAM neo::types::save_game_event scene_0_event_38(
+  constexpr neo::types::save_game_event scene_0_event_38(
     scene_0_event_38_type
   );
   // Event 39: load-game
   constexpr bn::string_view scene_0_event_39_type = "load-game";
-  BN_DATA_EWRAM neo::types::load_game_event scene_0_event_39(
+  constexpr neo::types::load_game_event scene_0_event_39(
     scene_0_event_39_type
   );
   // Event 40: save-state
   constexpr bn::string_view scene_0_event_40_type = "save-state";
-  BN_DATA_EWRAM neo::types::save_state_event scene_0_event_40(
+  constexpr neo::types::save_state_event scene_0_event_40(
     scene_0_event_40_type
   );
   // Event 41: load-state
   constexpr bn::string_view scene_0_event_41_type = "load-state";
-  BN_DATA_EWRAM neo::types::load_state_event scene_0_event_41(
+  constexpr neo::types::load_state_event scene_0_event_41(
     scene_0_event_41_type
   );
   // Event 42: reset-game
   constexpr bn::string_view scene_0_event_42_type = "reset-game";
-  BN_DATA_EWRAM neo::types::reset_game_event scene_0_event_42(
+  constexpr neo::types::reset_game_event scene_0_event_42(
     scene_0_event_42_type
   );
   // Event 43: shoot-projectile
@@ -1211,7 +1211,7 @@ namespace neo::scenes
     &scene_0_event_43_terminal_velocity_raw_value
   );
   
-  BN_DATA_EWRAM neo::types::shoot_projectile_event scene_0_event_43(
+  constexpr neo::types::shoot_projectile_event scene_0_event_43(
     scene_0_event_43_type,
     scene_0_event_43_sprite,
     scene_0_event_43_source_type,
@@ -1228,7 +1228,7 @@ namespace neo::scenes
     &scene_0_event_43_gravity_angle_value,
     &scene_0_event_43_terminal_velocity_value
   );
-  constexpr neo::types::event* scene_0_events[] = {
+  constexpr const neo::types::event* scene_0_events[] = {
     &scene_0_event_0,
     &scene_0_event_1,
     &scene_0_event_2,
@@ -1577,7 +1577,7 @@ namespace neo::scenes
   
   constexpr bn::string_view point_and_click_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event point_and_click_event_0(point_and_click_event_0_type, &point_and_click_event_0_duration_value);
-  constexpr neo::types::event* point_and_click_events[] = {
+  constexpr const neo::types::event* point_and_click_events[] = {
     &point_and_click_event_0,
   };
 
@@ -1822,7 +1822,7 @@ namespace neo::scenes
     &adventure_event_1_event_0_duration_raw_value
   );
   
-  BN_DATA_EWRAM neo::types::melee_attack_event adventure_event_1_event_0(
+  constexpr neo::types::melee_attack_event adventure_event_1_event_0(
     adventure_event_1_event_0_type,
     adventure_event_1_event_0_sprite,
     adventure_event_1_event_0_source_type,
@@ -1849,14 +1849,14 @@ namespace neo::scenes
     &adventure_event_1_event_1_duration_raw_value
   );
   
-  BN_DATA_EWRAM neo::types::melee_attack_event adventure_event_1_event_1(
+  constexpr neo::types::melee_attack_event adventure_event_1_event_1(
     adventure_event_1_event_1_type,
     adventure_event_1_event_1_sprite,
     adventure_event_1_event_1_source_type,
     adventure_event_1_event_1_actor,
     &adventure_event_1_event_1_duration_value
   );
-  constexpr neo::types::event* adventure_event_1_events[] = {
+  constexpr const neo::types::event* adventure_event_1_events[] = {
     &adventure_event_1_event_0,
     &adventure_event_1_event_1
   };
@@ -1871,7 +1871,7 @@ namespace neo::scenes
     2,
     adventure_event_1_events
   );
-  constexpr neo::types::event* adventure_events[] = {
+  constexpr const neo::types::event* adventure_events[] = {
     &adventure_event_0,
     &adventure_event_1,
   };
@@ -1909,11 +1909,11 @@ namespace neo::scenes
   // Event 0: disable-actor
   constexpr bn::string_view adventure_actor_0_hit_event_0_type = "disable-actor";
   constexpr bn::string_view adventure_actor_0_hit_event_0_actor = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
-  BN_DATA_EWRAM neo::types::disable_actor_event adventure_actor_0_hit_event_0(
+  constexpr neo::types::disable_actor_event adventure_actor_0_hit_event_0(
     adventure_actor_0_hit_event_0_type,
     adventure_actor_0_hit_event_0_actor
   );
-  constexpr neo::types::event* adventure_actor_0_hit_events[] = {
+  constexpr const neo::types::event* adventure_actor_0_hit_events[] = {
     &adventure_actor_0_hit_event_0,
   };
 
@@ -2154,7 +2154,7 @@ namespace neo::scenes
   
   constexpr bn::string_view side_scroller_event_0_type = "fade-in";
   BN_DATA_EWRAM neo::types::fade_event side_scroller_event_0(side_scroller_event_0_type, &side_scroller_event_0_duration_value);
-  constexpr neo::types::event* side_scroller_events[] = {
+  constexpr const neo::types::event* side_scroller_events[] = {
     &side_scroller_event_0,
   };
 
@@ -2481,7 +2481,7 @@ namespace neo::scenes
     actor_dialogs_script_event_0_animation,
     false
   );
-  constexpr neo::types::event* actor_dialogs_script_events[] = {
+  constexpr const neo::types::event* actor_dialogs_script_events[] = {
     &actor_dialogs_script_event_0,
   };
   constexpr bn::string_view actor_dialogs_script_id = "0db1c374-9a85-4e15-b816-631039d765f6";
@@ -2725,8 +2725,8 @@ namespace neo::types
   {
     bn::string_view type;
 
-    event(bn::string_view type_): type(type_) {}
-    virtual ~event() = default;
+    constexpr event(bn::string_view type_): type(type_) {}
+    constexpr virtual ~event() = default;
 
     // Advances a resumable event by one frame, like bn::core::update().
     // Instant events don't override this: they're already done immediately.
@@ -2739,7 +2739,7 @@ namespace neo::types
   struct wait_event: event
   {
     const event_value* duration;
-    wait_event(bn::string_view type_, const event_value* duration_):
+    constexpr wait_event(bn::string_view type_, const event_value* duration_):
       event(type_), duration(duration_) {}
   };
 
@@ -2764,7 +2764,7 @@ namespace neo::types
     const event_value* start_x;
     const event_value* start_y;
     neo::types::direction start_direction;
-    scene_event(bn::string_view type_, bn::string_view target_, const event_value* start_x_, const event_value* start_y_, neo::types::direction start_direction_):
+    constexpr scene_event(bn::string_view type_, bn::string_view target_, const event_value* start_x_, const event_value* start_y_, neo::types::direction start_direction_):
       event(type_), target(target_), start_x(start_x_), start_y(start_y_), start_direction(start_direction_) {}
   };
 
@@ -2773,18 +2773,18 @@ namespace neo::types
     bool every;
     bn::vector<bn::string_view, 10> buttons;
     int events_count;
-    event* const* events;
+    const event* const* events;
 
     button_event(
       bn::string_view type_,
       bool every_,
       bn::vector<bn::string_view, 10> buttons_,
       int events_count_,
-      event* const* events_
+      const event* const* events_
     ): event(type_), every(every_), buttons(buttons_), events_count(events_count_), events(events_) {}
 
     // Helper constructor for single button
-    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, event* const* events_):
+    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, const event* const* events_):
       event(type_), every(false), buttons(), events_count(events_count_), events(events_)
     {
       buttons.push_back(single_button);
@@ -2799,10 +2799,10 @@ namespace neo::types
   struct parallel_event: event
   {
     int events_count;
-    event* const* events;
+    const event* const* events;
     bn::vector<event*, 8> pending;
 
-    parallel_event(bn::string_view type_, int events_count_, event* const* events_):
+    parallel_event(bn::string_view type_, int events_count_, const event* const* events_):
       event(type_), events_count(events_count_), events(events_) {}
 
     // Runs instant sub-events immediately (delegated to game::exec_event)
@@ -2828,49 +2828,49 @@ namespace neo::types
 
   struct input_event: event
   {
-    input_event(bn::string_view type_):
+    constexpr input_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct freeze_camera_event: event
   {
-    freeze_camera_event(bn::string_view type_):
+    constexpr freeze_camera_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct player_event: event
   {
-    player_event(bn::string_view type_):
+    constexpr player_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct save_game_event: event
   {
-    save_game_event(bn::string_view type_):
+    constexpr save_game_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct load_game_event: event
   {
-    load_game_event(bn::string_view type_):
+    constexpr load_game_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct save_state_event: event
   {
-    save_state_event(bn::string_view type_):
+    constexpr save_state_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct load_state_event: event
   {
-    load_state_event(bn::string_view type_):
+    constexpr load_state_event(bn::string_view type_):
       event(type_) {}
   };
 
   struct reset_game_event: event
   {
-    reset_game_event(bn::string_view type_):
+    constexpr reset_game_event(bn::string_view type_):
       event(type_) {}
   };
 
@@ -2895,11 +2895,11 @@ namespace neo::types
   {
     bn::string_view text;
     int events_count;
-    event* const* events;
+    const event* const* events;
     int conditions_count;
-    if_condition* const* conditions;
+    const if_condition* const* conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, event* const* events_, int conditions_count_, if_condition* const* conditions_):
+    menu_choice(bn::string_view text_, int events_count_, const event* const* events_, int conditions_count_, const if_condition* const* conditions_):
       text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
@@ -2921,8 +2921,8 @@ namespace neo::types
   {
     bn::string_view key;
     int events_count;
-    event* const* events;
-    variable_change_event(bn::string_view type_, bn::string_view key_, int events_count_, event* const* events_):
+    const event* const* events;
+    constexpr variable_change_event(bn::string_view type_, bn::string_view key_, int events_count_, const event* const* events_):
       event(type_), key(key_), events_count(events_count_), events(events_) {}
   };
 
@@ -2931,7 +2931,7 @@ namespace neo::types
     bn::string_view hud;
     bn::string_view text;
     const event_value* value;
-    set_hud_text_event(bn::string_view type_, bn::string_view hud_, bn::string_view text_, const event_value* value_):
+    constexpr set_hud_text_event(bn::string_view type_, bn::string_view hud_, bn::string_view text_, const event_value* value_):
       event(type_), hud(hud_), text(text_), value(value_) {}
   };
 
@@ -2940,7 +2940,7 @@ namespace neo::types
     bn::string_view key;
     const neo::variables::value* value;
     neo::types::variable_operation operation;
-    set_variable_event(bn::string_view type_, bn::string_view key_, const neo::variables::value* value_, neo::types::variable_operation operation_):
+    constexpr set_variable_event(bn::string_view type_, bn::string_view key_, const neo::variables::value* value_, neo::types::variable_operation operation_):
       event(type_), key(key_), value(value_), operation(operation_) {}
   };
 
@@ -2953,7 +2953,7 @@ namespace neo::types
   {
     bn::string_view name;
 
-    if_expression_variable(bn::string_view type_, bn::string_view name_):
+    constexpr if_expression_variable(bn::string_view type_, bn::string_view name_):
       if_expression(type_), name(name_) {}
   };
 
@@ -2961,13 +2961,13 @@ namespace neo::types
   {
     bn::string_view value;
 
-    if_expression_value(bn::string_view type_, bn::string_view value_):
+    constexpr if_expression_value(bn::string_view type_, bn::string_view value_):
       if_expression(type_), value(value_) {}
   };
 
   struct if_expression_saved_game: if_expression
   {
-    if_expression_saved_game(bn::string_view type_):
+    constexpr if_expression_saved_game(bn::string_view type_):
       if_expression(type_) {}
   };
 
@@ -2975,7 +2975,7 @@ namespace neo::types
   {
     bn::string_view attribute;
 
-    if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
+    constexpr if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
       if_expression(type_), attribute(attribute_) {}
   };
 
@@ -2983,13 +2983,13 @@ namespace neo::types
   {
     neo::types::direction value;
 
-    if_expression_direction(bn::string_view type_, neo::types::direction value_):
+    constexpr if_expression_direction(bn::string_view type_, neo::types::direction value_):
       if_expression(type_), value(value_) {}
   };
 
   struct if_expression_collision_side: if_expression
   {
-    if_expression_collision_side(bn::string_view type_):
+    constexpr if_expression_collision_side(bn::string_view type_):
       if_expression(type_) {}
   };
 
@@ -2997,21 +2997,21 @@ namespace neo::types
   {
     bn::string_view id;
 
-    if_expression_scene(bn::string_view type_, bn::string_view id_):
+    constexpr if_expression_scene(bn::string_view type_, bn::string_view id_):
       if_expression(type_), id(id_) {}
   };
 
   struct if_condition: if_expression
   {
     bn::string_view op;
-    neo::types::if_expression* left;
-    neo::types::if_expression* right;
+    const neo::types::if_expression* left;
+    const neo::types::if_expression* right;
 
-    if_condition(
+    constexpr if_condition(
       bn::string_view type_,
       bn::string_view op_,
-      neo::types::if_expression* left_,
-      neo::types::if_expression* right_
+      const neo::types::if_expression* left_,
+      const neo::types::if_expression* right_
     ): if_expression(type_),
        op(op_),
        left(left_),
@@ -3021,20 +3021,20 @@ namespace neo::types
   struct if_event: event
   {
     int conditions_count;
-    if_condition* const* conditions;
+    const if_condition* const* conditions;
     int then_events_count;
-    event* const* then_events;
+    const event* const* then_events;
     int else_events_count;
-    event* const* else_events;
+    const event* const* else_events;
 
-    if_event(
+    constexpr if_event(
       bn::string_view type_,
       int conditions_count_,
-      if_condition* const* conditions_,
+      const if_condition* const* conditions_,
       int then_events_count_,
-      event* const* then_events_,
+      const event* const* then_events_,
       int else_events_count_,
-      event* const* else_events_
+      const event* const* else_events_
     ): event(type_),
        conditions_count(conditions_count_),
        conditions(conditions_),
@@ -3047,28 +3047,28 @@ namespace neo::types
   struct disable_actor_event: event
   {
     bn::string_view actor;
-    disable_actor_event(bn::string_view type_, bn::string_view actor_):
+    constexpr disable_actor_event(bn::string_view type_, bn::string_view actor_):
       event(type_), actor(actor_) {}
   };
 
   struct enable_actor_event: event
   {
     bn::string_view actor;
-    enable_actor_event(bn::string_view type_, bn::string_view actor_):
+    constexpr enable_actor_event(bn::string_view type_, bn::string_view actor_):
       event(type_), actor(actor_) {}
   };
 
   struct disable_sprite_event: event
   {
     bn::string_view sprite;
-    disable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+    constexpr disable_sprite_event(bn::string_view type_, bn::string_view sprite_):
       event(type_), sprite(sprite_) {}
   };
 
   struct enable_sprite_event: event
   {
     bn::string_view sprite;
-    enable_sprite_event(bn::string_view type_, bn::string_view sprite_):
+    constexpr enable_sprite_event(bn::string_view type_, bn::string_view sprite_):
       event(type_), sprite(sprite_) {}
   };
 
@@ -3077,13 +3077,13 @@ namespace neo::types
     bn::string_view music_name;
     bn::fixed volume;
     bool loop;
-    play_music_event(bn::string_view type_, bn::string_view music_name_, bn::fixed volume_, bool loop_):
+    constexpr play_music_event(bn::string_view type_, bn::string_view music_name_, bn::fixed volume_, bool loop_):
       event(type_), music_name(music_name_), volume(volume_), loop(loop_) {}
   };
 
   struct stop_music_event: event
   {
-    stop_music_event(bn::string_view type_):
+    constexpr stop_music_event(bn::string_view type_):
       event(type_) {}
   };
 
@@ -3094,7 +3094,7 @@ namespace neo::types
     bn::fixed speed;
     bn::fixed panning;
     int priority;
-    play_sound_event(
+    constexpr play_sound_event(
       bn::string_view type_,
       bn::string_view sound_name_,
       bn::fixed volume_,
@@ -3115,7 +3115,7 @@ namespace neo::types
     bn::string_view name;
     int arguments_count;
     const event_value* const* arguments;
-    execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, const event_value* const* arguments_):
+    constexpr execute_script_event(bn::string_view type_, bn::string_view name_, int arguments_count_, const event_value* const* arguments_):
       event(type_), name(name_), arguments_count(arguments_count_), arguments(arguments_) {}
   };
 
@@ -3168,7 +3168,7 @@ namespace neo::types
     const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
-    follow_actor_event(
+    constexpr follow_actor_event(
       bn::string_view type_,
       bn::string_view actor_,
       const event_value* duration_,
@@ -3187,7 +3187,7 @@ namespace neo::types
     const event_value* duration;
     bool allow_diagonal;
     bn::string_view direction_priority;
-    follow_player_event(
+    constexpr follow_player_event(
       bn::string_view type_,
       const event_value* duration_,
       bool allow_diagonal_,
@@ -3315,7 +3315,7 @@ namespace neo::types
     bn::string_view actor;
     const event_value* x;
     const event_value* y;
-    set_actor_position_event(
+    constexpr set_actor_position_event(
       bn::string_view type_,
       bn::string_view actor_,
       const event_value* x_,
@@ -3331,7 +3331,7 @@ namespace neo::types
   {
     const event_value* x;
     const event_value* y;
-    set_player_position_event(
+    constexpr set_player_position_event(
       bn::string_view type_,
       const event_value* x_,
       const event_value* y_
@@ -3345,7 +3345,7 @@ namespace neo::types
   {
     bn::string_view actor;
     neo::types::direction direction;
-    set_actor_direction_event(
+    constexpr set_actor_direction_event(
       bn::string_view type_,
       bn::string_view actor_,
       neo::types::direction direction_
@@ -3358,7 +3358,7 @@ namespace neo::types
   struct set_player_direction_event: event
   {
     neo::types::direction direction;
-    set_player_direction_event(
+    constexpr set_player_direction_event(
       bn::string_view type_,
       neo::types::direction direction_
     ):
@@ -3369,7 +3369,7 @@ namespace neo::types
   struct set_background_event: event
   {
     neo::types::background background;
-    set_background_event(
+    constexpr set_background_event(
       bn::string_view type_,
       neo::types::background background_
     ):
@@ -3381,7 +3381,7 @@ namespace neo::types
   {
     bn::string_view sprite;
     bn::sprite_item item;
-    set_sprite_event(
+    constexpr set_sprite_event(
       bn::string_view type_,
       bn::string_view sprite_,
       bn::sprite_item item_
@@ -3484,7 +3484,7 @@ namespace neo::types
     const event_value* gravity_angle; // degrees
     const event_value* terminal_velocity; // pixels per frame
 
-    shoot_projectile_event(
+    constexpr shoot_projectile_event(
       bn::string_view type_,
       bn::sprite_item sprite_,
       bn::string_view source_type_,
@@ -3525,7 +3525,7 @@ namespace neo::types
     bn::string_view actor;
     const event_value* duration; // ms
 
-    melee_attack_event(
+    constexpr melee_attack_event(
       bn::string_view type_,
       bn::sprite_item sprite_,
       bn::string_view source_type_,
@@ -3547,11 +3547,11 @@ namespace neo::types
     int width;
     int height;
     int enter_events_count;
-    event* const* enter_events;
+    const event* const* enter_events;
     int leave_events_count;
-    event* const* leave_events;
+    const event* const* leave_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
 
     inline bool is_inside (int tile_x, int tile_y) const {
       return tile_x >= x && tile_x < (x + width) && tile_y >= y && tile_y < (y + height);
@@ -3785,15 +3785,15 @@ namespace neo::types
     int collision_width;
     int collision_height;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
     int collide_events_count;
-    event* const* collide_events;
+    const event* const* collide_events;
     int hit_events_count;
-    event* const* hit_events;
+    const event* const* hit_events;
     int update_events_count;
-    event* const* update_events;
+    const event* const* update_events;
     int animations_count;
     sprite_animation* const* animations;
   };
@@ -3812,11 +3812,11 @@ namespace neo::types
     int collision_width;
     int collision_height;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int interact_events_count;
-    event* const* interact_events;
+    const event* const* interact_events;
     int collide_events_count;
-    event* const* collide_events;
+    const event* const* collide_events;
   };
 
   // Screen-fixed sprite of a HUD: x/y are pixels from the top-left corner
@@ -3854,9 +3854,9 @@ namespace neo::types
     int texts_count;
     const hud_text* const* texts;
     int init_events_count;
-    event* const* init_events;
+    const event* const* init_events;
     int update_events_count;
-    event* const* update_events;
+    const event* const* update_events;
   };
 
   struct script
@@ -3864,7 +3864,7 @@ namespace neo::types
     bn::string_view _id;
     bn::string_view name;
     int events_count;
-    event* const* events;
+    const event* const* events;
     int parameters_count;
     const bn::string_view* parameters;
   };
@@ -3877,7 +3877,7 @@ namespace neo::types
     neo::types::scene_type scene_type;
     neo::types::background background;
     int event_count;
-    event* const* events;
+    const event* const* events;
     // Player
     bool has_player;
     const actor* player;

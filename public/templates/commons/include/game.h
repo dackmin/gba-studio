@@ -34,10 +34,10 @@ namespace neo
 
       neo::types::scene* active_scene;
       neo::scene_bg scene_bg;
-      neo::types::scene_event* last_goto_event;
+      const neo::types::scene_event* last_goto_event;
 
       int scripted_events_count;
-      bn::vector<neo::types::event*, 100> scripted_events;
+      bn::vector<const neo::types::event*, 100> scripted_events;
 
       int actors_count;
       bn::vector<neo::actor*, 20> actors;

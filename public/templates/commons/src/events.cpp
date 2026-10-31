@@ -230,7 +230,7 @@ namespace neo::events
         static_cast<const neo::types::scene_event*>(e);
       game->scene_changed = true;
       game->current_scene = scene_evt->target;
-      game->last_goto_event = const_cast<neo::types::scene_event*>(scene_evt);
+      game->last_goto_event = scene_evt;
     }
 
     /**
@@ -253,14 +253,14 @@ namespace neo::events
           BN_LOG("Button pressed, executing events");
           for (int i = 0; i < button_evt->events_count; ++i)
           {
-            neo::types::event* ev = button_evt->events[i];
+            const neo::types::event* ev = button_evt->events[i];
             exec_event(game, ev, true);
           }
         }
       } else {
         BN_LOG("Registering on-button-press scripted event");
         game->scripted_events_count++;
-        game->scripted_events.push_back(const_cast<neo::types::event*>(e));
+        game->scripted_events.push_back(e);
       }
     }
 
@@ -276,7 +276,7 @@ namespace neo::events
       {
         BN_LOG("Registering on-variable-change scripted event");
         game->scripted_events_count++;
-        game->scripted_events.push_back(const_cast<neo::types::event*>(e));
+        game->scripted_events.push_back(e);
       }
     }
 
@@ -371,7 +371,7 @@ namespace neo::events
         BN_LOG("Executing menu choice events for choice: ", choice.text);
         for (int i = 0; i < choice.events_count; ++i)
         {
-          neo::types::event* ev = choice.events[i];
+          const neo::types::event* ev = choice.events[i];
           exec_event(game, ev, is_loop);
         }
       }
@@ -450,13 +450,13 @@ namespace neo::events
       {
         for (int i = 0; i < if_evt->then_events_count; ++i)
         {
-          neo::types::event* ev = if_evt->then_events[i];
+          const neo::types::event* ev = if_evt->then_events[i];
           exec_event(game, ev, is_loop);
         }
       } else {
         for (int i = 0; i < if_evt->else_events_count; ++i)
         {
-          neo::types::event* ev = if_evt->else_events[i];
+          const neo::types::event* ev = if_evt->else_events[i];
           exec_event(game, ev, is_loop);
         }
       }
@@ -672,7 +672,7 @@ namespace neo::events
 
         for (int i = 0; i < script.events_count; ++i)
         {
-          neo::types::event* ev = script.events[i];
+          const neo::types::event* ev = script.events[i];
 
           BN_LOG("Executing script event: ", ev->type);
           exec_event(game, ev, is_loop);
@@ -1246,7 +1246,9 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
 
   for (int i = 0; i < events_count; ++i)
   {
-    neo::types::event* sub_evt = events[i];
+    const neo::types::event* sub_evt = events[i];
+    // Resumable events are never constexpr (see neo_types.tpl.h), so writing is safe
+    neo::types::event* sub_evt_rw = const_cast<neo::types::event*>(sub_evt);
 
     if (
       (sub_evt->type == "fade-in" || sub_evt->type == "fade-out") &&
@@ -1254,7 +1256,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
     )
     {
       neo::types::fade_event* fade_evt =
-        static_cast<neo::types::fade_event*>(sub_evt);
+        static_cast<neo::types::fade_event*>(sub_evt_rw);
 
       fade_evt->start(game, game->scene_bg, fade_evt->duration->as_int(game->variables));
 
@@ -1266,7 +1268,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
     else if (sub_evt->type == "move-camera-to")
     {
       neo::types::move_camera_to_event* move_evt =
-        static_cast<neo::types::move_camera_to_event*>(sub_evt);
+        static_cast<neo::types::move_camera_to_event*>(sub_evt_rw);
 
       move_evt->start(game);
 
@@ -1278,7 +1280,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
     else if (sub_evt->type == "move-actor-to" || sub_evt->type == "move-player-to")
     {
       neo::types::actor_move_event* move_evt =
-        static_cast<neo::types::actor_move_event*>(sub_evt);
+        static_cast<neo::types::actor_move_event*>(sub_evt_rw);
 
       move_evt->start(game);
 
@@ -1289,7 +1291,7 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
     }
     else if (sub_evt->type == "set-palette-effect" || sub_evt->type == "wave-effect")
     {
-      neo::types::event* effect_evt = sub_evt;
+      neo::types::event* effect_evt = sub_evt_rw;
 
       if (effect_evt->type == "set-palette-effect")
       {

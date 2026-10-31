@@ -69,11 +69,11 @@ namespace neo::conditions
     // Resolves an if-expression to its comparable form. Tile x/y attributes
     // resolve to numbers, variables and raw values expose both their int
     // and text forms, everything else resolves to text.
-    condition_operand resolve_operand (neo::game* game, neo::types::if_expression* expression)
+    condition_operand resolve_operand (neo::game* game, const neo::types::if_expression* expression)
     {
       if (expression->type == "variable")
       {
-        auto* var_expr = static_cast<neo::types::if_expression_variable*>(expression);
+        auto* var_expr = static_cast<const neo::types::if_expression_variable*>(expression);
 
         if (!game->variables.has(var_expr->name))
         {
@@ -91,7 +91,7 @@ namespace neo::conditions
       }
       else if (expression->type == "value")
       {
-        auto* val_expr = static_cast<neo::types::if_expression_value*>(expression);
+        auto* val_expr = static_cast<const neo::types::if_expression_value*>(expression);
 
         BN_LOG("[IF] Getting raw value: ", val_expr->value);
 
@@ -105,7 +105,7 @@ namespace neo::conditions
       }
       else if (expression->type == "player-attribute")
       {
-        auto* attr_expr = static_cast<neo::types::if_expression_player_attribute*>(expression);
+        auto* attr_expr = static_cast<const neo::types::if_expression_player_attribute*>(expression);
 
         if (attr_expr->attribute == "scene")
         {
@@ -155,7 +155,7 @@ namespace neo::conditions
       }
       else if (expression->type == "direction")
       {
-        auto* dir_expr = static_cast<neo::types::if_expression_direction*>(expression);
+        auto* dir_expr = static_cast<const neo::types::if_expression_direction*>(expression);
         bn::string_view name = get_direction_string(dir_expr->value);
 
         BN_LOG("[IF] Getting direction: ", name);
@@ -170,7 +170,7 @@ namespace neo::conditions
       }
       else if (expression->type == "scene")
       {
-        auto* scene_expr = static_cast<neo::types::if_expression_scene*>(expression);
+        auto* scene_expr = static_cast<const neo::types::if_expression_scene*>(expression);
 
         BN_LOG("[IF] Getting scene: ", scene_expr->id);
 
@@ -210,7 +210,7 @@ namespace neo::conditions
     }
   }
 
-  bool evaluate_condition (neo::game* game, neo::types::if_expression* node)
+  bool evaluate_condition (neo::game* game, const neo::types::if_expression* node)
   {
     // A saved-game expression used directly as a condition is truthy if a save exists
     if (node->type == "saved-game")
@@ -227,7 +227,7 @@ namespace neo::conditions
       return operand.numeric || !operand.text.empty();
     }
 
-    auto* condition = static_cast<neo::types::if_condition*>(node);
+    auto* condition = static_cast<const neo::types::if_condition*>(node);
 
     if (condition->op == "&&")
     {
