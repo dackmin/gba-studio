@@ -30,12 +30,6 @@
         "z": {
           "type": "number"
         },
-        "width": {
-          "type": "number"
-        },
-        "height": {
-          "type": "number"
-        },
         "direction": {
           "$ref": "#/definitions/CharacterDirection"
         },
@@ -170,12 +164,6 @@
         "sprite": {
           "type": "string"
         },
-        "width": {
-          "type": "number"
-        },
-        "height": {
-          "type": "number"
-        },
         "x": {
           "type": "number"
         },
@@ -240,12 +228,6 @@
           "type": "number"
         },
         "z": {
-          "type": "number"
-        },
-        "width": {
-          "type": "number"
-        },
-        "height": {
           "type": "number"
         },
         "direction": {

@@ -19,7 +19,6 @@ const SpriteForm = ({
   onChange,
 }: SpriteFormProps) => {
   const { selectedScene } = useCanvas();
-
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -94,34 +93,6 @@ const SpriteForm = ({
                 min={0}
                 value={sprite.y ?? 0}
                 onValueChange={onValueChange.bind(null, 'y')}
-              >
-                <TextField.Slot side="right">
-                  tiles
-                </TextField.Slot>
-              </EventValueField>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-2 flex-auto">
-              <Text className="block text-slate" size="1">Width</Text>
-              <EventValueField
-                type="number"
-                min={1}
-                value={sprite.width ?? 1}
-                onValueChange={onValueChange.bind(null, 'width')}
-              >
-                <TextField.Slot side="right">
-                  tiles
-                </TextField.Slot>
-              </EventValueField>
-            </div>
-            <div className="flex flex-col gap-2 flex-auto">
-              <Text className="block text-slate" size="1">Height</Text>
-              <EventValueField
-                type="number"
-                min={1}
-                value={sprite.height ?? 2}
-                onValueChange={onValueChange.bind(null, 'height')}
               >
                 <TextField.Slot side="right">
                   tiles

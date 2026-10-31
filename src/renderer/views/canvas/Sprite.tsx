@@ -65,12 +65,8 @@ const Sprite = ({
       style={{
         left: 0,
         top: 0,
-        width: sprite.width
-          ? tileToPixel(sprite.width, gridSize)
-          : getSprite(sprite.sprite)?.width ?? gridSize,
-        height: sprite.height
-          ? tileToPixel(sprite.height, gridSize)
-          : getSprite(sprite.sprite)?.height ?? gridSize,
+        width: getSprite(sprite.sprite)?.width ?? gridSize,
+        height: getSprite(sprite.sprite)?.height ?? gridSize,
       }}
     >
       <div className="absolute w-full h-full">
@@ -90,8 +86,6 @@ const Sprite = ({
               <InnerSprite
                 className="absolute z-1 top-0 left-0 pixelated"
                 sprite={getSprite(sprite.sprite)}
-                width={sprite.width}
-                height={sprite.height}
                 direction="down"
                 gridSize={gridSize}
               />

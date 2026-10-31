@@ -25,8 +25,6 @@ export const DEFAULT_ACTOR: GameActor = {
   y: 0,
   z: 2,
   sprite: 'sprite_default',
-  width: 1,
-  height: 1,
   direction: 'down',
   collisionGroup: 0,
   events: {
@@ -61,8 +59,6 @@ export const DEFAULT_SPRITE: GameSprite = {
   y: 0,
   z: 2,
   sprite: 'sprite_default',
-  width: 1,
-  height: 1,
   collisionGroup: 0,
 };
 

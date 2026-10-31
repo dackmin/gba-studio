@@ -58,14 +58,10 @@ const PlayerStart = ({
       style={{
         left: 0,
         top: 0,
-        width: scene.player.width
-          ? tileToPixel(scene.player.width, gridSize)
-          : getSprite(scene.player.sprite || 'sprite_default')
-            ?.width ?? gridSize,
-        height: scene.player.height
-          ? tileToPixel(scene.player.height, gridSize)
-          : getSprite(scene.player.sprite || 'sprite_default')
-            ?.height ?? gridSize,
+        width: getSprite(scene.player.sprite || 'sprite_default')
+          ?.width ?? gridSize,
+        height: getSprite(scene.player.sprite || 'sprite_default')
+          ?.height ?? gridSize,
       }}
     >
       <div className="absolute w-full h-full">
@@ -83,8 +79,6 @@ const PlayerStart = ({
           <Sprite
             className="absolute z-1 top-0 left-0 pixelated"
             sprite={getSprite(scene.player.sprite || 'sprite_default')}
-            width={scene.player.width}
-            height={scene.player.height}
             direction={scene.player.direction}
             gridSize={gridSize}
           />

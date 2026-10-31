@@ -128,34 +128,6 @@ const ActorForm = ({
                 </TextField.Root>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col gap-2 flex-auto">
-                <Text className="block text-slate" size="1">Width</Text>
-                <TextField.Root
-                  type="number"
-                  min={1}
-                  value={actor.width ?? 1}
-                  onChange={onTextChange.bind(null, 'width')}
-                >
-                  <TextField.Slot side="right">
-                    tiles
-                  </TextField.Slot>
-                </TextField.Root>
-              </div>
-              <div className="flex flex-col gap-2 flex-auto">
-                <Text className="block text-slate" size="1">Height</Text>
-                <TextField.Root
-                  type="number"
-                  min={1}
-                  value={actor.height ?? 2}
-                  onChange={onTextChange.bind(null, 'height')}
-                >
-                  <TextField.Slot side="right">
-                    tiles
-                  </TextField.Slot>
-                </TextField.Root>
-              </div>
-            </div>
             <div className="flex flex-col gap-2">
               <Text className="block text-slate" size="1">Drawing priority</Text>
               <EventValueField

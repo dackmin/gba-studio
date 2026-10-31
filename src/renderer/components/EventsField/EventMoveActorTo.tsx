@@ -60,6 +60,10 @@ const EventMoveActorTo = ({
     updateSize();
   }, [updateSize]);
 
+  const sprite = useMemo(() => (
+    findSprite(sprites, actor?.sprite)
+  ), [sprites, actor?.sprite]);
+
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);
 
@@ -67,34 +71,30 @@ const EventMoveActorTo = ({
       eventEmitter?.emit('scene:camera:set', {
         x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
         y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
-        width: tileToPixel(actor?.width ?? 1, scene?.map?.gridSize || 16),
-        height: tileToPixel(actor?.height ?? 1, scene?.map?.gridSize || 16),
+        width: sprite?.width ?? scene?.map?.gridSize ?? 16,
+        height: sprite?.height ?? scene?.map?.gridSize ?? 16,
         sceneId: scene?.id,
       });
     }
 
     onValueChange?.(event);
-  }, [event, eventEmitter, scene, actor, onValueChange]);
+  }, [event, eventEmitter, scene, sprite, onValueChange]);
 
   const onFocus = useCallback(() => {
     eventEmitter?.emit('scene:camera:set', {
       x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
       y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
-      width: tileToPixel(actor?.width ?? 1, scene?.map?.gridSize || 16),
-      height: tileToPixel(actor?.height ?? 1, scene?.map?.gridSize || 16),
+      width: sprite?.width ?? scene?.map?.gridSize ?? 16,
+      height: sprite?.height ?? scene?.map?.gridSize ?? 16,
       sceneId: scene?.id,
     });
-  }, [eventEmitter, event.x, event.y, scene, actor]);
+  }, [eventEmitter, event.x, event.y, scene, sprite]);
 
   const onBlur = useCallback(() => {
     eventEmitter?.emit('scene:camera:reset', {
       sceneId: scene?.id,
     });
   }, [eventEmitter, scene?.id]);
-
-  const sprite = useMemo(() => (
-    findSprite(sprites, actor?.sprite)
-  ), [sprites, actor?.sprite]);
 
   return (
     <div

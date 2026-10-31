@@ -66,12 +66,8 @@ const Actor = ({
       style={{
         left: 0,
         top: 0,
-        width: actor.width
-          ? tileToPixel(actor.width, gridSize)
-          : actorSprite?.width ?? gridSize,
-        height: actor.height
-          ? tileToPixel(actor.height, gridSize)
-          : actorSprite?.height ?? gridSize,
+        width: actorSprite?.width ?? gridSize,
+        height: actorSprite?.height ?? gridSize,
       }}
     >
       <div className="absolute w-full h-full">
@@ -91,8 +87,6 @@ const Actor = ({
               <Sprite
                 className="absolute z-1 top-0 left-0 pixelated"
                 sprite={actorSprite}
-                width={actor.width}
-                height={actor.height}
                 direction={actor.direction}
                 gridSize={gridSize}
                 transparencyColor={actorSprite?.transparentColor}

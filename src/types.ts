@@ -165,8 +165,6 @@ export interface GamePlayer {
   x: number;
   y: number;
   z?: number;
-  width?: number;
-  height?: number;
   direction?: CharacterDirection;
   sprite?: string;
   // Collision group (1-4, 0 = none): actors/sprites in a different
@@ -229,8 +227,6 @@ export interface GameActor {
   y: number;
   z?: number;
   direction?: CharacterDirection;
-  width?: number;
-  height?: number;
   sprite: string;
   disableDirectionOnInteract?: boolean;
   // Collision group (1-4, 0 = none): actors/sprites in a different group than the player are solid
@@ -252,8 +248,6 @@ export interface GameSprite {
   type: 'sprite';
   name: string;
   sprite: string;
-  width?: number;
-  height?: number;
   x: number;
   y: number;
   z?: number;

@@ -114,8 +114,6 @@ export const sanitizeActor = async (actor: GameActor): Promise<GameActor> => {
     actor.id = randomUUID();
   }
 
-  actor.width = Number(actor.width ?? 1);
-  actor.height = Number(actor.height ?? 1);
   actor.collisionGroup = Math.min(4, Math.max(0, Number(actor.collisionGroup ?? 0)));
 
   for (const event of actor.events?.init ?? []) {
@@ -173,8 +171,6 @@ export const sanitizeSceneSprite = async (
     sprite.id = randomUUID();
   }
 
-  sprite.width = Number(sprite.width ?? 1);
-  sprite.height = Number(sprite.height ?? 1);
   sprite.collisionGroup = Math.min(4, Math.max(0, Number(sprite.collisionGroup ?? 0)));
 
   for (const event of sprite.events?.init ?? []) {
