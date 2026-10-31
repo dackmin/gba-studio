@@ -7,7 +7,7 @@ import fs from 'node:fs/promises';
 import type { IpcMainInvokeEvent } from 'electron';
 import fse from 'fs-extra';
 
-import type { AppPayload, Build, BuildOptions } from '../../../types';
+import type { AppPayload, Build, BuildCompletedEvent, BuildOptions } from '../../../types';
 import { getResourcesDir } from '../../utils';
 import {
   getBuildDir,
@@ -48,7 +48,7 @@ function createHandlers (
     onSuccess: (...args: any[]) => sendSuccessLog(event, buildId, args.join(' ')),
     onAbort: () => sendAbort(event, buildId),
     onStart: () => event.sender.send('build-started', { id: buildId }),
-    onComplete: (opts?: { exported?: boolean }) =>
+    onComplete: (opts?: BuildCompletedEvent) =>
       event.sender.send('build-completed', { id: buildId, ...opts }),
   };
 }
