@@ -17,7 +17,7 @@ import CollisionRectOverlay from '../../components/CollisionRectOverlay';
 import PixelText, { getTextWidth } from '../../components/PixelText';
 import Playback from './Playback';
 
-const SPRITE_SCALE = 4;
+const SPRITE_SCALE = 16;
 
 const SAMPLE_TEXTS = [
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
