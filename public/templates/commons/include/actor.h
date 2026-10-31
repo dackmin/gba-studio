@@ -144,7 +144,7 @@ namespace neo
       void check_collisions();
       bool try_interact();
 
-      neo::types::sprite_animation* find_animation(
+      const neo::types::sprite_animation* find_animation(
         neo::types::animation_state state, bn::string_view animation);
       bn::string_view default_animation();
       void show_direction_tile();
@@ -159,7 +159,8 @@ namespace neo
 
       neo::types::animation_state base_anim_state = neo::types::animation_state::IDLE;
       bn::string_view base_animation;
-      neo::types::sprite_animation* current_animation = nullptr;
+      const neo::types::sprite_animation* current_animation = nullptr;
+      neo::types::animation_playback playback;
       int action_frames_left = 0;
   };
 }

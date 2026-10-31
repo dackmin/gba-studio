@@ -18,7 +18,7 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_id = "{{this.id}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_name = "{{escapeCpp this.name}}";
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "{{valuedef this.animationType 'fixed'}}";
 constexpr neo::types::direction {{../prefix}}_{{@index}}_direction = neo::types::direction::{{uppercase (valuedef this.direction 'down')}};
-BN_DATA_EWRAM neo::types::sprite_animation {{../prefix}}_{{@index}} = {
+constexpr neo::types::sprite_animation {{../prefix}}_{{@index}} = {
   {{../prefix}}_{{@index}}_id,
   {{../prefix}}_{{@index}}_name,
   {{../prefix}}_{{@index}}_type,

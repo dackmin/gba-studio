@@ -3629,6 +3629,13 @@ namespace neo::types
     bool reversed;
   };
 
+  struct animation_playback
+  {
+    bool playing = false;
+    int current_index = 0;
+    int elapsed_frames = 0;
+  };
+
   struct sprite_animation
   {
     bn::string_view _id;
@@ -3639,11 +3646,8 @@ namespace neo::types
     bool loop;
     int frames_count;
     const sprite_animation_frame* const* frames;
-    bool _playing = false;
-    int _current_index = 0;
-    int _elapsed_frames = 0;
 
-    sprite_animation(
+    constexpr sprite_animation(
       bn::string_view _id_,
       bn::string_view name_,
       bn::string_view type_,
@@ -3663,11 +3667,11 @@ namespace neo::types
       frames(frames_) {}
 
     // Shows the first frame and arms the animation; call once before the per-frame play() loop starts
-    inline void reset (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
+    inline void reset (animation_playback& playback, bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles) const
     {
-      _playing = true;
-      _current_index = 0;
-      _elapsed_frames = 0;
+      playback.playing = true;
+      playback.current_index = 0;
+      playback.elapsed_frames = 0;
 
       if (frames_count > 0)
       {
@@ -3676,50 +3680,50 @@ namespace neo::types
     }
 
     // Non-blocking: advances the animation by a single frame, call once per bn::core::update()
-    inline void play (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles, neo::variables::registry& variables)
+    inline void play (animation_playback& playback, bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles, neo::variables::registry& variables) const
     {
-      if (!_playing || frames_count <= 0)
+      if (!playback.playing || frames_count <= 0)
       {
         return;
       }
 
-      int wait_frames = frames[_current_index]->duration->as_int(variables) / 16;
+      int wait_frames = frames[playback.current_index]->duration->as_int(variables) / 16;
 
       if (wait_frames < 1)
       {
         wait_frames = 1;
       }
 
-      if (++_elapsed_frames < wait_frames)
+      if (++playback.elapsed_frames < wait_frames)
       {
         return;
       }
 
-      _elapsed_frames = 0;
+      playback.elapsed_frames = 0;
 
-      if (_current_index + 1 >= frames_count)
+      if (playback.current_index + 1 >= frames_count)
       {
         if (!loop)
         {
-          _playing = false;
+          playback.playing = false;
           return;
         }
 
-        _current_index = 0;
+        playback.current_index = 0;
       }
       else
       {
-        ++_current_index;
+        ++playback.current_index;
       }
 
-      sprite.set_tiles(tiles->create_tiles(frames[_current_index]->frame_index));
+      sprite.set_tiles(tiles->create_tiles(frames[playback.current_index]->frame_index));
     }
 
-    inline void stop (bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles)
+    inline void stop (animation_playback& playback, bn::sprite_ptr sprite, bn::sprite_tiles_item* tiles) const
     {
-      _playing = false;
-      _current_index = 0;
-      _elapsed_frames = 0;
+      playback.playing = false;
+      playback.current_index = 0;
+      playback.elapsed_frames = 0;
       sprite.set_tiles(tiles->create_tiles(frames[0]->frame_index));
     }
   };
@@ -3750,7 +3754,7 @@ namespace neo::types
     int update_events_count;
     const event* const* update_events;
     int animations_count;
-    sprite_animation* const* animations;
+    const sprite_animation* const* animations;
   };
 
   struct sprite

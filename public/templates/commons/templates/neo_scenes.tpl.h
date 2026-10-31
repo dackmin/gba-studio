@@ -79,7 +79,7 @@ namespace neo::scenes
   {{#if (hasItems this._animations)}}
   {{>animationsPartial prefix=(concat (getSpriteName @root/sprites (valuedef this.name "sprite_default")) "_animation") animations=this._animations}}
   constexpr int {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations_count = {{this._animations.length}};
-  constexpr neo::types::sprite_animation* {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations[] = {
+  constexpr const neo::types::sprite_animation* {{getSpriteName @root/sprites (valuedef this.name "sprite_default")}}_animations[] = {
     {{#each this._animations}}
     &{{getSpriteName @root/sprites (valuedef ../this.name "sprite_default")}}_animation_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}

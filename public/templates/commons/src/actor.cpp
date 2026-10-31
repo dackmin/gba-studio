@@ -946,7 +946,7 @@ namespace neo
     }
 
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-    current_animation->reset(sprite, &tiles_item);
+    current_animation->reset(playback, sprite, &tiles_item);
   }
 
   void actor::update_animation()
@@ -957,7 +957,7 @@ namespace neo
     }
 
     bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-    current_animation->play(sprite, &tiles_item, game->variables);
+    current_animation->play(playback, sprite, &tiles_item, game->variables);
   }
 
   void actor::update_action()
@@ -976,7 +976,7 @@ namespace neo
     if (current_animation != nullptr)
     {
       bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
-      current_animation->play(sprite, &tiles_item, game->variables);
+      current_animation->play(playback, sprite, &tiles_item, game->variables);
     }
   }
 
@@ -987,7 +987,7 @@ namespace neo
       : bn::string_view();
   }
 
-  neo::types::sprite_animation* actor::find_animation(
+  const neo::types::sprite_animation* actor::find_animation(
     neo::types::animation_state state, bn::string_view animation)
   {
     if (state == neo::types::animation_state::IDLE || animation.empty())
@@ -997,7 +997,7 @@ namespace neo
 
     for (int i = 0; i < definition->animations_count; ++i)
     {
-      neo::types::sprite_animation* candidate = definition->animations[i];
+      const neo::types::sprite_animation* candidate = definition->animations[i];
 
       if (
         candidate->_id == animation &&
