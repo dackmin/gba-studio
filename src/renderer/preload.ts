@@ -66,6 +66,11 @@ contextBridge.exposeInMainWorld('electron', {
     projectPath?: string;
   }): Promise<string> =>
     ipcRenderer.invoke('browse-file', opts),
+  browseSaveFile: (opts?: {
+    defaultPath?: string;
+    filters?: FileFilter[];
+  }): Promise<string> =>
+    ipcRenderer.invoke('browse-save-file', opts),
   createProject: (opts: {
     type: ProjectTemplate;
     name: string;

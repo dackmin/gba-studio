@@ -902,6 +902,7 @@ export type FramesDefinition = {
 
 export interface BuildOptions {
   clean?: boolean;
+  exportPath?: string;
 }
 
 export interface Build {

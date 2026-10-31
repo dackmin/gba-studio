@@ -147,7 +147,9 @@ export async function buildProject (
   }
 
   if (build.data?.project) {
-    build.data.project.settings = buildConfig?.settings;
+    build.data.project.settings = build.opts?.exportPath
+      ? { ...buildConfig?.settings, logsEnabled: false }
+      : buildConfig?.settings;
   }
 
   if (build.opts?.clean === true) {
@@ -225,6 +227,14 @@ export async function buildProject (
     `${(globalThis.performance.now() - start).toFixed(2)} ms 🎉 ` +
     `(ROM size: ${humanSize(romSize)})`
   );
+
+  if (build.opts?.exportPath) {
+    await fse.ensureDir(path.dirname(build.opts.exportPath));
+    await fse.copyFile(finalGamePath, build.opts.exportPath);
+    build.events.onSuccess(`ROM exported to ${build.opts.exportPath}`);
+
+    return;
+  }
 
   if (buildConfig?.settings?.emulatorType === 'external') {
     const [command, ...args] = (

@@ -13,6 +13,7 @@ import {
 import {
   browseDirectory,
   browseFile,
+  browseSaveFile,
   browseProject,
   getRecentProjects,
   loadRecentProject,
@@ -100,6 +101,7 @@ ipcMain.handle('get-recent-projects', getRecentProjects.bind(null, storage));
 ipcMain.handle('load-recent-project', loadRecentProject);
 ipcMain.handle('browse-directory', browseDirectory);
 ipcMain.handle('browse-file', browseFile);
+ipcMain.handle('browse-save-file', browseSaveFile);
 ipcMain.handle('browse-project', browseProject);
 ipcMain.handle('load-project', loadProject.bind(null, storage));
 ipcMain.handle('save-project', saveProject);

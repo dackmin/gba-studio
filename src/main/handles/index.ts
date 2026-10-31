@@ -4,6 +4,7 @@ export { default as autosaveProject } from './autosave-project';
 export { default as discardAutosave } from './discard-autosave';
 export { default as browseDirectory } from './browse-directory';
 export { default as browseFile } from './browse-file';
+export { default as browseSaveFile } from './browse-save-file';
 export { default as browseProject } from './browse-project';
 export { default as loadProject } from './load-project';
 export { default as saveProject } from './save-project';

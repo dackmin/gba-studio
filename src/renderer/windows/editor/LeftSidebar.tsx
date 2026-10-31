@@ -22,6 +22,7 @@ import {
 import { type ResizableProps, Resizable } from 're-resizable';
 import { useHotkeys } from 'react-hotkeys-hook';
 
+import type { BuildOptions } from '../../../types';
 import {
   useApp,
   useBridgeListener,
@@ -29,8 +30,8 @@ import {
   useEditor,
   useLocalData,
 } from '../../services/hooks';
-import views from '../../views';
 import { findScene } from '../../../helpers';
+import views from '../../views';
 
 export interface LeftSidebarProps extends ResizableProps {}
 
@@ -70,13 +71,7 @@ const LeftSidebar = ({
     getSize('leftSidebarWidth', 300)
   ), [getSize]);
 
-  const onToggleBuild = useCallback(async (clean?: boolean) => {
-    if (building) {
-      await window.electron.abortBuildProject();
-
-      return;
-    }
-
+  const startBuild = useCallback(async (opts?: BuildOptions) => {
     const startingScene = selectedScene?.id ??
       findScene(scenes, getData('canvas.selectedScene'))?.id;
 
@@ -96,13 +91,42 @@ const LeftSidebar = ({
       fonts,
       sounds,
       music,
-    }, { clean });
+    }, opts);
   }, [
-    building, selectedScene, projectPath, project, scenes, huds, variables, scripts, sprites,
+    selectedScene, projectPath, project, scenes, huds, variables, scripts, sprites,
     backgrounds, fonts,
     sounds, music,
     getData,
   ]);
+
+  const onToggleBuild = useCallback(async (clean?: boolean) => {
+    if (building) {
+      await window.electron.abortBuildProject();
+
+      return;
+    }
+
+    await startBuild({ clean });
+  }, [building, startBuild]);
+
+  const onExportRom = useCallback(async () => {
+    if (building) {
+      return;
+    }
+
+    const romName = (await window.electron.getRomPath(projectPath))
+      .split('/').pop();
+    const exportPath = await window.electron.browseSaveFile({
+      defaultPath: romName,
+      filters: [{ name: 'GBA ROM', extensions: ['gba'] }],
+    });
+
+    if (!exportPath) {
+      return;
+    }
+
+    await startBuild({ exportPath });
+  }, [building, projectPath, startBuild]);
 
   useHotkeys('mod+left', () => {
     collapse('leftSidebar');
@@ -111,6 +135,8 @@ const LeftSidebar = ({
   useBridgeListener('build-project', onToggleBuild, [onToggleBuild]);
 
   useBridgeListener('rebuild-project', onToggleBuild.bind(null, true), [onToggleBuild]);
+
+  useBridgeListener('export-rom', onExportRom, [onExportRom]);
 
   const onCleanBuildFolder = useCallback(async () => {
     if (building) {

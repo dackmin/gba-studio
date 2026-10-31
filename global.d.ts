@@ -35,6 +35,10 @@ interface AppBridge extends EventTarget {
     filters?: FileFilter[];
     projectPath?: string;
   }): Promise<string>;
+  browseSaveFile(opts?: {
+    defaultPath?: string;
+    filters?: FileFilter[];
+  }): Promise<string>;
   browseProject(): Promise<string>;
   loadProject(path: string): Promise<AppPayload>;
   saveProject(path: string, payload: Partial<AppPayload>): Promise<void>;
