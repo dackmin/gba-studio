@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.8.0](https://github.com/dackmin/gba-studio/compare/v0.7.0...v0.8.0) (2026-10-31)
+
+### Features
+
+* allow to customize gravity & jump height ([6b6feda](https://github.com/dackmin/gba-studio/commit/6b6feda68d8bc4e59c87b22832e161d05820dcd2))
+* allow to customize sprites' collision rectangle ([870c7b5](https://github.com/dackmin/gba-studio/commit/870c7b5b92226637a6dc87d4c4d49aa96a545efd))
+* allow to export rom elsewhere ([c66b37e](https://github.com/dackmin/gba-studio/commit/c66b37e707b677755584708130442e553c7e0860))
+
+### Bug Fixes
+
+* correctly allow to set starting scene ([5517a40](https://github.com/dackmin/gba-studio/commit/5517a40f53f67c92a14b02ad83a9ba1081932d10))
+* correctly ignore selected scene on rom export ([57b677a](https://github.com/dackmin/gba-studio/commit/57b677a381c54b27dd0c639e9894386ee6703547))
+* do not start emulator on rom export ([3a27061](https://github.com/dackmin/gba-studio/commit/3a27061f76eb960873d9c3c8e18bf3fd5220644a))
+* remove useless actor & player width/height ([51703d3](https://github.com/dackmin/gba-studio/commit/51703d301dbdc27609e5ea303230d1dd844b928f))
+* upgrade various deps ([8b3311b](https://github.com/dackmin/gba-studio/commit/8b3311bd76a6205d681c735ba666a03295cf9ce7))
+* what did I do here ([75d4cbe](https://github.com/dackmin/gba-studio/commit/75d4cbe728f2eebc9b71ce603eabe0846f58e590))
+
 ## [0.7.0](https://github.com/dackmin/gba-studio/compare/v0.6.1...v0.7.0) (2026-10-30)
 
 ### Features
