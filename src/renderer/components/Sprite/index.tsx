@@ -94,7 +94,7 @@ const Sprite = ({
     ctx.imageSmoothingEnabled = false;
 
     if (reverse) {
-      ctx.translate(width * scale, 0);
+      ctx.translate(width, 0);
       ctx.scale(-1, 1);
     }
 
@@ -107,8 +107,8 @@ const Sprite = ({
       height / scale,
       0,
       0,
-      width * scale,
-      height * scale
+      width,
+      height
     );
 
     if (reverse) {
@@ -151,8 +151,8 @@ const Sprite = ({
         transform: direction === 'left' ? 'scaleX(-1)' : undefined,
         ...(keepAspectRatio && { objectFit: 'contain' }),
       }}
-      width={width * scale}
-      height={height * scale}
+      width={width}
+      height={height}
     />
   );
 };
