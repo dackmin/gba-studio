@@ -2,7 +2,7 @@
 
 #include <bn_core.h>
 #include <bn_keypad.h>
-#include <bn_vector.h>
+#include <bn_span.h>
 #include <bn_string_view.h>
 #include <bn_log.h>
 
@@ -23,7 +23,7 @@ namespace neo::buttons
     return false;
   }
 
-  bool any_pressed(const bn::vector<bn::string_view, 10>& buttons)
+  bool any_pressed(bn::span<const bn::string_view> buttons)
   {
     for (const bn::string_view& button : buttons)
     {
@@ -36,7 +36,7 @@ namespace neo::buttons
     return false;
   }
 
-  bool all_pressed(const bn::vector<bn::string_view, 10>& buttons)
+  bool all_pressed(bn::span<const bn::string_view> buttons)
   {
     for (const bn::string_view& button : buttons)
     {

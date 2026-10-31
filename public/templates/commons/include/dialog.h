@@ -20,7 +20,7 @@ namespace neo
     static constexpr int CHAR_WIDTH = 8;
 
     public:
-      dialog(neo::game* game, const bn::vector<bn::string_view, MAX_LINES>& lines);
+      dialog(neo::game* game, bn::span<const bn::string_view> lines);
 
       void show();
       void set_direction(neo::types::direction direction_);
@@ -32,7 +32,7 @@ namespace neo
       void set_text_color(const bn::color* text_color_);
 
       neo::game* game;
-      bn::vector<bn::string_view, MAX_LINES> lines;
+      bn::span<const bn::string_view> lines;
       neo::types::direction direction;
       neo::types::text_speed speed;
       const bn::sprite_item* portrait = nullptr;

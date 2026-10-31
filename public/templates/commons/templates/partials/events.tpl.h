@@ -26,17 +26,21 @@ constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
 };
 {{/if}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "{{this.type}}";
-{{#each this.buttons}}
-constexpr bn::string_view {{../../prefix}}_{{@../index}}_button_{{@index}} = "{{this}}";
-{{/each}}
-BN_DATA_EWRAM neo::types::button_event {{../prefix}}_{{@index}}(
+{{#if this.buttons.length}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_buttons[] = {
+  {{#each this.buttons}}
+  "{{this}}"{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+constexpr neo::types::button_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef this.every false}},
-  make_button_vector(
-    {{#each this.buttons}}
-    {{../../prefix}}_{{@../index}}_button_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
-  ),
+  {{#if this.buttons.length}}
+  bn::span<const bn::string_view>({{../prefix}}_{{@index}}_buttons),
+  {{else}}
+  bn::span<const bn::string_view>(),
+  {{/if}}
   {{#if (eq this.type "on-button-press")}}
   {{this.events.length}},
   {{../prefix}}_{{@index}}_events
@@ -97,10 +101,17 @@ constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-dialog";
 {{#each (truncate this.text (dialogLineLength this.portrait))}}
 constexpr bn::string_view {{../../prefix}}_{{@../index}}_line_{{@index}} = "{{escapeCpp this}}";
 {{/each}}
+{{#if (hasItems (truncate this.text (dialogLineLength this.portrait)))}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_lines[] = {
+  {{#each (truncate this.text (dialogLineLength this.portrait))}}
+  {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 {{#if (isset this.textColor)}}
 constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
 {{/if}}
-BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
+constexpr neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   neo::types::direction::{{uppercase (valuedef this.direction 'down')}},
   {{valuedef this.z 1}},
@@ -126,11 +137,11 @@ BN_DATA_EWRAM neo::types::dialog_event {{../prefix}}_{{@index}}(
   {{else}}
   nullptr,
   {{/if}}
-  make_dialog_vector(
-    {{#each (truncate this.text (dialogLineLength this.portrait))}}
-    {{../../prefix}}_{{@../index}}_line_{{@index}}{{#unless @last}},{{/unless}}
-    {{/each}}
-  )
+  {{#if (hasItems (truncate this.text (dialogLineLength this.portrait)))}}
+  bn::span<const bn::string_view>({{../prefix}}_{{@index}}_lines)
+  {{else}}
+  bn::span<const bn::string_view>()
+  {{/if}}
 );
 {{else if (eq this.type "show-menu")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_type = "show-menu";
@@ -152,27 +163,33 @@ constexpr const neo::types::if_condition* {{../../prefix}}_{{@../index}}_option_
 };
 {{/if}}
 constexpr bn::string_view {{../../prefix}}_{{@../index}}_option_{{@index}}_text = "{{escapeCpp (maxLen this.text 26)}}";
-BN_DATA_EWRAM neo::types::menu_choice {{../../prefix}}_{{@../index}}_option_{{@index}}_choice(
-  {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
-  {{this.events.length}},
-  {{#if this.events.length}}
-  {{../../prefix}}_{{@../index}}_option_{{@index}}_events,
-  {{else}}
-  nullptr,
-  {{/if}}
-  {{#if this.conditions.length}}
-  {{this.conditions.length}},
-  {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions
-  {{else}}
-  0,
-  nullptr
-  {{/if}}
-);
 {{/each}}
+{{#if this.choices.length}}
+constexpr neo::types::menu_choice {{../prefix}}_{{@index}}_choices[] = {
+  {{#each this.choices}}
+  neo::types::menu_choice(
+    {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
+    {{this.events.length}},
+    {{#if this.events.length}}
+    {{../../prefix}}_{{@../index}}_option_{{@index}}_events,
+    {{else}}
+    nullptr,
+    {{/if}}
+    {{#if this.conditions.length}}
+    {{this.conditions.length}},
+    {{../../prefix}}_{{@../index}}_option_{{@index}}_conditions
+    {{else}}
+    0,
+    nullptr
+    {{/if}}
+  ){{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
 {{#if (isset this.textColor)}}
 constexpr bn::color {{../prefix}}_{{@index}}_text_color = { {{colorRGB this.textColor}} };
 {{/if}}
-BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
+constexpr neo::types::menu_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_type,
   {{valuedef (len (longestMenuChoice this.choices)) 0}},
   {{valuedef this.choices.length 0}},
@@ -193,11 +210,11 @@ BN_DATA_EWRAM neo::types::menu_event {{../prefix}}_{{@index}}(
   {{else}}
   nullptr,
   {{/if}}
-  make_menu_vector(
-    {{#each this.choices}}
-    {{../../prefix}}_{{@../index}}_option_{{@index}}_choice{{#unless @last}},{{/unless}}
-    {{/each}}
-  )
+  {{#if this.choices.length}}
+  bn::span<const neo::types::menu_choice>({{../prefix}}_{{@index}}_choices)
+  {{else}}
+  bn::span<const neo::types::menu_choice>()
+  {{/if}}
 );
 {{else if (eq this.type "set-hud-text")}}
 {{>valuePartial prefix=(concat ../prefix "_" @index "_content") value=this.value}}

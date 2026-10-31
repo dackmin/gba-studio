@@ -51,45 +51,6 @@ namespace neo::scenes
 {
   constexpr bn::string_view STARTING_SCENE = "d2a023cc-364d-4caf-9638-78937f593e4d";
 
-  bn::vector<bn::string_view, 10> make_button_vector()
-  {
-    return bn::vector<bn::string_view, 10>();
-  }
-
-  template<typename... Args>
-  bn::vector<bn::string_view, 10> make_button_vector(Args... buttons)
-  {
-    bn::vector<bn::string_view, 10> vec;
-    ((vec.push_back(buttons)), ...);
-    return vec;
-  }
-
-  bn::vector<bn::string_view, 5> make_dialog_vector()
-  {
-    return bn::vector<bn::string_view, 5>();
-  }
-
-  template<typename... Args>
-  bn::vector<bn::string_view, 5> make_dialog_vector(Args... lines)
-  {
-    bn::vector<bn::string_view, 5> vec;
-    ((vec.push_back(lines)), ...);
-    return vec;
-  }
-
-  bn::vector<neo::types::menu_choice, 5> make_menu_vector()
-  {
-    return bn::vector<neo::types::menu_choice, 5>();
-  }
-
-  template<typename... Args>
-  bn::vector<neo::types::menu_choice, 5> make_menu_vector(Args... choices)
-  {
-    bn::vector<neo::types::menu_choice, 5> vec;
-    ((vec.push_back(choices)), ...);
-    return vec;
-  }
-
 
   //////////////////////////
   // HUD: HUD 1 //
@@ -208,19 +169,16 @@ namespace neo::scenes
   BN_DATA_EWRAM neo::types::fade_event scene_0_event_1(scene_0_event_1_type, &scene_0_event_1_duration_value);
   // Event 2: wait-for-button
   constexpr bn::string_view scene_0_event_2_type = "wait-for-button";
-  constexpr bn::string_view scene_0_event_2_button_0 = "A";
-  constexpr bn::string_view scene_0_event_2_button_1 = "B";
-  constexpr bn::string_view scene_0_event_2_button_2 = "Start";
-  constexpr bn::string_view scene_0_event_2_button_3 = "Select";
-  BN_DATA_EWRAM neo::types::button_event scene_0_event_2(
+  constexpr bn::string_view scene_0_event_2_buttons[] = {
+    "A",
+    "B",
+    "Start",
+    "Select"
+  };
+  constexpr neo::types::button_event scene_0_event_2(
     scene_0_event_2_type,
     false,
-    make_button_vector(
-      scene_0_event_2_button_0,
-      scene_0_event_2_button_1,
-      scene_0_event_2_button_2,
-      scene_0_event_2_button_3
-    ),
+    bn::span<const bn::string_view>(scene_0_event_2_buttons),
     0,
     nullptr
   );
@@ -247,19 +205,16 @@ namespace neo::scenes
     &scene_0_event_3_event_0
   };
   constexpr bn::string_view scene_0_event_3_type = "on-button-press";
-  constexpr bn::string_view scene_0_event_3_button_0 = "A";
-  constexpr bn::string_view scene_0_event_3_button_1 = "B";
-  constexpr bn::string_view scene_0_event_3_button_2 = "Start";
-  constexpr bn::string_view scene_0_event_3_button_3 = "Select";
-  BN_DATA_EWRAM neo::types::button_event scene_0_event_3(
+  constexpr bn::string_view scene_0_event_3_buttons[] = {
+    "A",
+    "B",
+    "Start",
+    "Select"
+  };
+  constexpr neo::types::button_event scene_0_event_3(
     scene_0_event_3_type,
     false,
-    make_button_vector(
-      scene_0_event_3_button_0,
-      scene_0_event_3_button_1,
-      scene_0_event_3_button_2,
-      scene_0_event_3_button_3
-    ),
+    bn::span<const bn::string_view>(scene_0_event_3_buttons),
     1,
     scene_0_event_3_events
   );
@@ -487,7 +442,10 @@ namespace neo::scenes
   // Event 14: show-dialog
   constexpr bn::string_view scene_0_event_14_type = "show-dialog";
   constexpr bn::string_view scene_0_event_14_line_0 = "Hello, world!";
-  BN_DATA_EWRAM neo::types::dialog_event scene_0_event_14(
+  constexpr bn::string_view scene_0_event_14_lines[] = {
+    scene_0_event_14_line_0
+  };
+  constexpr neo::types::dialog_event scene_0_event_14(
     scene_0_event_14_type,
     neo::types::direction::DOWN_LEFT,
     1,
@@ -497,9 +455,7 @@ namespace neo::scenes
     nullptr,
     nullptr,
     nullptr,
-    make_dialog_vector(
-      scene_0_event_14_line_0
-    )
+    bn::span<const bn::string_view>(scene_0_event_14_lines)
   );
   // Event 15: show-menu
   constexpr bn::string_view scene_0_event_15_type = "show-menu";
@@ -525,13 +481,6 @@ namespace neo::scenes
     &scene_0_event_15_option_0_event_0
   };
   constexpr bn::string_view scene_0_event_15_option_0_text = "Choice 1";
-  BN_DATA_EWRAM neo::types::menu_choice scene_0_event_15_option_0_choice(
-    scene_0_event_15_option_0_text,
-    1,
-    scene_0_event_15_option_0_events,
-    0,
-    nullptr
-  );
   // Event 0: fade-out
   constexpr bn::string_view scene_0_event_15_option_1_event_0_duration_name = "";
   constexpr bn::string_view scene_0_event_15_option_1_event_0_duration_string_value = "200";
@@ -554,14 +503,23 @@ namespace neo::scenes
     &scene_0_event_15_option_1_event_0
   };
   constexpr bn::string_view scene_0_event_15_option_1_text = "Choice 2";
-  BN_DATA_EWRAM neo::types::menu_choice scene_0_event_15_option_1_choice(
-    scene_0_event_15_option_1_text,
-    1,
-    scene_0_event_15_option_1_events,
-    0,
-    nullptr
-  );
-  BN_DATA_EWRAM neo::types::menu_event scene_0_event_15(
+  constexpr neo::types::menu_choice scene_0_event_15_choices[] = {
+    neo::types::menu_choice(
+      scene_0_event_15_option_0_text,
+      1,
+      scene_0_event_15_option_0_events,
+      0,
+      nullptr
+    ),
+    neo::types::menu_choice(
+      scene_0_event_15_option_1_text,
+      1,
+      scene_0_event_15_option_1_events,
+      0,
+      nullptr
+    )
+  };
+  constexpr neo::types::menu_event scene_0_event_15(
     scene_0_event_15_type,
     8,
     2,
@@ -570,10 +528,7 @@ namespace neo::scenes
     nullptr,
     nullptr,
     nullptr,
-    make_menu_vector(
-      scene_0_event_15_option_0_choice,
-      scene_0_event_15_option_1_choice
-    )
+    bn::span<const neo::types::menu_choice>(scene_0_event_15_choices)
   );
   // Event 16: disable-player
   constexpr bn::string_view scene_0_event_16_type = "disable-player";
@@ -1861,13 +1816,13 @@ namespace neo::scenes
     &adventure_event_1_event_1
   };
   constexpr bn::string_view adventure_event_1_type = "on-button-press";
-  constexpr bn::string_view adventure_event_1_button_0 = "B";
-  BN_DATA_EWRAM neo::types::button_event adventure_event_1(
+  constexpr bn::string_view adventure_event_1_buttons[] = {
+    "B"
+  };
+  constexpr neo::types::button_event adventure_event_1(
     adventure_event_1_type,
     false,
-    make_button_vector(
-      adventure_event_1_button_0
-    ),
+    bn::span<const bn::string_view>(adventure_event_1_buttons),
     2,
     adventure_event_1_events
   );
@@ -2771,24 +2726,17 @@ namespace neo::types
   struct button_event: event
   {
     bool every;
-    bn::vector<bn::string_view, 10> buttons;
+    bn::span<const bn::string_view> buttons;
     int events_count;
     const event* const* events;
 
-    button_event(
+    constexpr button_event(
       bn::string_view type_,
       bool every_,
-      bn::vector<bn::string_view, 10> buttons_,
+      bn::span<const bn::string_view> buttons_,
       int events_count_,
       const event* const* events_
     ): event(type_), every(every_), buttons(buttons_), events_count(events_count_), events(events_) {}
-
-    // Helper constructor for single button
-    button_event(bn::string_view type_, bn::string_view single_button, int events_count_, const event* const* events_):
-      event(type_), every(false), buttons(), events_count(events_count_), events(events_)
-    {
-      buttons.push_back(single_button);
-    }
   };
 
   // Only instant, self-contained events are allowed here (enforced by the
@@ -2884,8 +2832,8 @@ namespace neo::types
     const bn::sprite_item* font;
     const bn::color* text_color;
     const bn::sprite_item* background;
-    bn::vector<bn::string_view, 5> lines;
-    dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, const bn::vector<bn::string_view, 5>& lines_):
+    bn::span<const bn::string_view> lines;
+    constexpr dialog_event(bn::string_view type_, neo::types::direction direction_, int z_, neo::types::text_speed speed_, const bn::sprite_item* portrait_, neo::types::dialog_portrait_position portrait_position_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, bn::span<const bn::string_view> lines_):
       event(type_), direction(direction_), z(z_), speed(speed_), portrait(portrait_), portrait_position(portrait_position_), font(font_), text_color(text_color_), background(background_), lines(lines_) {}
   };
 
@@ -2899,7 +2847,7 @@ namespace neo::types
     int conditions_count;
     const if_condition* const* conditions;
 
-    menu_choice(bn::string_view text_, int events_count_, const event* const* events_, int conditions_count_, const if_condition* const* conditions_):
+    constexpr menu_choice(bn::string_view text_, int events_count_, const event* const* events_, int conditions_count_, const if_condition* const* conditions_):
       text(text_), events_count(events_count_), events(events_), conditions_count(conditions_count_), conditions(conditions_) {}
   };
 
@@ -2912,8 +2860,8 @@ namespace neo::types
     const bn::sprite_item* font;
     const bn::color* text_color;
     const bn::sprite_item* background;
-    bn::vector<menu_choice, 5> choices;
-    menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, const bn::vector<menu_choice, 5>& choices_):
+    bn::span<const menu_choice> choices;
+    constexpr menu_event(bn::string_view type_, int longest_text_length_, int choices_count_, neo::types::direction direction_, int z_, const bn::sprite_item* font_, const bn::color* text_color_, const bn::sprite_item* background_, bn::span<const menu_choice> choices_):
       event(type_), longest_text_length(longest_text_length_), choices_count(choices_count_), direction(direction_), z(z_), font(font_), text_color(text_color_), background(background_), choices(choices_) {}
   };
 

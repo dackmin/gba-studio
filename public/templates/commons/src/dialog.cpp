@@ -23,7 +23,7 @@
 
 namespace neo
 {
-  dialog::dialog (neo::game* game_, const bn::vector<bn::string_view, MAX_LINES>& lines_):
+  dialog::dialog (neo::game* game_, bn::span<const bn::string_view> lines_):
     game(game_),
     lines(lines_),
     direction(neo::types::direction::DOWN),

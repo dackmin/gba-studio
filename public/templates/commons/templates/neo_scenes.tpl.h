@@ -72,45 +72,6 @@ namespace neo::scenes
 {
   constexpr bn::string_view STARTING_SCENE = "{{valuedef project.startingScene scenes.[0].id}}";
 
-  bn::vector<bn::string_view, 10> make_button_vector()
-  {
-    return bn::vector<bn::string_view, 10>();
-  }
-
-  template<typename... Args>
-  bn::vector<bn::string_view, 10> make_button_vector(Args... buttons)
-  {
-    bn::vector<bn::string_view, 10> vec;
-    ((vec.push_back(buttons)), ...);
-    return vec;
-  }
-
-  bn::vector<bn::string_view, 5> make_dialog_vector()
-  {
-    return bn::vector<bn::string_view, 5>();
-  }
-
-  template<typename... Args>
-  bn::vector<bn::string_view, 5> make_dialog_vector(Args... lines)
-  {
-    bn::vector<bn::string_view, 5> vec;
-    ((vec.push_back(lines)), ...);
-    return vec;
-  }
-
-  bn::vector<neo::types::menu_choice, 5> make_menu_vector()
-  {
-    return bn::vector<neo::types::menu_choice, 5>();
-  }
-
-  template<typename... Args>
-  bn::vector<neo::types::menu_choice, 5> make_menu_vector(Args... choices)
-  {
-    bn::vector<neo::types::menu_choice, 5> vec;
-    ((vec.push_back(choices)), ...);
-    return vec;
-  }
-
   {{#each sprites}}
   //////////////////////////
   // Sprite: {{this.name}} //
