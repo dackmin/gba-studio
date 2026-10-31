@@ -3,6 +3,7 @@ import { classNames, useEventListener } from '@junipero/react';
 import mGBA, { type mGBAEmulator, type LogEntry } from '@thenick775/mgba-wasm';
 import { v4 as uuid } from 'uuid';
 
+import type { BuildCompletedEvent } from '../../../types';
 import { useApp, useBridgeListener, useEmulator, useLogs } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
 import Gamepad from '../../components/Gamepad';
@@ -131,7 +132,11 @@ const Preview = () => {
     init();
   }, [init]);
 
-  useBridgeListener('build-completed', () => {
+  useBridgeListener('build-completed', ({ exported }: BuildCompletedEvent) => {
+    if (exported) {
+      return;
+    }
+
     try {
       emulator?.quitGame();
       emulator?.quitMgba();

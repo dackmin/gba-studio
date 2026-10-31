@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useMemo, useReducer, useRef } from 'react';
 import { classNames, mockState, useTimeout } from '@junipero/react';
 
-import type { LogMessage } from '../../../types';
+import type { BuildCompletedEvent, LogMessage } from '../../../types';
 import { type EditorContextType, EditorContext } from '../../services/contexts';
 import { useApp, useBridgeListener } from '../../services/hooks';
 import views, { defaultView } from '../../views';
@@ -72,7 +72,11 @@ const Editor = () => {
     dispatch({ building: false, built: false, buildStep: '' });
   }, []);
 
-  useBridgeListener('build-completed', () => {
+  useBridgeListener('build-completed', ({ exported }: BuildCompletedEvent) => {
+    if (exported) {
+      return;
+    }
+
     const emulatorType = project?.settings?.emulatorType || 'internal';
 
     if (emulatorType !== 'external') {

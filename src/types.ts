@@ -919,8 +919,13 @@ export interface Build {
     onSuccess: (...args: any[]) => void;
     onAbort: (...args: any[]) => void;
     onStart: (...args: any[]) => void;
-    onComplete: (...args: any[]) => void;
+    onComplete: (event: BuildCompletedEvent) => void;
   }
+}
+
+export interface BuildCompletedEvent {
+  id: string;
+  exported?: boolean;
 }
 
 export interface LogMessage {

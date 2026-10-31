@@ -48,7 +48,8 @@ function createHandlers (
     onSuccess: (...args: any[]) => sendSuccessLog(event, buildId, args.join(' ')),
     onAbort: () => sendAbort(event, buildId),
     onStart: () => event.sender.send('build-started', { id: buildId }),
-    onComplete: () => event.sender.send('build-completed', { id: buildId }),
+    onComplete: (opts?: { exported?: boolean }) =>
+      event.sender.send('build-completed', { id: buildId, ...opts }),
   };
 }
 
@@ -265,7 +266,7 @@ async function startBuild (
     }
 
     await buildProject(build);
-    build.events.onComplete();
+    build.events.onComplete({ id: build.id, exported: !!build.opts?.exportPath });
   } catch (e) {
     if (build.controller?.signal.aborted) {
       build.events.onAbort();
