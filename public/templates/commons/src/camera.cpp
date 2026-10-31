@@ -14,7 +14,7 @@ namespace neo::camera
   {
     void get_bounds(
       neo::game* game,
-      neo::types::scene& active_scene,
+      const neo::types::scene& active_scene,
       int& min_x,
       int& max_x,
       int& min_y,
@@ -167,7 +167,7 @@ namespace neo::camera
 
   void move_to(
     neo::game* game,
-    neo::types::scene& active_scene,
+    const neo::types::scene& active_scene,
     int x,
     int y,
     int duration,
@@ -187,7 +187,7 @@ namespace neo::camera
 
   void follow(
     neo::game* game,
-    neo::types::scene& active_scene,
+    const neo::types::scene& active_scene,
     neo::actor* target,
     int duration,
     bool allow_diagonal,
@@ -211,7 +211,7 @@ namespace neo::camera
 
   void track(
     neo::game* game,
-    neo::types::scene& active_scene,
+    const neo::types::scene& active_scene,
     neo::actor* target
   )
   {

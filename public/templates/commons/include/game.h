@@ -32,7 +32,7 @@ namespace neo
       bn::camera_ptr& camera;
       neo::variables::registry variables;
 
-      neo::types::scene* active_scene;
+      const neo::types::scene* active_scene;
       neo::scene_bg scene_bg;
       const neo::types::scene_event* last_goto_event;
 

@@ -1435,7 +1435,7 @@ namespace neo::scenes
   
   constexpr bn::string_view scene_0_scene_id = "d2a023cc-364d-4caf-9638-78937f593e4d";
   constexpr bn::string_view scene_0_scene_name = "Scene 0";
-  BN_DATA_EWRAM neo::types::scene scene_scene_0 = {
+  constexpr neo::types::scene scene_scene_0 = {
     scene_0_scene_id,
     scene_0_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
@@ -1658,7 +1658,7 @@ namespace neo::scenes
   
   constexpr bn::string_view point_and_click_scene_id = "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12";
   constexpr bn::string_view point_and_click_scene_name = "Point & Click";
-  BN_DATA_EWRAM neo::types::scene scene_point_and_click = {
+  constexpr neo::types::scene scene_point_and_click = {
     point_and_click_scene_id,
     point_and_click_scene_name,
     neo::types::scene_type::POINT_AND_CLICK,
@@ -2006,7 +2006,7 @@ namespace neo::scenes
   
   constexpr bn::string_view adventure_scene_id = "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21";
   constexpr bn::string_view adventure_scene_name = "Adventure";
-  BN_DATA_EWRAM neo::types::scene scene_adventure = {
+  constexpr neo::types::scene scene_adventure = {
     adventure_scene_id,
     adventure_scene_name,
     neo::types::scene_type::ADVENTURE,
@@ -2229,7 +2229,7 @@ namespace neo::scenes
   
   constexpr bn::string_view side_scroller_scene_id = "e6b9f8a1-4c58-4799-8a40-16eda41dda41";
   constexpr bn::string_view side_scroller_scene_name = "Side Scroller";
-  BN_DATA_EWRAM neo::types::scene scene_side_scroller = {
+  constexpr neo::types::scene scene_side_scroller = {
     side_scroller_scene_id,
     side_scroller_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
@@ -2284,7 +2284,7 @@ namespace neo::scenes
   
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
-  BN_DATA_EWRAM neo::types::scene scene_default = {
+  constexpr neo::types::scene scene_default = {
     default_scene_id,
     default_scene_name,
     neo::types::scene_type::LOGOS,
@@ -2305,7 +2305,7 @@ namespace neo::scenes
     &default_jump_height_value
   };
 
-  neo::types::scene get_scene(bn::string_view name)
+  const neo::types::scene& get_scene(bn::string_view name)
   {
     if (name == "") return scene_default;
     if (name == "Scene 0" || name == "d2a023cc-364d-4caf-9638-78937f593e4d") return scene_scene_0;

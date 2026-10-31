@@ -102,7 +102,7 @@ namespace neo
   }
 
   void game::run () {
-    auto scene = neo::scenes::get_scene(current_scene);
+    const neo::types::scene& scene = neo::scenes::get_scene(current_scene);
     active_scene = &scene;
 
     BN_LOG("Loading scene: ", active_scene->name);

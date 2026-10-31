@@ -547,7 +547,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug this.name) "_jump_height") value=(valuedef this.jumpHeight 36)}}
   constexpr bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
   constexpr bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
-  BN_DATA_EWRAM neo::types::scene scene_{{slug this.name}} = {
+  constexpr neo::types::scene scene_{{slug this.name}} = {
     {{slug this.name}}_scene_id,
     {{slug this.name}}_scene_name,
     {{#if (eq this.sceneType 'side-scroller')}}
@@ -621,7 +621,7 @@ namespace neo::scenes
   {{>valuePartial prefix="default_jump_height" value=36}}
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
-  BN_DATA_EWRAM neo::types::scene scene_default = {
+  constexpr neo::types::scene scene_default = {
     default_scene_id,
     default_scene_name,
     neo::types::scene_type::LOGOS,
@@ -642,7 +642,7 @@ namespace neo::scenes
     &default_jump_height_value
   };
 
-  neo::types::scene get_scene(bn::string_view name)
+  const neo::types::scene& get_scene(bn::string_view name)
   {
     if (name == "") return scene_default;
     {{#each scenes}}
