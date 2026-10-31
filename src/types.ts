@@ -160,6 +160,13 @@ export interface GameMap {
   sensors?: GameSensor[];
 }
 
+export interface CollisionRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface GamePlayer {
   type: 'player';
   x: number;
@@ -173,6 +180,7 @@ export interface GamePlayer {
   // Adventure scenes only
   // Internals
   _spriteHasAnimations?: boolean;
+  _collisionRect?: CollisionRect;
 }
 
 export type GameSceneType =
@@ -241,6 +249,7 @@ export interface GameActor {
   };
   // Internals
   _spriteHasAnimations?: boolean;
+  _collisionRect?: CollisionRect;
   id: string;
 }
 
@@ -260,6 +269,7 @@ export interface GameSprite {
     collide?: SceneEvent[];
   };
   // Internals
+  _collisionRect?: CollisionRect;
   id: string;
 }
 
@@ -386,6 +396,7 @@ export interface GameSpriteFile {
   width?: number;
   height?: number;
   transparentColor?: string;
+  collisionRect?: CollisionRect;
   format?: string;
   animations?: SpriteAnimation[];
   // Internals

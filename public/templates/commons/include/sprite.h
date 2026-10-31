@@ -24,6 +24,11 @@ namespace neo
       void init();
       bool collides(int tile_x, int tile_y);
 
+      int box_x() { return definition->collision_x; }
+      int box_y() { return definition->collision_y; }
+      int box_width() { return definition->collision_width; }
+      int box_height() { return definition->collision_height; }
+
       // Executes this sprite's collide events (fired when the player,
       // being in a different collision group, touches this sprite).
       void trigger_collide();

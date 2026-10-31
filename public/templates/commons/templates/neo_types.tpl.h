@@ -1253,6 +1253,10 @@ namespace neo::types
     bn::sprite_item sprite;
     bool disable_direction_on_interact;
     int collision_group;
+    int collision_x;
+    int collision_y;
+    int collision_width;
+    int collision_height;
     int init_events_count;
     event* const* init_events;
     int interact_events_count;
@@ -1276,6 +1280,10 @@ namespace neo::types
     const event_value* z;
     bn::sprite_item sprite;
     int collision_group;
+    int collision_x;
+    int collision_y;
+    int collision_width;
+    int collision_height;
     int init_events_count;
     event* const* init_events;
     int interact_events_count;

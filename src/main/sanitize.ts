@@ -6,6 +6,7 @@ import { imageSizeFromFile } from 'image-size/fromFile';
 import type {
   AppPayload,
   CharacterDirection,
+  CollisionRect,
   GameActor,
   GameBackgroundFile,
   GameFontFile,
@@ -107,6 +108,25 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
   }
 
   return event;
+};
+
+const sanitizeCollisionRect = (
+  rect: CollisionRect | undefined,
+  fallback: CollisionRect,
+): CollisionRect => {
+  const width = Math.round(Number(rect?.width));
+  const height = Math.round(Number(rect?.height));
+
+  if (!rect || !(width >= 1) || !(height >= 1)) {
+    return fallback;
+  }
+
+  return {
+    x: Math.round(Number(rect.x) || 0),
+    y: Math.round(Number(rect.y) || 0),
+    width,
+    height,
+  };
 };
 
 export const sanitizeActor = async (actor: GameActor): Promise<GameActor> => {
@@ -515,6 +535,9 @@ export const sanitizeSprite = async (
 
   sprite.width = Number(sprite.width ?? 1);
   sprite.height = Number(sprite.height ?? 1);
+  sprite.collisionRect = sanitizeCollisionRect(sprite.collisionRect, {
+    x: 0, y: 0, width: sprite.width, height: sprite.height,
+  });
   sprite.animations = await Promise
     .all((sprite.animations || []).map(animation => sanitizeAnimation(animation)));
 

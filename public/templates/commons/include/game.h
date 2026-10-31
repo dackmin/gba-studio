@@ -110,10 +110,12 @@ namespace neo
       // Same idea as neo::utils::wait(), but goes through update_frame().
       void wait(int milliseconds);
       bool has_collision(int tile_x, int tile_y);
+      bool has_collision_rect(int left, int top, int right, int bottom);
       neo::actor* get_actor_by_id(bn::string_view id);
       neo::actor* get_actor_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sprite* get_sprite_at(int tile_x, int tile_y, neo::types::direction direction);
       neo::sensor* get_sensor_at(int tile_x, int tile_y);
+      neo::sensor* get_sensor_at_rect(int left, int top, int width, int height);
       void remove_projectile(neo::projectile* projectile);
   };
 }

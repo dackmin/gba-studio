@@ -77,6 +77,13 @@ export async function prepareData (build: Build) {
       if (sprite?._animations?.length) {
         actor._spriteHasAnimations = true;
       }
+
+      actor._collisionRect = sprite?.collisionRect;
+    }
+
+    for (const sceneSprite of scene.sprites || []) {
+      sceneSprite._collisionRect = findSprite(
+        build.data?.sprites, sceneSprite.sprite)?.collisionRect;
     }
 
     if (scene.player) {
@@ -85,6 +92,8 @@ export async function prepareData (build: Build) {
       if (sprite?._animations?.length) {
         scene.player._spriteHasAnimations = true;
       }
+
+      scene.player._collisionRect = sprite?.collisionRect;
     }
   }
 

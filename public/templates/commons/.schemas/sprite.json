@@ -118,6 +118,27 @@
         }
       }
     },
+    "CollisionRect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "minimum": 1,
+          "type": "number"
+        },
+        "height": {
+          "minimum": 1,
+          "type": "number"
+        }
+      }
+    },
     "Sprite": {
       "type": "object",
       "required": ["type", "width", "height", "name", "format", "path"],
@@ -138,6 +159,9 @@
         },
         "height": {
           "type": "number"
+        },
+        "collisionRect": {
+          "$ref": "#/definitions/CollisionRect"
         },
         "name": {
           "type": "string"

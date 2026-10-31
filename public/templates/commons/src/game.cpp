@@ -706,35 +706,53 @@ namespace neo
     }
   }
 
+  // Solidity depends on the collision group and the scene type:
+  // - top-down, point-and-click & adventure: group 0 (the default) is
+  //   solid like it always was;
+  //   same-group actors are pass-through (e.g. teammates)
+  // - side-scroller: group 0 is pass-through, groups 1-4 are solid
+  //   when different from the player's (opt-in obstacles/enemies)
+  static bool blocks_player(neo::game* game, neo::actor* actor_)
+  {
+    bool top_down = game->active_scene != nullptr && (
+      game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
+      game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
+      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE
+    );
+    int player_group = game->player != nullptr
+      ? game->player->definition->collision_group : 1;
+    int group = actor_->definition->collision_group;
+
+    return top_down
+      ? group == 0 || (group > 0 && group != player_group)
+      : group > 0 && group != player_group;
+  }
+
   bool game::has_collision(int tile_x, int tile_y)
   {
-    // Solidity depends on the collision group and the scene type:
-    // - top-down, point-and-click & adventure: group 0 (the default) is
-    //   solid like it always was;
-    //   same-group actors are pass-through (e.g. teammates)
-    // - side-scroller: group 0 is pass-through, groups 1-4 are solid
-    //   when different from the player's (opt-in obstacles/enemies)
-    bool top_down = active_scene != nullptr && (
-      active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
-      active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
-      active_scene->scene_type == neo::types::scene_type::ADVENTURE
-    );
-    int player_group = player != nullptr
-      ? player->definition->collision_group : 1;
-
     for (int i = 0; i < actors_count; ++i)
     {
       neo::actor* actor_ = actors[i];
-      int group = actor_->definition->collision_group;
 
-      // Top-down: solid by default (group 0), unless the actor
-      // explicitly joins the player's group (pass-through teammates).
-      // Side-scroller: groups are opt-in, group 0 is pass-through.
-      bool solid = top_down
-        ? group == 0 || (group > 0 && group != player_group)
-        : group > 0 && group != player_group;
+      if (blocks_player(this, actor_) && actor_->collides(tile_x, tile_y))
+      {
+        return true;
+      }
+    }
 
-      if (solid && actor_->collides(tile_x, tile_y))
+    return false;
+  }
+
+  bool game::has_collision_rect(int left, int top, int right, int bottom)
+  {
+    for (int i = 0; i < actors_count; ++i)
+    {
+      neo::actor* actor_ = actors[i];
+
+      if (
+        blocks_player(this, actor_) &&
+        actor_->collides_rect(left, top, right, bottom)
+      )
       {
         return true;
       }
@@ -832,6 +850,31 @@ namespace neo
     for (int i = 0; i < sensors_count; ++i)
     {
       if (sensors[i]->is_inside(tile_x, tile_y))
+      {
+        return sensors[i];
+      }
+    }
+
+    return nullptr;
+  }
+
+  neo::sensor* game::get_sensor_at_rect(int left, int top, int width, int height)
+  {
+    const neo::types::map* map_data = active_scene->map_data;
+    int grid_size = map_data->grid_size->as_int(variables);
+
+    for (int i = 0; i < sensors_count; ++i)
+    {
+      const neo::types::sensor* definition = sensors[i]->definition;
+      int sensor_left = map_data->to_pixel_x(variables, definition->x);
+      int sensor_top = map_data->to_pixel_y(variables, definition->y);
+
+      if (
+        left < sensor_left + definition->width * grid_size &&
+        left + width > sensor_left &&
+        top < sensor_top + definition->height * grid_size &&
+        top + height > sensor_top
+      )
       {
         return sensors[i];
       }

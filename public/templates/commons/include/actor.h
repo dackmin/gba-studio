@@ -10,6 +10,7 @@
 namespace neo
 {
   class game;
+  class sensor;
 
   class actor
   {
@@ -43,6 +44,7 @@ namespace neo
       void set_z_order(int z);
       void move_to(int tile_x, int tile_y, int speed, bn::string_view direction_priority, bn::string_view animation, bool backwards = false);
       bool collides(int tile_x, int tile_y);
+      bool collides_rect(int left, int top, int right, int bottom);
       void disable();
       void enable();
 
@@ -70,6 +72,12 @@ namespace neo
       neo::types::direction opposite_direction();
       int width();
       int height();
+
+      // Collision box relative to the sprite's top-left corner, in pixels
+      int box_x() { return definition->collision_x; }
+      int box_y() { return definition->collision_y; }
+      int box_width() { return definition->collision_width; }
+      int box_height() { return definition->collision_height; }
 
       neo::game* game;
       const neo::types::actor* definition;
@@ -120,7 +128,8 @@ namespace neo
       void walk_while_held(neo::types::direction facing, bool (*held)());
 
       bool point_and_click_blocked_at(bn::fixed_point pixel_position);
-      void update_sensors(int tile_x, int tile_y);
+      void update_sensors();
+      neo::sensor* sensor_at_box();
       bool side_scroller_blocked_at(
         int pixel_x, int pixel_y, int foot_clearance = 0, int side_inset = 0);
       int slope_surface_row(int center_x, int tile_y, int tolerance);

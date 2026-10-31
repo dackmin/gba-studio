@@ -1,4 +1,4 @@
-import { type ChangeEvent, type KeyboardEvent, useCallback } from 'react';
+import { type ChangeEvent, type KeyboardEvent, useCallback, useEffect } from 'react';
 import { classNames, set } from '@junipero/react';
 import {
   Button,
@@ -16,13 +16,23 @@ import { useApp, useSprite } from '../../services/hooks';
 import AnimationsListItem from './AnimationsListItem';
 
 const SpriteForm = () => {
-  const { onCanvasChange, projectPath, ...appPayload } = useApp();
+  const { onCanvasChange, projectPath, eventEmitter, ...appPayload } = useApp();
   const {
     selectedSprite,
     onAnimationsChange,
     onAddAnimation,
     onRemoveAnimation,
   } = useSprite();
+
+  const showCollisionRect = useCallback(() => {
+    eventEmitter?.emit('images:collision-rect:show');
+  }, [eventEmitter]);
+
+  const hideCollisionRect = useCallback(() => {
+    eventEmitter?.emit('images:collision-rect:hide');
+  }, [eventEmitter]);
+
+  useEffect(() => hideCollisionRect, [hideCollisionRect]);
 
   const onAnimationChange = useCallback((animation: SpriteAnimation) => {
     if (!selectedSprite) {
@@ -172,6 +182,61 @@ const SpriteForm = () => {
                     px
                   </TextField.Slot>
                 </TextField.Root>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text className="block text-slate" size="1">Collision rectangle</Text>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">X</Text>
+                  <TextField.Root
+                    type="number"
+                    value={selectedSprite.collisionRect?.x ?? 0}
+                    onChange={onTextChange.bind(null, 'collisionRect.x')}
+                    onFocus={showCollisionRect}
+                    onBlur={hideCollisionRect}
+                  >
+                    <TextField.Slot side="right">px</TextField.Slot>
+                  </TextField.Root>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Y</Text>
+                  <TextField.Root
+                    type="number"
+                    value={selectedSprite.collisionRect?.y ?? 0}
+                    onChange={onTextChange.bind(null, 'collisionRect.y')}
+                    onFocus={showCollisionRect}
+                    onBlur={hideCollisionRect}
+                  >
+                    <TextField.Slot side="right">px</TextField.Slot>
+                  </TextField.Root>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Width</Text>
+                  <TextField.Root
+                    type="number"
+                    min={1}
+                    value={selectedSprite.collisionRect?.width ?? 0}
+                    onChange={onTextChange.bind(null, 'collisionRect.width')}
+                    onFocus={showCollisionRect}
+                    onBlur={hideCollisionRect}
+                  >
+                    <TextField.Slot side="right">px</TextField.Slot>
+                  </TextField.Root>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Height</Text>
+                  <TextField.Root
+                    type="number"
+                    min={1}
+                    value={selectedSprite.collisionRect?.height ?? 0}
+                    onChange={onTextChange.bind(null, 'collisionRect.height')}
+                    onFocus={showCollisionRect}
+                    onBlur={hideCollisionRect}
+                  >
+                    <TextField.Slot side="right">px</TextField.Slot>
+                  </TextField.Root>
+                </div>
               </div>
             </div>
           </div>

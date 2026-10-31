@@ -402,6 +402,10 @@ namespace neo::scenes
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
     {{valuedef this.disableDirectionOnInteract false}},
     {{valuedef this.collisionGroup 0}},
+    {{valuedef this._collisionRect.x 0}},
+    {{valuedef this._collisionRect.y 0}},
+    {{valuedef this._collisionRect.width 16}},
+    {{valuedef this._collisionRect.height 16}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -496,6 +500,10 @@ namespace neo::scenes
     &{{slug ../this.name}}_sprite_{{@index}}_z_value,
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}},
     {{valuedef this.collisionGroup 0}},
+    {{valuedef this._collisionRect.x 0}},
+    {{valuedef this._collisionRect.y 0}},
+    {{valuedef this._collisionRect.width 16}},
+    {{valuedef this._collisionRect.height 16}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -547,6 +555,10 @@ namespace neo::scenes
     bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.player.sprite "sprite_default")}},
     false,
     {{valuedef this.player.collisionGroup 0}},
+    {{valuedef this.player._collisionRect.x 0}},
+    {{valuedef this.player._collisionRect.y 0}},
+    {{valuedef this.player._collisionRect.width 16}},
+    {{valuedef this.player._collisionRect.height 16}},
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,

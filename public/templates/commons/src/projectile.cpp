@@ -400,10 +400,12 @@ namespace neo
     int left = sprite.x().round_integer() - width / 2;
     int top = sprite.y().round_integer() - height / 2;
 
-    int other_width = other_sprite.dimensions().width();
-    int other_height = other_sprite.dimensions().height();
-    int other_left = other_sprite.x().round_integer() - other_width / 2;
-    int other_top = other_sprite.y().round_integer() - other_height / 2;
+    int other_width = other->box_width();
+    int other_height = other->box_height();
+    int other_left = other_sprite.x().round_integer() -
+      other_sprite.dimensions().width() / 2 + other->box_x();
+    int other_top = other_sprite.y().round_integer() -
+      other_sprite.dimensions().height() / 2 + other->box_y();
 
     bool overlaps = left < other_left + other_width &&
       left + width > other_left &&

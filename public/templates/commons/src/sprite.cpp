@@ -83,8 +83,17 @@ namespace neo
       return false;
     }
 
-    return (tile_x == position.x().right_shift_integer())
-      && (tile_y == position.y().right_shift_integer());
+    const neo::types::map* map_data = game->active_scene->map_data;
+    int grid_size = map_data->grid_size->as_int(game->variables);
+    int tile_left = map_data->to_pixel_x(game->variables, tile_x);
+    int tile_top = map_data->to_pixel_y(game->variables, tile_y);
+    int left = map_data->to_pixel_x(
+      game->variables, position.x().right_shift_integer()) + box_x();
+    int top = map_data->to_pixel_y(
+      game->variables, position.y().right_shift_integer()) + box_y();
+
+    return left < tile_left + grid_size && left + box_width() > tile_left &&
+      top < tile_top + grid_size && top + box_height() > tile_top;
   }
 
   void sprite::trigger_collide()

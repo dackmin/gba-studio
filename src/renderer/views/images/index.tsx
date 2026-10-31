@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   type InfiniteCanvasRef,
   InfiniteCanvas,
@@ -13,8 +13,11 @@ import { hexToRgb } from '../../services/helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
 import Sprite from '../../components/Sprite';
 import Background from '../../components/Background';
+import CollisionRectOverlay from '../../components/CollisionRectOverlay';
 import PixelText, { getTextWidth } from '../../components/PixelText';
 import Playback from './Playback';
+
+const SPRITE_SCALE = 4;
 
 const SAMPLE_TEXTS = [
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -38,6 +41,16 @@ const Images = () => {
     selectBackground,
     selectFont,
   } = useSprite();
+
+  const [collisionRectVisible, setCollisionRectVisible] = useState(false);
+
+  useEventListener('images:collision-rect:show', () => {
+    setCollisionRectVisible(true);
+  }, [], { target: eventEmitter });
+
+  useEventListener('images:collision-rect:hide', () => {
+    setCollisionRectVisible(false);
+  }, [], { target: eventEmitter });
 
   useEventListener('images:center', () => {
     if (!infiniteCanvasRef.current) {
@@ -91,14 +104,22 @@ const Images = () => {
       >
         <div ref={containerRef}>
           { selectedSprite ? (
-            <Sprite
-              scale={4}
-              sprite={selectedSprite}
-              frames={frames}
-              className="border-1 border-green-500"
-              animated={true}
-              transparencyColor={selectedSprite?.transparentColor}
-            />
+            <div className="relative">
+              <Sprite
+                scale={SPRITE_SCALE}
+                sprite={selectedSprite}
+                frames={frames}
+                className="border-1 border-green-500"
+                animated={true}
+                transparencyColor={selectedSprite?.transparentColor}
+              />
+              <div className="absolute left-px top-px">
+                <CollisionRectOverlay
+                  rect={collisionRectVisible ? selectedSprite.collisionRect : undefined}
+                  scale={SPRITE_SCALE}
+                />
+              </div>
+            </div>
           ) : selectedBackground ? (
             <Background
               background={selectedBackground}
