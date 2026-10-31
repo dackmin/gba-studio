@@ -12,7 +12,7 @@ import {
   TextField,
   Tooltip,
 } from '@radix-ui/themes';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { CheckCircledIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
@@ -23,6 +23,7 @@ import {
   getGraphicName,
   getImageSize,
   getMapSize,
+  getStartingSceneId,
   getStaticGridSize,
   resizeCollisions,
 } from '../../../helpers';
@@ -50,7 +51,21 @@ const SceneForm = ({
   scene,
   onChange,
 }: SceneFormProps) => {
-  const { backgrounds, huds, projectPath, onCanvasChange, ...appPayload } = useApp();
+  const {
+    backgrounds, huds, projectPath, onCanvasChange, onProjectChange,
+    ...appPayload
+  } = useApp();
+  const isStartingScene = getStartingSceneId(
+    appPayload.project, appPayload.scenes) === scene.id;
+
+  const onSetStartingScene = useCallback(() => {
+    if (!appPayload.project) {
+      return;
+    }
+
+    onProjectChange?.({ ...appPayload.project, startingScene: scene.id });
+  }, [appPayload.project, scene.id, onProjectChange]);
+
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -245,28 +260,49 @@ const SceneForm = ({
             { scene.name }
           </Heading>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
-          <div>
-            <Text size="1" className="text-slate">File</Text>
-            <div className="flex items-center gap-2">
-              <Text className="flex-auto truncate">
-                { scene._file ? `content/${scene._file}` : 'Not saved' }
-              </Text>
-              <Button
-                type="button"
-                size="1"
-                className="flex-none"
-                onClick={onRenameFile}
-              >
-                Rename
-              </Button>
-              <Button
-                type="button"
-                size="1"
-                className="flex-none"
-                onClick={openParentFolder}
-              >
-                Open
-              </Button>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Text size="1" className="text-slate">File</Text>
+              <div className="flex items-center gap-2">
+                <Text className="flex-auto truncate">
+                  { scene._file ? `content/${scene._file}` : 'Not saved' }
+                </Text>
+                <Button
+                  type="button"
+                  size="1"
+                  className="flex-none"
+                  onClick={onRenameFile}
+                >
+                  Rename
+                </Button>
+                <Button
+                  type="button"
+                  size="1"
+                  className="flex-none"
+                  onClick={openParentFolder}
+                >
+                  Open
+                </Button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text size="1" className="text-slate">Starting Scene</Text>
+              <div className="flex items-center gap-2">
+                { isStartingScene ? (
+                  <div className="flex items-center gap-1">
+                    <CheckCircledIcon color="green" />
+                    <Text size="2">This Scene</Text>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    size="1"
+                    onClick={onSetStartingScene}
+                  >
+                    Set as starting scene
+                  </Button>
+                ) }
+              </div>
             </div>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>

@@ -7,6 +7,7 @@ import type {
   GameBackgroundFile,
   GameFontFile,
   GameMusicFile,
+  GameProject,
   GameScene,
   GameSensor,
   GameSoundFile,
@@ -139,6 +140,13 @@ export const findScene = (
   id?: string,
 ): GameScene | undefined => {
   return scenes.find(s => s.id === id || s.name === id || s._file === id);
+};
+
+export const getStartingSceneId = (
+  project?: GameProject,
+  scenes: GameScene[] = [],
+): string | undefined => {
+  return scenes.find(s => s.id === project?.startingScene)?.id ?? scenes[0]?.id;
 };
 
 export const findSprite = (

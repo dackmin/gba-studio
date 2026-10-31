@@ -15,7 +15,7 @@ import {
   useInfiniteCanvas,
   useEventListener,
 } from '@junipero/react';
-import { Card, ContextMenu } from '@radix-ui/themes';
+import { Badge, Card, ContextMenu, Text, Tooltip } from '@radix-ui/themes';
 
 import type {
   GameActor,
@@ -34,6 +34,7 @@ import {
   findBackground,
   getAssetUrl,
   getImageSize,
+  getStartingSceneId,
   loadImage,
   pixelToTile,
   tileToPixel,
@@ -105,7 +106,7 @@ const Scene = ({
   const lastTileRef = useRef<[number, number] | null>(null);
   const { zoom, offsetX, offsetY } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
-  const { eventEmitter, project, backgrounds } = useApp();
+  const { eventEmitter, project, scenes, backgrounds } = useApp();
   const { selectedScene, selectedItem, tool, collisionBrush } = useCanvas();
   const { tileX, tileY, setTilePosition } = useEditor();
   const [state, dispatch] = useReducer(mockState<SceneState>, {
@@ -552,6 +553,10 @@ const Scene = ({
     dispatch({ isMouseDown: false });
   }, [state.isMouseDown]);
 
+  const isStartingScene = useMemo(() => (
+    getStartingSceneId(project, scenes) === scene.id
+  ), [project, scenes, scene.id]);
+
   return (
     <Moveable
       { ...rest }
@@ -574,9 +579,27 @@ const Scene = ({
           { 'z-100' : selectedScene === scene },
         )}
       >
-        <span className="absolute block w-full left-0 bottom-full text-center">
-          { scene.name }
-        </span>
+        <div
+          className={classNames(
+            'absolute flex items-center justify-center gap-2 w-full left-0',
+            'bottom-[calc(100%+0.5rem)]',
+          )}
+        >
+          { isStartingScene && (
+            <Tooltip content="Starting Scene">
+              <Badge
+                color="green"
+                radius="full"
+                variant="solid"
+                size="1"
+                className="text-xs! relative -top-[1px]"
+              >
+                S
+              </Badge>
+            </Tooltip>
+          ) }
+          <Text>{ scene.name }</Text>
+        </div>
         <ContextMenu.Root>
           <ContextMenu.Trigger disabled={tool === 'collisions'} className="cursor-default!">
             <Card
