@@ -72,8 +72,8 @@ const Sprite = ({
       return;
     }
 
-    const image = sprite?.path?.startsWith('data:')
-      ? await loadImage(sprite.path)
+    const image = /^(data|resources):/.test(sprite?.path ?? '')
+      ? await loadImage(sprite!.path!)
       : await loadImage(!sprite?._file
         ? `resources://public/templates/commons/graphics/sprite_default.bmp`
         : getAssetUrl(sprite));

@@ -51,7 +51,7 @@ const SpritesListField = ({
                   keepAspectRatio
                   transparencyColor={selected?.transparentColor}
                 />
-                <Text>{ selected?.name ?? defaultGraphic }</Text>
+                <Text>{ selected?.name ?? 'Default sprite' }</Text>
               </>
             ) }
           </div>
