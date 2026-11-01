@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.0](https://github.com/dackmin/gba-studio/compare/v0.8.0...v0.9.0) (2026-11-01)
+
+### Features
+
+* add show-reaction events ([5178436](https://github.com/dackmin/gba-studio/commit/51784364e1574e8531ec7fe556f97989de03fdb0))
+* allow to put text in scenes too ([d07885a](https://github.com/dackmin/gba-studio/commit/d07885af56a6843e1a91c1022cc2d6348c4d1f52))
+
+### Bug Fixes
+
+* correctly display default sprites ([d30ff7e](https://github.com/dackmin/gba-studio/commit/d30ff7ed751d6276a294f8fccb4a0c29384fb555))
+* hide dialog portrait into advanced settings ([7971770](https://github.com/dackmin/gba-studio/commit/797177039511578ff83e4baf9884c123db6937a8))
+* right sidebar overflowing ([da51433](https://github.com/dackmin/gba-studio/commit/da51433695da6250c2ada257e84ac30d92eb1491))
+
 ## [0.8.0](https://github.com/dackmin/gba-studio/compare/v0.7.0...v0.8.0) (2026-10-31)
 
 ### Features
