@@ -32,7 +32,7 @@ const CollisionGroupField = ({
     <SegmentedControl.Root
       value={'' + current}
       className={classNames(
-        '[&_span]:!px-0',
+        'segmented-fit [&_span]:!px-0',
         className,
       )}
     >

@@ -12,6 +12,10 @@
 /* Radix */
 @import '@radix-ui/themes/styles.css';
 
+.rt-ScrollAreaViewport[style*='overflow: hidden scroll'] > div {
+  width: 100%;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
@@ -45,6 +49,29 @@ body {
 @utility pixelated {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+@utility segmented-fit {
+  min-width: 0 !important;
+  max-width: 100%;
+  grid-auto-columns: minmax(0, 1fr) !important;
+
+  & .rt-SegmentedControlItem {
+    min-width: 0;
+  }
+
+  & .rt-SegmentedControlItemLabel {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  & .rt-SegmentedControlItemLabelActive,
+  & .rt-SegmentedControlItemLabelInactive {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 @utility editable {
