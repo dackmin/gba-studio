@@ -12,6 +12,7 @@
 #include "game.h"
 #include "camera.h"
 #include "commons.h"
+#include "reaction.h"
 
 namespace neo
 {
@@ -23,7 +24,8 @@ namespace neo
       definition(actor_definition_),
       sprite(definition->sprite.create_sprite(0, 0)),
       position(0, 0),
-      is_player(is_player_)
+      is_player(is_player_),
+      reaction(game_)
   {
     sprite.set_camera(game->camera);
     sprite.set_visible(true);
@@ -234,6 +236,7 @@ namespace neo
   void actor::disable()
   {
     end_attack();
+    reaction.end();
     end_action(neo::types::animation_state::FIRING);
     sprite.set_visible(false);
     sprite.remove_camera();
@@ -962,6 +965,8 @@ namespace neo
 
   void actor::update_action()
   {
+    reaction.update(sprite);
+
     if (!is_action(anim_state))
     {
       return;

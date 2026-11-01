@@ -1129,6 +1129,43 @@ namespace neo::events
     }
 
     /**
+     * @name show-actor-reaction
+     * @param actor string — Actor name or id
+     * @param sprite bn::sprite_item — Sprite item to display
+     */
+    else if (e->type == neo::types::event_type::SHOW_ACTOR_REACTION)
+    {
+      neo::types::show_reaction_event* reaction_evt =
+        const_cast<neo::types::show_reaction_event*>(
+          static_cast<const neo::types::show_reaction_event*>(e));
+
+      reaction_evt->init(game);
+
+      while (!reaction_evt->update() && !game->scene_changed)
+      {
+        game->update_frame();
+      }
+    }
+
+    /**
+     * @name show-player-reaction
+     * @param sprite bn::sprite_item — Sprite item to display
+     */
+    else if (e->type == neo::types::event_type::SHOW_PLAYER_REACTION)
+    {
+      neo::types::show_reaction_event* reaction_evt =
+        const_cast<neo::types::show_reaction_event*>(
+          static_cast<const neo::types::show_reaction_event*>(e));
+
+      reaction_evt->init(game);
+
+      while (!reaction_evt->update() && !game->scene_changed)
+      {
+        game->update_frame();
+      }
+    }
+
+    /**
      * Unknown events are ignored
      */
     else
@@ -1325,6 +1362,21 @@ void neo::types::parallel_event::exec(neo::game* game, bool is_loop)
         {
           pending.push_back(wave_evt);
         }
+      }
+    }
+    else if (
+      sub_evt->type == neo::types::event_type::SHOW_ACTOR_REACTION ||
+      sub_evt->type == neo::types::event_type::SHOW_PLAYER_REACTION
+    )
+    {
+      neo::types::show_reaction_event* reaction_evt =
+        static_cast<neo::types::show_reaction_event*>(sub_evt_rw);
+
+      reaction_evt->init(game);
+
+      if (!reaction_evt->update())
+      {
+        pending.push_back(reaction_evt);
       }
     }
     else

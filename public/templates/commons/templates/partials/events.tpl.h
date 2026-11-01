@@ -570,6 +570,46 @@ constexpr neo::types::melee_attack_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_actor,
   &{{../prefix}}_{{@index}}_duration_value
 );
+{{else if (eq this.type "show-actor-reaction")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{#if (or (isset this.sprite) (isset this.animation))}}{{valuedef this.animation ""}}{{else}}default{{/if}}";
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 1000)}}
+BN_DATA_EWRAM neo::types::show_actor_reaction_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::SHOW_ACTOR_REACTION,
+  {{../prefix}}_{{@index}}_actor,
+  bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}},
+  {{../prefix}}_{{@index}}_animation,
+  {{#if (hasSpriteAnimations @root/sprites (valuedef this.sprite "bubble_default"))}}
+  {{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}}_animations_count,
+  {{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}}_animations,
+  {{else if (or (isset this.sprite) (isset this.animation))}}
+  0,
+  nullptr,
+  {{else}}
+  bubble_default_animations_count,
+  bubble_default_animations,
+  {{/if}}
+  &{{../prefix}}_{{@index}}_duration_value
+);
+{{else if (eq this.type "show-player-reaction")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{#if (or (isset this.sprite) (isset this.animation))}}{{valuedef this.animation ""}}{{else}}default{{/if}}";
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 1000)}}
+BN_DATA_EWRAM neo::types::show_player_reaction_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::SHOW_PLAYER_REACTION,
+  bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}},
+  {{../prefix}}_{{@index}}_animation,
+  {{#if (hasSpriteAnimations @root/sprites (valuedef this.sprite "bubble_default"))}}
+  {{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}}_animations_count,
+  {{getSpriteName @root/sprites (valuedef this.sprite "bubble_default")}}_animations,
+  {{else if (or (isset this.sprite) (isset this.animation))}}
+  0,
+  nullptr,
+  {{else}}
+  bubble_default_animations_count,
+  bubble_default_animations,
+  {{/if}}
+  &{{../prefix}}_{{@index}}_duration_value
+);
 {{else}}
 constexpr neo::types::event {{../prefix}}_{{@index}}(neo::types::event_type::UNKNOWN);
 {{/if}}

@@ -7,6 +7,8 @@
 
 #include <neo_types.h>
 
+#include "reaction.h"
+
 namespace neo
 {
   class game;
@@ -86,6 +88,7 @@ namespace neo
       neo::types::direction direction;
       neo::types::animation_state anim_state = neo::types::animation_state::IDLE;
       bool is_player;
+      neo::reaction reaction;
       // Wave-effect x offset currently baked into sprite's rendered
       // position (see game::update_wave_effect()), so it can be removed
       // without drift regardless of how position is set.

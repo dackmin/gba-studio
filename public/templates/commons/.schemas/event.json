@@ -1097,6 +1097,50 @@
       ],
       "type": "object"
     },
+    "ShowActorReactionEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "sprite": {
+          "type": "string"
+        },
+        "animation": {
+          "type": "string"
+        },
+        "duration": { "$ref": "#/definitions/EventValue" },
+        "type": {
+          "const": "show-actor-reaction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
+    "ShowPlayerReactionEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "animation": {
+          "type": "string"
+        },
+        "duration": { "$ref": "#/definitions/EventValue" },
+        "type": {
+          "const": "show-player-reaction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -1143,7 +1187,9 @@
         { "$ref": "#/definitions/WaveEffectEvent" },
         { "$ref": "#/definitions/ParallelEventsEvent" },
         { "$ref": "#/definitions/ShootProjectileEvent" },
-        { "$ref": "#/definitions/MeleeAttackEvent" }
+        { "$ref": "#/definitions/MeleeAttackEvent" },
+        { "$ref": "#/definitions/ShowActorReactionEvent" },
+        { "$ref": "#/definitions/ShowPlayerReactionEvent" }
       ]
     }
   },

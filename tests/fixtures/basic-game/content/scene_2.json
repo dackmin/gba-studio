@@ -33,6 +33,18 @@
           "actor": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32",
           "sprite": "",
           "id": "b1c2d3e4-0006-4a52-9c9d-0f7d5b2b6a36"
+        },
+        {
+          "type": "show-player-reaction",
+          "sprite": "",
+          "duration": 500,
+          "id": "b1c2d3e4-0007-4a52-9c9d-0f7d5b2b6a37"
+        },
+        {
+          "type": "show-actor-reaction",
+          "actor": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32",
+          "sprite": "",
+          "id": "b1c2d3e4-0008-4a52-9c9d-0f7d5b2b6a38"
         }
       ]
     }

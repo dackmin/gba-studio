@@ -698,6 +698,21 @@ export interface ShowDialogEvent extends SceneEvent {
   background?: string;
 }
 
+export interface ShowActorReactionEvent extends SceneEvent {
+  type: 'show-actor-reaction';
+  actor: string;
+  sprite: string;
+  animation?: string;
+  duration?: EventValue;
+}
+
+export interface ShowPlayerReactionEvent extends SceneEvent {
+  type: 'show-player-reaction';
+  sprite: string;
+  animation?: string;
+  duration?: EventValue;
+}
+
 export interface DisableActorEvent extends SceneEvent {
   type: 'disable-actor';
   actor: string;

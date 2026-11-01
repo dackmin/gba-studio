@@ -58,6 +58,8 @@ import type {
   WaveEffectEvent,
   ShootProjectileEvent,
   MeleeAttackEvent,
+  ShowActorReactionEvent,
+  ShowPlayerReactionEvent,
 } from '../../../types';
 import { ALL_EVENT_TYPES, getEventDefinition } from '../../services/events';
 import { useApp, useDraggable, useLocalData } from '../../services/hooks';
@@ -92,6 +94,8 @@ import EventSetPaletteEffect from './EventSetPaletteEffect';
 import EventWaveEffect from './EventWaveEffect';
 import EventShootProjectile from './EventShootProjectile';
 import EventMeleeAttack from './EventMeleeAttack';
+import EventShowActorReaction from './EventShowActorReaction';
+import EventShowPlayerReaction from './EventShowPlayerReaction';
 
 export interface EventProps {
   event: SceneEvent;
@@ -572,6 +576,18 @@ const Event = ({
                 <Switch.Case value="melee-attack">
                   <EventMeleeAttack
                     event={event as MeleeAttackEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="show-actor-reaction">
+                  <EventShowActorReaction
+                    event={event as ShowActorReactionEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="show-player-reaction">
+                  <EventShowPlayerReaction
+                    event={event as ShowPlayerReactionEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

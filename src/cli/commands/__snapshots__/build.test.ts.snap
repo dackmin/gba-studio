@@ -19,6 +19,7 @@ exports[`cli/build > should build a basic project successfully 1`] = `
 #include <bn_regular_bg_items_map.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_cursor_default.h>
+#include <bn_sprite_items_bubble_default.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
@@ -51,6 +52,128 @@ namespace neo::scenes
 {
   constexpr bn::string_view STARTING_SCENE = "d2a023cc-364d-4caf-9638-78937f593e4d";
 
+
+  constexpr bn::string_view bubble_default_animation_frame_0_duration_name = "";
+  constexpr bn::string_view bubble_default_animation_frame_0_duration_string_value = "50";
+  constexpr neo::variables::value bubble_default_animation_frame_0_duration_raw_value(
+    bubble_default_animation_frame_0_duration_name,
+    50,
+    true,
+    bubble_default_animation_frame_0_duration_string_value,
+    50
+  );
+  constexpr bn::string_view bubble_default_animation_frame_0_duration_type = "value";
+  constexpr neo::types::event_value bubble_default_animation_frame_0_duration_value(
+    bubble_default_animation_frame_0_duration_type,
+    &bubble_default_animation_frame_0_duration_raw_value
+  );
+  
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_0 = {
+    0,
+    &bubble_default_animation_frame_0_duration_value,
+    false
+  };
+  constexpr bn::string_view bubble_default_animation_frame_1_duration_name = "";
+  constexpr bn::string_view bubble_default_animation_frame_1_duration_string_value = "50";
+  constexpr neo::variables::value bubble_default_animation_frame_1_duration_raw_value(
+    bubble_default_animation_frame_1_duration_name,
+    50,
+    true,
+    bubble_default_animation_frame_1_duration_string_value,
+    50
+  );
+  constexpr bn::string_view bubble_default_animation_frame_1_duration_type = "value";
+  constexpr neo::types::event_value bubble_default_animation_frame_1_duration_value(
+    bubble_default_animation_frame_1_duration_type,
+    &bubble_default_animation_frame_1_duration_raw_value
+  );
+  
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_1 = {
+    1,
+    &bubble_default_animation_frame_1_duration_value,
+    false
+  };
+  constexpr bn::string_view bubble_default_animation_frame_2_duration_name = "";
+  constexpr bn::string_view bubble_default_animation_frame_2_duration_string_value = "50";
+  constexpr neo::variables::value bubble_default_animation_frame_2_duration_raw_value(
+    bubble_default_animation_frame_2_duration_name,
+    50,
+    true,
+    bubble_default_animation_frame_2_duration_string_value,
+    50
+  );
+  constexpr bn::string_view bubble_default_animation_frame_2_duration_type = "value";
+  constexpr neo::types::event_value bubble_default_animation_frame_2_duration_value(
+    bubble_default_animation_frame_2_duration_type,
+    &bubble_default_animation_frame_2_duration_raw_value
+  );
+  
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_2 = {
+    2,
+    &bubble_default_animation_frame_2_duration_value,
+    false
+  };
+  constexpr bn::string_view bubble_default_animation_frame_3_duration_name = "";
+  constexpr bn::string_view bubble_default_animation_frame_3_duration_string_value = "50";
+  constexpr neo::variables::value bubble_default_animation_frame_3_duration_raw_value(
+    bubble_default_animation_frame_3_duration_name,
+    50,
+    true,
+    bubble_default_animation_frame_3_duration_string_value,
+    50
+  );
+  constexpr bn::string_view bubble_default_animation_frame_3_duration_type = "value";
+  constexpr neo::types::event_value bubble_default_animation_frame_3_duration_value(
+    bubble_default_animation_frame_3_duration_type,
+    &bubble_default_animation_frame_3_duration_raw_value
+  );
+  
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_3 = {
+    3,
+    &bubble_default_animation_frame_3_duration_value,
+    false
+  };
+  constexpr bn::string_view bubble_default_animation_frame_4_duration_name = "";
+  constexpr bn::string_view bubble_default_animation_frame_4_duration_string_value = "50";
+  constexpr neo::variables::value bubble_default_animation_frame_4_duration_raw_value(
+    bubble_default_animation_frame_4_duration_name,
+    50,
+    true,
+    bubble_default_animation_frame_4_duration_string_value,
+    50
+  );
+  constexpr bn::string_view bubble_default_animation_frame_4_duration_type = "value";
+  constexpr neo::types::event_value bubble_default_animation_frame_4_duration_value(
+    bubble_default_animation_frame_4_duration_type,
+    &bubble_default_animation_frame_4_duration_raw_value
+  );
+  
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_4 = {
+    4,
+    &bubble_default_animation_frame_4_duration_value,
+    false
+  };
+  constexpr const neo::types::sprite_animation_frame* bubble_default_animation_frames[] = {
+    &bubble_default_animation_frame_0,
+    &bubble_default_animation_frame_1,
+    &bubble_default_animation_frame_2,
+    &bubble_default_animation_frame_3,
+    &bubble_default_animation_frame_4
+  };
+  constexpr neo::types::sprite_animation bubble_default_animation(
+    "default",
+    "",
+    "fixed",
+    neo::types::direction::DOWN,
+    neo::types::animation_state::IDLE,
+    false,
+    5,
+    bubble_default_animation_frames
+  );
+  constexpr int bubble_default_animations_count = 1;
+  constexpr const neo::types::sprite_animation* bubble_default_animations[] = {
+    &bubble_default_animation
+  };
 
   //////////////////////////
   // HUD: HUD 1 //
@@ -1754,9 +1877,63 @@ namespace neo::scenes
     adventure_event_1_event_1_actor,
     &adventure_event_1_event_1_duration_value
   );
+  // Event 2: show-player-reaction
+  constexpr bn::string_view adventure_event_1_event_2_animation = "default";
+  constexpr bn::string_view adventure_event_1_event_2_duration_name = "";
+  constexpr bn::string_view adventure_event_1_event_2_duration_string_value = "500";
+  constexpr neo::variables::value adventure_event_1_event_2_duration_raw_value(
+    adventure_event_1_event_2_duration_name,
+    500,
+    true,
+    adventure_event_1_event_2_duration_string_value,
+    500
+  );
+  constexpr bn::string_view adventure_event_1_event_2_duration_type = "value";
+  constexpr neo::types::event_value adventure_event_1_event_2_duration_value(
+    adventure_event_1_event_2_duration_type,
+    &adventure_event_1_event_2_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::show_player_reaction_event adventure_event_1_event_2(
+    neo::types::event_type::SHOW_PLAYER_REACTION,
+    bn::sprite_items::bubble_default,
+    adventure_event_1_event_2_animation,
+    bubble_default_animations_count,
+    bubble_default_animations,
+      &adventure_event_1_event_2_duration_value
+  );
+  // Event 3: show-actor-reaction
+  constexpr bn::string_view adventure_event_1_event_3_actor = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
+  constexpr bn::string_view adventure_event_1_event_3_animation = "default";
+  constexpr bn::string_view adventure_event_1_event_3_duration_name = "";
+  constexpr bn::string_view adventure_event_1_event_3_duration_string_value = "1000";
+  constexpr neo::variables::value adventure_event_1_event_3_duration_raw_value(
+    adventure_event_1_event_3_duration_name,
+    1000,
+    true,
+    adventure_event_1_event_3_duration_string_value,
+    1000
+  );
+  constexpr bn::string_view adventure_event_1_event_3_duration_type = "value";
+  constexpr neo::types::event_value adventure_event_1_event_3_duration_value(
+    adventure_event_1_event_3_duration_type,
+    &adventure_event_1_event_3_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::show_actor_reaction_event adventure_event_1_event_3(
+    neo::types::event_type::SHOW_ACTOR_REACTION,
+    adventure_event_1_event_3_actor,
+    bn::sprite_items::bubble_default,
+    adventure_event_1_event_3_animation,
+    bubble_default_animations_count,
+    bubble_default_animations,
+      &adventure_event_1_event_3_duration_value
+  );
   constexpr const neo::types::event* adventure_event_1_events[] = {
     &adventure_event_1_event_0,
-    &adventure_event_1_event_1
+    &adventure_event_1_event_1,
+    &adventure_event_1_event_2,
+    &adventure_event_1_event_3
   };
   constexpr bn::string_view adventure_event_1_buttons[] = {
     "B"
@@ -1765,7 +1942,7 @@ namespace neo::scenes
     neo::types::event_type::ON_BUTTON_PRESS,
     false,
     bn::span<const bn::string_view>(adventure_event_1_buttons),
-    2,
+    4,
     adventure_event_1_events
   );
   constexpr const neo::types::event* adventure_events[] = {
@@ -2661,7 +2838,9 @@ namespace neo::types
   X(SET_BACKGROUND, "set-background") \\
   X(SET_SPRITE, "set-sprite") \\
   X(SHOOT_PROJECTILE, "shoot-projectile") \\
-  X(MELEE_ATTACK, "melee-attack")
+  X(MELEE_ATTACK, "melee-attack") \\
+  X(SHOW_ACTOR_REACTION, "show-actor-reaction") \\
+  X(SHOW_PLAYER_REACTION, "show-player-reaction")
 
   enum class event_type : unsigned char
   {
@@ -3492,6 +3671,62 @@ namespace neo::types
       source_type(source_type_),
       actor(actor_),
       duration(duration_) {}
+  };
+
+  struct show_reaction_event: event
+  {
+    bn::sprite_item sprite;
+    bn::string_view animation;
+    int animations_count;
+    const sprite_animation* const* animations;
+    const event_value* duration; // ms
+
+    neo::actor* target = nullptr;
+
+    show_reaction_event(
+      event_type type_,
+      bn::sprite_item sprite_,
+      bn::string_view animation_,
+      int animations_count_,
+      const sprite_animation* const* animations_,
+      const event_value* duration_
+    ):
+      event(type_),
+      sprite(sprite_),
+      animation(animation_),
+      animations_count(animations_count_),
+      animations(animations_),
+      duration(duration_) {}
+
+    virtual void init(neo::game* game_) = 0;
+    void start();
+    bool update() override;
+  };
+
+  struct show_actor_reaction_event: show_reaction_event
+  {
+    bn::string_view actor;
+
+    show_actor_reaction_event(
+      event_type type_,
+      bn::string_view actor_,
+      bn::sprite_item sprite_,
+      bn::string_view animation_,
+      int animations_count_,
+      const sprite_animation* const* animations_,
+      const event_value* duration_
+    ):
+      show_reaction_event(type_, sprite_, animation_, animations_count_, animations_, duration_),
+      actor(actor_) {}
+
+    void init(neo::game* game_) override;
+  };
+
+  struct show_player_reaction_event: show_reaction_event
+  {
+    using show_reaction_event::show_reaction_event;
+
+    void init(neo::game* game_) override;
   };
 
   struct sensor

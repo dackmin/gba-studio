@@ -240,7 +240,9 @@ namespace neo::types
   X(SET_BACKGROUND, "set-background") \
   X(SET_SPRITE, "set-sprite") \
   X(SHOOT_PROJECTILE, "shoot-projectile") \
-  X(MELEE_ATTACK, "melee-attack")
+  X(MELEE_ATTACK, "melee-attack") \
+  X(SHOW_ACTOR_REACTION, "show-actor-reaction") \
+  X(SHOW_PLAYER_REACTION, "show-player-reaction")
 
   enum class event_type : unsigned char
   {
@@ -1071,6 +1073,62 @@ namespace neo::types
       source_type(source_type_),
       actor(actor_),
       duration(duration_) {}
+  };
+
+  struct show_reaction_event: event
+  {
+    bn::sprite_item sprite;
+    bn::string_view animation;
+    int animations_count;
+    const sprite_animation* const* animations;
+    const event_value* duration; // ms
+
+    neo::actor* target = nullptr;
+
+    show_reaction_event(
+      event_type type_,
+      bn::sprite_item sprite_,
+      bn::string_view animation_,
+      int animations_count_,
+      const sprite_animation* const* animations_,
+      const event_value* duration_
+    ):
+      event(type_),
+      sprite(sprite_),
+      animation(animation_),
+      animations_count(animations_count_),
+      animations(animations_),
+      duration(duration_) {}
+
+    virtual void init(neo::game* game_) = 0;
+    void start();
+    bool update() override;
+  };
+
+  struct show_actor_reaction_event: show_reaction_event
+  {
+    bn::string_view actor;
+
+    show_actor_reaction_event(
+      event_type type_,
+      bn::string_view actor_,
+      bn::sprite_item sprite_,
+      bn::string_view animation_,
+      int animations_count_,
+      const sprite_animation* const* animations_,
+      const event_value* duration_
+    ):
+      show_reaction_event(type_, sprite_, animation_, animations_count_, animations_, duration_),
+      actor(actor_) {}
+
+    void init(neo::game* game_) override;
+  };
+
+  struct show_player_reaction_event: show_reaction_event
+  {
+    using show_reaction_event::show_reaction_event;
+
+    void init(neo::game* game_) override;
   };
 
   struct sensor

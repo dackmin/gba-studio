@@ -125,6 +125,9 @@ export const setupHandlebars = async () => {
     return findSprite(sprites, id)
       ?._file?.replace(/\.json$/, '').replace(/^sprite_/, '') || id;
   });
+  Handlebars.registerHelper('hasSpriteAnimations', (sprites: any[], id: string) => {
+    return !!findSprite(sprites, id)?._animations?.length;
+  });
   Handlebars.registerHelper('getFontName', (fonts: GameFontFile[], id: string) => {
     return findFont(fonts, id)
       ?._file?.replace(/\.json$/, '').replace(/^font_/, '') || '';

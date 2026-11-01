@@ -10,6 +10,7 @@ import {
   DownloadIcon,
   EyeClosedIcon,
   EyeOpenIcon,
+  FaceIcon,
   GroupIcon,
   ImageIcon,
   LapTimerIcon,
@@ -299,6 +300,18 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'set-player-direction',
       direction: 'down',
     }),
+  }, {
+    icon: FaceIcon,
+    name: 'Show Player Reaction',
+    value: 'show-player-reaction',
+    keywords: ['player', 'reaction', 'bubble', 'emote', 'emotion', 'balloon', 'exclamation'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'show-player-reaction',
+      sprite: '',
+      animation: '',
+      duration: 1000,
+    }),
   }],
 }, {
   name: 'Actors',
@@ -356,6 +369,19 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'set-actor-direction',
       actor: '',
       direction: 'down',
+    }),
+  }, {
+    icon: FaceIcon,
+    name: 'Show Actor Reaction',
+    value: 'show-actor-reaction',
+    keywords: ['actor', 'reaction', 'bubble', 'emote', 'emotion', 'balloon', 'exclamation'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'show-actor-reaction',
+      actor: '',
+      sprite: '',
+      animation: '',
+      duration: 1000,
     }),
   }],
 }, {

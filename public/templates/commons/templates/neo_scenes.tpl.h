@@ -20,6 +20,7 @@
 {{/each}}
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_cursor_default.h>
+#include <bn_sprite_items_bubble_default.h>
 {{#each sprites}}
 #include <bn_sprite_items_{{getSpriteName @root/sprites this.id}}.h>
 {{/each}}
@@ -86,6 +87,36 @@ namespace neo::scenes
   };
   {{/if}}
   {{/each}}
+
+  {{#each (array 0 1 2 3 4)}}
+  {{>valuePartial prefix=(concat "bubble_default_animation_frame_" this "_duration") value=50}}
+  constexpr neo::types::sprite_animation_frame bubble_default_animation_frame_{{this}} = {
+    {{this}},
+    &bubble_default_animation_frame_{{this}}_duration_value,
+    false
+  };
+  {{/each}}
+  constexpr const neo::types::sprite_animation_frame* bubble_default_animation_frames[] = {
+    &bubble_default_animation_frame_0,
+    &bubble_default_animation_frame_1,
+    &bubble_default_animation_frame_2,
+    &bubble_default_animation_frame_3,
+    &bubble_default_animation_frame_4
+  };
+  constexpr neo::types::sprite_animation bubble_default_animation(
+    "default",
+    "",
+    "fixed",
+    neo::types::direction::DOWN,
+    neo::types::animation_state::IDLE,
+    false,
+    5,
+    bubble_default_animation_frames
+  );
+  constexpr int bubble_default_animations_count = 1;
+  constexpr const neo::types::sprite_animation* bubble_default_animations[] = {
+    &bubble_default_animation
+  };
 
   {{#each huds}}
   //////////////////////////
