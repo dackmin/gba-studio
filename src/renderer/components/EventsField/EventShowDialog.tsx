@@ -68,29 +68,6 @@ const EventShowDialog = ({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Text size="1" className="text-slate">Portrait</Text>
-        <SpritesListField
-          nullable
-          value={event.portrait || ''}
-          onValueChange={onValueChange_.bind(null, 'portrait')}
-        />
-      </div>
-      { event.portrait && (
-        <div className="flex flex-col gap-2">
-          <Text size="1" className="text-slate">Portrait position</Text>
-          <Select.Root
-            value={event.portraitPosition || 'left'}
-            onValueChange={onValueChange_.bind(null, 'portraitPosition')}
-          >
-            <Select.Trigger placeholder="Select" />
-            <Select.Content>
-              <Select.Item value="left">Left</Select.Item>
-              <Select.Item value="right">Right</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </div>
-      ) }
-      <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Speed</Text>
         <Select.Root
           value={event.speed || 'normal'}
@@ -140,6 +117,29 @@ const EventShowDialog = ({
             Advanced
           </Collapsible.Trigger>
           <Collapsible.Content className="mt-4! flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Text size="1" className="text-slate">Portrait</Text>
+              <SpritesListField
+                nullable
+                value={event.portrait || ''}
+                onValueChange={onValueChange_.bind(null, 'portrait')}
+              />
+            </div>
+            { event.portrait && (
+              <div className="flex flex-col gap-2">
+                <Text size="1" className="text-slate">Portrait position</Text>
+                <Select.Root
+                  value={event.portraitPosition || 'left'}
+                  onValueChange={onValueChange_.bind(null, 'portraitPosition')}
+                >
+                  <Select.Trigger placeholder="Select" />
+                  <Select.Content>
+                    <Select.Item value="left">Left</Select.Item>
+                    <Select.Item value="right">Right</Select.Item>
+                  </Select.Content>
+                </Select.Root>
+              </div>
+            ) }
             <div className="flex flex-col gap-2">
               <Text size="1" className="text-slate">Font</Text>
               <FontsListField
