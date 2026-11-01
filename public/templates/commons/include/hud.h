@@ -12,9 +12,8 @@ namespace neo
 
 namespace neo::hud
 {
-  constexpr int MAX_TEXT_LENGTH = 30;
-
   void build(neo::game* game);
+  void clear(neo::game* game);
   void set_text(
     neo::game* game,
     bn::string_view hud_reference,

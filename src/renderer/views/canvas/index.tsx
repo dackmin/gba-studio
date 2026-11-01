@@ -22,10 +22,10 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
-  GameHudText,
   GameScene,
   GameSensor,
   GameSprite,
+  GameText,
 } from '../../../types';
 import {
   useApp,
@@ -38,10 +38,10 @@ import {
   DEFAULT_ACTOR,
   DEFAULT_HUD,
   DEFAULT_HUD_SPRITE,
-  DEFAULT_HUD_TEXT,
   DEFAULT_SCENE,
   DEFAULT_SENSOR,
   DEFAULT_SPRITE,
+  DEFAULT_TEXT,
 } from '../../services/defaults';
 import { isEditableElementFocused } from '../../services/helpers';
 import {
@@ -49,6 +49,7 @@ import {
   duplicateScene,
   duplicateSensor,
   duplicateSprite,
+  duplicateText,
   pixelToTile,
 } from '../../../helpers';
 import FullscreenView from '../../windows/editor/FullscreenView';
@@ -61,7 +62,7 @@ import Sensor from './Sensor';
 import Sprite from './Sprite';
 import Hud, { HUD_HEIGHT, HUD_WIDTH } from './Hud';
 import HudSprite from './HudSprite';
-import HudText from './HudText';
+import TextItem from './TextItem';
 
 const Canvas = () => {
   const infiniteCanvasRef = useRef<InfiniteCanvasRef>(null);
@@ -202,6 +203,19 @@ const Canvas = () => {
     selectItem?.(scene);
   }, [appPayload, onCanvasChange, selectItem]);
 
+  const onDeleteText = useCallback((scene: GameScene, text: GameText) => {
+    set(scene, 'texts', scene?.texts?.filter(t => t.id !== text.id) || []);
+    onCanvasChange?.({
+      ...appPayload,
+      scenes: appPayload.scenes.map(s => (
+        s.id === scene?.id ||
+        s._file === scene?._file
+          ? scene! : s
+      )),
+    });
+    selectItem?.(scene);
+  }, [appPayload, onCanvasChange, selectItem]);
+
   const onDeleteHud = useCallback((hud?: GameHud) => {
     if (!hud) {
       return;
@@ -216,9 +230,9 @@ const Canvas = () => {
 
   const onDeleteHudItem = useCallback((
     hud: GameHud,
-    item: GameHudSprite | GameHudText,
+    item: GameHudSprite | GameText,
   ) => {
-    if (item.type === 'hud-text') {
+    if (item.type === 'text') {
       set(hud, 'texts', hud.texts?.filter(t => t.id !== item.id) || []);
     } else {
       set(hud, 'sprites', hud.sprites?.filter(s => s.id !== item.id) || []);
@@ -236,7 +250,7 @@ const Canvas = () => {
     e.stopPropagation();
 
     if (selectedHud) {
-      if (selectedItem?.type === 'hud-sprite' || selectedItem?.type === 'hud-text') {
+      if (selectedItem?.type === 'hud-sprite' || selectedItem?.type === 'text') {
         onDeleteHudItem?.(selectedHud, selectedItem);
       } else if (!selectedItem) {
         onDeleteHud?.(selectedHud);
@@ -267,13 +281,19 @@ const Canvas = () => {
       return;
     }
 
+    if (selectedScene && selectedItem?.type === 'text') {
+      onDeleteText?.(selectedScene, selectedItem);
+
+      return;
+    }
+
     if (selectedScene) {
       onDeleteScene?.(selectedScene);
     }
   }, [
     selectedScene, selectedItem, selectedHud, appPayload,
     onCanvasChange, selectItem, resetSelection,
-    onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite,
+    onDeleteScene, onDeleteActor, onDeleteSensor, onDeleteSprite, onDeleteText,
     onDeleteHud, onDeleteHudItem,
   ]);
 
@@ -291,7 +311,7 @@ const Canvas = () => {
       return;
     }
 
-    if (!['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')) {
+    if (!['actor', 'sensor', 'sprite', 'text'].includes(selectedItem?.type || '')) {
       return;
     }
 
@@ -337,14 +357,14 @@ const Canvas = () => {
       return;
     }
 
-    if (!selectedScene || !['actor', 'sensor', 'sprite'].includes(clipboard?.type || '')) {
+    if (!selectedScene || !['actor', 'sensor', 'sprite', 'text'].includes(clipboard?.type || '')) {
       return;
     }
 
     e?.preventDefault();
     e?.stopPropagation();
 
-    let newItem: GameActor | GameSensor | GameSprite | undefined;
+    let newItem: GameActor | GameSensor | GameSprite | GameText | undefined;
 
     switch (clipboard?.type) {
       case 'actor': {
@@ -386,6 +406,18 @@ const Canvas = () => {
 
         break;
       }
+      case 'text': {
+        const duplicated = duplicateText(selectedScene, clipboard as GameText);
+
+        set(selectedScene, 'texts', [
+          ...(selectedScene.texts || []),
+          duplicated,
+        ]);
+
+        newItem = duplicated;
+
+        break;
+      }
       default:
         break;
     }
@@ -408,7 +440,7 @@ const Canvas = () => {
     if (
       isEditableElementFocused() ||
       !selectedScene ||
-      !['actor', 'sensor', 'sprite'].includes(selectedItem?.type || '')
+      !['actor', 'sensor', 'sprite', 'text'].includes(selectedItem?.type || '')
     ) {
       return;
     }
@@ -428,10 +460,16 @@ const Canvas = () => {
       case 'sprite':
         onDeleteSprite?.(selectedScene, selectedItem);
         break;
+      case 'text':
+        onDeleteText?.(selectedScene, selectedItem);
+        break;
       default:
         break;
     }
-  }, [selectedScene, selectedItem, onDeleteActor, onDeleteSensor, onDeleteSprite]);
+  }, [
+    selectedScene, selectedItem,
+    onDeleteActor, onDeleteSensor, onDeleteSprite, onDeleteText,
+  ]);
 
   useBridgeListener('cut', onCut, [onCut]);
 
@@ -555,6 +593,40 @@ const Canvas = () => {
       selectItem?.(selectedScene, sprite);
     }
 
+    if (tool === 'add' && subTool === 'text' && selectedScene) {
+      const position = infiniteCanvasRef.current
+        ?.getCursorPosition() || { x: 0, y: 0 };
+
+      const sceneConfig = project?.scenes.find(s => (
+        s.id === selectedScene.id || s._file === selectedScene._file
+      ));
+
+      const text: GameText = {
+        ...cloneDeep(DEFAULT_TEXT),
+        id: uuid(),
+        name: `Text ${((selectedScene.texts?.length || 0) + 1)}`,
+        x: Math.max(0, Math.round(position.x - (sceneConfig?.x || 0))),
+        y: Math.max(0, Math.round(position.y - (sceneConfig?.y || 0))),
+      };
+
+      set(selectedScene, 'texts', [
+        ...(selectedScene.texts || []),
+        text,
+      ]);
+
+      onCanvasChange?.({
+        ...appPayload,
+        scenes: appPayload.scenes.map(s => (
+          s.id === selectedScene.id ||
+          s._file === selectedScene._file
+            ? selectedScene! : s
+        )),
+      });
+
+      setTool?.('default');
+      selectItem?.(selectedScene, text);
+    }
+
     if (tool === 'add' && subTool === 'hud') {
       const hud: GameHud = {
         ...cloneDeep(DEFAULT_HUD),
@@ -612,7 +684,7 @@ const Canvas = () => {
       selectHudItem?.(selectedHud, sprite);
     }
 
-    if (tool === 'add' && subTool === 'hud-text' && selectedHud) {
+    if (tool === 'add' && subTool === 'text' && selectedHud) {
       const position = infiniteCanvasRef.current
         ?.getCursorPosition() || { x: 0, y: 0 };
 
@@ -620,10 +692,11 @@ const Canvas = () => {
         h.id === selectedHud.id || h._file === selectedHud._file
       ));
 
-      const text: GameHudText = {
-        ...cloneDeep(DEFAULT_HUD_TEXT),
+      const text: GameText = {
+        ...cloneDeep(DEFAULT_TEXT),
         id: uuid(),
-        name: `HUD Text ${((selectedHud.texts?.length || 0) + 1)}`,
+        name: `Text ${((selectedHud.texts?.length || 0) + 1)}`,
+        z: selectedHud ? 0 : 2,
         x: Math.min(HUD_WIDTH - 1, Math.max(0,
           Math.round(position.x - (hudConfig?.x || 0)))),
         y: Math.min(HUD_HEIGHT - 1, Math.max(0,
@@ -754,6 +827,7 @@ const Canvas = () => {
             onDeleteActor={onDeleteActor.bind(null, scene)}
             onDeleteSensor={onDeleteSensor.bind(null, scene)}
             onDeleteSprite={onDeleteSprite?.bind(null, scene)}
+            onDeleteText={onDeleteText.bind(null, scene)}
           />
         )) }
 
@@ -806,6 +880,22 @@ const Canvas = () => {
           />
         ) }
 
+        { tool === 'add' && subTool === 'text' && selectedScene && (
+          <TextItem
+            item={DEFAULT_TEXT}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+          />
+        ) }
+
+        { tool === 'add' && subTool === 'text' && (selectedScene || selectedHud) && (
+          <TextItem
+            item={DEFAULT_TEXT}
+            className="!fixed pointer-events-none opacity-50 !z-1000"
+            preview={true}
+          />
+        ) }
+
         { tool === 'add' && subTool === 'hud' && (
           <Hud
             hud={DEFAULT_HUD}
@@ -817,14 +907,6 @@ const Canvas = () => {
         { tool === 'add' && subTool === 'hud-sprite' && selectedHud && (
           <HudSprite
             sprite={DEFAULT_HUD_SPRITE}
-            className="!fixed pointer-events-none opacity-50 !z-1000"
-            preview={true}
-          />
-        ) }
-
-        { tool === 'add' && subTool === 'hud-text' && selectedHud && (
-          <HudText
-            item={DEFAULT_HUD_TEXT}
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
           />

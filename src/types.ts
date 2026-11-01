@@ -28,8 +28,16 @@ export interface AppStorage {
 export type VariableValue = string | number | boolean;
 
 export type ToolType = InfiniteCanvasCursorMode | 'collisions';
-export type AddSubToolType = 'scene' | 'sensor' | 'actor' | 'sprite' | 'hud' |
-  'hud-sprite' | 'hud-text';
+
+export type AddSubToolType =
+  | 'scene'
+  | 'sensor'
+  | 'actor'
+  | 'sprite'
+  | 'text'
+  | 'hud'
+  | 'hud-sprite';
+
 export type SubToolType = AddSubToolType;
 
 export type CollisionBrush =
@@ -204,6 +212,7 @@ export interface GameScene {
   events?: SceneEvent[];
   actors?: GameActor[];
   sprites?: GameSprite[];
+  texts?: GameText[];
   hud?: string;
   // Internals
   id: string;
@@ -277,7 +286,7 @@ export interface GameHud {
   type: 'hud';
   name: string;
   sprites?: GameHudSprite[];
-  texts?: GameHudText[];
+  texts?: GameText[];
   events?: {
     init?: SceneEvent[];
     update?: SceneEvent[];
@@ -300,13 +309,13 @@ export interface GameHudSprite {
   id: string;
 }
 
-export interface GameHudText {
-  type: 'hud-text';
+export interface GameText {
+  type: 'text';
   name: string;
   text: EventValue;
   x: number;
   y: number;
-  z?: number;
+  z?: EventValue;
   color?: string;
   font?: string;
   // Internals

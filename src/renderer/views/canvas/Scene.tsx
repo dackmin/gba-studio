@@ -23,6 +23,7 @@ import type {
   GameScene,
   GameSensor,
   GameSprite,
+  GameText,
 } from '../../../types';
 import {
   useApp,
@@ -58,6 +59,7 @@ import Actor from './Actor';
 import Sensor from './Sensor';
 import PlayerStart from './PlayerStart';
 import Sprite from './Sprite';
+import TextItem from './TextItem';
 
 export interface SceneProps
   extends Omit<MoveableProps, 'onSelect' | 'onChange'> {
@@ -67,13 +69,14 @@ export interface SceneProps
   onSelect?: (scene: GameScene) => void;
   onSelectItem?: (
     scene?: GameScene,
-    item?: GameActor | GameSensor | GamePlayer | GameSprite
+    item?: GameActor | GameSensor | GamePlayer | GameSprite | GameText
   ) => void;
   onMove?: (scene: GameScene, e: MoveableState) => void;
   onDelete?: (scene?: GameScene) => void;
   onDeleteActor?: (actor: GameActor) => void;
   onDeleteSensor?: (sensor: GameSensor) => void;
   onDeleteSprite?: (sprite: GameSprite) => void;
+  onDeleteText?: (text: GameText) => void;
 }
 
 export interface SceneState {
@@ -98,6 +101,7 @@ const Scene = ({
   onDeleteActor,
   onDeleteSensor,
   onDeleteSprite,
+  onDeleteText,
   ...rest
 }: SceneProps) => {
   const moveableRef = useRef<HTMLDivElement>(null);
@@ -184,6 +188,10 @@ const Scene = ({
   const sprites = useMemo(() => (
     scene.sprites || []
   ), [scene.sprites]);
+
+  const texts = useMemo(() => (
+    scene.texts || []
+  ), [scene.texts]);
 
   const gridSize = useMemo(() => (
     scene.map?.gridSize || 16
@@ -358,6 +366,21 @@ const Scene = ({
     e.preventDefault();
     e.stopPropagation();
     onSelectItem?.(scene, sprite);
+  }, [onSelectItem, scene]);
+
+  const onMovedText = useCallback((text: GameText, e: MoveableState) => {
+    text.x = Math.max(0, Math.round(e.deltaX));
+    text.y = Math.max(0, Math.round(e.deltaY));
+    onChange?.(scene);
+  }, [onChange, scene]);
+
+  const onSelectText_ = useCallback((
+    text: GameText,
+    e: MouseEvent<HTMLElement>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectItem?.(scene, text);
   }, [onSelectItem, scene]);
 
   const checkCollisionsArray = useCallback(() => {
@@ -674,6 +697,16 @@ const Scene = ({
                   onMoveEnd={onMovedSprite.bind(null, sprite)}
                   onSelect={onSelectSprite_.bind(null, sprite)}
                   onDelete={onDeleteSprite?.bind(null, sprite)}
+                />
+              )) }
+
+              { texts.map(text => (
+                <TextItem
+                  key={text.id}
+                  item={text}
+                  onMoveEnd={onMovedText.bind(null, text)}
+                  onSelect={onSelectText_.bind(null, text)}
+                  onDelete={onDeleteText?.bind(null, text)}
                 />
               )) }
 

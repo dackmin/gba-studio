@@ -3,7 +3,7 @@ import { hsva2rgba, parseColor } from '@junipero/core';
 
 import type { EventValue, GameVariables } from '../../types';
 
-export const getHudTextPreview = (
+export const getTextPreview = (
   value: EventValue,
   variables: GameVariables[],
 ): string => {

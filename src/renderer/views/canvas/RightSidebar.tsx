@@ -3,11 +3,11 @@ import { Text } from '@radix-ui/themes';
 import type {
   GameActor,
   GameHudSprite,
-  GameHudText,
   GamePlayer,
   GameScript,
   GameSensor,
   GameSprite,
+  GameText,
   GameVariable,
 } from '../../../types';
 import { useCanvas } from '../../services/hooks';
@@ -22,7 +22,7 @@ import VariableForm from './VariableForm';
 import PlayerForm from './PlayerForm';
 import HudForm from './HudForm';
 import HudSpriteForm from './HudSpriteForm';
-import HudTextForm from './HudTextForm';
+import TextForm from './TextForm';
 
 const RightSidebar = () => {
   const {
@@ -73,10 +73,13 @@ const RightSidebar = () => {
           onChange={onHudChange}
         />
       </Switch.Case>
-      <Switch.Case value="hud-text">
-        <HudTextForm
-          item={selectedItem as GameHudText}
-          onChange={onHudChange}
+      <Switch.Case value="text">
+        <TextForm
+          item={selectedItem as GameText}
+          inHud={!!selectedHud}
+          onChange={selectedHud
+            ? onHudChange?.bind(null, selectedHud)
+            : onSceneChange?.bind(null, selectedScene)}
         />
       </Switch.Case>
       <Switch.Case value="variable">

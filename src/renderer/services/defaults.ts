@@ -2,10 +2,10 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
-  GameHudText,
   GameScene,
   GameSensor,
   GameSprite,
+  GameText,
 } from '../../types';
 
 export const DEFAULT_SCENE: GameScene = {
@@ -62,6 +62,16 @@ export const DEFAULT_SPRITE: GameSprite = {
   collisionGroup: 0,
 };
 
+export const DEFAULT_TEXT: GameText = {
+  id: 'preview',
+  type: 'text',
+  name: 'New Text',
+  text: 'Text',
+  x: 0,
+  y: 0,
+  z: 2,
+};
+
 export const DEFAULT_HUD: GameHud = {
   id: 'preview',
   type: 'hud',
@@ -76,16 +86,6 @@ export const DEFAULT_HUD_SPRITE: GameHudSprite = {
   y: 0,
   z: 0,
   sprite: 'sprite_default',
-};
-
-export const DEFAULT_HUD_TEXT: GameHudText = {
-  id: 'preview',
-  type: 'hud-text',
-  name: 'New HUD Text',
-  text: 'Text',
-  x: 0,
-  y: 0,
-  z: 0,
 };
 
 export const DEFAULT_FIXED_ANMATIONS = {

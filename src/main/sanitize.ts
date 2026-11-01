@@ -12,7 +12,6 @@ import type {
   GameFontFile,
   GameHud,
   GameHudSprite,
-  GameHudText,
   GameMusicFile,
   GameProject,
   GameScene,
@@ -34,7 +33,9 @@ import type {
   SpriteAnimationFrame,
   SpriteAnimations,
   SpriteAnimationState,
+  GameText,
 } from '../types';
+import { TEXT_MAX_LENGTH } from '../commons';
 import {
   findBackground,
   getMapSize,
@@ -223,28 +224,42 @@ export const sanitizeHudSprite = async (
   return sprite;
 };
 
-export const sanitizeHudText = async (
-  text: GameHudText
-): Promise<GameHudText> => {
+const sanitizeText = (
+  text: GameText,
+): GameText => {
   if (!text.id) {
     text.id = randomUUID();
   }
 
-  text.type = 'hud-text';
+  // Compat with old "hud-text" type
+  text.type = 'text';
 
   if (typeof text.text === 'object' && text.text !== null) {
     if (text.text.type !== 'variable') {
       text.text = '';
     }
   } else {
-    text.text = String(text.text ?? '').replace(/[\r\n]+/g, ' ').slice(0, 30);
+    text.text = String(text.text ?? '')
+      .replace(/[\r\n]+/g, ' ')
+      .slice(0, TEXT_MAX_LENGTH);
   }
 
-  text.x = Math.round(Number(text.x ?? 0));
-  text.y = Math.round(Number(text.y ?? 0));
-  text.z = Math.min(99, Math.max(0, Math.round(Number(text.z ?? 0))));
+  text.x = Math.max(0, Math.round(Number(text.x ?? 0)));
+  text.y = Math.max(0, Math.round(Number(text.y ?? 0)));
 
   return text;
+};
+
+export const sanitizeHudText = async (
+  text: GameText
+): Promise<GameText> => {
+  return sanitizeText(text);
+};
+
+export const sanitizeSceneText = async (
+  text: GameText
+): Promise<GameText> => {
+  return sanitizeText(text);
 };
 
 export const sanitizeHud = async (hud: GameHud): Promise<GameHud> => {
@@ -287,6 +302,10 @@ export const sanitizeScene = async (
 
   for (const sprite of scene.sprites ?? []) {
     await sanitizeSceneSprite(sprite);
+  }
+
+  for (const text of scene.texts ?? []) {
+    await sanitizeSceneText(text);
   }
 
   if (!scene.map) {

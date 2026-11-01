@@ -11,11 +11,11 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
-  GameHudText,
   GamePlayer,
   GameScene,
   GameScript,
   GameSensor,
+  GameText,
   GameVariable,
   GameVariables,
   SubToolType,
@@ -27,8 +27,8 @@ import { useApp, useLocalData } from '../../services/hooks';
 export interface CanvasState {
   selectedScene?: string;
   selectedHud?: string;
-  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer |
-    GameHudSprite | GameHudText | GameVariable;
+  selectedItem?: GameActor | GameSensor | GameScript | GamePlayer | GameText |
+    GameHudSprite | GameVariable;
   tool: ToolType;
   previousTool: ToolType;
   subTool?: SubToolType;
@@ -87,7 +87,7 @@ const Provider = ({
 
   const selectHudItem = useCallback((
     hud: GameHud,
-    item?: GameHudSprite | GameHudText,
+    item?: GameHudSprite | GameText,
   ) => {
     if (state.selectedItem === item) {
       return;
@@ -150,7 +150,7 @@ const Provider = ({
 
   const selectItem = useCallback((
     scene: GameScene,
-    item: GameActor | GameSensor | GamePlayer | undefined
+    item: GameActor | GameSensor | GamePlayer | GameText | undefined
   ) => {
     if (state.selectedItem === item) {
       return;

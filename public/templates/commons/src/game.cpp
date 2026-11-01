@@ -153,8 +153,15 @@ namespace neo
       sprites_count = 0;
     }
 
-    hud_sprites.clear();
-    hud_text_sprites.clear();
+    neo::hud::clear(this);
+
+    // Clean up old texts just in case
+    for (int i = 0; i < texts.size(); ++i)
+    {
+      delete texts[i];
+    }
+
+    texts.clear();
 
     // Clean up old sensors just in case
     BN_LOG("Cleaning up old sensors, count:", sensors_count);
@@ -268,6 +275,33 @@ namespace neo
         BN_LOG("Creating sprite: ", active_scene->sprites[i]->name);
         neo::sprite* s = new neo::sprite(this, active_scene->sprites[i]);
         sprites.push_back(s);
+      }
+    }
+
+    // Texts
+    if (active_scene->texts != nullptr)
+    {
+      int map_width = active_scene->map_data != nullptr
+        ? active_scene->map_data->pixel_width(variables)
+        : neo::types::SCREEN_WIDTH;
+      int map_height = active_scene->map_data != nullptr
+        ? active_scene->map_data->pixel_height(variables)
+        : neo::types::SCREEN_HEIGHT;
+
+      neo::text::placement placement = {
+        bn::fixed_point(
+          (neo::types::SCREEN_WIDTH - map_width) / 2,
+          (neo::types::SCREEN_HEIGHT - map_height) / 2
+        ),
+        true,
+        1,
+        0
+      };
+
+      for (int i = 0; i < active_scene->texts_count && !texts.full(); ++i)
+      {
+        BN_LOG("Creating text: ", active_scene->texts[i]->name);
+        texts.push_back(new neo::text(this, active_scene->texts[i], placement));
       }
     }
 
@@ -692,6 +726,12 @@ namespace neo
 
     neo::effects::update_wave_effect(this);
     neo::hud::update(this);
+
+    for (int i = 0; i < texts.size(); ++i)
+    {
+      texts[i]->update();
+    }
+
     scene_bg.update();
     bn::core::update();
   }

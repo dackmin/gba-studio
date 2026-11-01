@@ -8,16 +8,16 @@ import {
 } from '@junipero/react';
 import { Card, ContextMenu } from '@radix-ui/themes';
 
-import type { GameHud, GameHudSprite, GameHudText } from '../../../types';
+import type { GameHud, GameHudSprite, GameText } from '../../../types';
 import { useApp, useCanvas, usePreviewCursor } from '../../services/hooks';
 import HudSprite from './HudSprite';
-import HudText from './HudText';
+import TextItem from './TextItem';
 
 // GBA screen size
 export const HUD_WIDTH = 240;
 export const HUD_HEIGHT = 160;
 
-type HudItem = GameHudSprite | GameHudText;
+type HudItem = GameHudSprite | GameText;
 
 export interface HudProps
   extends Omit<MoveableProps, 'onSelect' | 'onChange'> {
@@ -56,10 +56,13 @@ const Hud = ({
   ), [project, cursor, hud, preview]);
 
   // Lower z is drawn in front, like on the console
-  const items = useMemo<HudItem[]>(() => (
-    [...(hud.sprites || []), ...(hud.texts || [])]
-      .sort((a, b) => (b.z ?? 0) - (a.z ?? 0))
-  ), [hud.sprites, hud.texts]);
+  const items = useMemo<HudItem[]>(() => {
+    return [...(hud.sprites || []), ...(hud.texts || [])]
+      .sort((a, b) => (
+        (typeof b.z === 'number' ? b.z : 0) -
+        (typeof a.z === 'number' ? a.z : 0)
+      ));
+  }, [hud.sprites, hud.texts]);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -120,8 +123,8 @@ const Hud = ({
               )}
               style={{ width: HUD_WIDTH, height: HUD_HEIGHT }}
             >
-              { items.map(item => item.type === 'hud-text' ? (
-                <HudText
+              { items.map(item => item.type === 'text' ? (
+                <TextItem
                   key={item.id}
                   item={item}
                   onMoveEnd={onMovedItem.bind(null, item)}

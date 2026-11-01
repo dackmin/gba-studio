@@ -206,20 +206,35 @@ namespace neo::scenes
     &hud_0_text_0_content_raw_value
   );
   
+  constexpr bn::string_view hud_0_text_0_z_name = "";
+  constexpr bn::string_view hud_0_text_0_z_string_value = "0";
+  constexpr neo::variables::value hud_0_text_0_z_raw_value(
+    hud_0_text_0_z_name,
+    0,
+    false,
+    hud_0_text_0_z_string_value,
+    0
+  );
+  constexpr bn::string_view hud_0_text_0_z_type = "value";
+  constexpr neo::types::event_value hud_0_text_0_z_value(
+    hud_0_text_0_z_type,
+    &hud_0_text_0_z_raw_value
+  );
+  
   constexpr bn::string_view hud_0_text_0_id = "65d889f4-8e5c-4ee3-83f2-3a737cc0f393";
   constexpr bn::string_view hud_0_text_0_name = "HUD Text 1";
   constexpr bn::color hud_0_text_0_color = { 31, 31, 31 };
-  constexpr neo::types::hud_text hud_0_text_0 = {
+  constexpr neo::types::text hud_0_text_0 = {
     hud_0_text_0_id,
     hud_0_text_0_name,
     &hud_0_text_0_content_value,
     29,
     9,
-    0,
+    &hud_0_text_0_z_value,
     hud_0_text_0_color,
     nullptr
   };
-  constexpr const neo::types::hud_text* hud_0_texts[] = {
+  constexpr const neo::types::text* hud_0_texts[] = {
     &hud_0_text_0
   };
   // Event 0: on-variable-change
@@ -1446,6 +1461,7 @@ namespace neo::scenes
   };
 
 
+
   // Scene
   constexpr bn::string_view scene_0_player_x_name = "";
   constexpr bn::string_view scene_0_player_x_string_value = "4";
@@ -1572,6 +1588,8 @@ namespace neo::scenes
     scene_0_actors,
     0,
     nullptr,
+    0,
+    nullptr,
     &hud_0,
     bn::sprite_items::cursor_default,
     false,
@@ -1666,6 +1684,7 @@ namespace neo::scenes
     point_and_click_map_collisions,
     0, nullptr
   };
+
 
 
 
@@ -1791,6 +1810,8 @@ namespace neo::scenes
     true,
     &point_and_click_player_actor,
     &point_and_click_map_data,
+    0,
+    nullptr,
     0,
     nullptr,
     0,
@@ -2071,6 +2092,98 @@ namespace neo::scenes
   };
 
 
+  // Texts
+  constexpr bn::string_view adventure_text_0_content_name = "";
+  constexpr bn::string_view adventure_text_0_content_string_value = "Hello world";
+  constexpr neo::variables::value adventure_text_0_content_raw_value(
+    adventure_text_0_content_name,
+    0,
+    false,
+    adventure_text_0_content_string_value,
+    0
+  );
+  constexpr bn::string_view adventure_text_0_content_type = "value";
+  constexpr neo::types::event_value adventure_text_0_content_value(
+    adventure_text_0_content_type,
+    &adventure_text_0_content_raw_value
+  );
+  
+  constexpr bn::string_view adventure_text_0_z_name = "";
+  constexpr bn::string_view adventure_text_0_z_string_value = "1";
+  constexpr neo::variables::value adventure_text_0_z_raw_value(
+    adventure_text_0_z_name,
+    1,
+    true,
+    adventure_text_0_z_string_value,
+    1
+  );
+  constexpr bn::string_view adventure_text_0_z_type = "value";
+  constexpr neo::types::event_value adventure_text_0_z_value(
+    adventure_text_0_z_type,
+    &adventure_text_0_z_raw_value
+  );
+  
+  constexpr bn::string_view adventure_text_0_id = "b1c2d3e4-0009-4a52-9c9d-0f7d5b2b6a39";
+  constexpr bn::string_view adventure_text_0_name = "Text 1";
+  constexpr bn::color adventure_text_0_color = { 31, 25, 0 };
+  constexpr neo::types::text adventure_text_0 = {
+    adventure_text_0_id,
+    adventure_text_0_name,
+    &adventure_text_0_content_value,
+    16,
+    8,
+    &adventure_text_0_z_value,
+    adventure_text_0_color,
+    nullptr
+  };
+  constexpr bn::string_view adventure_text_1_content_name = "";
+  constexpr bn::string_view adventure_text_1_content_string_value = "96c1d71d-993a-42b4-9073-e7ba70439b54";
+  constexpr neo::variables::value adventure_text_1_content_raw_value(
+    adventure_text_1_content_name,
+    0,
+    true,
+    adventure_text_1_content_string_value,
+    0
+  );
+  constexpr bn::string_view adventure_text_1_content_type = "variable";
+  constexpr neo::types::event_value adventure_text_1_content_value(
+    adventure_text_1_content_type,
+    &adventure_text_1_content_raw_value
+  );
+  
+  constexpr bn::string_view adventure_text_1_z_name = "";
+  constexpr bn::string_view adventure_text_1_z_string_value = "2";
+  constexpr neo::variables::value adventure_text_1_z_raw_value(
+    adventure_text_1_z_name,
+    2,
+    true,
+    adventure_text_1_z_string_value,
+    2
+  );
+  constexpr bn::string_view adventure_text_1_z_type = "value";
+  constexpr neo::types::event_value adventure_text_1_z_value(
+    adventure_text_1_z_type,
+    &adventure_text_1_z_raw_value
+  );
+  
+  constexpr bn::string_view adventure_text_1_id = "b1c2d3e4-000a-4a52-9c9d-0f7d5b2b6a3a";
+  constexpr bn::string_view adventure_text_1_name = "Text 2";
+  constexpr bn::color adventure_text_1_color = { 0, 0, 0 };
+  constexpr neo::types::text adventure_text_1 = {
+    adventure_text_1_id,
+    adventure_text_1_name,
+    &adventure_text_1_content_value,
+    16,
+    24,
+    &adventure_text_1_z_value,
+    adventure_text_1_color,
+    nullptr
+  };
+  constexpr const neo::types::text* adventure_texts[] = {
+    &adventure_text_0,
+    &adventure_text_1
+  };
+
   // Scene
   constexpr bn::string_view adventure_player_x_name = "";
   constexpr bn::string_view adventure_player_x_string_value = "2";
@@ -2197,6 +2310,8 @@ namespace neo::scenes
     adventure_actors,
     0,
     nullptr,
+    2,
+    adventure_texts,
     nullptr,
     bn::sprite_items::cursor_default,
     false,
@@ -2291,6 +2406,7 @@ namespace neo::scenes
     side_scroller_map_collisions,
     0, nullptr
   };
+
 
 
 
@@ -2420,6 +2536,8 @@ namespace neo::scenes
     nullptr,
     0,
     nullptr,
+    0,
+    nullptr,
     nullptr,
     bn::sprite_items::cursor_default,
     false,
@@ -2470,6 +2588,8 @@ namespace neo::scenes
     nullptr,
     false,
     nullptr,
+    nullptr,
+    0,
     nullptr,
     0,
     nullptr,
@@ -4025,16 +4145,14 @@ namespace neo::types
     bn::sprite_item sprite;
   };
 
-  // Single line drawn with the dialogs font, one sprite per character. The
-  // content (value or variable) is re-resolved every frame.
-  struct hud_text
+  struct text
   {
     bn::string_view _id;
     bn::string_view name;
     const event_value* content;
     int x;
     int y;
-    int z;
+    const event_value* z;
     bn::color color;
     const bn::sprite_item* font;
   };
@@ -4046,7 +4164,7 @@ namespace neo::types
     int sprites_count;
     const hud_sprite* const* sprites;
     int texts_count;
-    const hud_text* const* texts;
+    const text* const* texts;
     int init_events_count;
     const event* const* init_events;
     int update_events_count;
@@ -4083,6 +4201,9 @@ namespace neo::types
     // Sprites
     int sprites_count;
     const sprite* const* sprites;
+    // Texts
+    int texts_count;
+    const text* const* texts;
     const hud* hud_data;
     bn::sprite_item cursor;
     // Gravity

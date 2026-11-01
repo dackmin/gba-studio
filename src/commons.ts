@@ -41,3 +41,5 @@ export const COLLISION_ONE_WAY_COLOR = 'rgba(0, 255, 0, 0.4)';
 
 export const DEFAULT_GRAVITY_FORCE = 1;
 export const DEFAULT_JUMP_HEIGHT = 36;
+
+export const TEXT_MAX_LENGTH = 30;

@@ -9,29 +9,27 @@ import {
 } from '@radix-ui/themes';
 import { classNames, set } from '@junipero/react';
 
-import type { GameHud, GameHudText } from '../../../types';
-import { useCanvas } from '../../services/hooks';
-import EventValueField from '../../components/EventValueField';
+import type { GameText } from '../../../types';
+import { TEXT_MAX_LENGTH } from '../../../commons';
+import EventValueField, {
+  EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES,
+} from '../../components/EventValueField';
 import ColorField from '../../components/ColorField';
 import FontsListField from '../../components/FontsListField';
 
-// Sprites are limited on the GBA: one per character
-export const HUD_TEXT_MAX_LENGTH = 30;
-
-// A HUD text is a plain value or a variable
 const EXCLUDED_TYPES = [
   'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene',
   'actor',
 ];
 
-export interface HudTextFormProps {
-  item: GameHudText;
-  onChange?: (hud?: GameHud) => void;
+export interface TextFormProps {
+  item: GameText;
+  // Texts of a HUD live on the screen, the ones of a scene anywhere on the map
+  inHud?: boolean;
+  onChange?: () => void;
 }
 
-const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
-  const { selectedHud } = useCanvas();
-
+const TextForm = ({ item, inHud = false, onChange }: TextFormProps) => {
   const onNameChange = useCallback((e: ChangeEvent<HTMLHeadingElement>) => {
     const name = (e.currentTarget.textContent || 'Untitled')
       .trim().slice(0, 32);
@@ -41,8 +39,8 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
     }
 
     set(item, 'name', name);
-    onChange?.(selectedHud);
-  }, [onChange, item, selectedHud]);
+    onChange?.();
+  }, [onChange, item]);
 
   const onNameKeyDown = (e: KeyboardEvent<HTMLHeadingElement>) => {
     e.stopPropagation();
@@ -55,24 +53,22 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
 
   const onValueChange = useCallback((name: string, value: any) => {
     set(item, name, value);
-    onChange?.(selectedHud);
-  }, [onChange, item, selectedHud]);
+    onChange?.();
+  }, [onChange, item]);
 
   const onNumberChange = useCallback((
     name: string,
-    min: number,
-    max: number,
     e: ChangeEvent<HTMLInputElement>,
   ) => {
     const value = Math.round(Number(e.currentTarget.value));
 
-    onValueChange(name, Math.min(max, Math.max(min, value || 0)));
+    onValueChange(name, value);
   }, [onValueChange]);
 
   return (
     <ScrollArea scrollbars="vertical">
       <div className="p-3">
-        <Text size="1" className="text-slate">HUD Text</Text>
+        <Text size="1" className="text-slate">Text</Text>
         <Heading
           contentEditable
           as="h2"
@@ -93,7 +89,7 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
             <Text className="block text-slate" size="1">Text</Text>
             <EventValueField
               type="text"
-              maxLength={HUD_TEXT_MAX_LENGTH}
+              maxLength={TEXT_MAX_LENGTH}
               excludeTypes={EXCLUDED_TYPES}
               value={item.text ?? ''}
               onValueChange={onValueChange.bind(null, 'text')}
@@ -105,9 +101,8 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
               <TextField.Root
                 type="number"
                 min={0}
-                max={239}
                 value={item.x ?? 0}
-                onChange={onNumberChange.bind(null, 'x', 0, 239)}
+                onChange={onNumberChange.bind(null, 'x')}
               >
                 <TextField.Slot side="right">px</TextField.Slot>
               </TextField.Root>
@@ -117,9 +112,8 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
               <TextField.Root
                 type="number"
                 min={0}
-                max={159}
                 value={item.y ?? 0}
-                onChange={onNumberChange.bind(null, 'y', 0, 159)}
+                onChange={onNumberChange.bind(null, 'y')}
               >
                 <TextField.Slot side="right">px</TextField.Slot>
               </TextField.Root>
@@ -127,12 +121,11 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
           </div>
           <div className="flex flex-col gap-2">
             <Text className="block text-slate" size="1">Drawing priority</Text>
-            <TextField.Root
+            <EventValueField
               type="number"
-              min={0}
-              max={99}
-              value={item.z ?? 0}
-              onChange={onNumberChange.bind(null, 'z', 0, 99)}
+              excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+              value={item.z ?? (inHud ? 0 : 2)}
+              onValueChange={onValueChange.bind(null, 'z')}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -156,4 +149,4 @@ const HudTextForm = ({ item, onChange }: HudTextFormProps) => {
   );
 };
 
-export default HudTextForm;
+export default TextForm;

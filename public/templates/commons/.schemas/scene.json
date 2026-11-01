@@ -214,6 +214,47 @@
         "y"
       ]
     },
+    "Text": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "const": "text",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "text": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "color": {
+          "type": "string"
+        },
+        "font": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "text",
+        "x",
+        "y"
+      ]
+    },
     "Player": {
       "type": "object",
       "properties": {
@@ -290,6 +331,10 @@
         "sprites": {
           "type": "array",
           "items": { "$ref": "#/definitions/Sprite" }
+        },
+        "texts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Text" }
         },
         "hud": {
           "type": "string"

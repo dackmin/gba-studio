@@ -141,6 +141,9 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'actor')}>
             Actor
           </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={onAddClick.bind(null, 'text')}>
+            Text
+          </DropdownMenu.Item>
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'sprite')}>
             Sprite
           </DropdownMenu.Item>
@@ -150,9 +153,6 @@ const Toolbar = ({ className, onSelectTool, ...props }: ToolbarProps) => {
           </DropdownMenu.Item>
           <DropdownMenu.Item onClick={onAddClick.bind(null, 'hud-sprite')}>
             HUD Sprite
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onClick={onAddClick.bind(null, 'hud-text')}>
-            HUD Text
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>

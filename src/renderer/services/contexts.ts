@@ -9,7 +9,6 @@ import type {
   GameActor,
   GameHud,
   GameHudSprite,
-  GameHudText,
   GamePlayer,
   GameProject,
   GameScene,
@@ -17,6 +16,7 @@ import type {
   GameSensor,
   GameSprite,
   GameSpriteFile,
+  GameText,
   GameVariable,
   GameVariables,
   SpriteAnimation,
@@ -108,7 +108,7 @@ export interface CanvasContextType {
   selectedScene?: GameScene;
   selectedHud?: GameHud;
   selectedItem?: GameActor | GameSensor | GameScript | GamePlayer | GameSprite |
-    GameHudSprite | GameHudText | GameVariable;
+    GameText | GameHudSprite | GameVariable;
   tool: ToolType;
   subTool?: SubToolType;
   collisionBrush: CollisionBrush;
@@ -117,12 +117,13 @@ export interface CanvasContextType {
   resetTool?(): void;
   selectItem?(
     scene?: GameScene,
-    item?: GameActor | GameSensor | GamePlayer | GameScript | GameSprite | GameVariable
+    item?: GameActor | GameSensor | GamePlayer | GameScript | GameSprite | GameText |
+      GameVariable
   ): void;
   resetSelection?(): void;
   selectScene?(scene?: GameScene): void;
   selectHud?(hud?: GameHud): void;
-  selectHudItem?(hud: GameHud, item?: GameHudSprite | GameHudText): void;
+  selectHudItem?(hud: GameHud, item?: GameHudSprite | GameText): void;
   selectScript?(script?: GameScript): void;
   selectVariable?(variable?: GameVariable): void;
   onVariablesChange?(registry: GameVariables): void;

@@ -143,16 +143,17 @@ namespace neo::scenes
   {{/if}}
   {{#each this.texts}}
   {{>valuePartial prefix=(concat "hud_" @../index "_text_" @index "_content") value=this.text}}
+  {{>valuePartial prefix=(concat "hud_" @../index "_text_" @index "_z") value=(valuedef this.z 0)}}
   constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_id = "{{this.id}}";
   constexpr bn::string_view hud_{{@../index}}_text_{{@index}}_name = "{{escapeCpp this.name}}";
   constexpr bn::color hud_{{@../index}}_text_{{@index}}_color = { {{colorRGB this.color 31}} };
-  constexpr neo::types::hud_text hud_{{@../index}}_text_{{@index}} = {
+  constexpr neo::types::text hud_{{@../index}}_text_{{@index}} = {
     hud_{{@../index}}_text_{{@index}}_id,
     hud_{{@../index}}_text_{{@index}}_name,
     &hud_{{@../index}}_text_{{@index}}_content_value,
     {{valuedef this.x 0}},
     {{valuedef this.y 0}},
-    {{valuedef this.z 0}},
+    &hud_{{@../index}}_text_{{@index}}_z_value,
     hud_{{@../index}}_text_{{@index}}_color,
     {{#if (hasFont @root/fonts this.font)}}
     &bn::sprite_items::{{getFontName @root/fonts this.font}}
@@ -162,7 +163,7 @@ namespace neo::scenes
   };
   {{/each}}
   {{#if (hasItems this.texts)}}
-  constexpr const neo::types::hud_text* hud_{{@index}}_texts[] = {
+  constexpr const neo::types::text* hud_{{@index}}_texts[] = {
     {{#each this.texts}}
     &hud_{{@../index}}_text_{{@index}}{{#unless @last}},{{/unless}}
     {{/each}}
@@ -527,6 +528,36 @@ namespace neo::scenes
   };
   {{/if}}
 
+  {{#if (hasItems this.texts)}}
+  // Texts
+  {{#each this.texts}}
+  {{>valuePartial prefix=(concat (slug ../this.name) "_text_" @index "_content") value=this.text}}
+  {{>valuePartial prefix=(concat (slug ../this.name) "_text_" @index "_z") value=(valuedef this.z 2)}}
+  constexpr bn::string_view {{slug ../this.name}}_text_{{@index}}_id = "{{this.id}}";
+  constexpr bn::string_view {{slug ../this.name}}_text_{{@index}}_name = "{{escapeCpp this.name}}";
+  constexpr bn::color {{slug ../this.name}}_text_{{@index}}_color = { {{colorRGB this.color 31}} };
+  constexpr neo::types::text {{slug ../this.name}}_text_{{@index}} = {
+    {{slug ../this.name}}_text_{{@index}}_id,
+    {{slug ../this.name}}_text_{{@index}}_name,
+    &{{slug ../this.name}}_text_{{@index}}_content_value,
+    {{valuedef this.x 0}},
+    {{valuedef this.y 0}},
+    &{{slug ../this.name}}_text_{{@index}}_z_value,
+    {{slug ../this.name}}_text_{{@index}}_color,
+    {{#if (hasFont @root/fonts this.font)}}
+    &bn::sprite_items::{{getFontName @root/fonts this.font}}
+    {{else}}
+    nullptr
+    {{/if}}
+  };
+  {{/each}}
+  constexpr const neo::types::text* {{slug this.name}}_texts[] = {
+    {{#each this.texts}}
+    &{{slug ../this.name}}_text_{{@index}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  };
+  {{/if}}
+
   // Scene
   {{#if this.player}}
   {{>valuePartial prefix=(concat (slug this.name) "_player_x") value=(valuedef this.player.x 0)}}
@@ -630,6 +661,13 @@ namespace neo::scenes
     0,
     nullptr,
     {{/if}}
+    {{#if (hasItems this.texts)}}
+    {{this.texts.length}},
+    {{slug this.name}}_texts,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
     {{#if (gte (getHudIndex @root/huds this.hud) 0)}}
     &hud_{{getHudIndex @root/huds this.hud}},
     {{else}}
@@ -661,6 +699,8 @@ namespace neo::scenes
     nullptr,
     false,
     nullptr,
+    nullptr,
+    0,
     nullptr,
     0,
     nullptr,

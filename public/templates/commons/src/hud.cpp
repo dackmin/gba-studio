@@ -3,124 +3,30 @@
 #include <bn_core.h>
 #include <bn_log.h>
 #include <bn_display.h>
-#include <bn_sprite_font.h>
-#include <bn_sprite_text_generator.h>
-#include <bn_sprite_palette_ptr.h>
-#include <bn_string.h>
-#include <bn_algorithm.h>
 
 #include <neo_types.h>
-#include <neo_settings.h>
 
 #include "hud.h"
 #include "game.h"
+#include "text.h"
 
 namespace neo::hud
 {
-  namespace
+  void clear (neo::game* game)
   {
-    // FNV-1a over the resolved texts: detects changes without storing them.
-    unsigned hash_text (unsigned hash, bn::string_view text)
+    game->hud_sprites.clear();
+
+    for (int i = 0; i < game->hud_texts.size(); ++i)
     {
-      for (int i = 0; i < text.size(); ++i)
-      {
-        hash ^= static_cast<unsigned char>(text[i]);
-        hash *= 16777619u;
-      }
-
-      hash ^= 0xFF;
-      hash *= 16777619u;
-
-      return hash;
+      delete game->hud_texts[i];
     }
 
-    // Longer text is cut to the sprite budget
-    void resolve_text (
-      neo::game* game,
-      const neo::types::event_value* content,
-      bn::istring& out
-    )
-    {
-      bn::string_view value = content->as_string(game->variables);
-
-      out.clear();
-      out.append(value, 0, bn::min(value.size(), out.available()));
-    }
-
-    unsigned hash_texts (neo::game* game)
-    {
-      unsigned hash = 2166136261u;
-
-      for (int i = 0; i < game->hud_text_content.size(); ++i)
-      {
-        bn::string<MAX_TEXT_LENGTH> text;
-        resolve_text(game, game->hud_text_content[i], text);
-        hash = hash_text(hash, text);
-      }
-
-      return hash;
-    }
-
-    void generate_texts (neo::game* game)
-    {
-      const neo::types::hud* hud_data = game->active_scene->hud_data;
-
-      game->hud_text_sprites.clear();
-
-      for (int i = 0; i < game->hud_text_content.size(); ++i)
-      {
-        const neo::types::hud_text* definition = hud_data->texts[i];
-        bn::string<MAX_TEXT_LENGTH> text;
-        resolve_text(game, game->hud_text_content[i], text);
-
-        if (text.empty())
-        {
-          continue;
-        }
-
-        if (game->hud_text_sprites.available() < text.size())
-        {
-          BN_LOG("No room left for HUD text: ", definition->name);
-          continue;
-        }
-
-        const bn::sprite_item& font_item = definition->font != nullptr
-          ? *definition->font
-          : neo::settings::default_font;
-        bn::sprite_text_generator text_generator{bn::sprite_font(font_item)};
-        text_generator.set_left_alignment();
-        text_generator.set_bg_priority(0);
-        text_generator.set_z_order(1000 + definition->z);
-
-        int first_sprite = game->hud_text_sprites.size();
-
-        text_generator.generate_top_left(
-          definition->x,
-          definition->y,
-          text,
-          game->hud_text_sprites
-        );
-
-        bn::sprite_palette_ptr palette = font_item.palette_item().create_new_palette();
-
-        for (int c = 1; c < 16; ++c)
-        {
-          palette.set_color(c, definition->color);
-        }
-
-        for (int j = first_sprite; j < game->hud_text_sprites.size(); ++j)
-        {
-          game->hud_text_sprites[j].set_palette(palette);
-        }
-      }
-    }
+    game->hud_texts.clear();
   }
 
   void build (neo::game* game)
   {
-    game->hud_sprites.clear();
-    game->hud_text_sprites.clear();
-    game->hud_text_content.clear();
+    clear(game);
 
     if (game->active_scene->hud_data == nullptr)
     {
@@ -129,17 +35,6 @@ namespace neo::hud
 
     const neo::types::hud* hud_data = game->active_scene->hud_data;
     BN_LOG("Creating HUD: ", hud_data->name);
-
-    for (int i = 0; i < hud_data->texts_count; ++i)
-    {
-      if (game->hud_text_content.full())
-      {
-        BN_LOG("Too many HUD texts, ignoring: ", hud_data->texts[i]->name);
-        break;
-      }
-
-      game->hud_text_content.push_back(hud_data->texts[i]->content);
-    }
 
     for (int i = 0; i < hud_data->sprites_count && !game->hud_sprites.full(); ++i)
     {
@@ -155,8 +50,20 @@ namespace neo::hud
       game->hud_sprites.push_back(bn::move(hud_sprite));
     }
 
-    game->hud_text_hash = hash_texts(game);
-    generate_texts(game);
+    neo::text::placement placement = {
+      bn::fixed_point(0, 0), false, 0, 1000
+    };
+
+    for (int i = 0; i < hud_data->texts_count; ++i)
+    {
+      if (game->hud_texts.full())
+      {
+        BN_LOG("Too many HUD texts, ignoring: ", hud_data->texts[i]->name);
+        break;
+      }
+
+      game->hud_texts.push_back(new neo::text(game, hud_data->texts[i], placement));
+    }
   }
 
   void set_text (
@@ -182,13 +89,13 @@ namespace neo::hud
       return;
     }
 
-    for (int i = 0; i < game->hud_text_content.size(); ++i)
+    for (int i = 0; i < game->hud_texts.size(); ++i)
     {
-      const neo::types::hud_text* definition = hud_data->texts[i];
+      const neo::types::text* definition = game->hud_texts[i]->definition;
 
       if (text_reference == definition->_id || text_reference == definition->name)
       {
-        game->hud_text_content[i] = content;
+        game->hud_texts[i]->set_content(content);
         return;
       }
     }
@@ -196,21 +103,9 @@ namespace neo::hud
 
   void update (neo::game* game)
   {
-    if (
-      game->active_scene == nullptr ||
-      game->active_scene->hud_data == nullptr ||
-      game->active_scene->hud_data->texts_count == 0
-    )
+    for (int i = 0; i < game->hud_texts.size(); ++i)
     {
-      return;
-    }
-
-    unsigned hash = hash_texts(game);
-
-    if (hash != game->hud_text_hash)
-    {
-      game->hud_text_hash = hash;
-      generate_texts(game);
+      game->hud_texts[i]->update();
     }
   }
 }

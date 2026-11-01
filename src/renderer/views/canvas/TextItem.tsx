@@ -7,34 +7,35 @@ import {
 } from '@junipero/react';
 import { ContextMenu } from '@radix-ui/themes';
 
-import type { GameHudText } from '../../../types';
+import type { GameText } from '../../../types';
+import { TEXT_MAX_LENGTH } from '../../../commons';
 import { useApp, useCanvas, usePreviewCursor, useProjectFont } from '../../services/hooks';
 import { findFont, getAssetUrl } from '../../../helpers';
-import { getHudTextPreview, hexToRgb } from '../../services/helpers';
+import { getTextPreview, hexToRgb } from '../../services/helpers';
 import PixelText, { getTextWidth } from '../../components/PixelText';
 
-export interface HudTextProps extends MoveableProps {
-  item: GameHudText;
+export interface TextItemProps extends MoveableProps {
+  item: GameText;
   preview?: boolean;
   onSelect?: (e: MouseEvent<HTMLElement>) => void;
   onDelete?: () => void;
 }
 
-const HudText = ({
+const TextItem = ({
   item,
   preview = false,
   onSelect,
   onMoveEnd,
   onDelete,
   ...rest
-}: HudTextProps) => {
+}: TextItemProps) => {
   const { zoom } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { tool, selectedItem } = useCanvas();
   const { variables, fonts } = useApp();
   const projectFont = useProjectFont();
   const text = useMemo(() => (
-    getHudTextPreview(item.text, variables).slice(0, 30)
+    getTextPreview(item.text, variables).slice(0, TEXT_MAX_LENGTH)
   ), [item.text, variables]);
   const customFont = useMemo(() => (
     item.font ? findFont(fonts, item.font) : undefined
@@ -93,7 +94,7 @@ const HudText = ({
             </div>
           </ContextMenu.Trigger>
           <ContextMenu.Content>
-            <ContextMenu.Label className="text-xs!">HUD Text</ContextMenu.Label>
+            <ContextMenu.Label className="text-xs!">Text</ContextMenu.Label>
             <ContextMenu.Item
               onClick={onDelete}
               shortcut={window.electron.isDarwin ? '⌦' : 'Del'}
@@ -107,4 +108,4 @@ const HudText = ({
   );
 };
 
-export default HudText;
+export default TextItem;

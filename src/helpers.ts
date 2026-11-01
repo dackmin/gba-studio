@@ -13,6 +13,7 @@ import type {
   GameSoundFile,
   GameSprite,
   GameSpriteFile,
+  GameText,
 } from './types';
 
 slugify.extend({ '-': '_' });
@@ -220,6 +221,18 @@ export const duplicateSprite = (scene: GameScene, sprite: GameSprite): GameSprit
   };
 
   return newSprite;
+};
+
+export const duplicateText = (scene: GameScene, text: GameText): GameText => {
+  const sceneText = (scene.texts || []).find(t => t.id === text.id);
+
+  return {
+    ...cloneDeep(omit(text, ['id'])),
+    id: uuid(),
+    name: `${text.name} copy`,
+    x: sceneText ? (text.x || 0) + 8 : 0,
+    y: sceneText ? (text.y || 0) + 8 : 0,
+  };
 };
 
 export const duplicateScene = (scenes: GameScene[], scene: GameScene): GameScene => {

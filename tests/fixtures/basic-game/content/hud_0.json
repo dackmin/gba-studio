@@ -27,7 +27,7 @@
   "texts": [
     {
       "id": "65d889f4-8e5c-4ee3-83f2-3a737cc0f393",
-      "type": "hud-text",
+      "type": "text",
       "name": "HUD Text 1",
       "text": {
         "type": "variable",

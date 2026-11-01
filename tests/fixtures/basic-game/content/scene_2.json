@@ -49,6 +49,29 @@
       ]
     }
   ],
+  "texts": [
+    {
+      "id": "b1c2d3e4-0009-4a52-9c9d-0f7d5b2b6a39",
+      "type": "text",
+      "name": "Text 1",
+      "text": "Hello world",
+      "x": 16,
+      "y": 8,
+      "z": 1,
+      "color": "#ffcc00"
+    },
+    {
+      "id": "b1c2d3e4-000a-4a52-9c9d-0f7d5b2b6a3a",
+      "type": "text",
+      "name": "Text 2",
+      "text": {
+        "type": "variable",
+        "name": "96c1d71d-993a-42b4-9073-e7ba70439b54"
+      },
+      "x": 16,
+      "y": 24
+    }
+  ],
   "actors": [
     {
       "id": "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32",
