@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.2](https://github.com/dackmin/gba-studio/compare/v0.9.1...v0.9.2) (2026-11-03)
+
+### Bug Fixes
+
+* allow to clean vendors & redownload ([63c7cd4](https://github.com/dackmin/gba-studio/commit/63c7cd4bdce4cfe76a91614e8f9e891b6efdc70a))
+
 ## [0.9.1](https://github.com/dackmin/gba-studio/compare/v0.9.0...v0.9.1) (2026-11-03)
 
 ### Bug Fixes
