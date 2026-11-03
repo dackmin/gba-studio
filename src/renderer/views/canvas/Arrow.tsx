@@ -56,13 +56,13 @@ const Arrow = ({
       : sourceType === 'sensor'
         ? {
           x: (selectedSceneConfig?.x ?? 0) +
-            tileToPixel((source as GameSensor).x ?? 0, 16) + gridSize / 2,
+            tileToPixel((source as GameSensor).x ?? 0, gridSize) + gridSize / 2,
           y: (selectedSceneConfig?.y ?? 0) +
-            tileToPixel((source as GameSensor).y ?? 0, 16) + gridSize / 2,
+            tileToPixel((source as GameSensor).y ?? 0, gridSize) + gridSize / 2,
         }
         : {
-          x: tileToPixel((source as GameActor).x, 16) ?? 0,
-          y: tileToPixel((source as GameActor).y, 16) ?? 0,
+          x: tileToPixel((source as GameActor).x, gridSize) ?? 0,
+          y: tileToPixel((source as GameActor).y, gridSize) ?? 0,
         }
   ), [
     source, gridSize,

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { GameScene, GameSensor, GoToSceneEvent } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
+import { getGridSize } from '../../../helpers';
 import Arrow from './Arrow';
 
 export interface ArrowsProps {
@@ -10,7 +11,7 @@ export interface ArrowsProps {
 }
 
 const Arrows = ({
-  gridSize = 16,
+  gridSize,
 }: ArrowsProps) => {
   const { scenes, scripts } = useApp();
   const { selectedScene } = useCanvas();
@@ -48,7 +49,7 @@ const Arrows = ({
           key={(scene.id || scene._file) + '-' + e.id}
           source={scene}
           event={e}
-          gridSize={scene.map?.gridSize || gridSize}
+          gridSize={getGridSize(gridSize || scene.map?.gridSize)}
         />
       ))) }
       { sensorArrows.map(([sensor, events]) => events.map(e => (
@@ -56,7 +57,7 @@ const Arrows = ({
           key={sensor.id + '-' + e.id}
           source={sensor}
           event={e}
-          gridSize={selectedScene?.map?.gridSize || gridSize}
+          gridSize={getGridSize(gridSize || selectedScene?.map?.gridSize)}
           color="var(--orange-9)"
         />
       ))) }

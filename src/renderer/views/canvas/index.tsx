@@ -32,6 +32,7 @@ import {
   useBridgeListener,
   useCanvas,
   useEditor,
+  useGridSize,
   useLocalData,
 } from '../../services/hooks';
 import {
@@ -87,6 +88,7 @@ const Canvas = () => {
     onHudChange,
   } = useCanvas();
   const bottomBarHeight = useMemo(() => getSize('bottomBarHeight', 300), [getSize]);
+  const selectedGridSize = useGridSize(selectedScene);
 
   useTimeout(() => {
     const storedSelectedScene = getData('canvas.selectedScene');
@@ -527,11 +529,11 @@ const Canvas = () => {
         name: `Actor ${((selectedScene.actors?.length || 0) + 1)}`,
         x: pixelToTile(
           position.x - (sceneConfig?.x || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
         y: pixelToTile(
           position.y - (sceneConfig?.y || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
       };
 
@@ -567,11 +569,11 @@ const Canvas = () => {
         name: `Sprite ${((selectedScene.actors?.length || 0) + 1)}`,
         x: pixelToTile(
           position.x - (sceneConfig?.x || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
         y: pixelToTile(
           position.y - (sceneConfig?.y || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
       };
 
@@ -731,11 +733,11 @@ const Canvas = () => {
         name: `Sensor ${((selectedScene.map?.sensors?.length || 0) + 1)}`,
         x: pixelToTile(
           position.x - (sceneConfig?.x || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
         y: pixelToTile(
           position.y - (sceneConfig?.y || 0),
-          selectedScene.map?.gridSize || 16
+          selectedGridSize
         ),
       };
 
@@ -757,7 +759,7 @@ const Canvas = () => {
       selectItem?.(selectedScene, sensor);
     }
   }, [
-    tool, appPayload, subTool, selectedScene, selectedHud, project,
+    tool, appPayload, subTool, selectedScene, selectedHud, project, selectedGridSize,
     onCanvasChange, selectScene, onMoveScene, setTool, selectItem,
     onMoveHud, selectHud, selectHudItem,
   ]);
@@ -803,16 +805,11 @@ const Canvas = () => {
         )}
         fitAbsolute={true}
         onClick={onCanvasClick}
-        // initialZoom={getSize('canvas.zoom') || 1}
-        // initialOffsetX={getSize('canvas.x') || 0}
-        // initialOffsetY={getSize('canvas.y') || 0}
         padding={{
           left: !isCollapsed('leftSidebar') ? getSize('leftSidebarWidth') || 300 : 0,
           bottom: !isCollapsed('bottomBar') ? getSize('bottomBarHeight') || 300 : 0,
           right: !isCollapsed('rightSidebar') ? getSize('rightSidebarWidth') || 300 : 0,
         }}
-        // onZoom={onZoom}
-        // onPan={onPan}
       >
         { appPayload.scenes.map(scene => (
           <Scene
@@ -858,7 +855,7 @@ const Canvas = () => {
             actor={DEFAULT_ACTOR}
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
-            gridSize={selectedScene?.map?.gridSize}
+            gridSize={selectedGridSize}
           />
         ) }
 
@@ -867,7 +864,7 @@ const Canvas = () => {
             sensor={DEFAULT_SENSOR}
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
-            gridSize={selectedScene?.map?.gridSize}
+            gridSize={selectedGridSize}
           />
         ) }
 
@@ -876,7 +873,7 @@ const Canvas = () => {
             sprite={DEFAULT_SPRITE}
             className="!fixed pointer-events-none opacity-50 !z-1000"
             preview={true}
-            gridSize={selectedScene?.map?.gridSize}
+            gridSize={selectedGridSize}
           />
         ) }
 

@@ -9,7 +9,7 @@ import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameActor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
-import { findSprite, tileToPixel } from '../../../helpers';
+import { DEFAULT_SPRITE_SIZE, findSprite, tileToPixel } from '../../../helpers';
 import { usePreviewCursor } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
@@ -66,8 +66,8 @@ const Actor = ({
       style={{
         left: 0,
         top: 0,
-        width: actorSprite?.width ?? gridSize,
-        height: actorSprite?.height ?? gridSize,
+        width: actorSprite?.width ?? DEFAULT_SPRITE_SIZE,
+        height: actorSprite?.height ?? DEFAULT_SPRITE_SIZE,
       }}
     >
       <div className="absolute w-full h-full">

@@ -33,10 +33,14 @@ export const getMapSize = (
   height: Math.max(1, Math.round(pixelHeight / gridSize)),
 });
 
-export const getStaticGridSize = (gridSize: unknown) => {
-  const size = typeof gridSize === 'object' ? NaN : Number(gridSize);
+export const DEFAULT_GRID_SIZE = 16;
 
-  return Number.isFinite(size) && size > 0 ? size : undefined;
+export const DEFAULT_SPRITE_SIZE = 16;
+
+export const getGridSize = (gridSize?: unknown): number => {
+  const size = Math.floor(Number(gridSize));
+
+  return Number.isFinite(size) && size > 0 ? size : DEFAULT_GRID_SIZE;
 };
 
 export const resizeCollisions = (

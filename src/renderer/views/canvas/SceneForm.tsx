@@ -1,4 +1,10 @@
-import { type ChangeEvent, type KeyboardEvent, useCallback, useMemo } from 'react';
+import {
+  type ChangeEvent,
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   Button,
   Heading,
@@ -21,10 +27,10 @@ import {
   findBackground,
   getAssetUrl,
   getGraphicName,
+  getGridSize,
   getImageSize,
   getMapSize,
   getStartingSceneId,
-  getStaticGridSize,
   resizeCollisions,
 } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
@@ -146,9 +152,9 @@ const SceneForm = ({
       height: 0,
     };
 
-    const gridSize = getStaticGridSize(scene.map.gridSize ?? 16);
+    const gridSize = getGridSize(scene.map.gridSize);
 
-    if (scene.sceneType !== 'logos' && gridSize) {
+    if (scene.sceneType !== 'logos') {
       const { width, height } = getMapSize(pixelWidth, pixelHeight, gridSize);
 
       if (scene.map.collisions?.length) {
@@ -166,8 +172,14 @@ const SceneForm = ({
     onValueChange('background', getGraphicName(value || 'bg_default'));
   }, [syncMapSize, onValueChange]);
 
-  const onGridSizeChange = useCallback(async (value: any) => {
-    onValueChange('map.gridSize', value);
+  const onGridSizeChange = useCallback(async (e: FocusEvent<HTMLInputElement>) => {
+    const size = getGridSize(e.target.value);
+
+    if (size === scene.map?.gridSize) {
+      return;
+    }
+
+    onValueChange('map.gridSize', size);
     await syncMapSize(scene.background);
     onChange?.(scene);
   }, [scene, syncMapSize, onValueChange, onChange]);
@@ -338,13 +350,16 @@ const SceneForm = ({
                 { scene.sceneType !== 'logos' && (
                   <div className="flex flex-col gap-2">
                     <Text className="block text-slate" size="1">Grid size</Text>
-                    <EventValueField
+                    <TextField.Root
+                      key={`${scene.id}-${scene.map?.gridSize}`}
                       type="number"
-                      value={scene.map?.gridSize ?? 16}
-                      onValueChange={onGridSizeChange}
+                      min={1}
+                      step={1}
+                      defaultValue={scene.map?.gridSize ?? 16}
+                      onBlur={onGridSizeChange}
                     >
                       <TextField.Slot side="right">px</TextField.Slot>
-                    </EventValueField>
+                    </TextField.Root>
                   </div>
                 ) }
                 <div className="flex flex-col gap-2">

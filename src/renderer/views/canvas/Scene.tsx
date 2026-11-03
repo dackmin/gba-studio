@@ -34,7 +34,9 @@ import {
 import {
   findBackground,
   getAssetUrl,
+  getGridSize,
   getImageSize,
+  getMapSize,
   getStartingSceneId,
   loadImage,
   pixelToTile,
@@ -194,15 +196,11 @@ const Scene = ({
   ), [scene.texts]);
 
   const gridSize = useMemo(() => (
-    scene.map?.gridSize || 16
-  ), [scene]);
+    getGridSize(scene.map?.gridSize)
+  ), [scene.map?.gridSize]);
 
-  const tileWidth = useMemo(() => (
-    Math.ceil(state.size[0] / gridSize)
-  ), [state.size, gridSize]);
-
-  const tileHeight = useMemo(() => (
-    Math.ceil(state.size[1] / gridSize)
+  const { width: tileWidth, height: tileHeight } = useMemo(() => (
+    getMapSize(state.size[0], state.size[1], gridSize)
   ), [state.size, gridSize]);
 
   const drawBackground = useCallback(async () => {

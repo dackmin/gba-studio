@@ -7,7 +7,7 @@ import {
 } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
-import { findSprite, tileToPixel } from '../../../helpers';
+import { DEFAULT_SPRITE_SIZE, findSprite, tileToPixel } from '../../../helpers';
 import { useApp, useCanvas } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
@@ -59,9 +59,9 @@ const PlayerStart = ({
         left: 0,
         top: 0,
         width: getSprite(scene.player.sprite || 'sprite_default')
-          ?.width ?? gridSize,
+          ?.width ?? DEFAULT_SPRITE_SIZE,
         height: getSprite(scene.player.sprite || 'sprite_default')
-          ?.height ?? gridSize,
+          ?.height ?? DEFAULT_SPRITE_SIZE,
       }}
     >
       <div className="absolute w-full h-full">

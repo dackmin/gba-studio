@@ -4,7 +4,7 @@ import { Text } from '@radix-ui/themes';
 
 import type { SetActorPositionEvent } from '../../../types';
 import { findBackground, getAssetUrl, getImageSize, pixelToTile } from '../../../helpers';
-import { useApp, useSceneForm } from '../../services/hooks';
+import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import ActorListField from '../ActorListField';
 
@@ -21,6 +21,7 @@ const EventSetActorPosition = ({
 }: EventSetActorPositionProps) => {
   const { backgrounds } = useApp();
   const { scene } = useSceneForm();
+  const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
@@ -71,7 +72,7 @@ const EventSetActorPosition = ({
               value={event.x}
               onValueChange={onValueChange_.bind(null, 'x')}
               min={0}
-              max={pixelToTile(size[0] - 240, scene?.map?.gridSize || 16)}
+              max={pixelToTile(size[0] - 240, gridSize)}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -81,7 +82,7 @@ const EventSetActorPosition = ({
               value={event.y}
               onValueChange={onValueChange_.bind(null, 'y')}
               min={0}
-              max={pixelToTile(size[1] - 160, scene?.map?.gridSize || 16)}
+              max={pixelToTile(size[1] - 160, gridSize)}
             />
           </div>
         </div>

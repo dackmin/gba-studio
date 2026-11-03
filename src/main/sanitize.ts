@@ -39,7 +39,7 @@ import { TEXT_MAX_LENGTH } from '../commons';
 import {
   findBackground,
   getMapSize,
-  getStaticGridSize,
+  getGridSize,
   resizeCollisions,
 } from '../helpers';
 import { getResourcesDir } from './utils';
@@ -319,17 +319,11 @@ export const sanitizeScene = async (
     scene.map = { type: 'map', width: 0, height: 0, gridSize: 16 };
   }
 
-  if (!scene.map.gridSize) {
-    scene.map.gridSize = 16;
-  }
+  scene.map.gridSize = getGridSize(scene.map.gridSize);
 
-  const gridSize = getStaticGridSize(scene.map.gridSize);
+  const gridSize = scene.map.gridSize;
 
   try {
-    if (!gridSize) {
-      throw new Error('Dynamic grid size');
-    }
-
     const background = findBackground(opts?.backgrounds, scene.background);
     const size = await imageSizeFromFile(
       !scene.background || scene.background === 'bg_default'

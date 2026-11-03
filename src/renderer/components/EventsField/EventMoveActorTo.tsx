@@ -11,7 +11,7 @@ import {
   pixelToTile,
   tileToPixel,
 } from '../../../helpers';
-import { useApp, useSceneForm } from '../../services/hooks';
+import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
 import ActorListField from '../ActorListField';
@@ -29,6 +29,7 @@ const EventMoveActorTo = ({
 }: EventMoveActorToProps) => {
   const { eventEmitter, backgrounds, sprites } = useApp();
   const { scene } = useSceneForm();
+  const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);
 
   const background = useMemo(() => (
@@ -69,26 +70,26 @@ const EventMoveActorTo = ({
 
     if (['x', 'y'].includes(name)) {
       eventEmitter?.emit('scene:camera:set', {
-        x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
-        y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
-        width: sprite?.width ?? scene?.map?.gridSize ?? 16,
-        height: sprite?.height ?? scene?.map?.gridSize ?? 16,
+        x: tileToPixel(typeof event.x === 'number' ? event.x : 0, gridSize),
+        y: tileToPixel(typeof event.y === 'number' ? event.y : 0, gridSize),
+        width: sprite?.width ?? gridSize,
+        height: sprite?.height ?? gridSize,
         sceneId: scene?.id,
       });
     }
 
     onValueChange?.(event);
-  }, [event, eventEmitter, scene, sprite, onValueChange]);
+  }, [event, eventEmitter, scene, sprite, gridSize, onValueChange]);
 
   const onFocus = useCallback(() => {
     eventEmitter?.emit('scene:camera:set', {
-      x: tileToPixel(typeof event.x === 'number' ? event.x : 0, scene?.map?.gridSize || 16),
-      y: tileToPixel(typeof event.y === 'number' ? event.y : 0, scene?.map?.gridSize || 16),
-      width: sprite?.width ?? scene?.map?.gridSize ?? 16,
-      height: sprite?.height ?? scene?.map?.gridSize ?? 16,
+      x: tileToPixel(typeof event.x === 'number' ? event.x : 0, gridSize),
+      y: tileToPixel(typeof event.y === 'number' ? event.y : 0, gridSize),
+      width: sprite?.width ?? gridSize,
+      height: sprite?.height ?? gridSize,
       sceneId: scene?.id,
     });
-  }, [eventEmitter, event.x, event.y, scene, sprite]);
+  }, [eventEmitter, event.x, event.y, scene, sprite, gridSize]);
 
   const onBlur = useCallback(() => {
     eventEmitter?.emit('scene:camera:reset', {
@@ -118,7 +119,7 @@ const EventMoveActorTo = ({
               value={event.x}
               onValueChange={onValueChange_.bind(null, 'x')}
               min={0}
-              max={pixelToTile(size[0] - 240, scene?.map?.gridSize || 16)}
+              max={pixelToTile(size[0] - 240, gridSize)}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -128,7 +129,7 @@ const EventMoveActorTo = ({
               value={event.y}
               onValueChange={onValueChange_.bind(null, 'y')}
               min={0}
-              max={pixelToTile(size[1] - 160, scene?.map?.gridSize || 16)}
+              max={pixelToTile(size[1] - 160, gridSize)}
             />
           </div>
         </div>

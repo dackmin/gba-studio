@@ -13,7 +13,12 @@ import type {
   GameSpriteFile,
   SpriteAnimationFrame,
 } from '../../../types';
-import { getAssetUrl, loadImage, tileToPixel } from '../../../helpers';
+import {
+  DEFAULT_SPRITE_SIZE,
+  getAssetUrl,
+  loadImage,
+  tileToPixel,
+} from '../../../helpers';
 import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
 import { mergeRefs } from '../../services/helpers';
@@ -55,13 +60,13 @@ const Sprite = ({
   const width = useMemo(() => (
     (widthProp
       ? tileToPixel(widthProp ?? 1, gridSize ?? 16)
-      : (sprite?.width ?? gridSize ?? 16)) * scale
+      : (sprite?.width ?? DEFAULT_SPRITE_SIZE)) * scale
   ), [gridSize, sprite?.width, widthProp, scale]);
 
   const height = useMemo(() => (
     (heightProp
       ? tileToPixel(heightProp ?? 1, gridSize ?? 16)
-      : (sprite?.height ?? gridSize ?? 16)) * scale
+      : (sprite?.height ?? DEFAULT_SPRITE_SIZE)) * scale
   ), [gridSize, sprite?.height, heightProp, scale]);
 
   const redraw = useCallback(async () => {

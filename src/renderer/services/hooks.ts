@@ -10,7 +10,8 @@ import {
 } from 'react';
 import { useInfiniteCanvas, useTimeout } from '@junipero/react';
 
-import { findFont, getAssetUrl } from '../../helpers';
+import { findFont, getAssetUrl, getGridSize } from '../../helpers';
+import type { GameScene } from '../../types';
 import { hexToRgb } from './helpers';
 import {
   AppContext,
@@ -79,6 +80,8 @@ export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
 };
 
 export const useApp = () => use(AppContext);
+
+export const useGridSize = (scene?: GameScene) => getGridSize(scene?.map?.gridSize);
 export const useEditor = () => use(EditorContext);
 export const useCanvas = () => use(CanvasContext);
 export const useSceneForm = () => use(SceneFormContext);

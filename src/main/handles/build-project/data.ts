@@ -1,4 +1,4 @@
-import { findBackground, findSprite } from '../../../helpers';
+import { findBackground, findSprite, getGridSize } from '../../../helpers';
 import { getBackgroundLayoutFromFile } from './assets';
 import type { Build, InternalSpriteAnimation, SpriteAnimation } from '../../../types';
 
@@ -66,8 +66,10 @@ export async function prepareData (build: Build) {
         const width = layout?.width ?? 256;
         const height = layout?.height ?? 256;
 
-        scene.map.width ||= Math.round(width / scene.map.gridSize);
-        scene.map.height ||= Math.round(height / scene.map.gridSize);
+        const gridSize = getGridSize(scene.map.gridSize);
+
+        scene.map.width ||= Math.round(width / gridSize);
+        scene.map.height ||= Math.round(height / gridSize);
       }
     }
 

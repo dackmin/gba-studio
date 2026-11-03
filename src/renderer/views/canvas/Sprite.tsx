@@ -9,7 +9,7 @@ import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameSprite } from '../../../types';
 import { useApp, useCanvas, usePreviewCursor } from '../../services/hooks';
-import { findSprite, tileToPixel } from '../../../helpers';
+import { DEFAULT_SPRITE_SIZE, findSprite, tileToPixel } from '../../../helpers';
 import InnerSprite from '../../components/Sprite';
 
 export interface SpriteProps extends MoveableProps {
@@ -65,8 +65,8 @@ const Sprite = ({
       style={{
         left: 0,
         top: 0,
-        width: getSprite(sprite.sprite)?.width ?? gridSize,
-        height: getSprite(sprite.sprite)?.height ?? gridSize,
+        width: getSprite(sprite.sprite)?.width ?? DEFAULT_SPRITE_SIZE,
+        height: getSprite(sprite.sprite)?.height ?? DEFAULT_SPRITE_SIZE,
       }}
     >
       <div className="absolute w-full h-full">
