@@ -9,7 +9,8 @@ import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameActor } from '../../../types';
 import { useApp, useCanvas } from '../../services/hooks';
-import { DEFAULT_SPRITE_SIZE, findSprite, tileToPixel } from '../../../helpers';
+import { findSprite, tileToPixel } from '../../../helpers';
+import { DEFAULT_SPRITE_SIZE } from '../../../commons';
 import { usePreviewCursor } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 

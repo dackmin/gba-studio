@@ -14,11 +14,11 @@ import type {
   SpriteAnimationFrame,
 } from '../../../types';
 import {
-  DEFAULT_SPRITE_SIZE,
   getAssetUrl,
   loadImage,
   tileToPixel,
 } from '../../../helpers';
+import { DEFAULT_SPRITE_SIZE } from '../../../commons';
 import { SPRITE_HORIZONTAL_FRAMES } from '../../services/graphics';
 import { usePlayback } from '../../services/hooks';
 import { mergeRefs } from '../../services/helpers';

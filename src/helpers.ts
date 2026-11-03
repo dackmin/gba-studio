@@ -15,6 +15,7 @@ import type {
   GameSpriteFile,
   GameText,
 } from './types';
+import { DEFAULT_GRID_SIZE } from './commons';
 
 slugify.extend({ '-': '_' });
 
@@ -27,15 +28,11 @@ export const pixelToTile = (pixel: number, gridSize: number) =>
 export const getMapSize = (
   pixelWidth: number,
   pixelHeight: number,
-  gridSize: number = 16,
+  gridSize: number = DEFAULT_GRID_SIZE,
 ) => ({
   width: Math.max(1, Math.round(pixelWidth / gridSize)),
   height: Math.max(1, Math.round(pixelHeight / gridSize)),
 });
-
-export const DEFAULT_GRID_SIZE = 16;
-
-export const DEFAULT_SPRITE_SIZE = 16;
 
 export const getGridSize = (gridSize?: unknown): number => {
   const size = Math.floor(Number(gridSize));
