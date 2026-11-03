@@ -63,9 +63,9 @@ namespace neo
       // being in a different collision group, touches this actor).
       void trigger_collide();
 
-      // Side of the other rect hit by the first one ("up" = the first rect
+      // Side of the other rect hit by the first one (UP = the first rect
       // is above the other), in the same pixel space
-      static bn::string_view get_collision_side(
+      static neo::types::collision_side get_collision_side(
         int player_left, int player_top, int player_width, int player_height,
         int other_left, int other_top, int other_width, int other_height);
 

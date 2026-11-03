@@ -64,6 +64,15 @@ namespace neo::types
     FROM_PLAYER
   };
 
+  enum class collision_side
+  {
+    NONE,
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+  };
+
   enum class animation_state
   {
     IDLE,

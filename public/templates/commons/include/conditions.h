@@ -17,6 +17,8 @@ namespace neo::conditions
 
   // Converts a neo::types::direction to its name ("up", "down", ...)
   bn::string_view get_direction_string(neo::types::direction direction);
+
+  bn::string_view get_collision_side_string(neo::types::collision_side side);
 }
 
 #endif

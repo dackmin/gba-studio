@@ -164,9 +164,11 @@ namespace neo::conditions
       }
       else if (expression->type == "collision-side")
       {
-        BN_LOG("[IF] Getting collision side: ", game->active_collision_side);
+        bn::string_view side = get_collision_side_string(game->active_collision_side);
 
-        return { false, 0, game->active_collision_side };
+        BN_LOG("[IF] Getting collision side: ", side);
+
+        return { false, 0, side };
       }
       else if (expression->type == "scene")
       {
@@ -207,6 +209,23 @@ namespace neo::conditions
         return "from_player";
       default:
         return "down";
+    }
+  }
+
+  bn::string_view get_collision_side_string (neo::types::collision_side side)
+  {
+    switch (side)
+    {
+      case neo::types::collision_side::LEFT:
+        return "left";
+      case neo::types::collision_side::RIGHT:
+        return "right";
+      case neo::types::collision_side::UP:
+        return "up";
+      case neo::types::collision_side::DOWN:
+        return "down";
+      default:
+        return "";
     }
   }
 

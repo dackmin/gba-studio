@@ -1459,14 +1459,12 @@ namespace neo
   }
 
   /**
-   * Which side of a collided actor/sprite the player hit, as a direction
-   * name ("up", "down", "left", "right"), so it compares directly with
-   * a direction expression. Uses the two overlapping rects in map pixel
-   * coordinates and picks the axis with the smallest penetration: the
-   * side the player just crossed to enter the other rect. "up" means
-   * the player is above it (stomp).
+   * Which side of a collided actor/sprite the player hit. Uses the two
+   * overlapping rects in map pixel coordinates and picks the axis with
+   * the smallest penetration: the side the player just crossed to enter
+   * the other rect. UP means the player is above it (stomp).
    */
-  bn::string_view actor::get_collision_side(
+  neo::types::collision_side actor::get_collision_side(
     int player_left, int player_top, int player_width, int player_height,
     int other_left, int other_top, int other_width, int other_height)
   {
@@ -1479,23 +1477,23 @@ namespace neo
     // The smallest overlap is the axis the player entered through, so
     // it identifies the side that was hit
     int smallest = overlap_left;
-    bn::string_view side = "left";
+    neo::types::collision_side side = neo::types::collision_side::LEFT;
 
     if (overlap_right < smallest)
     {
       smallest = overlap_right;
-      side = "right";
+      side = neo::types::collision_side::RIGHT;
     }
 
     if (overlap_up < smallest)
     {
       smallest = overlap_up;
-      side = "up";
+      side = neo::types::collision_side::UP;
     }
 
     if (overlap_down < smallest)
     {
-      side = "down";
+      side = neo::types::collision_side::DOWN;
     }
 
     return side;
@@ -1565,7 +1563,7 @@ namespace neo
           player_left, player_top, player_width, player_height,
           other_left, other_top, other_width, other_height);
         other->trigger_collide();
-        game->active_collision_side = "";
+        game->active_collision_side = neo::types::collision_side::NONE;
       }
       else if (!touching)
       {
@@ -1611,7 +1609,7 @@ namespace neo
           player_left, player_top, player_width, player_height,
           other_left, other_top, other_width, other_height);
         other->trigger_collide();
-        game->active_collision_side = "";
+        game->active_collision_side = neo::types::collision_side::NONE;
       }
       else if (!touching)
       {

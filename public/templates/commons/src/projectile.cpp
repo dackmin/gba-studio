@@ -431,7 +431,7 @@ namespace neo
     );
 
     other->trigger_collide();
-    game->active_collision_side = "";
+    game->active_collision_side = neo::types::collision_side::NONE;
 
     return !definition->destroy_on_collision;
   }
