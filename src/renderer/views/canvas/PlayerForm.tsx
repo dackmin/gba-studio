@@ -78,7 +78,7 @@ const PlayerForm = ({
                   value={player.direction ?? 'down'}
                   exclude={[
                     'towards_player', 'from_player', 'player', 'up_left', 'up_right',
-                    'down_left', 'down_right',
+                    'down_left', 'down_right', 'all',
                   ]}
                   onValueChange={onValueChange.bind(null, 'direction')}
                 />

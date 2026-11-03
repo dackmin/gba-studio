@@ -66,7 +66,16 @@ namespace neo::types
 
   enum class collision_side
   {
-    NONE,
+    NONE, // outside of a collision
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+  };
+
+  enum class bounce_direction
+  {
+    ALL, // whichever side is touched
     LEFT,
     RIGHT,
     UP,
@@ -1389,6 +1398,8 @@ namespace neo::types
     int collision_y;
     int collision_width;
     int collision_height;
+    const event_value* bounce;
+    neo::types::bounce_direction bounce_direction;
     int init_events_count;
     const event* const* init_events;
     int interact_events_count;

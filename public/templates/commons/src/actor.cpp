@@ -1499,6 +1499,61 @@ namespace neo
     return side;
   }
 
+  void actor::bounce_from(neo::types::collision_side side, int amount)
+  {
+    int dx = side == neo::types::collision_side::LEFT ? -1
+      : (side == neo::types::collision_side::RIGHT ? 1 : 0);
+    int dy = side == neo::types::collision_side::UP ? -1
+      : (side == neo::types::collision_side::DOWN ? 1 : 0);
+
+    if (dy != 0)
+    {
+      vertical_velocity = dy * launch_velocity(amount);
+      vertical_remaining = 0;
+      grounded = false;
+      jump_cuttable = false;
+
+      return;
+    }
+
+    int remaining = amount;
+
+    while (remaining > 0 && !game->scene_changed)
+    {
+      int step = bn::min(PLAYER_SPEED, remaining);
+
+      if (side_scroller_blocked_at((int)position.x() + dx * step, (int)position.y()))
+      {
+        break;
+      }
+
+      set_position(bn::fixed_point(position.x() + dx * step, position.y()));
+      game->update_projectiles();
+      game->update_frame();
+      remaining -= step;
+    }
+  }
+
+  static bool bounce_accepts_side(
+    neo::types::bounce_direction bounce_direction,
+    neo::types::collision_side side
+  )
+  {
+    switch (bounce_direction)
+    {
+      case neo::types::bounce_direction::LEFT:
+        return side == neo::types::collision_side::LEFT;
+      case neo::types::bounce_direction::RIGHT:
+        return side == neo::types::collision_side::RIGHT;
+      case neo::types::bounce_direction::UP:
+        return side == neo::types::collision_side::UP;
+      case neo::types::bounce_direction::DOWN:
+        return side == neo::types::collision_side::DOWN;
+      default:
+        return true;
+    }
+  }
+
   void actor::check_collisions()
   {
     const neo::types::map* map_data = game->active_scene->map_data;
@@ -1562,8 +1617,27 @@ namespace neo
         game->active_collision_side = get_collision_side(
           player_left, player_top, player_width, player_height,
           other_left, other_top, other_width, other_height);
+        neo::types::collision_side side = game->active_collision_side;
         other->trigger_collide();
         game->active_collision_side = neo::types::collision_side::NONE;
+
+        if (
+          !top_down &&
+          other->definition->bounce != nullptr &&
+          !game->scene_changed &&
+          bounce_accepts_side(other->definition->bounce_direction, side)
+        )
+        {
+          int bounce = other->definition->bounce->as_int(game->variables);
+
+          if (bounce > 0)
+          {
+            bounce_from(side, bn::min(bounce, 255));
+
+            player_left = (int)position.x() + box_x();
+            player_top = (int)position.y() + box_y();
+          }
+        }
       }
       else if (!touching)
       {

@@ -136,6 +136,13 @@ export const sanitizeActor = async (actor: GameActor): Promise<GameActor> => {
   }
 
   actor.collisionGroup = Math.min(4, Math.max(0, Number(actor.collisionGroup ?? 0)));
+  actor.bounce = typeof actor.bounce === 'number' || actor.bounce === undefined
+    ? Math.min(255, Math.max(0, Math.round(Number(actor.bounce ?? 0)) || 0))
+    : actor.bounce;
+
+  if (!['all', 'up', 'down', 'left', 'right'].includes('' + actor.bounceDirection)) {
+    actor.bounceDirection = 'all';
+  }
 
   for (const event of actor.events?.init ?? []) {
     await sanitizeEvent(event);

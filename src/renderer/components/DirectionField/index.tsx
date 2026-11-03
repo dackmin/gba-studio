@@ -15,7 +15,7 @@ export interface DirectionFieldProps extends SegmentedControl.RootProps {
 
 const DirectionField = ({
   className,
-  exclude = ['up_left', 'up_right', 'down_left', 'down_right', 'player'],
+  exclude = ['up_left', 'up_right', 'down_left', 'down_right', 'player', 'all'],
   ...rest
 }: DirectionFieldProps) => {
   return (
@@ -26,6 +26,11 @@ const DirectionField = ({
         className,
       )}
     >
+      { !exclude.includes('all') && (
+        <SegmentedControl.Item title="All" value="all">
+          All
+        </SegmentedControl.Item>
+      ) }
       { !exclude.includes('down') && (
         <SegmentedControl.Item title="Down" value="down">
           <TriangleDownIcon />

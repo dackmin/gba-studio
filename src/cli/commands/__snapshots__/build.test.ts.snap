@@ -1425,6 +1425,21 @@ namespace neo::scenes
     &scene_0_actor_0_z_raw_value
   );
   
+  constexpr bn::string_view scene_0_actor_0_bounce_name = "";
+  constexpr bn::string_view scene_0_actor_0_bounce_string_value = "0";
+  constexpr neo::variables::value scene_0_actor_0_bounce_raw_value(
+    scene_0_actor_0_bounce_name,
+    0,
+    false,
+    scene_0_actor_0_bounce_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_actor_0_bounce_type = "value";
+  constexpr neo::types::event_value scene_0_actor_0_bounce_value(
+    scene_0_actor_0_bounce_type,
+    &scene_0_actor_0_bounce_raw_value
+  );
+  
   constexpr bn::string_view scene_0_actor_0_id = "d2a023cc-364d-4caf-9638-78937f593e4e";
   constexpr bn::string_view scene_0_actor_0_name = "Actor 1";
   constexpr neo::types::actor scene_0_actor_0 = {
@@ -1441,6 +1456,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    &scene_0_actor_0_bounce_value,
+    neo::types::bounce_direction::ALL,
     // Events
     0,
     nullptr,
@@ -1526,6 +1543,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    nullptr,
+    neo::types::bounce_direction::ALL,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -1752,6 +1771,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    nullptr,
+    neo::types::bounce_direction::ALL,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2056,6 +2077,21 @@ namespace neo::scenes
     &adventure_actor_0_z_raw_value
   );
   
+  constexpr bn::string_view adventure_actor_0_bounce_name = "";
+  constexpr bn::string_view adventure_actor_0_bounce_string_value = "0";
+  constexpr neo::variables::value adventure_actor_0_bounce_raw_value(
+    adventure_actor_0_bounce_name,
+    0,
+    false,
+    adventure_actor_0_bounce_string_value,
+    0
+  );
+  constexpr bn::string_view adventure_actor_0_bounce_type = "value";
+  constexpr neo::types::event_value adventure_actor_0_bounce_value(
+    adventure_actor_0_bounce_type,
+    &adventure_actor_0_bounce_raw_value
+  );
+  
   constexpr bn::string_view adventure_actor_0_id = "b1c2d3e4-0002-4a52-9c9d-0f7d5b2b6a32";
   constexpr bn::string_view adventure_actor_0_name = "Target";
   constexpr neo::types::actor adventure_actor_0 = {
@@ -2072,6 +2108,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    &adventure_actor_0_bounce_value,
+    neo::types::bounce_direction::ALL,
     // Events
     0,
     nullptr,
@@ -2248,6 +2286,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    nullptr,
+    neo::types::bounce_direction::ALL,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2474,6 +2514,8 @@ namespace neo::scenes
     0,
     16,
     16,
+    nullptr,
+    neo::types::bounce_direction::ALL,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2780,6 +2822,24 @@ namespace neo::types
     PLAYER, // Compat, same as TOWARDS_PLAYER
     TOWARDS_PLAYER,
     FROM_PLAYER
+  };
+
+  enum class collision_side
+  {
+    NONE, // outside of a collision
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+  };
+
+  enum class bounce_direction
+  {
+    ALL, // whichever side is touched
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
   };
 
   enum class animation_state
@@ -4098,6 +4158,8 @@ namespace neo::types
     int collision_y;
     int collision_width;
     int collision_height;
+    const event_value* bounce;
+    neo::types::bounce_direction bounce_direction;
     int init_events_count;
     const event* const* init_events;
     int interact_events_count;

@@ -147,6 +147,7 @@ namespace neo
       // not-touching -> touching transition. Shared by both movement
       // models (top-down grid steps and side-scroller free movement).
       void check_collisions();
+      void bounce_from(neo::types::collision_side side, int amount);
       bool try_interact();
 
       const neo::types::sprite_animation* find_animation(

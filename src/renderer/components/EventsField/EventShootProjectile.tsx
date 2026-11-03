@@ -99,6 +99,7 @@ const EventShootProjectile = ({
         <DirectionField
           value={event.direction ?? 'right'}
           exclude={[
+            'all',
             ...(event.sourceType === 'player' ? ['towards_player' as Direction] : []),
             ...(event.sourceType === 'actor' ? ['from_player' as Direction] : []),
           ]}

@@ -68,7 +68,7 @@ export type MenuDirection =
   | 'down_left'
   | 'down_right';
 
-export type Direction = ActorDirection | MenuDirection;
+export type Direction = ActorDirection | MenuDirection | 'all';
 
 export interface ListItem {
   name: string;
@@ -249,6 +249,8 @@ export interface GameActor {
   // Collision group (1-4, 0 = none): actors/sprites in a different group than the player are solid
   // and fire collide events on touch.
   collisionGroup?: number;
+  bounce?: EventValue;
+  bounceDirection?: 'all' | 'up' | 'down' | 'left' | 'right';
   events?: {
     init?: SceneEvent[];
     interact?: SceneEvent[];

@@ -94,7 +94,11 @@ const EventShowMenu = ({
           <Text size="1" className="text-slate">Disposition</Text>
           <DirectionField
             value={event.direction || 'down_right'}
-            exclude={['left', 'right', 'up', 'down', 'player', 'towards_player', 'from_player']}
+            exclude={[
+              'left', 'right', 'up', 'down',
+              'player', 'towards_player', 'from_player',
+              'all',
+            ]}
             onValueChange={onValueChange_.bind(null, 'direction')}
           />
         </div>

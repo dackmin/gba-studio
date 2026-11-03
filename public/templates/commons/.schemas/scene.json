@@ -44,6 +44,13 @@
           "minimum": 0,
           "type": "number"
         },
+        "bounce": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "bounceDirection": {
+          "enum": ["all", "up", "down", "left", "right"],
+          "type": "string"
+        },
         "events": {
           "additionalProperties": false,
           "properties": {

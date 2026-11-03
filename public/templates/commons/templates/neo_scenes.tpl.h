@@ -383,6 +383,7 @@ namespace neo::scenes
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_x") value=(valuedef this.x 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_y") value=(valuedef this.y 0)}}
   {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_z") value=(valuedef this.z 2)}}
+  {{>valuePartial prefix=(concat (slug ../this.name) "_actor_" @index "_bounce") value=(valuedef this.bounce 0)}}
   constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_id = "{{this.id}}";
   constexpr bn::string_view {{slug ../this.name}}_actor_{{@index}}_name = "{{escapeCpp this.name}}";
   constexpr neo::types::actor {{slug ../this.name}}_actor_{{@index}} = {
@@ -399,6 +400,8 @@ namespace neo::scenes
     {{valuedef this._collisionRect.y 0}},
     {{valuedef this._collisionRect.width 16}},
     {{valuedef this._collisionRect.height 16}},
+    &{{slug ../this.name}}_actor_{{@index}}_bounce_value,
+    neo::types::bounce_direction::{{uppercase (valuedef this.bounceDirection "all")}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -582,6 +585,8 @@ namespace neo::scenes
     {{valuedef this.player._collisionRect.y 0}},
     {{valuedef this.player._collisionRect.width 16}},
     {{valuedef this.player._collisionRect.height 16}},
+    nullptr,
+    neo::types::bounce_direction::ALL,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,

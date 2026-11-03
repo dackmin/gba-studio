@@ -19,8 +19,11 @@ import { useCanvas, useDelayedCallback } from '../../services/hooks';
 import EventsField from '../../components/EventsField';
 import SpritesListField from '../../components/SpritesListField';
 import DirectionField from '../../components/DirectionField';
-import EventValueField from '../../components/EventValueField';
+import EventValueField, {
+  EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES,
+} from '../../components/EventValueField';
 import CollisionGroupField from '../../components/CollisionGroupField';
+import Collapsible from '../../components/Collapsible';
 
 export interface ActorFormProps {
   actor: GameActor;
@@ -144,28 +147,82 @@ const ActorForm = ({
                 value={actor.direction || 'down'}
                 exclude={[
                   'towards_player', 'from_player', 'player', 'up_left', 'up_right',
-                  'down_left', 'down_right',
+                  'down_left', 'down_right', 'all',
                 ]}
                 onValueChange={onValueChange.bind(null, 'direction')}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={!!actor.disableDirectionOnInteract}
-                onCheckedChange={
-                  onValueChange.bind(null, 'disableDirectionOnInteract')
-                }
-              />
-              <Text size="1">Don&apos;t turn to face player on interact</Text>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Text className="block text-slate" size="1">Collision group</Text>
-              <CollisionGroupField
-                value={actor.collisionGroup}
-                sceneType={selectedScene?.sceneType}
-                onValueChange={onValueChange.bind(null, 'collisionGroup')}
-              />
-            </div>
+            <Collapsible.Root>
+              <Collapsible.Trigger className="px-0! py-0! text-sm! text-slate">
+                Advanced
+              </Collapsible.Trigger>
+              <Collapsible.Content className="mt-4! flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Reaction</Text>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={!!actor.disableDirectionOnInteract}
+                      onCheckedChange={
+                        onValueChange.bind(null, 'disableDirectionOnInteract')
+                      }
+                    />
+                    <Text size="1">Don&apos;t turn to face player on interact</Text>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Collision group</Text>
+                  <CollisionGroupField
+                    value={actor.collisionGroup}
+                    sceneType={selectedScene?.sceneType}
+                    onValueChange={onValueChange.bind(null, 'collisionGroup')}
+                  />
+                </div>
+                { selectedScene?.sceneType === 'side-scroller' && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-1">
+                        <Text className="block text-slate" size="1">Bounce Height</Text>
+                        <Tooltip
+                          content={
+                            'Pushes the player away by this many pixels when touching this ' +
+                            'actor (use a big value for springs-like behavior).'
+                          }
+                        >
+                          <InfoCircledIcon
+                            width={12}
+                            height={12}
+                            className="[&_path]:fill-(--accent-9)"
+                          />
+                        </Tooltip>
+                      </div>
+                      <EventValueField
+                        type="number"
+                        min={0}
+                        max={255}
+                        excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                        value={actor.bounce ?? 0}
+                        onValueChange={onValueChange.bind(null, 'bounce')}
+                      >
+                        <TextField.Slot side="right">
+                          px
+                        </TextField.Slot>
+                      </EventValueField>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Bounce Direction</Text>
+                      <DirectionField
+                        value={actor.bounceDirection ?? 'all'}
+                        exclude={[
+                          'towards_player', 'from_player', 'player',
+                          'up_left', 'up_right', 'down_left', 'down_right',
+                        ]}
+                        onValueChange={onValueChange.bind(null, 'bounceDirection')}
+                      />
+                    </div>
+                  </>
+                ) }
+              </Collapsible.Content>
+            </Collapsible.Root>
           </div>
           <Inset side="x"><Separator className="!w-full my-4" /></Inset>
           <div className="flex flex-col gap-4 pb-10">
