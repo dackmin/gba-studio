@@ -448,6 +448,17 @@ namespace neo
       vertical_velocity = -jump_velocity();
       vertical_remaining = 0;
       grounded = false;
+      jump_cuttable = true;
+    }
+
+    if (jump_cuttable && (vertical_velocity >= 0 || !bn::keypad::a_held()))
+    {
+      if (vertical_velocity < 0)
+      {
+        vertical_velocity /= 2;
+      }
+
+      jump_cuttable = false;
     }
 
     apply_side_scroller_gravity();
@@ -1173,11 +1184,13 @@ namespace neo
 
   bn::fixed actor::jump_velocity()
   {
+    return launch_velocity(game->active_scene->jump_height->as_fixed(game->variables));
+  }
+
+  bn::fixed actor::launch_velocity(bn::fixed height_)
+  {
     bn::fixed gravity = scene_gravity();
-    bn::fixed height = bn::max(
-      game->active_scene->jump_height->as_fixed(game->variables),
-      bn::fixed(0)
-    );
+    bn::fixed height = bn::max(height_, bn::fixed(0));
 
     // https://top10k.com/tool/jump-height-physics-game
     return (gravity + bn::fixed(bn::sqrt(gravity * gravity + 8 * gravity * height))) / 2;

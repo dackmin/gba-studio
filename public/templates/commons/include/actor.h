@@ -97,6 +97,7 @@ namespace neo
       bn::fixed vertical_velocity = 0;
       bn::fixed vertical_remaining = 0;
       bool grounded = false;
+      bool jump_cuttable = false;
       // Whether the player is currently touching this actor (different
       // collision group), so collide events fire once per touch instead
       // of on every frame of contact.
@@ -120,6 +121,7 @@ namespace neo
       void apply_side_scroller_gravity();
       bn::fixed scene_gravity();
       bn::fixed jump_velocity();
+      bn::fixed launch_velocity(bn::fixed height);
       void check_input_point_and_click();
       void check_input_adventure();
       bool adventure_blocked_at(int pixel_x, int pixel_y);
