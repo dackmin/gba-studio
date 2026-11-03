@@ -55,6 +55,7 @@ interface AppBridge extends EventTarget {
     opts?: BuildOptions,
   ): Promise<string>;
   cleanBuildFolder(projectPath?: string): Promise<void>;
+  cleanVendorsCache(): Promise<void>;
   abortBuildProject(buildId?: string): Promise<void>;
   getRomPath(projectPath: string): Promise<string>;
   getEditorConfig(): Promise<AppStorage>;

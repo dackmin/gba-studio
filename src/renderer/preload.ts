@@ -87,6 +87,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('abort-build-project', buildId),
   cleanBuildFolder: (projectPath?: string): Promise<void> =>
     ipcRenderer.invoke('clean-build-folder', projectPath),
+  cleanVendorsCache: (): Promise<void> =>
+    ipcRenderer.invoke('clean-vendors-cache'),
   getRomPath: (projectPath: string): Promise<string> =>
     ipcRenderer.invoke('get-rom-path', projectPath),
   getEditorConfig: (): Promise<AppStorage> =>

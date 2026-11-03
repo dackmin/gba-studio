@@ -32,6 +32,7 @@ import {
   registerClipboard,
   getClipboard,
   cleanBuildFolder,
+  cleanVendorsCache,
   openParentFolder,
   removeRecentProject,
   getProjectRelativePath,
@@ -118,6 +119,7 @@ ipcMain.handle('get-resources-path', getResourcesPath);
 ipcMain.handle('register-clipboard', registerClipboard.bind(null, storage));
 ipcMain.handle('get-clipboard', getClipboard.bind(null, storage));
 ipcMain.handle('clean-build-folder', cleanBuildFolder);
+ipcMain.handle('clean-vendors-cache', cleanVendorsCache);
 ipcMain.handle('open-parent-folder', openParentFolder);
 ipcMain.handle('remove-recent-project', removeRecentProject.bind(null, storage));
 ipcMain.handle('get-project-relative-path', getProjectRelativePath);

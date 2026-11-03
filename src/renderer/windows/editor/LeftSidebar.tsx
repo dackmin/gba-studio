@@ -152,6 +152,16 @@ const LeftSidebar = ({
 
   useBridgeListener('clean-build-folder', onCleanBuildFolder, [onCleanBuildFolder]);
 
+  const onCleanVendorsCache = useCallback(async () => {
+    if (building) {
+      return;
+    }
+
+    await window.electron.cleanVendorsCache();
+  }, [building]);
+
+  useBridgeListener('clean-vendors-cache', onCleanVendorsCache, [onCleanVendorsCache]);
+
   const onTabChange = useCallback((newView: string) => {
     setView(newView);
   }, [setView]);

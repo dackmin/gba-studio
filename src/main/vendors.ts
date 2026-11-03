@@ -144,6 +144,17 @@ async function checkPackagedVendor (
   }
 }
 
+export async function cleanVendorsCache () {
+  await Promise.all(Object.keys(packagesShasum).flatMap(vendorName => {
+    const vendorPath = getVendorPath(vendorName);
+
+    return [
+      fsp.rm(vendorPath, { recursive: true, force: true }),
+      fsp.rm(vendorPath + '.tar.gz', { force: true }),
+    ];
+  }));
+}
+
 export function getVendorPath (vendorName: string) {
   return path.join(
     getResourcesDir(),

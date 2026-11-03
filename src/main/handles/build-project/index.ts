@@ -27,6 +27,7 @@ import {
   getCustomPythonPath,
   getVendorPath,
   getVendorExecutable,
+  cleanVendorsCache as removeVendorsCache,
 } from '../../vendors';
 import { prepareData } from './data';
 import { serialize } from '../../serialize';
@@ -333,5 +334,23 @@ export async function cleanBuildFolder (
   await fse.remove(getBuildDir(build));
   event.sender.send('clean-completed', { id: build.id });
   sendSuccessLog(event, build.id, 'Build folder cleaned.');
+}
+
+export async function cleanVendorsCache (
+  event: IpcMainInvokeEvent,
+) {
+  const buildId = randomUUID();
+
+  event.sender.send('clean-started', { id: buildId });
+  sendStep(event, buildId, 'Cleaning vendors cache...');
+
+  try {
+    await removeVendorsCache();
+    sendSuccessLog(event, buildId, 'Vendors cache cleaned.');
+  } catch (e) {
+    sendError(event, buildId, (e as Error).message);
+  }
+
+  event.sender.send('clean-completed', { id: buildId });
 }
 

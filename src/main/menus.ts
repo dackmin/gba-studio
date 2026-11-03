@@ -242,6 +242,17 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
         },
         { type: 'separator' },
         {
+          label: 'Clean Vendors Cache',
+          click: async () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+              focusedWindow.webContents.send('clean-vendors-cache');
+            }
+          },
+        },
+        { type: 'separator' },
+        {
           label: 'Export ROM...',
           click: async () => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -285,7 +296,7 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
         {
           label: 'Learn More',
           click: async () => {
-            await shell.openExternal('https://github.com/dackmin/gba-studio');
+            await shell.openExternal('https://gbastudio.dev');
           },
         },
       ],
