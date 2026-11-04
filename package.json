@@ -27,7 +27,8 @@
     "bundle:devkitPro": "node ./scripts/extract-vendor.ts devkitPro",
     "bundle:python": "node ./scripts/extract-vendor.ts python",
     "shasum": "node ./scripts/shasum.ts",
-    "release": "commit-and-tag-version && git push --follow-tags"
+    "release": "commit-and-tag-version && git push --follow-tags",
+    "prepack": "yarn lint && yarn tsc"
   },
   "peerDependencies": {
     "@neoframe/electron-window-corner-addon": "0.1.4"

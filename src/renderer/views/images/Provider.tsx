@@ -51,9 +51,7 @@ const Provider = ({
   });
 
   useEffect(() => {
-    const { selectedSprite, selectedBackground, selectedFont } = state;
-
-    if (selectedSprite && !findSprite(sprites, selectedSprite._file)) {
+    if (state.selectedSprite && !findSprite(sprites, state.selectedSprite._file)) {
       dispatch({
         selectedSprite: sprites?.[0],
         selectedAnimation: sprites?.[0]?.animations?.[0],
@@ -64,11 +62,11 @@ const Provider = ({
       });
     }
 
-    if (selectedBackground && !findBackground(backgrounds, selectedBackground._file)) {
+    if (state.selectedBackground && !findBackground(backgrounds, state.selectedBackground._file)) {
       dispatch({ selectedBackground: backgrounds?.[0] });
     }
 
-    if (selectedFont && !findFont(fonts, selectedFont._file)) {
+    if (state.selectedFont && !findFont(fonts, state.selectedFont._file)) {
       dispatch({ selectedFont: fonts?.[0] });
     }
   }, [
