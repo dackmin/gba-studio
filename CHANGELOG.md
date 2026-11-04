@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.11.0](https://github.com/dackmin/gba-studio/compare/v0.10.0...v0.11.0) (2026-11-04)
+
+### Features
+
+* add racing scene type ([6354d77](https://github.com/dackmin/gba-studio/commit/6354d77bdb4ef24891d9563f4e125bc7884dc921))
+* add run-after & run-every events ([c6d6f60](https://github.com/dackmin/gba-studio/commit/c6d6f60f2504ef8bd1b96dbb81b3ba4acbd5f69d))
+* add start & stop animation events ([291667a](https://github.com/dackmin/gba-studio/commit/291667ad8fbaac843ed5edc271560e890dcc8b30))
+
+### Bug Fixes
+
+* allow player to pass through colliding actors ([d7708ba](https://github.com/dackmin/gba-studio/commit/d7708baa1a4896c8580899198051c06f64b7dfe0))
+* also apply velocity to adventure movements ([76cfff6](https://github.com/dackmin/gba-studio/commit/76cfff62955a8f4a115dfb0853b0c39cf3107aa1))
+* various slopes adjustments ([ba83254](https://github.com/dackmin/gba-studio/commit/ba832549909fed0cc2ce4ab72f11edde4c11e37e))
+
 ## [0.10.0](https://github.com/dackmin/gba-studio/compare/v0.9.2...v0.10.0) (2026-11-04)
 
 ### Features
