@@ -1590,7 +1590,7 @@ namespace neo
       slope_surface_row(center_x, tile_y + 1, SLOPE_MAX_STEP) >= 0;
   }
 
-  bool actor::adjust_to_slope(bn::fixed_point& next, int side_inset)
+  bool actor::adjust_to_slope(bn::fixed_point& next, int side_inset, int step_x)
   {
     const neo::types::map* map_data = game->active_scene->map_data;
     int center_x = (int)next.x() + box_x() + box_width() / 2;
@@ -1602,19 +1602,27 @@ namespace neo
     }
 
     int tile_y = map_data->to_tile_y(game->variables, bottom);
-    int surface = slope_surface_row(center_x, tile_y, SLOPE_MAX_STEP);
+    int depth_limit = SLOPE_MAX_STEP;
+    int center_value = map_data->tile_value(map_data->to_tile_x(game->variables, center_x), tile_y);
+
+    // Prevent getting through slopes if standing inside them and moving horizontally
+    if (grounded && ((step_x > 0 && center_value == 9) || (step_x < 0 && center_value == 8)))
+    {
+      depth_limit = map_data->grid_size->as_int(game->variables);
+    }
+
+    int surface = slope_surface_row(center_x, tile_y, depth_limit);
 
     if (surface >= 0 && bottom >= surface)
     {
-      if (bottom - (surface - 1) > SLOPE_MAX_STEP)
+      if (bottom - (surface - 1) > depth_limit)
       {
         return false;
       }
 
       next.set_y(surface - (box_y() + box_height()));
 
-      return !side_scroller_blocked_at(
-        (int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
+      return !side_scroller_blocked_at((int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
     }
 
     int above = slope_surface_row(center_x, tile_y - 1, SLOPE_MAX_STEP);
@@ -1623,14 +1631,14 @@ namespace neo
     {
       next.set_y(above - (box_y() + box_height()));
 
-      return !side_scroller_blocked_at(
-        (int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
+      return !side_scroller_blocked_at((int)next.x(), (int)next.y(), SLOPE_MAX_STEP, side_inset);
     }
 
     if (grounded)
     {
       int below = surface >= 0
-        ? surface : slope_surface_row(center_x, tile_y + 1, SLOPE_MAX_STEP);
+        ? surface
+        : slope_surface_row(center_x, tile_y + 1, SLOPE_MAX_STEP);
       int gap = below - 1 - bottom;
 
       if (below >= 0 && gap > 0 && gap <= SLOPE_MAX_STEP)
@@ -1652,11 +1660,48 @@ namespace neo
     int side_inset = on_slope ? bn::max(0, box_width() / 2 - 4) : 0;
 
     if (
-      side_scroller_blocked_at((int)next.x(), (int)next.y(), clearance, side_inset) ||
-      !adjust_to_slope(next, side_inset)
+      !adjust_to_slope(next, side_inset, (int)step_x) ||
+      side_scroller_blocked_at((int)next.x(), (int)next.y(), clearance, side_inset)
     )
     {
       return false;
+    }
+
+    // Prevent passing through slope when coming from a top block next to it
+    if (on_slope && grounded)
+    {
+      const neo::types::map* map_data = game->active_scene->map_data;
+      int bottom = (int)next.y() + box_y() + box_height() - 1;
+
+      if (bottom >= 0)
+      {
+        int size = map_data->grid_size->as_int(game->variables);
+        int tile_y = map_data->to_tile_y(game->variables, bottom);
+        int box_left = (int)next.x() + box_x();
+        int min_tile_x = map_data->to_tile_x(game->variables, box_left + side_inset);
+        int max_tile_x = map_data->to_tile_x(
+          game->variables, box_left + box_width() - 1 - side_inset
+        );
+
+        int lift = 0;
+
+        for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+        {
+          if (map_data->tile_value(tile_x, tile_y) == 4)
+          {
+            lift = bn::max(lift, bottom - tile_y * size + 1);
+          }
+        }
+
+        if (
+          lift > 0 &&
+          lift <= SLOPE_MAX_STEP &&
+          !side_scroller_blocked_at((int)next.x(), (int)next.y() - lift, SLOPE_MAX_STEP, side_inset)
+        )
+        {
+          next.set_y(next.y() - lift);
+        }
+      }
     }
 
     if (on_slope && !near_slope((int)next.x(), (int)next.y()))

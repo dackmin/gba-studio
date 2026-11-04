@@ -152,7 +152,7 @@ namespace neo
       int slope_surface_row(int center_x, int tile_y, int tolerance);
       bool slope_embedded(int pixel_x, int pixel_y);
       bool near_slope(int pixel_x, int pixel_y);
-      bool adjust_to_slope(bn::fixed_point& next, int side_inset);
+      bool adjust_to_slope(bn::fixed_point& next, int side_inset, int step_x);
       bool side_view_step_x(bn::fixed step_x);
       // Resolves solid actors/sprites the player's footprint overlaps
       // (different collision group), firing their collide events on the
