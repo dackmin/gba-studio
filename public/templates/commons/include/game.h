@@ -69,6 +69,8 @@ namespace neo
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
 
+      bn::fixed scroll_accumulator = 0;
+
       bool player_out_of_camera = false;
       neo::types::collision_side active_collision_side = neo::types::collision_side::NONE;
 
@@ -99,6 +101,7 @@ namespace neo
       void update_scripted_events();
       void update_frame();
       void update_projectiles();
+      void update_auto_scroll();
 
       // Point-and-click
       void update_cursor();

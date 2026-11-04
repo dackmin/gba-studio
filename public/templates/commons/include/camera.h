@@ -35,6 +35,18 @@ namespace neo::camera
     neo::actor* target
   );
 
+  void reset_auto_scroll(
+    neo::game* game,
+    const neo::types::scene& active_scene
+  );
+
+  void auto_scroll(
+    neo::game* game,
+    const neo::types::scene& active_scene,
+    int& scrolled_x,
+    int& scrolled_y
+  );
+
   // Computes the clamped target position for a move-camera-to command
   // (used by neo::types::move_camera_to_event::start()).
   void get_move_to_target(

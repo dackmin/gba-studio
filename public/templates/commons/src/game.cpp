@@ -237,6 +237,39 @@ namespace neo
       }
     }
 
+    // Shoot 'em all scenes start at one end of the map and scroll by themselves, so the
+    // camera never follows the player
+    if (
+      active_scene->scene_type == neo::types::scene_type::SHOOT_EM_ALL &&
+      active_scene->map_data != nullptr
+    )
+    {
+      camera_target = nullptr;
+      scroll_accumulator = 0;
+      neo::camera::reset_auto_scroll(this, *active_scene);
+
+      if (player != nullptr)
+      {
+        switch (active_scene->scroll_direction)
+        {
+          case neo::types::scroll_direction::LEFT:
+            player->set_direction(neo::types::direction::LEFT);
+            break;
+          case neo::types::scroll_direction::UP:
+            player->set_direction(neo::types::direction::UP);
+            break;
+          case neo::types::scroll_direction::DOWN:
+            player->set_direction(neo::types::direction::DOWN);
+            break;
+          default:
+            player->set_direction(neo::types::direction::RIGHT);
+            break;
+        }
+
+        player->clamp_to_view(player->position);
+      }
+    }
+
     // Enable projectiles
     projectiles_count = 0;
     projectiles.clear();
@@ -403,6 +436,7 @@ namespace neo
     {
       update_projectiles();
       update_cursor();
+      update_auto_scroll();
 
       if (active_scene->has_player && player != nullptr)
       {
@@ -443,6 +477,30 @@ namespace neo
     {
       delete player;
       player = nullptr;
+    }
+  }
+
+  void game::update_auto_scroll()
+  {
+    if (
+      active_scene == nullptr ||
+      active_scene->scene_type != neo::types::scene_type::SHOOT_EM_ALL ||
+      active_scene->map_data == nullptr
+    )
+    {
+      return;
+    }
+
+    // Camera events (follow-actor...) can't take the camera away from the scroll
+    camera_target = nullptr;
+
+    int scrolled_x = 0;
+    int scrolled_y = 0;
+    neo::camera::auto_scroll(this, *active_scene, scrolled_x, scrolled_y);
+
+    if (player != nullptr)
+    {
+      player->scroll_by(scrolled_x, scrolled_y);
     }
   }
 

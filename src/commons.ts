@@ -41,6 +41,8 @@ export const COLLISION_ONE_WAY_COLOR = 'rgba(0, 255, 0, 0.4)';
 
 export const DEFAULT_GRAVITY_FORCE = 1;
 export const DEFAULT_JUMP_HEIGHT = 36;
+export const DEFAULT_SCROLL_SPEED = 1;
+export const DEFAULT_PLAYER_INERTIA = 0;
 export const DEFAULT_GRID_SIZE = 16;
 export const DEFAULT_SPRITE_SIZE = 16;
 

@@ -364,7 +364,9 @@ export const sanitizeScene = async (
   }
 
   // Ensure player exists for map-based scenes & has type "player"
-  if (['2d-top-down', 'side-scroller', 'adventure'].includes(scene.sceneType)) {
+  if (
+    ['2d-top-down', 'side-scroller', 'adventure', 'shoot-em-all'].includes(scene.sceneType)
+  ) {
     scene.player = scene.player || { type: 'player', x: 0, y: 0 };
   }
 

@@ -24,6 +24,12 @@
       "y": 41,
       "id": "e6b9f8a1-4c58-4799-8a40-16eda41dda41",
       "_file": "scene_4.json"
+    },
+    {
+      "x": 1307,
+      "y": 700,
+      "id": "5a7c1e92-3d84-4b6f-a0c5-82e4f1b7d630",
+      "_file": "scene_5.json"
     }
   ],
   "romName": "MY AWESOME GAME",

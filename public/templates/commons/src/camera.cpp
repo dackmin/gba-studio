@@ -42,7 +42,10 @@ namespace neo::camera
       min_y = -(bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2);
       max_y = bg_pixel_height / 2 - neo::types::SCREEN_HEIGHT / 2;
 
-      if (active_scene.scene_type == neo::types::scene_type::POINT_AND_CLICK)
+      if (
+        active_scene.scene_type == neo::types::scene_type::POINT_AND_CLICK ||
+        active_scene.scene_type == neo::types::scene_type::SHOOT_EM_ALL
+      )
       {
         if (min_x > max_x)
         {
@@ -227,6 +230,128 @@ namespace neo::camera
     int y = bn::min(bn::max((int)target->sprite.y(), min_y), max_y);
 
     game->camera.set_position(x, y);
+  }
+
+  void reset_auto_scroll(
+    neo::game* game,
+    const neo::types::scene& active_scene
+  )
+  {
+    int min_x, max_x, min_y, max_y;
+    get_bounds(game, active_scene, min_x, max_x, min_y, max_y);
+
+    int x = (min_x + max_x) / 2;
+    int y = (min_y + max_y) / 2;
+
+    switch (active_scene.scroll_direction)
+    {
+      case neo::types::scroll_direction::LEFT:
+        x = max_x;
+        break;
+      case neo::types::scroll_direction::UP:
+        y = max_y;
+        break;
+      case neo::types::scroll_direction::DOWN:
+        y = min_y;
+        break;
+      default:
+        x = min_x;
+        break;
+    }
+
+    if (game->player != nullptr)
+    {
+      int player_x = (int)game->player->sprite.x();
+      int player_y = (int)game->player->sprite.y();
+      int half_width = game->player->width() / 2;
+      int half_height = game->player->height() / 2;
+
+      switch (active_scene.scroll_direction)
+      {
+        case neo::types::scroll_direction::LEFT:
+          x = bn::min(x, player_x - half_width + neo::types::SCREEN_WIDTH / 2);
+          y = player_y;
+          break;
+        case neo::types::scroll_direction::UP:
+          y = bn::min(y, player_y - half_height + neo::types::SCREEN_HEIGHT / 2);
+          x = player_x;
+          break;
+        case neo::types::scroll_direction::DOWN:
+          y = bn::max(y, player_y + half_height - neo::types::SCREEN_HEIGHT / 2);
+          x = player_x;
+          break;
+        default:
+          x = bn::max(x, player_x + half_width - neo::types::SCREEN_WIDTH / 2);
+          y = player_y;
+          break;
+      }
+
+      x = bn::min(bn::max(x, min_x), max_x);
+      y = bn::min(bn::max(y, min_y), max_y);
+    }
+
+    game->camera.set_position(x, y);
+  }
+
+  void auto_scroll(
+    neo::game* game,
+    const neo::types::scene& active_scene,
+    int& scrolled_x,
+    int& scrolled_y
+  )
+  {
+    scrolled_x = 0;
+    scrolled_y = 0;
+
+    int min_x, max_x, min_y, max_y;
+    get_bounds(game, active_scene, min_x, max_x, min_y, max_y);
+
+    game->scroll_accumulator += bn::max(
+      active_scene.scroll_speed->as_fixed(game->variables), bn::fixed(0));
+    int steps = game->scroll_accumulator.right_shift_integer();
+    game->scroll_accumulator -= steps;
+
+    int x = (int)game->camera.x();
+    int y = (int)game->camera.y();
+    bool horizontal =
+      active_scene.scroll_direction == neo::types::scroll_direction::RIGHT ||
+      active_scene.scroll_direction == neo::types::scroll_direction::LEFT;
+
+    switch (active_scene.scroll_direction)
+    {
+      case neo::types::scroll_direction::LEFT:
+        scrolled_x = -bn::min(steps, bn::max(x - min_x, 0));
+        break;
+      case neo::types::scroll_direction::UP:
+        scrolled_y = -bn::min(steps, bn::max(y - min_y, 0));
+        break;
+      case neo::types::scroll_direction::DOWN:
+        scrolled_y = bn::min(steps, bn::max(max_y - y, 0));
+        break;
+      default:
+        scrolled_x = bn::min(steps, bn::max(max_x - x, 0));
+        break;
+    }
+
+    x += scrolled_x;
+    y += scrolled_y;
+
+    if (game->player != nullptr)
+    {
+      if (horizontal)
+      {
+        y = bn::min(bn::max((int)game->player->sprite.y(), min_y), max_y);
+      }
+      else
+      {
+        x = bn::min(bn::max((int)game->player->sprite.x(), min_x), max_x);
+      }
+    }
+
+    if (x != (int)game->camera.x() || y != (int)game->camera.y())
+    {
+      game->camera.set_position(x, y);
+    }
   }
 }
 

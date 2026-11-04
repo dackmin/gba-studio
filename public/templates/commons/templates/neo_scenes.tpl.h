@@ -612,6 +612,8 @@ namespace neo::scenes
 
   {{>valuePartial prefix=(concat (slug this.name) "_gravity_force") value=(valuedef this.gravityForce 1)}}
   {{>valuePartial prefix=(concat (slug this.name) "_jump_height") value=(valuedef this.jumpHeight 36)}}
+  {{>valuePartial prefix=(concat (slug this.name) "_player_inertia") value=(valuedef this.playerInertia 0)}}
+  {{>valuePartial prefix=(concat (slug this.name) "_scroll_speed") value=(valuedef this.scrollSpeed 1)}}
   constexpr bn::string_view {{slug this.name}}_scene_id = "{{this.id}}";
   constexpr bn::string_view {{slug this.name}}_scene_name = "{{escapeCpp this.name}}";
   constexpr neo::types::scene scene_{{slug this.name}} = {
@@ -625,6 +627,8 @@ namespace neo::scenes
     neo::types::scene_type::ADVENTURE,
     {{else if (eq this.sceneType '2d-top-down')}}
     neo::types::scene_type::TOP_DOWN,
+    {{else if (eq this.sceneType 'shoot-em-all')}}
+    neo::types::scene_type::SHOOT_EM_ALL,
     {{else}}
     neo::types::scene_type::LOGOS,
     {{/if}}
@@ -685,7 +689,25 @@ namespace neo::scenes
     {{/if}}
     {{#if (and (eq this.sceneType 'point-and-click') this.gravity)}}true{{else}}false{{/if}},
     &{{slug this.name}}_gravity_force_value,
-    &{{slug this.name}}_jump_height_value
+    &{{slug this.name}}_jump_height_value,
+    {{#if (eq this.scrollDirection 'left')}}
+    neo::types::scroll_direction::LEFT,
+    {{else if (eq this.scrollDirection 'up')}}
+    neo::types::scroll_direction::UP,
+    {{else if (eq this.scrollDirection 'down')}}
+    neo::types::scroll_direction::DOWN,
+    {{else}}
+    neo::types::scroll_direction::RIGHT,
+    {{/if}}
+    &{{slug this.name}}_scroll_speed_value,
+    {{#if (eq this.playerAxis 'horizontal')}}
+    neo::types::player_axis::HORIZONTAL,
+    {{else if (eq this.playerAxis 'vertical')}}
+    neo::types::player_axis::VERTICAL,
+    {{else}}
+    neo::types::player_axis::BOTH,
+    {{/if}}
+    &{{slug this.name}}_player_inertia_value
   };
   //////////////////////////
   {{/each}}
@@ -693,6 +715,8 @@ namespace neo::scenes
   // Default scene
   {{>valuePartial prefix="default_gravity_force" value=1}}
   {{>valuePartial prefix="default_jump_height" value=36}}
+  {{>valuePartial prefix="default_player_inertia" value=0}}
+  {{>valuePartial prefix="default_scroll_speed" value=1}}
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
   constexpr neo::types::scene scene_default = {
@@ -715,7 +739,11 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     &default_gravity_force_value,
-    &default_jump_height_value
+    &default_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+    &default_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+    &default_player_inertia_value
   };
 
   const neo::types::scene& get_scene(bn::string_view name)

@@ -109,7 +109,23 @@ namespace neo::types
     TOP_DOWN,
     SIDE_SCROLLER,
     POINT_AND_CLICK,
-    ADVENTURE
+    ADVENTURE,
+    SHOOT_EM_ALL
+  };
+
+  enum class scroll_direction
+  {
+    RIGHT,
+    LEFT,
+    UP,
+    DOWN
+  };
+
+  enum class player_axis
+  {
+    BOTH,
+    HORIZONTAL,
+    VERTICAL
   };
 
   enum class camera_edge
@@ -1537,6 +1553,11 @@ namespace neo::types
     bool has_gravity;
     const event_value* gravity_force;
     const event_value* jump_height;
+    // Shoot 'em all
+    neo::types::scroll_direction scroll_direction;
+    const event_value* scroll_speed;
+    neo::types::player_axis player_axis;
+    const event_value* player_inertia;
 
     inline bool is (bn::string_view name_) const
     {

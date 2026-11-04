@@ -22,7 +22,12 @@ import { CheckCircledIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
-import { DEFAULT_GRAVITY_FORCE, DEFAULT_JUMP_HEIGHT } from '../../../commons';
+import {
+  DEFAULT_GRAVITY_FORCE,
+  DEFAULT_JUMP_HEIGHT,
+  DEFAULT_SCROLL_SPEED,
+  DEFAULT_PLAYER_INERTIA,
+} from '../../../commons';
 import {
   findBackground,
   getAssetUrl,
@@ -332,6 +337,7 @@ const SceneForm = ({
                   <Select.Item value="side-scroller">Side Scroller</Select.Item>
                   <Select.Item value="point-and-click">Point & Click</Select.Item>
                   <Select.Item value="adventure">Adventure</Select.Item>
+                  <Select.Item value="shoot-em-all">Shoot 'em all</Select.Item>
                 </Select.Content>
               </Select.Root>
             </div>
@@ -379,6 +385,66 @@ const SceneForm = ({
                     </Select.Content>
                   </Select.Root>
                 </div>
+                { scene.sceneType === 'shoot-em-all' && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Scroll direction</Text>
+                      <Select.Root
+                        value={scene.scrollDirection ?? 'right'}
+                        onValueChange={onValueChange.bind(null, 'scrollDirection')}
+                      >
+                        <Select.Trigger className="w-full" />
+                        <Select.Content>
+                          <Select.Item value="right">Right</Select.Item>
+                          <Select.Item value="left">Left</Select.Item>
+                          <Select.Item value="up">Up</Select.Item>
+                          <Select.Item value="down">Down</Select.Item>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Scroll speed</Text>
+                      <EventValueField
+                        type="number"
+                        min={0}
+                        step={0.25}
+                        excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                        value={scene.scrollSpeed ?? DEFAULT_SCROLL_SPEED}
+                        onValueChange={onValueChange.bind(null, 'scrollSpeed')}
+                      >
+                        <TextField.Slot side="right">px/frame</TextField.Slot>
+                      </EventValueField>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Player movement</Text>
+                      <Select.Root
+                        value={scene.playerAxis ?? 'both'}
+                        onValueChange={onValueChange.bind(null, 'playerAxis')}
+                      >
+                        <Select.Trigger className="w-full" />
+                        <Select.Content>
+                          <Select.Item value="both">Both axes</Select.Item>
+                          <Select.Item value="horizontal">Horizontal only</Select.Item>
+                          <Select.Item value="vertical">Vertical only</Select.Item>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Text className="block text-slate" size="1">Player inertia</Text>
+                      <EventValueField
+                        type="number"
+                        min={0}
+                        max={95}
+                        step={5}
+                        excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                        value={scene.playerInertia ?? DEFAULT_PLAYER_INERTIA}
+                        onValueChange={onValueChange.bind(null, 'playerInertia')}
+                      >
+                        <TextField.Slot side="right">%</TextField.Slot>
+                      </EventValueField>
+                    </div>
+                  </>
+                ) }
                 { scene.sceneType === 'point-and-click' && (
                   <>
                     <div className="flex flex-col gap-2">

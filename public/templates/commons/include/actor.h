@@ -26,6 +26,7 @@ namespace neo
 
       // Because adventure mode allows diagonals, speed needs to be a fixed
       inline constexpr static bn::fixed ADVENTURE_PLAYER_SPEED = 2;
+      inline constexpr static bn::fixed SHOOT_EM_ALL_PLAYER_SPEED = 2;
 
       void init();
       void update();
@@ -55,7 +56,13 @@ namespace neo
       void stop_walking();
       void trigger_hit();
 
+      // Shoot 'em all
+      void clamp_to_view(bn::fixed_point previous);
+      void scroll_by(int delta_x, int delta_y);
+
+      // Whether no part of the player's collision box is inside the camera's view
       bool is_out_of_camera();
+
       void start_attack(const neo::types::melee_attack_event* attack);
       void end_attack();
       void start_firing();
@@ -111,6 +118,8 @@ namespace neo
       int attack_frames_left = 0;
       bn::optional<bn::sprite_ptr> weapon_sprite;
       const neo::types::melee_attack_event* attack_definition = nullptr;
+      // Shoot 'em all (for now, will probs be used for inertia on "icy" ground in the future)
+      bn::fixed_point velocity;
 
       int swing_id = 0;
       int last_hit_swing = 0;
@@ -125,6 +134,8 @@ namespace neo
       bn::fixed launch_velocity(bn::fixed height);
       void check_input_point_and_click();
       void check_input_adventure();
+      void check_input_shoot_em_all();
+      bool shoot_em_all_blocked_at(int pixel_x, int pixel_y);
       bool adventure_blocked_at(int pixel_x, int pixel_y);
       bool interact_ahead();
       void update_attack();

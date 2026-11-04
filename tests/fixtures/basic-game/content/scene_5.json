@@ -1,0 +1,66 @@
+{
+  "id": "5a7c1e92-3d84-4b6f-a0c5-82e4f1b7d630",
+  "name": "Shoot em all",
+  "background": "95458cca-f5fb-49e0-ab08-3e24a77c7703",
+  "type": "scene",
+  "sceneType": "shoot-em-all",
+  "scrollDirection": "right",
+  "scrollSpeed": 0.5,
+  "playerAxis": "both",
+  "playerInertia": 60,
+  "player": {
+    "type": "player",
+    "x": 2,
+    "y": 5
+  },
+  "events": [
+    {
+      "type": "fade-in",
+      "duration": 200,
+      "id": "7d3b9f10-52c6-4e8a-91f4-0b6a2c5d8e47"
+    },
+    {
+      "type": "on-out-of-camera-bounds",
+      "id": "b4e2c7a9-18d3-4f65-8a0e-3d9f5b2c7164",
+      "events": [
+        {
+          "type": "fade-out",
+          "id": "e6a1f3d8-72b4-4c09-9d5e-1c8b4a7f2e30",
+          "duration": 200
+        }
+      ]
+    },
+    {
+      "type": "if",
+      "id": "3c8e5a21-6b94-4f07-a1d3-9e2b7c40f158",
+      "conditions": [
+        {
+          "type": "condition",
+          "left": {
+            "type": "player-attribute",
+            "name": "x"
+          },
+          "operator": "<",
+          "right": {
+            "type": "camera",
+            "name": "left"
+          }
+        }
+      ],
+      "then": [
+        {
+          "type": "fade-out",
+          "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e940",
+          "duration": 200
+        }
+      ]
+    }
+  ],
+  "map": {
+    "type": "map",
+    "gridSize": 16,
+    "width": 64,
+    "height": 32
+  },
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/scene.json"
+}

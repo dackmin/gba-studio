@@ -26,6 +26,7 @@ exports[`cli/build > should build a basic project successfully 1`] = `
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_sprite_default.h>
 
 namespace neo::backgrounds
 {
@@ -1591,6 +1592,36 @@ namespace neo::scenes
     &scene_0_jump_height_raw_value
   );
   
+  constexpr bn::string_view scene_0_player_inertia_name = "";
+  constexpr bn::string_view scene_0_player_inertia_string_value = "0";
+  constexpr neo::variables::value scene_0_player_inertia_raw_value(
+    scene_0_player_inertia_name,
+    0,
+    false,
+    scene_0_player_inertia_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_player_inertia_type = "value";
+  constexpr neo::types::event_value scene_0_player_inertia_value(
+    scene_0_player_inertia_type,
+    &scene_0_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_scroll_speed_name = "";
+  constexpr bn::string_view scene_0_scroll_speed_string_value = "1";
+  constexpr neo::variables::value scene_0_scroll_speed_raw_value(
+    scene_0_scroll_speed_name,
+    1,
+    true,
+    scene_0_scroll_speed_string_value,
+    1
+  );
+  constexpr bn::string_view scene_0_scroll_speed_type = "value";
+  constexpr neo::types::event_value scene_0_scroll_speed_value(
+    scene_0_scroll_speed_type,
+    &scene_0_scroll_speed_raw_value
+  );
+  
   constexpr bn::string_view scene_0_scene_id = "d2a023cc-364d-4caf-9638-78937f593e4d";
   constexpr bn::string_view scene_0_scene_name = "Scene 0";
   constexpr neo::types::scene scene_scene_0 = {
@@ -1613,7 +1644,11 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     &scene_0_gravity_force_value,
-    &scene_0_jump_height_value
+    &scene_0_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+        &scene_0_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+        &scene_0_player_inertia_value
   };
   //////////////////////////
   //////////////////////////
@@ -1819,6 +1854,36 @@ namespace neo::scenes
     &point_and_click_jump_height_raw_value
   );
   
+  constexpr bn::string_view point_and_click_player_inertia_name = "";
+  constexpr bn::string_view point_and_click_player_inertia_string_value = "0";
+  constexpr neo::variables::value point_and_click_player_inertia_raw_value(
+    point_and_click_player_inertia_name,
+    0,
+    false,
+    point_and_click_player_inertia_string_value,
+    0
+  );
+  constexpr bn::string_view point_and_click_player_inertia_type = "value";
+  constexpr neo::types::event_value point_and_click_player_inertia_value(
+    point_and_click_player_inertia_type,
+    &point_and_click_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view point_and_click_scroll_speed_name = "";
+  constexpr bn::string_view point_and_click_scroll_speed_string_value = "1";
+  constexpr neo::variables::value point_and_click_scroll_speed_raw_value(
+    point_and_click_scroll_speed_name,
+    1,
+    true,
+    point_and_click_scroll_speed_string_value,
+    1
+  );
+  constexpr bn::string_view point_and_click_scroll_speed_type = "value";
+  constexpr neo::types::event_value point_and_click_scroll_speed_value(
+    point_and_click_scroll_speed_type,
+    &point_and_click_scroll_speed_raw_value
+  );
+  
   constexpr bn::string_view point_and_click_scene_id = "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12";
   constexpr bn::string_view point_and_click_scene_name = "Point & Click";
   constexpr neo::types::scene scene_point_and_click = {
@@ -1841,7 +1906,11 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     true,
     &point_and_click_gravity_force_value,
-    &point_and_click_jump_height_value
+    &point_and_click_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+        &point_and_click_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+        &point_and_click_player_inertia_value
   };
   //////////////////////////
   //////////////////////////
@@ -2334,6 +2403,36 @@ namespace neo::scenes
     &adventure_jump_height_raw_value
   );
   
+  constexpr bn::string_view adventure_player_inertia_name = "";
+  constexpr bn::string_view adventure_player_inertia_string_value = "0";
+  constexpr neo::variables::value adventure_player_inertia_raw_value(
+    adventure_player_inertia_name,
+    0,
+    false,
+    adventure_player_inertia_string_value,
+    0
+  );
+  constexpr bn::string_view adventure_player_inertia_type = "value";
+  constexpr neo::types::event_value adventure_player_inertia_value(
+    adventure_player_inertia_type,
+    &adventure_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view adventure_scroll_speed_name = "";
+  constexpr bn::string_view adventure_scroll_speed_string_value = "1";
+  constexpr neo::variables::value adventure_scroll_speed_raw_value(
+    adventure_scroll_speed_name,
+    1,
+    true,
+    adventure_scroll_speed_string_value,
+    1
+  );
+  constexpr bn::string_view adventure_scroll_speed_type = "value";
+  constexpr neo::types::event_value adventure_scroll_speed_value(
+    adventure_scroll_speed_type,
+    &adventure_scroll_speed_raw_value
+  );
+  
   constexpr bn::string_view adventure_scene_id = "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21";
   constexpr bn::string_view adventure_scene_name = "Adventure";
   constexpr neo::types::scene scene_adventure = {
@@ -2356,7 +2455,11 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     &adventure_gravity_force_value,
-    &adventure_jump_height_value
+    &adventure_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+        &adventure_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+        &adventure_player_inertia_value
   };
   //////////////////////////
   //////////////////////////
@@ -2562,6 +2665,36 @@ namespace neo::scenes
     &side_scroller_jump_height_raw_value
   );
   
+  constexpr bn::string_view side_scroller_player_inertia_name = "";
+  constexpr bn::string_view side_scroller_player_inertia_string_value = "0";
+  constexpr neo::variables::value side_scroller_player_inertia_raw_value(
+    side_scroller_player_inertia_name,
+    0,
+    false,
+    side_scroller_player_inertia_string_value,
+    0
+  );
+  constexpr bn::string_view side_scroller_player_inertia_type = "value";
+  constexpr neo::types::event_value side_scroller_player_inertia_value(
+    side_scroller_player_inertia_type,
+    &side_scroller_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view side_scroller_scroll_speed_name = "";
+  constexpr bn::string_view side_scroller_scroll_speed_string_value = "1";
+  constexpr neo::variables::value side_scroller_scroll_speed_raw_value(
+    side_scroller_scroll_speed_name,
+    1,
+    true,
+    side_scroller_scroll_speed_string_value,
+    1
+  );
+  constexpr bn::string_view side_scroller_scroll_speed_type = "value";
+  constexpr neo::types::event_value side_scroller_scroll_speed_value(
+    side_scroller_scroll_speed_type,
+    &side_scroller_scroll_speed_raw_value
+  );
+  
   constexpr bn::string_view side_scroller_scene_id = "e6b9f8a1-4c58-4799-8a40-16eda41dda41";
   constexpr bn::string_view side_scroller_scene_name = "Side Scroller";
   constexpr neo::types::scene scene_side_scroller = {
@@ -2584,7 +2717,320 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     &side_scroller_gravity_force_value,
-    &side_scroller_jump_height_value
+    &side_scroller_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+        &side_scroller_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+        &side_scroller_player_inertia_value
+  };
+  //////////////////////////
+  //////////////////////////
+  // Scene: Shoot em all //
+  //////////////////////////
+
+  // Scene Events
+  // Event 0: fade-in
+  constexpr bn::string_view shoot_em_all_event_0_duration_name = "";
+  constexpr bn::string_view shoot_em_all_event_0_duration_string_value = "200";
+  constexpr neo::variables::value shoot_em_all_event_0_duration_raw_value(
+    shoot_em_all_event_0_duration_name,
+    200,
+    true,
+    shoot_em_all_event_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view shoot_em_all_event_0_duration_type = "value";
+  constexpr neo::types::event_value shoot_em_all_event_0_duration_value(
+    shoot_em_all_event_0_duration_type,
+    &shoot_em_all_event_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_0(neo::types::event_type::FADE_IN, &shoot_em_all_event_0_duration_value);
+  // Event 1: on-out-of-camera-bounds
+  // Event 0: fade-out
+  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_name = "";
+  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_string_value = "200";
+  constexpr neo::variables::value shoot_em_all_event_1_event_0_duration_raw_value(
+    shoot_em_all_event_1_event_0_duration_name,
+    200,
+    true,
+    shoot_em_all_event_1_event_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_type = "value";
+  constexpr neo::types::event_value shoot_em_all_event_1_event_0_duration_value(
+    shoot_em_all_event_1_event_0_duration_type,
+    &shoot_em_all_event_1_event_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_1_event_0(neo::types::event_type::FADE_OUT, &shoot_em_all_event_1_event_0_duration_value);
+  constexpr const neo::types::event* shoot_em_all_event_1_events[] = {
+    &shoot_em_all_event_1_event_0
+  };
+  constexpr neo::types::camera_bounds_event shoot_em_all_event_1(
+    neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS,
+    1,
+    shoot_em_all_event_1_events
+  );
+  // Event 2: if
+  // Event 0: fade-out
+  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_name = "";
+  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_string_value = "200";
+  constexpr neo::variables::value shoot_em_all_event_2_then_0_duration_raw_value(
+    shoot_em_all_event_2_then_0_duration_name,
+    200,
+    true,
+    shoot_em_all_event_2_then_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_type = "value";
+  constexpr neo::types::event_value shoot_em_all_event_2_then_0_duration_value(
+    shoot_em_all_event_2_then_0_duration_type,
+    &shoot_em_all_event_2_then_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_2_then_0(neo::types::event_type::FADE_OUT, &shoot_em_all_event_2_then_0_duration_value);
+  constexpr const neo::types::event* shoot_em_all_event_2_then[] = {
+    &shoot_em_all_event_2_then_0
+  };
+  // If condition 0:
+  constexpr bn::string_view shoot_em_all_event_2_condition_0_left_type = "player-attribute";
+  constexpr bn::string_view shoot_em_all_event_2_condition_0_left_attribute = "x";
+  constexpr neo::types::if_expression_player_attribute shoot_em_all_event_2_condition_0_left(
+    shoot_em_all_event_2_condition_0_left_type,
+    shoot_em_all_event_2_condition_0_left_attribute
+  );
+  constexpr bn::string_view shoot_em_all_event_2_condition_0_right_type = "camera";
+  constexpr neo::types::if_expression_camera shoot_em_all_event_2_condition_0_right(
+    shoot_em_all_event_2_condition_0_right_type,
+    neo::types::camera_edge::LEFT
+  );
+  constexpr bn::string_view shoot_em_all_event_2_condition_0_type = "condition";
+  constexpr bn::string_view shoot_em_all_event_2_condition_0_operator = "<";
+  constexpr neo::types::if_condition shoot_em_all_event_2_condition_0(
+    shoot_em_all_event_2_condition_0_type,
+    shoot_em_all_event_2_condition_0_operator,
+    &shoot_em_all_event_2_condition_0_left,
+    &shoot_em_all_event_2_condition_0_right
+  );
+  constexpr const neo::types::if_condition* shoot_em_all_event_2_conditions[] = {
+    &shoot_em_all_event_2_condition_0
+  };
+  constexpr neo::types::if_event shoot_em_all_event_2(
+    neo::types::event_type::IF,
+    1,
+    shoot_em_all_event_2_conditions,
+    1,
+    shoot_em_all_event_2_then,
+    0,
+    nullptr
+  );
+  constexpr const neo::types::event* shoot_em_all_events[] = {
+    &shoot_em_all_event_0,
+    &shoot_em_all_event_1,
+    &shoot_em_all_event_2,
+  };
+
+  // Map collisions
+
+  // Map sensors
+
+  // Map
+  constexpr bn::string_view shoot_em_all_map_grid_size_name = "";
+  constexpr bn::string_view shoot_em_all_map_grid_size_string_value = "16";
+  constexpr neo::variables::value shoot_em_all_map_grid_size_raw_value(
+    shoot_em_all_map_grid_size_name,
+    16,
+    true,
+    shoot_em_all_map_grid_size_string_value,
+    16
+  );
+  constexpr bn::string_view shoot_em_all_map_grid_size_type = "value";
+  constexpr neo::types::event_value shoot_em_all_map_grid_size_value(
+    shoot_em_all_map_grid_size_type,
+    &shoot_em_all_map_grid_size_raw_value
+  );
+  
+  constexpr neo::types::map shoot_em_all_map_data = {
+    64,
+    32,
+    &shoot_em_all_map_grid_size_value,
+    nullptr,
+    0, nullptr
+  };
+
+
+
+
+  // Scene
+  constexpr bn::string_view shoot_em_all_player_x_name = "";
+  constexpr bn::string_view shoot_em_all_player_x_string_value = "2";
+  constexpr neo::variables::value shoot_em_all_player_x_raw_value(
+    shoot_em_all_player_x_name,
+    2,
+    true,
+    shoot_em_all_player_x_string_value,
+    2
+  );
+  constexpr bn::string_view shoot_em_all_player_x_type = "value";
+  constexpr neo::types::event_value shoot_em_all_player_x_value(
+    shoot_em_all_player_x_type,
+    &shoot_em_all_player_x_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_player_y_name = "";
+  constexpr bn::string_view shoot_em_all_player_y_string_value = "5";
+  constexpr neo::variables::value shoot_em_all_player_y_raw_value(
+    shoot_em_all_player_y_name,
+    5,
+    true,
+    shoot_em_all_player_y_string_value,
+    5
+  );
+  constexpr bn::string_view shoot_em_all_player_y_type = "value";
+  constexpr neo::types::event_value shoot_em_all_player_y_value(
+    shoot_em_all_player_y_type,
+    &shoot_em_all_player_y_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_player_z_name = "";
+  constexpr bn::string_view shoot_em_all_player_z_string_value = "1";
+  constexpr neo::variables::value shoot_em_all_player_z_raw_value(
+    shoot_em_all_player_z_name,
+    1,
+    true,
+    shoot_em_all_player_z_string_value,
+    1
+  );
+  constexpr bn::string_view shoot_em_all_player_z_type = "value";
+  constexpr neo::types::event_value shoot_em_all_player_z_value(
+    shoot_em_all_player_z_type,
+    &shoot_em_all_player_z_raw_value
+  );
+  
+
+  // Player
+  constexpr bn::string_view shoot_em_all_player_id = "player";
+  constexpr bn::string_view shoot_em_all_player_name = "player";
+  constexpr neo::types::actor shoot_em_all_player_actor = {
+    shoot_em_all_player_id,
+    shoot_em_all_player_name,
+    &shoot_em_all_player_x_value,
+    &shoot_em_all_player_y_value,
+    &shoot_em_all_player_z_value,
+    neo::types::direction::DOWN,
+    bn::sprite_items::sprite_default,
+    false,
+    0,
+    0,
+    0,
+    16,
+    16,
+    nullptr,
+    neo::types::bounce_direction::ALL,
+    // Events: the player has no event arrays (its interactions live on the
+    // other actors/sprites/sensors)
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr
+  };
+
+  constexpr bn::string_view shoot_em_all_gravity_force_name = "";
+  constexpr bn::string_view shoot_em_all_gravity_force_string_value = "1";
+  constexpr neo::variables::value shoot_em_all_gravity_force_raw_value(
+    shoot_em_all_gravity_force_name,
+    1,
+    true,
+    shoot_em_all_gravity_force_string_value,
+    1
+  );
+  constexpr bn::string_view shoot_em_all_gravity_force_type = "value";
+  constexpr neo::types::event_value shoot_em_all_gravity_force_value(
+    shoot_em_all_gravity_force_type,
+    &shoot_em_all_gravity_force_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_jump_height_name = "";
+  constexpr bn::string_view shoot_em_all_jump_height_string_value = "36";
+  constexpr neo::variables::value shoot_em_all_jump_height_raw_value(
+    shoot_em_all_jump_height_name,
+    36,
+    true,
+    shoot_em_all_jump_height_string_value,
+    36
+  );
+  constexpr bn::string_view shoot_em_all_jump_height_type = "value";
+  constexpr neo::types::event_value shoot_em_all_jump_height_value(
+    shoot_em_all_jump_height_type,
+    &shoot_em_all_jump_height_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_player_inertia_name = "";
+  constexpr bn::string_view shoot_em_all_player_inertia_string_value = "60";
+  constexpr neo::variables::value shoot_em_all_player_inertia_raw_value(
+    shoot_em_all_player_inertia_name,
+    60,
+    true,
+    shoot_em_all_player_inertia_string_value,
+    60
+  );
+  constexpr bn::string_view shoot_em_all_player_inertia_type = "value";
+  constexpr neo::types::event_value shoot_em_all_player_inertia_value(
+    shoot_em_all_player_inertia_type,
+    &shoot_em_all_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_scroll_speed_name = "";
+  constexpr bn::string_view shoot_em_all_scroll_speed_string_value = "0.5";
+  constexpr neo::variables::value shoot_em_all_scroll_speed_raw_value(
+    shoot_em_all_scroll_speed_name,
+    0,
+    true,
+    shoot_em_all_scroll_speed_string_value,
+    0.5
+  );
+  constexpr bn::string_view shoot_em_all_scroll_speed_type = "value";
+  constexpr neo::types::event_value shoot_em_all_scroll_speed_value(
+    shoot_em_all_scroll_speed_type,
+    &shoot_em_all_scroll_speed_raw_value
+  );
+  
+  constexpr bn::string_view shoot_em_all_scene_id = "5a7c1e92-3d84-4b6f-a0c5-82e4f1b7d630";
+  constexpr bn::string_view shoot_em_all_scene_name = "Shoot em all";
+  constexpr neo::types::scene scene_shoot_em_all = {
+    shoot_em_all_scene_id,
+    shoot_em_all_scene_name,
+    neo::types::scene_type::SHOOT_EM_ALL,
+    neo::backgrounds::map,
+    3,
+    shoot_em_all_events,
+    true,
+    &shoot_em_all_player_actor,
+    &shoot_em_all_map_data,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    nullptr,
+    bn::sprite_items::cursor_default,
+    false,
+    &shoot_em_all_gravity_force_value,
+    &shoot_em_all_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+        &shoot_em_all_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+        &shoot_em_all_player_inertia_value
   };
   //////////////////////////
 
@@ -2619,6 +3065,36 @@ namespace neo::scenes
     &default_jump_height_raw_value
   );
   
+  constexpr bn::string_view default_player_inertia_name = "";
+  constexpr bn::string_view default_player_inertia_string_value = "0";
+  constexpr neo::variables::value default_player_inertia_raw_value(
+    default_player_inertia_name,
+    0,
+    false,
+    default_player_inertia_string_value,
+    0
+  );
+  constexpr bn::string_view default_player_inertia_type = "value";
+  constexpr neo::types::event_value default_player_inertia_value(
+    default_player_inertia_type,
+    &default_player_inertia_raw_value
+  );
+  
+  constexpr bn::string_view default_scroll_speed_name = "";
+  constexpr bn::string_view default_scroll_speed_string_value = "1";
+  constexpr neo::variables::value default_scroll_speed_raw_value(
+    default_scroll_speed_name,
+    1,
+    true,
+    default_scroll_speed_string_value,
+    1
+  );
+  constexpr bn::string_view default_scroll_speed_type = "value";
+  constexpr neo::types::event_value default_scroll_speed_value(
+    default_scroll_speed_type,
+    &default_scroll_speed_raw_value
+  );
+  
   constexpr bn::string_view default_scene_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
   constexpr bn::string_view default_scene_name = "default";
   constexpr neo::types::scene scene_default = {
@@ -2641,7 +3117,11 @@ namespace neo::scenes
     bn::sprite_items::cursor_default,
     false,
     &default_gravity_force_value,
-    &default_jump_height_value
+    &default_jump_height_value,
+    neo::types::scroll_direction::RIGHT,
+    &default_scroll_speed_value,
+    neo::types::player_axis::BOTH,
+    &default_player_inertia_value
   };
 
   const neo::types::scene& get_scene(bn::string_view name)
@@ -2651,6 +3131,7 @@ namespace neo::scenes
     if (name == "Point & Click" || name == "7c2d9a41-3b6e-4f5a-8e21-9a4c1d7e5b12") return scene_point_and_click;
     if (name == "Adventure" || name == "3e8f2b6a-91c4-4d07-b5a2-6d1f0c9e7a21") return scene_adventure;
     if (name == "Side Scroller" || name == "e6b9f8a1-4c58-4799-8a40-16eda41dda41") return scene_side_scroller;
+    if (name == "Shoot em all" || name == "5a7c1e92-3d84-4b6f-a0c5-82e4f1b7d630") return scene_shoot_em_all;
     return scene_default;
   }
 
@@ -2869,7 +3350,31 @@ namespace neo::types
     TOP_DOWN,
     SIDE_SCROLLER,
     POINT_AND_CLICK,
-    ADVENTURE
+    ADVENTURE,
+    SHOOT_EM_ALL
+  };
+
+  enum class scroll_direction
+  {
+    RIGHT,
+    LEFT,
+    UP,
+    DOWN
+  };
+
+  enum class player_axis
+  {
+    BOTH,
+    HORIZONTAL,
+    VERTICAL
+  };
+
+  enum class camera_edge
+  {
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
   };
 
   enum class variable_operation
@@ -2987,6 +3492,7 @@ namespace neo::types
   X(RESET_GAME, "reset-game") \\
   X(GO_TO_SCENE, "go-to-scene") \\
   X(ON_VARIABLE_CHANGE, "on-variable-change") \\
+  X(ON_OUT_OF_CAMERA_BOUNDS, "on-out-of-camera-bounds") \\
   X(SET_HUD_TEXT, "set-hud-text") \\
   X(SHOW_DIALOG, "show-dialog") \\
   X(SHOW_MENU, "show-menu") \\
@@ -3240,6 +3746,14 @@ namespace neo::types
       event(type_), key(key_), events_count(events_count_), events(events_) {}
   };
 
+  struct camera_bounds_event: event
+  {
+    int events_count;
+    const event* const* events;
+    constexpr camera_bounds_event(event_type type_, int events_count_, const event* const* events_):
+      event(type_), events_count(events_count_), events(events_) {}
+  };
+
   struct set_hud_text_event: event
   {
     bn::string_view hud;
@@ -3291,6 +3805,14 @@ namespace neo::types
 
     constexpr if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
       if_expression(type_), attribute(attribute_) {}
+  };
+
+  struct if_expression_camera: if_expression
+  {
+    neo::types::camera_edge edge;
+
+    constexpr if_expression_camera(bn::string_view type_, neo::types::camera_edge edge_):
+      if_expression(type_), edge(edge_) {}
   };
 
   struct if_expression_direction: if_expression
@@ -4272,6 +4794,12 @@ namespace neo::types
     bool has_gravity;
     const event_value* gravity_force;
     const event_value* jump_height;
+    // Shoot 'em all
+    neo::types::scroll_direction scroll_direction;
+    const event_value* scroll_speed;
+    neo::types::player_axis player_axis;
+    // 0-95, percent of the player's movement that lags behind the inputs
+    const event_value* player_inertia;
 
     inline bool is (bn::string_view name_) const
     {

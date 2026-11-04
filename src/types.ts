@@ -196,7 +196,11 @@ export type GameSceneType =
   | '2d-top-down'
   | 'side-scroller'
   | 'point-and-click'
-  | 'adventure';
+  | 'adventure'
+  | 'shoot-em-all';
+
+export type GameSceneScrollDirection = 'right' | 'left' | 'up' | 'down';
+export type GameScenePlayerAxis = 'both' | 'horizontal' | 'vertical';
 
 export interface GameScene {
   type: 'scene';
@@ -208,6 +212,10 @@ export interface GameScene {
   gravity?: boolean;
   gravityForce?: EventValue;
   jumpHeight?: EventValue;
+  scrollDirection?: GameSceneScrollDirection;
+  scrollSpeed?: EventValue;
+  playerInertia?: EventValue;
+  playerAxis?: GameScenePlayerAxis;
   map?: GameMap;
   events?: SceneEvent[];
   actors?: GameActor[];

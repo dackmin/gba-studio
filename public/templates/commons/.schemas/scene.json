@@ -301,8 +301,22 @@
           "type": "string"
         },
         "sceneType": {
-          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click", "adventure"],
+          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click", "adventure", "shoot-em-all"],
           "type": "string"
+        },
+        "scrollDirection": {
+          "enum": ["right", "left", "up", "down"],
+          "type": "string"
+        },
+        "scrollSpeed": {
+          "$ref": "event.json#/definitions/EventValue"
+        },
+        "playerAxis": {
+          "enum": ["both", "horizontal", "vertical"],
+          "type": "string"
+        },
+        "playerInertia": {
+          "$ref": "event.json#/definitions/EventValue"
         },
         "background": {
           "type": "string"

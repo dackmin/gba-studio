@@ -269,6 +269,10 @@ namespace neo
       {
         check_input();
       }
+      else
+      {
+        velocity = bn::fixed_point(0, 0);
+      }
 
       return;
     }
@@ -372,6 +376,12 @@ namespace neo
     if (game->active_scene->scene_type == neo::types::scene_type::ADVENTURE)
     {
       check_input_adventure();
+      return;
+    }
+
+    if (game->active_scene->scene_type == neo::types::scene_type::SHOOT_EM_ALL)
+    {
+      check_input_shoot_em_all();
       return;
     }
 
@@ -699,6 +709,222 @@ namespace neo
 
     update_sensors();
 
+    check_collisions();
+  }
+
+  bool actor::shoot_em_all_blocked_at(int pixel_x, int pixel_y)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    int left = pixel_x + box_x();
+    int right = left + box_width() - 1;
+    int top = pixel_y + box_y();
+    int bottom = top + box_height() - 1;
+
+    int min_tile_x = left < 0 ? -1 : map_data->to_tile_x(game->variables, left);
+    int max_tile_x = right < 0 ? -1 : map_data->to_tile_x(game->variables, right);
+    int min_tile_y = top < 0 ? -1 : map_data->to_tile_y(game->variables, top);
+    int max_tile_y = bottom < 0 ? -1 : map_data->to_tile_y(game->variables, bottom);
+
+    for (int tile_y = min_tile_y; tile_y <= max_tile_y; ++tile_y)
+    {
+      for (int tile_x = min_tile_x; tile_x <= max_tile_x; ++tile_x)
+      {
+        if (map_data->has_collision(tile_x, tile_y))
+        {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  void actor::clamp_to_view(bn::fixed_point previous)
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    int view_left = (int)game->camera.x() +
+      map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2;
+    int view_top = (int)game->camera.y() +
+      map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2;
+
+    bn::fixed min_x = view_left - box_x();
+    bn::fixed max_x = view_left + neo::types::SCREEN_WIDTH - box_x() - box_width();
+    bn::fixed min_y = view_top - box_y();
+    bn::fixed max_y = view_top + neo::types::SCREEN_HEIGHT - box_y() - box_height();
+
+    // Allow player to be pushed by walls
+    switch (game->active_scene->scroll_direction)
+    {
+      case neo::types::scroll_direction::LEFT:
+        max_x = bn::max(max_x, previous.x());
+        break;
+      case neo::types::scroll_direction::UP:
+        max_y = bn::max(max_y, previous.y());
+        break;
+      case neo::types::scroll_direction::DOWN:
+        min_y = bn::min(min_y, previous.y());
+        break;
+      default:
+        min_x = bn::min(min_x, previous.x());
+        break;
+    }
+
+    bn::fixed_point clamped(
+      bn::min(bn::max(position.x(), min_x), max_x),
+      bn::min(bn::max(position.y(), min_y), max_y)
+    );
+
+    if (clamped != position)
+    {
+      if (clamped.x() != position.x())
+      {
+        velocity.set_x(0);
+      }
+
+      if (clamped.y() != position.y())
+      {
+        velocity.set_y(0);
+      }
+
+      set_position(clamped);
+    }
+  }
+
+  void actor::scroll_by(int delta_x, int delta_y)
+  {
+    bn::fixed_point previous = position;
+    bool inside_wall = shoot_em_all_blocked_at((int)position.x(), (int)position.y());
+    int unit_x = delta_x < 0 ? -1 : (delta_x > 0 ? 1 : 0);
+    int unit_y = delta_y < 0 ? -1 : (delta_y > 0 ? 1 : 0);
+
+    for (int i = bn::max(bn::abs(delta_x), bn::abs(delta_y)); i > 0; --i)
+    {
+      bn::fixed_point next = position + bn::fixed_point(unit_x, unit_y);
+
+      if (!inside_wall && shoot_em_all_blocked_at((int)next.x(), (int)next.y()))
+      {
+        break;
+      }
+
+      set_position(next);
+    }
+
+    clamp_to_view(previous);
+  }
+
+  bool actor::is_out_of_camera()
+  {
+    const neo::types::map* map_data = game->active_scene->map_data;
+
+    if (map_data == nullptr)
+    {
+      return false;
+    }
+
+    int view_left = (int)game->camera.x() +
+      map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2;
+    int view_top = (int)game->camera.y() +
+      map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2;
+
+    int left = (int)position.x() + box_x();
+    int top = (int)position.y() + box_y();
+
+    return left + box_width() <= view_left ||
+      left >= view_left + neo::types::SCREEN_WIDTH ||
+      top + box_height() <= view_top ||
+      top >= view_top + neo::types::SCREEN_HEIGHT;
+  }
+
+  void actor::check_input_shoot_em_all()
+  {
+    const neo::types::scene* scene = game->active_scene;
+    bn::fixed_point previous = position;
+
+    int dx = 0;
+    int dy = 0;
+
+    if (scene->player_axis != neo::types::player_axis::VERTICAL)
+    {
+      dx = (bn::keypad::right_held() ? 1 : 0) - (bn::keypad::left_held() ? 1 : 0);
+    }
+
+    if (scene->player_axis != neo::types::player_axis::HORIZONTAL)
+    {
+      dy = (bn::keypad::down_held() ? 1 : 0) - (bn::keypad::up_held() ? 1 : 0);
+    }
+
+    bn::fixed speed = (dx != 0 && dy != 0)
+      ? SHOOT_EM_ALL_PLAYER_SPEED * bn::fixed(0.707)
+      : SHOOT_EM_ALL_PLAYER_SPEED;
+
+    int inertia = bn::min(bn::max(scene->player_inertia->as_int(game->variables), 0), 95);
+    bn::fixed grip = bn::fixed(100 - inertia) / 100;
+
+    velocity.set_x(velocity.x() + (dx * speed - velocity.x()) * grip);
+    velocity.set_y(velocity.y() + (dy * speed - velocity.y()) * grip);
+
+    if (dx == 0 && bn::abs(velocity.x()) < bn::fixed(0.1))
+    {
+      velocity.set_x(0);
+    }
+
+    if (dy == 0 && bn::abs(velocity.y()) < bn::fixed(0.1))
+    {
+      velocity.set_y(0);
+    }
+
+    bn::fixed_point next_position = position;
+
+    bool inside_wall = shoot_em_all_blocked_at((int)position.x(), (int)position.y());
+
+    if (velocity.x() != 0)
+    {
+      if (
+        inside_wall ||
+        !shoot_em_all_blocked_at((int)(next_position.x() + velocity.x()), (int)next_position.y())
+      )
+      {
+        next_position.set_x(next_position.x() + velocity.x());
+      }
+      else
+      {
+        velocity.set_x(0);
+      }
+    }
+
+    if (velocity.y() != 0)
+    {
+      if (
+        inside_wall ||
+        !shoot_em_all_blocked_at((int)next_position.x(), (int)(next_position.y() + velocity.y()))
+      )
+      {
+        next_position.set_y(next_position.y() + velocity.y());
+      }
+      else
+      {
+        velocity.set_y(0);
+      }
+    }
+
+    bool moved = next_position != position;
+
+    set_anim_state(
+      moved
+        ? neo::types::animation_state::MOVING
+        : neo::types::animation_state::IDLE
+    );
+
+    if (moved)
+    {
+      set_position(next_position);
+      update_animation();
+    }
+
+    clamp_to_view(previous);
+    update_sensors();
     check_collisions();
   }
 
@@ -1622,7 +1848,7 @@ namespace neo
         game->active_collision_side = neo::types::collision_side::NONE;
 
         if (
-          !top_down &&
+          game->active_scene->scene_type == neo::types::scene_type::SIDE_SCROLLER &&
           other->definition->bounce != nullptr &&
           !game->scene_changed &&
           bounce_accepts_side(other->definition->bounce_direction, side)
