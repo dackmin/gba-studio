@@ -406,6 +406,40 @@
           "duration": 200
         }
       ]
+    },
+    {
+      "type": "run-after",
+      "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e941",
+      "duration": 200,
+      "timerId": "timer-id",
+      "events": [
+        {
+          "type": "fade-out",
+          "id": "e6a1f3d8-72b4-4c09-9d5e-1c8b4a7f2e30",
+          "duration": 200
+        }
+      ]
+    },
+    {
+      "type": "run-every",
+      "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e942",
+      "duration": 200,
+      "events": [
+        {
+          "type": "fade-out",
+          "id": "e6a1f3d8-72b4-4c09-9d5e-1c8b4a7f2e31",
+          "duration": 200
+        }
+      ]
+    },
+    {
+      "type": "stop-timer",
+      "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e943",
+      "timerId": "timer-id"
+    },
+    {
+      "type": "stop-all-timers",
+      "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e944"
     }
   ],
   "id": "d2a023cc-364d-4caf-9638-78937f593e4d",

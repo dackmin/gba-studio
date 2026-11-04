@@ -53,6 +53,9 @@ namespace neo::events
     // scripted events; the nested call must not poll again.
     bool polling_scripted_events = false;
 
+    // prevent deep nesting of timer updates
+    int timers_depth = 0;
+
     constexpr int MAX_VARIABLE_CHANGE_DEPTH = 4;
     int variable_change_depth = 0;
   }
@@ -91,6 +94,29 @@ namespace neo::events
     }
 
     --variable_change_depth;
+  }
+
+  static int timer_frames(neo::game* game, const neo::types::timer_event* timer)
+  {
+    return bn::max(1, timer->duration->as_int(game->variables) / 16);
+  }
+
+  static void start_timer(neo::game* game, neo::types::timer_event* timer)
+  {
+    if (!timer->queued)
+    {
+      if (game->active_timers.full())
+      {
+        BN_LOG("Too many active timers, ignoring timer event");
+        return;
+      }
+
+      game->active_timers.push_back(timer);
+      timer->queued = true;
+    }
+
+    timer->frames_left = timer_frames(game, timer);
+    timer->active = true;
   }
 
   void exec_event (neo::game* game, const neo::types::event* e, bool is_loop) {
@@ -732,6 +758,63 @@ namespace neo::events
     }
 
     /**
+     * @name run-after
+     * @param timerId string — Optional id, to stop it with stop-timer
+     * @param duration number — Delay in milliseconds (default: 1000)
+     * @param events array of events — Executed once, after the delay
+     */
+    else if (e->type == neo::types::event_type::RUN_AFTER)
+    {
+      start_timer(game, const_cast<neo::types::timer_event*>(
+        static_cast<const neo::types::timer_event*>(e)));
+    }
+
+    /**
+     * @name run-every
+     * @param timerId string — Optional id, to stop it with stop-timer
+     * @param duration number — Interval in milliseconds (default: 1000)
+     * @param events array of events — Executed each time the interval elapses, until the scene
+     *                                 changes
+     */
+    else if (e->type == neo::types::event_type::RUN_EVERY)
+    {
+      start_timer(game, const_cast<neo::types::timer_event*>(
+        static_cast<const neo::types::timer_event*>(e)));
+    }
+
+    /**
+     * @name stop-timer
+     * @param timerId string — Id of the run-after/run-every events to cancel
+     */
+    else if (e->type == neo::types::event_type::STOP_TIMER)
+    {
+      const neo::types::stop_timer_event* stop_timer_evt =
+        static_cast<const neo::types::stop_timer_event*>(e);
+
+      if (!stop_timer_evt->timer_id.empty())
+      {
+        for (neo::types::timer_event* timer : game->active_timers)
+        {
+          if (timer->timer_id == stop_timer_evt->timer_id)
+          {
+            timer->active = false;
+          }
+        }
+      }
+    }
+
+    /**
+     * @name stop-all-timers
+     */
+    else if (e->type == neo::types::event_type::STOP_ALL_TIMERS)
+    {
+      for (neo::types::timer_event* timer : game->active_timers)
+      {
+        timer->active = false;
+      }
+    }
+
+    /**
      * @name set-palette-effect
      * @param target string — Which palettes to affect (background, sprite, both)
      * @param effect string — Which effect to change (brightness, contrast, intensity, grayscale, hue-shift)
@@ -1353,6 +1436,61 @@ namespace neo::events
     }
 
     polling_scripted_events = false;
+  }
+
+  void update_timers(neo::game* game)
+  {
+    ++timers_depth;
+
+    for (int i = 0; i < game->active_timers.size() && !game->scene_changed; ++i)
+    {
+      neo::types::timer_event* timer = game->active_timers[i];
+
+      if (!timer->active || timer->running || --timer->frames_left > 0)
+      {
+        continue;
+      }
+
+      bool repeats = timer->type == neo::types::event_type::RUN_EVERY;
+
+      timer->active = repeats;
+      timer->frames_left = repeats ? timer_frames(game, timer) : 0;
+      timer->running = true;
+
+      for (int j = 0; j < timer->events_count && !game->scene_changed; ++j)
+      {
+        exec_event(game, timer->events[j], true);
+      }
+
+      timer->running = false;
+    }
+
+    if (--timers_depth == 0)
+    {
+      for (int i = game->active_timers.size() - 1; i >= 0; --i)
+      {
+        neo::types::timer_event* timer = game->active_timers[i];
+
+        if (!timer->active && !timer->running)
+        {
+          timer->queued = false;
+          game->active_timers.erase(game->active_timers.begin() + i);
+        }
+      }
+    }
+  }
+
+  void clear_timers(neo::game* game)
+  {
+    for (neo::types::timer_event* timer : game->active_timers)
+    {
+      timer->active = false;
+      timer->queued = false;
+      timer->running = false;
+      timer->frames_left = 0;
+    }
+
+    game->active_timers.clear();
   }
 
   void update_active_parallel_events(neo::game* game)

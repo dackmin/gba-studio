@@ -61,6 +61,9 @@ export const isParallelizable = (type: string): boolean =>
 export const isHudEvent = (definition: EventDefinition): boolean =>
   !!definition.hud;
 
+export const isNotHandler = (definition: EventDefinition) =>
+  !definition.value.startsWith('on-');
+
 export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   name: 'Input',
   items: [{
@@ -581,6 +584,35 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       then: [],
       else: [],
     }),
+  }, {
+    icon: LapTimerIcon,
+    name: 'Run After X Milliseconds',
+    value: 'run-after',
+    keywords: ['run', 'after', 'timeout', 'settimeout', 'delay', 'later', 'timer', 'schedule'],
+    containers: ['events'],
+    construct: () => ({ type: 'run-after', duration: 1000, events: [] }),
+  }, {
+    icon: ReloadIcon,
+    name: 'Run Every X Milliseconds',
+    value: 'run-every',
+    keywords: ['run', 'every', 'interval', 'setinterval', 'repeat', 'loop', 'timer', 'schedule'],
+    containers: ['events'],
+    construct: () => ({ type: 'run-every', duration: 1000, events: [] }),
+  }, {
+    icon: StopIcon,
+    name: 'Stop Timer',
+    value: 'stop-timer',
+    keywords: [
+      'stop', 'cancel', 'clear', 'timer', 'timeout', 'interval',
+      'cleartimeout', 'clearinterval',
+    ],
+    construct: () => ({ type: 'stop-timer', timerId: '' }),
+  }, {
+    icon: StopIcon,
+    name: 'Stop All Timers',
+    value: 'stop-all-timers',
+    keywords: ['stop', 'cancel', 'clear', 'all', 'timers', 'timeout', 'interval'],
+    construct: () => ({ type: 'stop-all-timers' }),
   }, {
     icon: Share2Icon,
     name: 'Parallel Events',

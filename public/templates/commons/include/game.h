@@ -83,6 +83,9 @@ namespace neo
       // all of them to finish.
       bn::vector<neo::types::parallel_event*, 10> active_parallel_events;
 
+      // run-after/run-every events timers
+      bn::vector<neo::types::timer_event*, 20> active_timers;
+
       void set_scene(bn::string_view scene_name);
       void reset();
       bn::string_view resolve_actor_reference(bn::string_view actor_reference);
@@ -92,6 +95,7 @@ namespace neo
       void enable_blending();
       void disable_blending();
       void update_active_parallel_events();
+      void update_timers();
       // Advances one frame, including any active parallel effects. Every
       // blocking wait loop (dialog/menu, wait/wait-for-button, blocking
       // fade/pan/actor-move, ...) must tick through this instead of calling

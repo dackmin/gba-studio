@@ -673,6 +673,29 @@ export interface OnOutOfCameraBoundsEvent extends SceneEvent {
   events?: SceneEvent[];
 }
 
+export interface RunAfterEvent extends SceneEvent {
+  type: 'run-after';
+  timerId?: string;
+  duration: EventValue;
+  events?: SceneEvent[];
+}
+
+export interface RunEveryEvent extends SceneEvent {
+  type: 'run-every';
+  timerId?: string;
+  duration: EventValue;
+  events?: SceneEvent[];
+}
+
+export interface StopTimerEvent extends SceneEvent {
+  type: 'stop-timer';
+  timerId: string;
+}
+
+export interface StopAllTimersEvent extends SceneEvent {
+  type: 'stop-all-timers';
+}
+
 export interface ParallelEventsEvent extends SceneEvent {
   type: 'parallel-events';
   events: SceneEvent[];

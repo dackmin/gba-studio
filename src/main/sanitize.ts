@@ -28,6 +28,8 @@ import type {
   OnVariableChangeEvent,
   OnOutOfCameraBoundsEvent,
   ParallelEventsEvent,
+  RunAfterEvent,
+  RunEveryEvent,
   SceneEvent,
   ShowMenuEvent,
   SpriteAnimation,
@@ -86,6 +88,16 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
 
   if (event.type === 'on-variable-change') {
     const evt = event as OnVariableChangeEvent;
+
+    evt.events = evt.events ?? [];
+
+    for (const e of evt.events) {
+      await sanitizeEvent(e);
+    }
+  }
+
+  if (event.type === 'run-after' || event.type === 'run-every') {
+    const evt = event as RunAfterEvent | RunEveryEvent;
 
     evt.events = evt.events ?? [];
 

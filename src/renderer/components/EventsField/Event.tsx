@@ -48,8 +48,11 @@ import type {
   SetActorPositionEvent,
   SetBackgroundEvent,
   SetHudTextEvent,
+  RunAfterEvent,
+  RunEveryEvent,
   SetSpriteAnimationEvent,
   StopActorAnimationEvent,
+  StopTimerEvent,
   StopSpriteAnimationEvent,
   SetSpriteEvent,
   SetPaletteEffectEvent,
@@ -99,6 +102,8 @@ import EventSetPlayerPosition from './EventSetPlayerPosition';
 import EventSetBackground from './EventSetBackground';
 import EventSetSprite from './EventSetSprite';
 import EventSetSpriteAnimation from './EventSetSpriteAnimation';
+import EventTimer from './EventTimer';
+import EventStopTimer from './EventStopTimer';
 import EventStopActorAnimation from './EventStopActorAnimation';
 import EventStopSpriteAnimation from './EventStopSpriteAnimation';
 import EventParallel from './EventParallel';
@@ -543,6 +548,18 @@ const Event = ({
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>
+                <Switch.Case value={['run-after', 'run-every']}>
+                  <EventTimer
+                    event={event as RunAfterEvent | RunEveryEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="stop-timer">
+                  <EventStopTimer
+                    event={event as StopTimerEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
                 <Switch.Case value="parallel-events">
                   <EventParallel
                     event={event as ParallelEventsEvent}
@@ -555,6 +572,7 @@ const Event = ({
                     'stop-music', 'disable-input', 'enable-input', 'freeze-camera',
                     'disable-player', 'enable-player', 'save-game', 'load-game',
                     'save-state', 'load-state', 'reset-game', 'stop-player-animation',
+                    'stop-all-timers',
                   ]}
                 >
                   <Text className="text-xs text-slate text-center">

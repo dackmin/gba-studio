@@ -372,6 +372,7 @@ namespace neo
 
     scripted_events_count = 0;
     active_parallel_events.clear();
+    neo::events::clear_timers(this);
 
     // The old wave_hbe (if any) referenced the previous scene's background.
     neo::effects::stop_wave_effect(this);
@@ -752,6 +753,11 @@ namespace neo
     neo::events::update_active_parallel_events(this);
   }
 
+  void game::update_timers()
+  {
+    neo::events::update_timers(this);
+  }
+
   void game::update_scripted_events()
   {
     neo::events::update_scripted_events(this);
@@ -772,6 +778,7 @@ namespace neo
   {
     update_scripted_events();
     update_active_parallel_events();
+    update_timers();
 
     for (int i = 0; i < actors.size(); ++i)
     {

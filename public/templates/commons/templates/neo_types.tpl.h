@@ -286,6 +286,10 @@ namespace neo::types
   X(SET_PLAYER_ANIMATION, "set-player-animation") \
   X(SET_ACTOR_ANIMATION, "set-actor-animation") \
   X(SET_SPRITE_ANIMATION, "set-sprite-animation") \
+  X(RUN_AFTER, "run-after") \
+  X(RUN_EVERY, "run-every") \
+  X(STOP_TIMER, "stop-timer") \
+  X(STOP_ALL_TIMERS, "stop-all-timers") \
   X(STOP_PLAYER_ANIMATION, "stop-player-animation") \
   X(STOP_ACTOR_ANIMATION, "stop-actor-animation") \
   X(STOP_SPRITE_ANIMATION, "stop-sprite-animation") \
@@ -1030,6 +1034,40 @@ namespace neo::types
       event(type_),
       sprite(sprite_),
       animation(animation_) {}
+  };
+
+  // setTimeout/setInterval equivalents (run-after, run-every)
+  struct timer_event: event
+  {
+    bn::string_view timer_id;
+    const event_value* duration; // ms
+    int events_count;
+    const event* const* events;
+
+    int frames_left = 0;
+    bool active = false;
+    bool queued = false;
+    bool running = false;
+
+    timer_event(
+      event_type type_,
+      bn::string_view timer_id_,
+      const event_value* duration_,
+      int events_count_,
+      const event* const* events_
+    ):
+      event(type_),
+      timer_id(timer_id_),
+      duration(duration_),
+      events_count(events_count_),
+      events(events_) {}
+  };
+
+  struct stop_timer_event: event
+  {
+    bn::string_view timer_id;
+    constexpr stop_timer_event(event_type type_, bn::string_view timer_id_):
+      event(type_), timer_id(timer_id_) {}
   };
 
   struct stop_actor_animation_event: event

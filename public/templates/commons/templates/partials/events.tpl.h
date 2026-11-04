@@ -568,6 +568,43 @@ constexpr neo::types::set_sprite_animation_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_sprite,
   {{../prefix}}_{{@index}}_animation
 );
+{{else if (or (eq this.type "run-after") (eq this.type "run-every"))}}
+{{#if (hasItems this.events)}}
+{{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
+constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+{{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=(valuedef this.duration 1000)}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_timer_id = "{{escapeCpp this.timerId}}";
+BN_DATA_EWRAM neo::types::timer_event {{../prefix}}_{{@index}}(
+  {{#if (eq this.type "run-after")}}
+  neo::types::event_type::RUN_AFTER,
+  {{else}}
+  neo::types::event_type::RUN_EVERY,
+  {{/if}}
+  {{../prefix}}_{{@index}}_timer_id,
+  &{{../prefix}}_{{@index}}_duration_value,
+  {{#if (hasItems this.events)}}
+  {{this.events.length}},
+  {{../prefix}}_{{@index}}_events
+  {{else}}
+  0,
+  nullptr
+  {{/if}}
+);
+{{else if (eq this.type "stop-timer")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_timer_id = "{{escapeCpp this.timerId}}";
+constexpr neo::types::stop_timer_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::STOP_TIMER,
+  {{../prefix}}_{{@index}}_timer_id
+);
+{{else if (eq this.type "stop-all-timers")}}
+constexpr neo::types::event {{../prefix}}_{{@index}}(
+  neo::types::event_type::STOP_ALL_TIMERS
+);
 {{else if (eq this.type "stop-player-animation")}}
 constexpr neo::types::player_event {{../prefix}}_{{@index}}(
   neo::types::event_type::STOP_PLAYER_ANIMATION

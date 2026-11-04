@@ -402,6 +402,78 @@
       ],
       "type": "object"
     },
+    "RunAfterEvent": {
+      "properties": {
+        "type": {
+          "const": "run-after",
+          "type": "string"
+        },
+        "timerId": {
+          "type": "string"
+        },
+        "duration": { "$ref": "#/definitions/EventValue" },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "RunEveryEvent": {
+      "properties": {
+        "type": {
+          "const": "run-every",
+          "type": "string"
+        },
+        "timerId": {
+          "type": "string"
+        },
+        "duration": { "$ref": "#/definitions/EventValue" },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopTimerEvent": {
+      "properties": {
+        "timerId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "stop-timer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "timerId",
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopAllTimersEvent": {
+      "properties": {
+        "type": {
+          "const": "stop-all-timers",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "DisableInputEvent": {
       "properties": {
         "type": {
@@ -1319,6 +1391,10 @@
         { "$ref": "#/definitions/SetPlayerAnimationEvent" },
         { "$ref": "#/definitions/SetActorAnimationEvent" },
         { "$ref": "#/definitions/SetSpriteAnimationEvent" },
+        { "$ref": "#/definitions/RunAfterEvent" },
+        { "$ref": "#/definitions/RunEveryEvent" },
+        { "$ref": "#/definitions/StopTimerEvent" },
+        { "$ref": "#/definitions/StopAllTimersEvent" },
         { "$ref": "#/definitions/StopPlayerAnimationEvent" },
         { "$ref": "#/definitions/StopActorAnimationEvent" },
         { "$ref": "#/definitions/StopSpriteAnimationEvent" },
