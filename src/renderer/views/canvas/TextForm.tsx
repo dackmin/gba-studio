@@ -19,7 +19,7 @@ import FontsListField from '../../components/FontsListField';
 
 const EXCLUDED_TYPES = [
   'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene',
-  'actor',
+  'actor', 'camera',
 ];
 
 export interface TextFormProps {

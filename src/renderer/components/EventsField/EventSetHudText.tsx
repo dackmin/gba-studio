@@ -7,7 +7,7 @@ import EventValueField from '../EventValueField';
 
 const EXCLUDED_TYPES = [
   'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene',
-  'actor',
+  'actor', 'camera',
 ];
 
 export interface EventSetHudTextProps {

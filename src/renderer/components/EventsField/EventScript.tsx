@@ -100,7 +100,7 @@ const EventScript = ({
               type="text"
               excludeTypes={[
                 'variable', 'saved-game', 'player-attribute', 'direction', 'collision-side',
-                'scene',
+                'scene', 'camera',
               ]}
               value={parameterValues[index] ?? ''}
               onValueChange={value => onParameterChange(index, value)}

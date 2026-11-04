@@ -20,10 +20,12 @@ export interface EventValueFieldProps
 
 export const HUD_EXCLUDED_TYPES = [
   'saved-game', 'player-attribute', 'direction', 'collision-side', 'scene', 'actor',
+  'camera',
 ];
 
 export const EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES = [
   'saved-game', 'scene', 'actor', 'player-attribute', 'direction', 'collision-side',
+  'camera',
 ];
 
 const EventValueField = ({
@@ -32,7 +34,7 @@ const EventValueField = ({
   defaultValue,
   children,
   className,
-  excludeTypes: excludeTypesProp = ['saved-game', 'scene'],
+  excludeTypes: excludeTypesProp = ['saved-game', 'scene', 'camera'],
   min = 0,
   onValueChange,
   ...rest
@@ -83,6 +85,8 @@ const EventValueField = ({
       } as DynamicValue);
     } else if (type === 'actor') {
       onValueChange?.({ type, name: '' });
+    } else if (type === 'camera') {
+      onValueChange?.({ type, name: 'left' } as DynamicValue);
     } else {
       onValueChange?.({ type } as DynamicValue);
     }
@@ -134,7 +138,7 @@ const EventValueField = ({
         {
           '[&>input]:!hidden overflow-hidden': isDynamicValue &&
             ['variable', 'saved-game', 'player-attribute', 'direction',
-              'collision-side', 'scene', 'actor']
+              'collision-side', 'scene', 'actor', 'camera']
               .includes((val as DynamicValue).type),
         }
       )}
@@ -160,6 +164,7 @@ const EventValueField = ({
                     <Switch.Case value="collision-side">✚</Switch.Case>
                     <Switch.Case value="scene">S</Switch.Case>
                     <Switch.Case value="actor">A</Switch.Case>
+                    <Switch.Case value="camera">C</Switch.Case>
                     <Switch.Case default>#</Switch.Case>
                   </Switch>
                 </Text>
@@ -201,6 +206,11 @@ const EventValueField = ({
             { !excludeTypes.includes('actor') && (
               <Select.Item value="actor">
                 <Text className="text-slate">A</Text> Actor
+              </Select.Item>
+            ) }
+            { !excludeTypes.includes('camera') && (
+              <Select.Item value="camera">
+                <Text className="text-slate">C</Text> Camera
               </Select.Item>
             ) }
           </Select.Content>
@@ -314,6 +324,45 @@ const EventValueField = ({
             value={(val as DynamicValue).name}
             onValueChange={onValueChange_}
           />
+        </TextField.Slot>
+      ) }
+      { isDynamicValue && (val as DynamicValue).type === 'camera' && (
+        <TextField.Slot side="left">
+          <Select.Root
+            value={(val as DynamicValue).name || 'left'}
+            onValueChange={onValueChange_}
+          >
+            <SelectPrimitive.Trigger asChild>
+              <Button variant="ghost" size="1">
+                <SelectPrimitive.Value>
+                  <Text size="1" className="dark:text-seashell">
+                    {
+                      {
+                        left: 'Left',
+                        right: 'Right',
+                        top: 'Top',
+                        bottom: 'Bottom',
+                      }[(val as DynamicValue).name || 'left']
+                    }
+                  </Text>
+                </SelectPrimitive.Value>
+              </Button>
+            </SelectPrimitive.Trigger>
+            <Select.Content>
+              <Select.Item value="left">
+                <Text>Left</Text>
+              </Select.Item>
+              <Select.Item value="right">
+                <Text>Right</Text>
+              </Select.Item>
+              <Select.Item value="top">
+                <Text>Top</Text>
+              </Select.Item>
+              <Select.Item value="bottom">
+                <Text>Bottom</Text>
+              </Select.Item>
+            </Select.Content>
+          </Select.Root>
         </TextField.Slot>
       ) }
       { !isDynamicValue && children }

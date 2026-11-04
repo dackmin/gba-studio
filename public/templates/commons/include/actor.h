@@ -55,6 +55,7 @@ namespace neo
       void stop_walking();
       void trigger_hit();
 
+      bool is_out_of_camera();
       void start_attack(const neo::types::melee_attack_event* attack);
       void end_attack();
       void start_firing();

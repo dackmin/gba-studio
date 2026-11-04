@@ -112,6 +112,14 @@ namespace neo::types
     ADVENTURE
   };
 
+  enum class camera_edge
+  {
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
+  };
+
   enum class variable_operation
   {
     SET,
@@ -540,6 +548,14 @@ namespace neo::types
 
     constexpr if_expression_player_attribute(bn::string_view type_, bn::string_view attribute_):
       if_expression(type_), attribute(attribute_) {}
+  };
+
+  struct if_expression_camera: if_expression
+  {
+    neo::types::camera_edge edge;
+
+    constexpr if_expression_camera(bn::string_view type_, neo::types::camera_edge edge_):
+      if_expression(type_), edge(edge_) {}
   };
 
   struct if_expression_direction: if_expression

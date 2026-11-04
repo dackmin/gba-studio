@@ -550,6 +550,10 @@ export interface DynamicSceneValue extends AnyDynamic {
   type: 'scene';
 }
 
+export interface DynamicCameraValue extends AnyDynamic {
+  type: 'camera';
+}
+
 export interface DynamicActorValue extends AnyDynamic {
   type: 'actor';
 }
@@ -561,6 +565,7 @@ export type DynamicValue =
   | DynamicDirectionValue
   | DynamicCollisionSideValue
   | DynamicSceneValue
+  | DynamicCameraValue
   | DynamicActorValue;
 
 export type EventValue =

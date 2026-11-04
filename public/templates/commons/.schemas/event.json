@@ -58,6 +58,24 @@
       "enum": ["x", "y", "direction", "scene"],
       "type": "string"
     },
+    "CameraAttribute": {
+      "enum": ["left", "right", "top", "bottom"],
+      "type": "string"
+    },
+    "DynamicCameraValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "camera"
+        },
+        "name": {
+          "$ref": "#/definitions/CameraAttribute"
+        }
+      }
+    },
     "DynamicPlayerAttributeValue": {
       "type": "object",
       "additionalProperties": false,
@@ -133,7 +151,8 @@
         { "$ref": "#/definitions/DynamicDirectionValue" },
         { "$ref": "#/definitions/DynamicCollisionSideValue" },
         { "$ref": "#/definitions/DynamicSceneValue" },
-        { "$ref": "#/definitions/DynamicActorValue" }
+        { "$ref": "#/definitions/DynamicActorValue" },
+        { "$ref": "#/definitions/DynamicCameraValue" }
       ]
     },
     "EventValue": {

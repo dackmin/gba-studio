@@ -28,6 +28,12 @@ constexpr neo::types::if_expression_player_attribute {{../prefix}}(
   {{../prefix}}_type,
   {{../prefix}}_attribute
 );
+{{else if (eq this.type "camera")}}
+constexpr bn::string_view {{../prefix}}_type = "camera";
+constexpr neo::types::if_expression_camera {{../prefix}}(
+  {{../prefix}}_type,
+  neo::types::camera_edge::{{uppercase (valuedef this.name 'left')}}
+);
 {{else if (eq this.type "direction")}}
 constexpr bn::string_view {{../prefix}}_type = "direction";
 constexpr neo::types::if_expression_direction {{../prefix}}(

@@ -66,6 +66,46 @@ namespace neo::conditions
         : (int)game->player->position.y();
     }
 
+    int floor_tile (int pixel, int grid_size)
+    {
+      return pixel >= 0 ? pixel / grid_size : -((-pixel + grid_size - 1) / grid_size);
+    }
+
+    // Edge of the camera's view in tile coordinates (right/bottom being the last visible tile)
+    bool get_camera_edge (neo::game* game, neo::types::camera_edge edge, int& tile)
+    {
+      if (game->active_scene == nullptr || game->active_scene->map_data == nullptr)
+      {
+        return false;
+      }
+
+      const neo::types::map* map_data = game->active_scene->map_data;
+      int grid_size = map_data->grid_size->as_int(game->variables);
+
+      int view_left = (int)game->camera.x()
+        + map_data->pixel_width(game->variables) / 2 - neo::types::SCREEN_WIDTH / 2;
+      int view_top = (int)game->camera.y()
+        + map_data->pixel_height(game->variables) / 2 - neo::types::SCREEN_HEIGHT / 2;
+
+      switch (edge)
+      {
+        case neo::types::camera_edge::LEFT:
+          tile = floor_tile(view_left, grid_size);
+          break;
+        case neo::types::camera_edge::RIGHT:
+          tile = floor_tile(view_left + neo::types::SCREEN_WIDTH - 1, grid_size);
+          break;
+        case neo::types::camera_edge::TOP:
+          tile = floor_tile(view_top, grid_size);
+          break;
+        default:
+          tile = floor_tile(view_top + neo::types::SCREEN_HEIGHT - 1, grid_size);
+          break;
+      }
+
+      return true;
+    }
+
     // Resolves an if-expression to its comparable form. Tile x/y attributes
     // resolve to numbers, variables and raw values expose both their int
     // and text forms, everything else resolves to text.
@@ -152,6 +192,21 @@ namespace neo::conditions
 
         BN_LOG("Unknown player attribute: ", attr_expr->attribute);
         return {};
+      }
+      else if (expression->type == "camera")
+      {
+        auto* camera_expr = static_cast<const neo::types::if_expression_camera*>(expression);
+        int camera_tile = 0;
+
+        if (!get_camera_edge(game, camera_expr->edge, camera_tile))
+        {
+          BN_LOG("[IF] No map to read the camera edge from");
+          return {};
+        }
+
+        BN_LOG("[IF] Getting camera edge: ", camera_tile);
+
+        return { true, camera_tile, "" };
       }
       else if (expression->type == "direction")
       {

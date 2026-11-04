@@ -86,6 +86,8 @@ const VariableForm = ({
         return scenes.find(s => s.id === value.name)?.name ?? 'Scene';
       case 'player-attribute':
         return value.name === 'scene' ? 'Current scene' : `Player ${value.name}`;
+      case 'camera':
+        return `Camera ${value.name ?? 'left'}`;
       case 'direction':
         return value.name ?? 'down';
       case 'saved-game':
