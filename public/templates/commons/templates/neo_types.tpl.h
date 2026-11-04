@@ -1441,6 +1441,7 @@ namespace neo::types
     int collision_height;
     const event_value* bounce;
     neo::types::bounce_direction bounce_direction;
+    bool pass_through;
     int init_events_count;
     const event* const* init_events;
     int interact_events_count;

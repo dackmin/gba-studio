@@ -27,6 +27,7 @@ export const DEFAULT_ACTOR: GameActor = {
   sprite: 'sprite_default',
   direction: 'down',
   collisionGroup: 0,
+  passThrough: false,
   bounce: 0,
   bounceDirection: 'all',
   events: {

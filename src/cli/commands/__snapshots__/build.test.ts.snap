@@ -1552,6 +1552,7 @@ namespace neo::scenes
     16,
     &scene_0_actor_0_bounce_value,
     neo::types::bounce_direction::ALL,
+    false,
     // Events
     0,
     nullptr,
@@ -1639,6 +1640,7 @@ namespace neo::scenes
     16,
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -1901,6 +1903,7 @@ namespace neo::scenes
     16,
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2272,6 +2275,7 @@ namespace neo::scenes
     16,
     &adventure_actor_0_bounce_value,
     neo::types::bounce_direction::ALL,
+    false,
     // Events
     0,
     nullptr,
@@ -2450,6 +2454,7 @@ namespace neo::scenes
     16,
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2712,6 +2717,7 @@ namespace neo::scenes
     16,
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -2940,6 +2946,7 @@ namespace neo::scenes
     16,
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,
@@ -4694,6 +4701,7 @@ namespace neo::types
     int collision_height;
     const event_value* bounce;
     neo::types::bounce_direction bounce_direction;
+    bool pass_through;
     int init_events_count;
     const event* const* init_events;
     int interact_events_count;

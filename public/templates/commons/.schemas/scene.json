@@ -44,6 +44,9 @@
           "minimum": 0,
           "type": "number"
         },
+        "passThrough": {
+          "type": "boolean"
+        },
         "bounce": {
           "$ref": "event.json#/definitions/EventValue"
         },

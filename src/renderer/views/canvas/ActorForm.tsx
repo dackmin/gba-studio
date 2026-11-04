@@ -177,6 +177,16 @@ const ActorForm = ({
                     onValueChange={onValueChange.bind(null, 'collisionGroup')}
                   />
                 </div>
+                <div className="flex flex-col gap-2">
+                  <Text className="block text-slate" size="1">Pass through</Text>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={!!actor.passThrough}
+                      onCheckedChange={onValueChange.bind(null, 'passThrough')}
+                    />
+                    <Text size="1">Player can pass through</Text>
+                  </div>
+                </div>
                 { selectedScene?.sceneType === 'side-scroller' && (
                   <>
                     <div className="flex flex-col gap-2">

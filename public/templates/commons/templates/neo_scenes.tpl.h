@@ -402,6 +402,7 @@ namespace neo::scenes
     {{valuedef this._collisionRect.height 16}},
     &{{slug ../this.name}}_actor_{{@index}}_bounce_value,
     neo::types::bounce_direction::{{uppercase (valuedef this.bounceDirection "all")}},
+    {{valuedef this.passThrough false}},
     // Events
     {{#if (hasItems this.events.init)}}
     {{this.events.init.length}},
@@ -587,6 +588,7 @@ namespace neo::scenes
     {{valuedef this.player._collisionRect.height 16}},
     nullptr,
     neo::types::bounce_direction::ALL,
+    false,
     // Events: the player has no event arrays (its interactions live on the
     // other actors/sprites/sensors)
     0,

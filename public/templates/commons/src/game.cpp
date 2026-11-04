@@ -813,6 +813,11 @@ namespace neo
   //   when different from the player's (opt-in obstacles/enemies)
   static bool blocks_player(neo::game* game, neo::actor* actor_)
   {
+    if (actor_->definition->pass_through)
+    {
+      return false;
+    }
+
     bool top_down = game->active_scene != nullptr && (
       game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
       game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||

@@ -257,6 +257,7 @@ export interface GameActor {
   // Collision group (1-4, 0 = none): actors/sprites in a different group than the player are solid
   // and fire collide events on touch.
   collisionGroup?: number;
+  passThrough?: boolean;
   bounce?: EventValue;
   bounceDirection?: 'all' | 'up' | 'down' | 'left' | 'right';
   events?: {
