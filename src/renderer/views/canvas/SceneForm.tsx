@@ -333,11 +333,11 @@ const SceneForm = ({
                 <Select.Trigger className="w-full" />
                 <Select.Content>
                   <Select.Item value="logos">Logos</Select.Item>
-                  <Select.Item value="2d-top-down">Top Down 2D</Select.Item>
-                  <Select.Item value="side-scroller">Side Scroller</Select.Item>
-                  <Select.Item value="point-and-click">Point & Click</Select.Item>
+                  <Select.Item value="2d-top-down">Top Down</Select.Item>
                   <Select.Item value="adventure">Adventure</Select.Item>
-                  <Select.Item value="shoot-em-all">Shoot 'em all</Select.Item>
+                  <Select.Item value="side-scroller">Platformer/Side Scroller</Select.Item>
+                  <Select.Item value="point-and-click">Point & Click</Select.Item>
+                  <Select.Item value="shoot-em-all">Shoot &apos;em all</Select.Item>
                 </Select.Content>
               </Select.Root>
             </div>
