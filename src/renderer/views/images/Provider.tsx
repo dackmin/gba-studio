@@ -1,6 +1,7 @@
 import {
   type ComponentPropsWithoutRef,
   useCallback,
+  useEffect,
   useReducer,
 } from 'react';
 import { mockState } from '@junipero/react';
@@ -20,6 +21,7 @@ import {
   SpriteContext,
 } from '../../services/contexts';
 import { useApp } from '../../services/hooks';
+import { findBackground, findFont, findSprite } from '../../../helpers';
 import PlaybackProvider from './PlaybackProvider';
 
 export interface SpriteState {
@@ -36,7 +38,7 @@ export interface SpriteState {
 const Provider = ({
   children,
 }: ComponentPropsWithoutRef<any>) => {
-  const { sprites } = useApp();
+  const { sprites, backgrounds, fonts } = useApp();
   const { onCanvasChange, ...appPayload } = useApp();
   const [state, dispatch] = useReducer(mockState<SpriteState>, {
     selectedSprite: sprites?.[0],
@@ -47,6 +49,32 @@ const Provider = ({
     selectedState: undefined,
     selectedFrame: undefined,
   });
+
+  useEffect(() => {
+    const { selectedSprite, selectedBackground, selectedFont } = state;
+
+    if (selectedSprite && !findSprite(sprites, selectedSprite._file)) {
+      dispatch({
+        selectedSprite: sprites?.[0],
+        selectedAnimation: sprites?.[0]?.animations?.[0],
+        selectedStateName: undefined,
+        selectedDirection: undefined,
+        selectedState: undefined,
+        selectedFrame: undefined,
+      });
+    }
+
+    if (selectedBackground && !findBackground(backgrounds, selectedBackground._file)) {
+      dispatch({ selectedBackground: backgrounds?.[0] });
+    }
+
+    if (selectedFont && !findFont(fonts, selectedFont._file)) {
+      dispatch({ selectedFont: fonts?.[0] });
+    }
+  }, [
+    sprites, backgrounds, fonts,
+    state.selectedSprite, state.selectedBackground, state.selectedFont,
+  ]);
 
   const selectSprite = useCallback((spriteFile: GameSpriteFile) => {
     if (state.selectedSprite === spriteFile) {
