@@ -38,6 +38,7 @@ import type {
   MovePlayerToEvent,
   OnButtonPressEvent,
   OnVariableChangeEvent,
+  OnOutOfCameraBoundsEvent,
   ParallelEventsEvent,
   PlayMusicEvent,
   PlaySoundEvent,
@@ -71,6 +72,7 @@ import EventButtons from './EventButtons';
 import EventSetVariable from './EventSetVariable';
 import EventSetHudText from './EventSetHudText';
 import EventVariableChange from './EventVariableChange';
+import EventOutOfCameraBounds from './EventOutOfCameraBounds';
 import EventShowDialog from './EventShowDialog';
 import EventActor from './EventActor';
 import EventSprite from './EventSprite';
@@ -437,6 +439,12 @@ const Event = ({
                 <Switch.Case value="on-variable-change">
                   <EventVariableChange
                     event={event as OnVariableChangeEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="on-out-of-camera-bounds">
+                  <EventOutOfCameraBounds
+                    event={event as OnOutOfCameraBoundsEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

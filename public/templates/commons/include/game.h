@@ -69,6 +69,7 @@ namespace neo
       // Actor the camera currently tracks as it moves (nullptr if none).
       neo::actor* camera_target;
 
+      bool player_out_of_camera = false;
       neo::types::collision_side active_collision_side = neo::types::collision_side::NONE;
 
       // Parallel-events nodes with resumable (fade-in/out, move-camera-to,

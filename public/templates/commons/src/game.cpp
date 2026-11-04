@@ -119,6 +119,7 @@ namespace neo
     // Reset before deleting actors below, since it may point at one of them.
     camera_target = nullptr;
     cursor_sprite.reset();
+    player_out_of_camera = false;
 
     // Clean up old player just in case
     if (player != nullptr)

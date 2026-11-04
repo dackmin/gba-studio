@@ -365,6 +365,24 @@
       ],
       "type": "object"
     },
+    "OnOutOfCameraBoundsEvent": {
+      "properties": {
+        "type": {
+          "const": "on-out-of-camera-bounds",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "DisableInputEvent": {
       "properties": {
         "type": {
@@ -1152,6 +1170,7 @@
         { "$ref": "#/definitions/WaitForButtonEvent" },
         { "$ref": "#/definitions/OnButtonPressEvent" },
         { "$ref": "#/definitions/OnVariableChangeEvent" },
+        { "$ref": "#/definitions/OnOutOfCameraBoundsEvent" },
         { "$ref": "#/definitions/DisableInputEvent" },
         { "$ref": "#/definitions/EnableInputEvent" },
         { "$ref": "#/definitions/SetVariableEvent" },

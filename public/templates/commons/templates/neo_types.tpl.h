@@ -227,6 +227,7 @@ namespace neo::types
   X(RESET_GAME, "reset-game") \
   X(GO_TO_SCENE, "go-to-scene") \
   X(ON_VARIABLE_CHANGE, "on-variable-change") \
+  X(ON_OUT_OF_CAMERA_BOUNDS, "on-out-of-camera-bounds") \
   X(SET_HUD_TEXT, "set-hud-text") \
   X(SHOW_DIALOG, "show-dialog") \
   X(SHOW_MENU, "show-menu") \
@@ -478,6 +479,14 @@ namespace neo::types
     const event* const* events;
     constexpr variable_change_event(event_type type_, bn::string_view key_, int events_count_, const event* const* events_):
       event(type_), key(key_), events_count(events_count_), events(events_) {}
+  };
+
+  struct camera_bounds_event: event
+  {
+    int events_count;
+    const event* const* events;
+    constexpr camera_bounds_event(event_type type_, int events_count_, const event* const* events_):
+      event(type_), events_count(events_count_), events(events_) {}
   };
 
   struct set_hud_text_event: event

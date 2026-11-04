@@ -31,6 +31,7 @@ import {
   StopIcon,
   TextIcon,
   Crosshair2Icon,
+  ExitIcon,
   HobbyKnifeIcon,
 } from '@radix-ui/react-icons';
 import { get } from '@junipero/react';
@@ -172,6 +173,13 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'follow-player',
       duration: 200,
     }),
+  }, {
+    icon: ExitIcon,
+    name: 'On Out Of Camera Bounds',
+    value: 'on-out-of-camera-bounds',
+    containers: ['events'],
+    keywords: ['camera', 'bounds', 'out', 'outside', 'offscreen', 'crush', 'shoot', 'scroll'],
+    construct: () => ({ type: 'on-out-of-camera-bounds', events: [] }),
   }],
 }, {
   name: 'Scene',

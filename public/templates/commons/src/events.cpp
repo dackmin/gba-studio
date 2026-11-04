@@ -284,6 +284,19 @@ namespace neo::events
     }
 
     /**
+     * @name on-out-of-camera-bounds
+     */
+    else if (e->type == neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS)
+    {
+      if (!is_loop)
+      {
+        BN_LOG("Registering on-out-of-camera-bounds scripted event");
+        game->scripted_events_count++;
+        game->scripted_events.push_back(e);
+      }
+    }
+
+    /**
      * @name set-hud-text
      * @param hud string — HUD id (empty: the HUD the event runs in)
      * @param text string — HUD text id
@@ -1186,6 +1199,35 @@ namespace neo::events
     for (int i = 0; i < game->scripted_events_count && !game->scene_changed; ++i)
     {
       exec_event(game, game->scripted_events[i], true);
+    }
+
+    bool out_of_camera = game->player != nullptr && game->player->is_out_of_camera();
+
+    if (out_of_camera && !game->player_out_of_camera)
+    {
+      game->player_out_of_camera = true;
+
+      for (int i = 0; i < game->scripted_events_count && !game->scene_changed; ++i)
+      {
+        const neo::types::event* registered = game->scripted_events[i];
+
+        if (registered->type != neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS)
+        {
+          continue;
+        }
+
+        const neo::types::camera_bounds_event* bounds_evt =
+          static_cast<const neo::types::camera_bounds_event*>(registered);
+
+        for (int j = 0; j < bounds_evt->events_count && !game->scene_changed; ++j)
+        {
+          exec_event(game, bounds_evt->events[j], true);
+        }
+      }
+    }
+    else if (!out_of_camera)
+    {
+      game->player_out_of_camera = false;
     }
 
     polling_scripted_events = false;

@@ -650,6 +650,11 @@ export interface OnVariableChangeEvent extends SceneEvent {
   events?: SceneEvent[];
 }
 
+export interface OnOutOfCameraBoundsEvent extends SceneEvent {
+  type: 'on-out-of-camera-bounds';
+  events?: SceneEvent[];
+}
+
 export interface ParallelEventsEvent extends SceneEvent {
   type: 'parallel-events';
   events: SceneEvent[];

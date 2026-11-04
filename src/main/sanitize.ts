@@ -26,6 +26,7 @@ import type {
   IfEvent,
   OnButtonPressEvent,
   OnVariableChangeEvent,
+  OnOutOfCameraBoundsEvent,
   ParallelEventsEvent,
   SceneEvent,
   ShowMenuEvent,
@@ -85,6 +86,16 @@ export const sanitizeEvent = async (event: SceneEvent): Promise<SceneEvent> => {
 
   if (event.type === 'on-variable-change') {
     const evt = event as OnVariableChangeEvent;
+
+    evt.events = evt.events ?? [];
+
+    for (const e of evt.events) {
+      await sanitizeEvent(e);
+    }
+  }
+
+  if (event.type === 'on-out-of-camera-bounds') {
+    const evt = event as OnOutOfCameraBoundsEvent;
 
     evt.events = evt.events ?? [];
 

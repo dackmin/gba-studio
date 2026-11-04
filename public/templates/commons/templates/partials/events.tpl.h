@@ -233,6 +233,25 @@ constexpr neo::types::variable_change_event {{../prefix}}_{{@index}}(
   nullptr
   {{/if}}
 );
+{{else if (eq this.type "on-out-of-camera-bounds")}}
+{{#if (hasItems this.events)}}
+{{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
+constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
+  {{#each this.events}}
+  &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+constexpr neo::types::camera_bounds_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS,
+  {{#if (hasItems this.events)}}
+  {{this.events.length}},
+  {{../prefix}}_{{@index}}_events
+  {{else}}
+  0,
+  nullptr
+  {{/if}}
+);
 {{else if (eq this.type "set-variable")}}
 constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_string_value = "{{escapeCpp this.value}}";
