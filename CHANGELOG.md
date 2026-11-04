@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.10.0](https://github.com/dackmin/gba-studio/compare/v0.9.2...v0.10.0) (2026-11-04)
+
+### Features
+
+* add bounce mechanics ([92acc9a](https://github.com/dackmin/gba-studio/commit/92acc9a19e4d7036f67831220368080bafa4f415))
+* add new camera if operand ([2c573b1](https://github.com/dackmin/gba-studio/commit/2c573b1d8817703e32450e602321f9b7e76057c3))
+* add new on-out-of-camera-bounds event ([6bf2c62](https://github.com/dackmin/gba-studio/commit/6bf2c629a91e5b2a43491ba9e77e58b0482f675b))
+* add new shoot-em-all scene type ([a0d0787](https://github.com/dackmin/gba-studio/commit/a0d07875ae023706691ef9221350b4d0adbb10bf))
+* cut jump height in half if A is not held ([a889774](https://github.com/dackmin/gba-studio/commit/a889774410c17dca276d167a47a4341940aea90a))
+
+### Bug Fixes
+
+* build crash on empty on-button-press events list ([706cf4a](https://github.com/dackmin/gba-studio/commit/706cf4a758f0b59b8fcdc6b3d99e95e1b45bc011))
+* correctly allow to edit grid size ([d2eb107](https://github.com/dackmin/gba-studio/commit/d2eb1077cd062ad0ab6092f3ad6f3c101c53b16e))
+* correctly display gamepad bindings ([d89c6e2](https://github.com/dackmin/gba-studio/commit/d89c6e20a3a276d245bebd2f9de0e2a96e705ca6))
+* correctly unselect asset on remove ([5f1d395](https://github.com/dackmin/gba-studio/commit/5f1d39575ddee4c1b6e26c37d6cbbfeef6570a50))
+* more ram optimization ([ac6eccf](https://github.com/dackmin/gba-studio/commit/ac6eccf4aa685c6ffc5fa9e655b7ecd0b1a2e3b3))
+* upgrade various deps ([318f34f](https://github.com/dackmin/gba-studio/commit/318f34f6f49f75023379c5dc814307849cbf245b))
+
 ## [0.9.2](https://github.com/dackmin/gba-studio/compare/v0.9.1...v0.9.2) (2026-11-03)
 
 ### Bug Fixes
