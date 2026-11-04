@@ -118,7 +118,7 @@ namespace neo
       int attack_frames_left = 0;
       bn::optional<bn::sprite_ptr> weapon_sprite;
       const neo::types::melee_attack_event* attack_definition = nullptr;
-      // Shoot 'em all (for now, will probs be used for inertia on "icy" ground in the future)
+      // Shoot 'em all & adventure
       bn::fixed_point velocity;
 
       int swing_id = 0;

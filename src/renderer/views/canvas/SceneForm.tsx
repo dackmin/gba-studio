@@ -429,21 +429,23 @@ const SceneForm = ({
                         </Select.Content>
                       </Select.Root>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Text className="block text-slate" size="1">Player inertia</Text>
-                      <EventValueField
-                        type="number"
-                        min={0}
-                        max={95}
-                        step={5}
-                        excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
-                        value={scene.playerInertia ?? DEFAULT_PLAYER_INERTIA}
-                        onValueChange={onValueChange.bind(null, 'playerInertia')}
-                      >
-                        <TextField.Slot side="right">%</TextField.Slot>
-                      </EventValueField>
-                    </div>
                   </>
+                ) }
+                { (scene.sceneType === 'shoot-em-all' || scene.sceneType === 'adventure') && (
+                  <div className="flex flex-col gap-2">
+                    <Text className="block text-slate" size="1">Player inertia</Text>
+                    <EventValueField
+                      type="number"
+                      min={0}
+                      max={95}
+                      step={5}
+                      excludeTypes={EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES}
+                      value={scene.playerInertia ?? DEFAULT_PLAYER_INERTIA}
+                      onValueChange={onValueChange.bind(null, 'playerInertia')}
+                    >
+                      <TextField.Slot side="right">%</TextField.Slot>
+                    </EventValueField>
+                  </div>
                 ) }
                 { scene.sceneType === 'point-and-click' && (
                   <>

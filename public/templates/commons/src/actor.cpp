@@ -630,11 +630,15 @@ namespace neo
     // The player can't move or interact while swinging the weapon
     if (attack_frames_left > 0)
     {
+      velocity = bn::fixed_point(0, 0);
+
       return;
     }
 
     if (bn::keypad::a_pressed() && interact_ahead())
     {
+      velocity = bn::fixed_point(0, 0);
+
       return;
     }
 
@@ -678,16 +682,48 @@ namespace neo
     bn::fixed speed = (dx != 0 && dy != 0)
       ? ADVENTURE_PLAYER_SPEED * bn::fixed(0.707)
       : ADVENTURE_PLAYER_SPEED;
-    bn::fixed_point next_position = position;
 
-    if (dx != 0 && !adventure_blocked_at((int)(next_position.x() + dx * speed), (int)next_position.y()))
+    int inertia = bn::min(
+      bn::max(game->active_scene->player_inertia->as_int(game->variables), 0), 95);
+    bn::fixed grip = bn::fixed(100 - inertia) / 100;
+
+    velocity.set_x(velocity.x() + (dx * speed - velocity.x()) * grip);
+    velocity.set_y(velocity.y() + (dy * speed - velocity.y()) * grip);
+
+    if (dx == 0 && bn::abs(velocity.x()) < bn::fixed(0.1))
     {
-      next_position.set_x(next_position.x() + dx * speed);
+      velocity.set_x(0);
     }
 
-    if (dy != 0 && !adventure_blocked_at((int)next_position.x(), (int)(next_position.y() + dy * speed)))
+    if (dy == 0 && bn::abs(velocity.y()) < bn::fixed(0.1))
     {
-      next_position.set_y(next_position.y() + dy * speed);
+      velocity.set_y(0);
+    }
+
+    bn::fixed_point next_position = position;
+
+    if (velocity.x() != 0)
+    {
+      if (!adventure_blocked_at((int)(next_position.x() + velocity.x()), (int)next_position.y()))
+      {
+        next_position.set_x(next_position.x() + velocity.x());
+      }
+      else
+      {
+        velocity.set_x(0);
+      }
+    }
+
+    if (velocity.y() != 0)
+    {
+      if (!adventure_blocked_at((int)next_position.x(), (int)(next_position.y() + velocity.y())))
+      {
+        next_position.set_y(next_position.y() + velocity.y());
+      }
+      else
+      {
+        velocity.set_y(0);
+      }
     }
 
     bool moved = next_position != position;
