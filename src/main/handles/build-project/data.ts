@@ -15,6 +15,7 @@ export const prepareAnimations = async (
         type: 'animation',
         name: animation.name,
         animationType: animation.animationType,
+        loop: animation.loop ?? true,
         state: 'idle',
         direction: 'down',
       });
@@ -34,6 +35,7 @@ export const prepareAnimations = async (
           type: 'animation',
           name: animation.name,
           animationType: animation.animationType,
+          loop: animation.loop ?? true,
           state: movement,
           direction: direction,
         });
@@ -84,8 +86,13 @@ export async function prepareData (build: Build) {
     }
 
     for (const sceneSprite of scene.sprites || []) {
-      sceneSprite._collisionRect = findSprite(
-        build.data?.sprites, sceneSprite.sprite)?.collisionRect;
+      const sprite = findSprite(build.data?.sprites, sceneSprite.sprite);
+
+      if (sprite?._animations?.length) {
+        sceneSprite._spriteHasAnimations = true;
+      }
+
+      sceneSprite._collisionRect = sprite?.collisionRect;
     }
 
     if (scene.player) {

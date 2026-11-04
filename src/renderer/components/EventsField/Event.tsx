@@ -43,12 +43,17 @@ import type {
   PlayMusicEvent,
   PlaySoundEvent,
   SceneEvent,
+  SetActorAnimationEvent,
   SetActorDirectionEvent,
   SetActorPositionEvent,
   SetBackgroundEvent,
   SetHudTextEvent,
+  SetSpriteAnimationEvent,
+  StopActorAnimationEvent,
+  StopSpriteAnimationEvent,
   SetSpriteEvent,
   SetPaletteEffectEvent,
+  SetPlayerAnimationEvent,
   SetPlayerDirectionEvent,
   SetPlayerPositionEvent,
   SetVariableEvent,
@@ -85,12 +90,17 @@ import EventFollowPlayer from './EventFollowPlayer';
 import EventShowMenu from './EventShowMenu';
 import EventMoveActorTo from './EventMoveActorTo';
 import EventMovePlayerTo from './EventMovePlayerTo';
+import EventSetActorAnimation from './EventSetActorAnimation';
 import EventSetActorDirection from './EventSetActorDirection';
 import EventSetActorPosition from './EventSetActorPosition';
+import EventSetPlayerAnimation from './EventSetPlayerAnimation';
 import EventSetPlayerDirection from './EventSetPlayerDirection';
 import EventSetPlayerPosition from './EventSetPlayerPosition';
 import EventSetBackground from './EventSetBackground';
 import EventSetSprite from './EventSetSprite';
+import EventSetSpriteAnimation from './EventSetSpriteAnimation';
+import EventStopActorAnimation from './EventStopActorAnimation';
+import EventStopSpriteAnimation from './EventStopSpriteAnimation';
 import EventParallel from './EventParallel';
 import EventSetPaletteEffect from './EventSetPaletteEffect';
 import EventWaveEffect from './EventWaveEffect';
@@ -544,7 +554,7 @@ const Event = ({
                   value={[
                     'stop-music', 'disable-input', 'enable-input', 'freeze-camera',
                     'disable-player', 'enable-player', 'save-game', 'load-game',
-                    'save-state', 'load-state', 'reset-game',
+                    'save-state', 'load-state', 'reset-game', 'stop-player-animation',
                   ]}
                 >
                   <Text className="text-xs text-slate text-center">
@@ -572,6 +582,36 @@ const Event = ({
                 <Switch.Case value="set-sprite">
                   <EventSetSprite
                     event={event as SetSpriteEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="set-player-animation">
+                  <EventSetPlayerAnimation
+                    event={event as SetPlayerAnimationEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="set-actor-animation">
+                  <EventSetActorAnimation
+                    event={event as SetActorAnimationEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="set-sprite-animation">
+                  <EventSetSpriteAnimation
+                    event={event as SetSpriteAnimationEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="stop-actor-animation">
+                  <EventStopActorAnimation
+                    event={event as StopActorAnimationEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
+                <Switch.Case value="stop-sprite-animation">
+                  <EventStopSpriteAnimation
+                    event={event as StopSpriteAnimationEvent}
                     onValueChange={onValueChange}
                   />
                 </Switch.Case>

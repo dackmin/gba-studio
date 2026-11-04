@@ -35,6 +35,8 @@ namespace neo
 
       void set_anim_state(neo::types::animation_state state);
       void set_anim_state(neo::types::animation_state state, bn::string_view animation);
+      void play_animation(bn::string_view animation);
+      void stop_animation();
       void restart_animation();
       void update_animation();
       void update_action();
@@ -167,6 +169,7 @@ namespace neo
 
       const neo::types::sprite_animation* find_animation(
         neo::types::animation_state state, bn::string_view animation);
+      const neo::types::sprite_animation* find_forced_animation();
       bn::string_view default_animation();
       void show_direction_tile();
       void start_action(neo::types::animation_state state);
@@ -180,6 +183,8 @@ namespace neo
 
       neo::types::animation_state base_anim_state = neo::types::animation_state::IDLE;
       bn::string_view base_animation;
+      bn::string_view forced_animation;
+      bool forced_playing = false;
       const neo::types::sprite_animation* current_animation = nullptr;
       neo::types::animation_playback playback;
       int action_frames_left = 0;

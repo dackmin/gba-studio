@@ -3543,6 +3543,12 @@ namespace neo::types
   X(SET_PLAYER_DIRECTION, "set-player-direction") \\
   X(SET_BACKGROUND, "set-background") \\
   X(SET_SPRITE, "set-sprite") \\
+  X(SET_PLAYER_ANIMATION, "set-player-animation") \\
+  X(SET_ACTOR_ANIMATION, "set-actor-animation") \\
+  X(SET_SPRITE_ANIMATION, "set-sprite-animation") \\
+  X(STOP_PLAYER_ANIMATION, "stop-player-animation") \\
+  X(STOP_ACTOR_ANIMATION, "stop-actor-animation") \\
+  X(STOP_SPRITE_ANIMATION, "stop-sprite-animation") \\
   X(SHOOT_PROJECTILE, "shoot-projectile") \\
   X(MELEE_ATTACK, "melee-attack") \\
   X(SHOW_ACTOR_REACTION, "show-actor-reaction") \\
@@ -4247,6 +4253,59 @@ namespace neo::types
       item(item_) {}
   };
 
+  struct set_player_animation_event: event
+  {
+    bn::string_view animation;
+    constexpr set_player_animation_event(
+      event_type type_,
+      bn::string_view animation_
+    ):
+      event(type_),
+      animation(animation_) {}
+  };
+
+  struct set_actor_animation_event: event
+  {
+    bn::string_view actor;
+    bn::string_view animation;
+    constexpr set_actor_animation_event(
+      event_type type_,
+      bn::string_view actor_,
+      bn::string_view animation_
+    ):
+      event(type_),
+      actor(actor_),
+      animation(animation_) {}
+  };
+
+  struct set_sprite_animation_event: event
+  {
+    bn::string_view sprite;
+    bn::string_view animation;
+    constexpr set_sprite_animation_event(
+      event_type type_,
+      bn::string_view sprite_,
+      bn::string_view animation_
+    ):
+      event(type_),
+      sprite(sprite_),
+      animation(animation_) {}
+  };
+
+  struct stop_actor_animation_event: event
+  {
+    bn::string_view actor;
+    constexpr stop_actor_animation_event(event_type type_, bn::string_view actor_):
+      event(type_), actor(actor_) {}
+  };
+
+  struct stop_sprite_animation_event: event
+  {
+    bn::string_view sprite;
+    constexpr stop_sprite_animation_event(event_type type_, bn::string_view sprite_):
+      event(type_), sprite(sprite_) {}
+  };
+
   struct set_palette_effect_event: event
   {
     bn::string_view target; // "background" | "sprite" | "both"
@@ -4736,6 +4795,8 @@ namespace neo::types
     const event* const* interact_events;
     int collide_events_count;
     const event* const* collide_events;
+    int animations_count;
+    const sprite_animation* const* animations;
   };
 
   // Screen-fixed sprite of a HUD: x/y are pixels from the top-left corner

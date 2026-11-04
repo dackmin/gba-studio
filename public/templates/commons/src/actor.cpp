@@ -1229,6 +1229,11 @@ namespace neo
 
     bool unchanged = base_anim_state == state && base_animation == animation;
 
+    if (!unchanged)
+    {
+      forced_animation = bn::string_view();
+    }
+
     base_anim_state = state;
     base_animation = animation;
 
@@ -1241,8 +1246,26 @@ namespace neo
     restart_animation();
   }
 
+  void actor::play_animation(bn::string_view animation)
+  {
+    forced_animation = animation;
+    restart_animation();
+  }
+
+  void actor::stop_animation()
+  {
+    if (forced_animation.empty())
+    {
+      return;
+    }
+
+    forced_animation = bn::string_view();
+    restart_animation();
+  }
+
   void actor::start_action(neo::types::animation_state state)
   {
+    forced_animation = bn::string_view();
     anim_state = state;
     action_frames_left = 0;
     restart_animation();
@@ -1284,6 +1307,21 @@ namespace neo
       return;
     }
 
+    forced_playing = false;
+
+    if (!forced_animation.empty() && !is_action(anim_state))
+    {
+      current_animation = find_forced_animation();
+
+      if (current_animation != nullptr)
+      {
+        forced_playing = true;
+        bn::sprite_tiles_item forced_tiles_item = definition->sprite.tiles_item();
+        current_animation->reset(playback, sprite, &forced_tiles_item);
+        return;
+      }
+    }
+
     bn::string_view animation = is_action(anim_state) ? default_animation() : base_animation;
 
     current_animation = find_animation(anim_state, animation);
@@ -1315,6 +1353,12 @@ namespace neo
 
     if (!is_action(anim_state))
     {
+      if (forced_playing && current_animation != nullptr)
+      {
+        bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+        current_animation->play(playback, sprite, &tiles_item, game->variables);
+      }
+
       return;
     }
 
@@ -1329,6 +1373,38 @@ namespace neo
       bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
       current_animation->play(playback, sprite, &tiles_item, game->variables);
     }
+  }
+
+  const neo::types::sprite_animation* actor::find_forced_animation()
+  {
+    const neo::types::sprite_animation* fallback = nullptr;
+
+    for (int i = 0; i < definition->animations_count; ++i)
+    {
+      const neo::types::sprite_animation* candidate = definition->animations[i];
+
+      if (candidate->_id != forced_animation || candidate->frames_count <= 0)
+      {
+        continue;
+      }
+
+      if (candidate->type != "fixed" && candidate->direction != sprite_direction())
+      {
+        continue;
+      }
+
+      if (candidate->state == anim_state)
+      {
+        return candidate;
+      }
+
+      if (fallback == nullptr)
+      {
+        fallback = candidate;
+      }
+    }
+
+    return fallback;
   }
 
   bn::string_view actor::default_animation()

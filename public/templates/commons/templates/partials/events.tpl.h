@@ -546,6 +546,44 @@ constexpr neo::types::set_sprite_event {{../prefix}}_{{@index}}(
   {{../prefix}}_{{@index}}_sprite,
   bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.asset "sprite_default")}}
 );
+{{else if (eq this.type "set-player-animation")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{this.animation}}";
+constexpr neo::types::set_player_animation_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::SET_PLAYER_ANIMATION,
+  {{../prefix}}_{{@index}}_animation
+);
+{{else if (eq this.type "set-actor-animation")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{this.animation}}";
+constexpr neo::types::set_actor_animation_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::SET_ACTOR_ANIMATION,
+  {{../prefix}}_{{@index}}_actor,
+  {{../prefix}}_{{@index}}_animation
+);
+{{else if (eq this.type "set-sprite-animation")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
+constexpr bn::string_view {{../prefix}}_{{@index}}_animation = "{{this.animation}}";
+constexpr neo::types::set_sprite_animation_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::SET_SPRITE_ANIMATION,
+  {{../prefix}}_{{@index}}_sprite,
+  {{../prefix}}_{{@index}}_animation
+);
+{{else if (eq this.type "stop-player-animation")}}
+constexpr neo::types::player_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::STOP_PLAYER_ANIMATION
+);
+{{else if (eq this.type "stop-actor-animation")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_actor = "{{this.actor}}";
+constexpr neo::types::stop_actor_animation_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::STOP_ACTOR_ANIMATION,
+  {{../prefix}}_{{@index}}_actor
+);
+{{else if (eq this.type "stop-sprite-animation")}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_sprite = "{{this.sprite}}";
+constexpr neo::types::stop_sprite_animation_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::STOP_SPRITE_ANIMATION,
+  {{../prefix}}_{{@index}}_sprite
+);
 {{else if (eq this.type "shoot-projectile")}}
 constexpr bn::sprite_item {{../prefix}}_{{@index}}_sprite = bn::sprite_items::{{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_source_type = "{{this.sourceType}}";

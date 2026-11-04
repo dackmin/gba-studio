@@ -916,6 +916,106 @@
       ],
       "type": "object"
     },
+    "SetPlayerAnimationEvent": {
+      "properties": {
+        "animation": {
+          "type": "string"
+        },
+        "type": {
+          "const": "set-player-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "animation",
+        "type"
+      ],
+      "type": "object"
+    },
+    "SetActorAnimationEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "animation": {
+          "type": "string"
+        },
+        "type": {
+          "const": "set-actor-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "animation",
+        "type"
+      ],
+      "type": "object"
+    },
+    "SetSpriteAnimationEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "animation": {
+          "type": "string"
+        },
+        "type": {
+          "const": "set-sprite-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "animation",
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopPlayerAnimationEvent": {
+      "properties": {
+        "type": {
+          "const": "stop-player-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopActorAnimationEvent": {
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "type": {
+          "const": "stop-actor-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "type"
+      ],
+      "type": "object"
+    },
+    "StopSpriteAnimationEvent": {
+      "properties": {
+        "sprite": {
+          "type": "string"
+        },
+        "type": {
+          "const": "stop-sprite-animation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sprite",
+        "type"
+      ],
+      "type": "object"
+    },
     "SaveGameEvent": {
       "properties": {
         "type": {
@@ -1216,6 +1316,12 @@
         { "$ref": "#/definitions/SetPlayerDirectionEvent" },
         { "$ref": "#/definitions/SetBackgroundEvent" },
         { "$ref": "#/definitions/SetSpriteEvent" },
+        { "$ref": "#/definitions/SetPlayerAnimationEvent" },
+        { "$ref": "#/definitions/SetActorAnimationEvent" },
+        { "$ref": "#/definitions/SetSpriteAnimationEvent" },
+        { "$ref": "#/definitions/StopPlayerAnimationEvent" },
+        { "$ref": "#/definitions/StopActorAnimationEvent" },
+        { "$ref": "#/definitions/StopSpriteAnimationEvent" },
         { "$ref": "#/definitions/SaveGameEvent" },
         { "$ref": "#/definitions/LoadGameEvent" },
         { "$ref": "#/definitions/SaveStateEvent" },

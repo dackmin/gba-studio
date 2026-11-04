@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import { classNames, set } from '@junipero/react';
-import { DropdownMenu, IconButton, Select, Text } from '@radix-ui/themes';
+import { DropdownMenu, IconButton, Select, Switch, Text } from '@radix-ui/themes';
 import {
   CaretDownIcon,
   CaretRightIcon,
@@ -178,6 +178,13 @@ const AnimationsListItem = ({
                 </Select.Item>
               </Select.Content>
             </Select.Root>
+          </div>
+          <div className="flex flex-col gap-2 mt-3">
+            <Text size="1" className="text-slate">Loop</Text>
+            <Switch
+              checked={animation.loop ?? true}
+              onCheckedChange={onValueChange_.bind(null, 'loop')}
+            />
           </div>
         </div>
       ) }

@@ -56,6 +56,9 @@
         "name": {
           "type": "string"
         },
+        "loop": {
+          "type": "boolean"
+        },
         "animationType": {
           "enum": [
             "fixed",

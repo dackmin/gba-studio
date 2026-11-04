@@ -783,6 +783,11 @@ namespace neo
       player->update_action();
     }
 
+    for (int i = 0; i < sprites_count; ++i)
+    {
+      sprites[i]->update_animation();
+    }
+
     neo::effects::update_wave_effect(this);
     neo::hud::update(this);
 

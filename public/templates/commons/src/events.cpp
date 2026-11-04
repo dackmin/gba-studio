@@ -1107,6 +1107,128 @@ namespace neo::events
     }
 
     /**
+     * @name set-player-animation
+     * @param animation string — Animation id
+     */
+    else if (e->type == neo::types::event_type::SET_PLAYER_ANIMATION)
+    {
+      const neo::types::set_player_animation_event* set_player_animation_evt =
+        static_cast<const neo::types::set_player_animation_event*>(e);
+
+      if (game->player != nullptr)
+      {
+        BN_LOG("Setting player animation: ", set_player_animation_evt->animation);
+        game->player->play_animation(set_player_animation_evt->animation);
+      }
+    }
+
+    /**
+     * @name set-actor-animation
+     * @param actor string — Actor name or id
+     * @param animation string — Animation id
+     */
+    else if (e->type == neo::types::event_type::SET_ACTOR_ANIMATION)
+    {
+      const neo::types::set_actor_animation_event* set_actor_animation_evt =
+        static_cast<const neo::types::set_actor_animation_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(set_actor_animation_evt->actor);
+
+      for (int i = 0; i < game->actors_count; ++i)
+      {
+        if (
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
+        )
+        {
+          BN_LOG("Setting actor animation: ", game->actors[i]->definition->name);
+          game->actors[i]->play_animation(set_actor_animation_evt->animation);
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name set-sprite-animation
+     * @param sprite string — Sprite name or id
+     * @param animation string — Animation id
+     */
+    else if (e->type == neo::types::event_type::SET_SPRITE_ANIMATION)
+    {
+      const neo::types::set_sprite_animation_event* set_sprite_animation_evt =
+        static_cast<const neo::types::set_sprite_animation_event*>(e);
+
+      for (int i = 0; i < game->sprites_count; ++i)
+      {
+        if (
+          game->sprites[i]->definition->name == set_sprite_animation_evt->sprite ||
+          game->sprites[i]->definition->_id == set_sprite_animation_evt->sprite
+        ) {
+          BN_LOG("Setting sprite animation: ", game->sprites[i]->definition->name);
+          game->sprites[i]->play_animation(set_sprite_animation_evt->animation);
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name stop-player-animation
+     */
+    else if (e->type == neo::types::event_type::STOP_PLAYER_ANIMATION)
+    {
+      if (game->player != nullptr)
+      {
+        BN_LOG("Stopping player animation");
+        game->player->stop_animation();
+      }
+    }
+
+    /**
+     * @name stop-actor-animation
+     * @param actor string — Actor name or id
+     */
+    else if (e->type == neo::types::event_type::STOP_ACTOR_ANIMATION)
+    {
+      const neo::types::stop_actor_animation_event* stop_actor_animation_evt =
+        static_cast<const neo::types::stop_actor_animation_event*>(e);
+      bn::string_view actor_reference = game->resolve_actor_reference(stop_actor_animation_evt->actor);
+
+      for (int i = 0; i < game->actors_count; ++i)
+      {
+        if (
+          game->actors[i]->definition->name == actor_reference ||
+          game->actors[i]->definition->_id == actor_reference
+        )
+        {
+          BN_LOG("Stopping actor animation: ", game->actors[i]->definition->name);
+          game->actors[i]->stop_animation();
+          break;
+        }
+      }
+    }
+
+    /**
+     * @name stop-sprite-animation
+     * @param sprite string — Sprite name or id
+     */
+    else if (e->type == neo::types::event_type::STOP_SPRITE_ANIMATION)
+    {
+      const neo::types::stop_sprite_animation_event* stop_sprite_animation_evt =
+        static_cast<const neo::types::stop_sprite_animation_event*>(e);
+
+      for (int i = 0; i < game->sprites_count; ++i)
+      {
+        if (
+          game->sprites[i]->definition->name == stop_sprite_animation_evt->sprite ||
+          game->sprites[i]->definition->_id == stop_sprite_animation_evt->sprite
+        ) {
+          BN_LOG("Stopping sprite animation: ", game->sprites[i]->definition->name);
+          game->sprites[i]->stop_animation();
+          break;
+        }
+      }
+    }
+
+    /**
      * @name shoot-projectile
      */
     else if (e->type == neo::types::event_type::SHOOT_PROJECTILE)

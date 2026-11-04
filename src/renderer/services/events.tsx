@@ -309,6 +309,23 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       direction: 'down',
     }),
   }, {
+    icon: PlayIcon,
+    name: 'Set Player Animation',
+    value: 'set-player-animation',
+    keywords: ['player', 'animation', 'play', 'sprite'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-player-animation',
+      animation: '',
+    }),
+  }, {
+    icon: StopIcon,
+    name: 'Stop Player Animation',
+    value: 'stop-player-animation',
+    keywords: ['player', 'animation', 'stop', 'sprite'],
+    parallelizable: true,
+    construct: () => ({ type: 'stop-player-animation' }),
+  }, {
     icon: FaceIcon,
     name: 'Show Player Reaction',
     value: 'show-player-reaction',
@@ -379,6 +396,27 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       direction: 'down',
     }),
   }, {
+    icon: PlayIcon,
+    name: 'Set Actor Animation',
+    value: 'set-actor-animation',
+    keywords: ['actor', 'animation', 'play', 'sprite'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-actor-animation',
+      actor: '',
+      animation: '',
+    }),
+  }, {
+    icon: StopIcon,
+    name: 'Stop Actor Animation',
+    value: 'stop-actor-animation',
+    keywords: ['actor', 'animation', 'stop', 'sprite'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'stop-actor-animation',
+      actor: '',
+    }),
+  }, {
     icon: FaceIcon,
     name: 'Show Actor Reaction',
     value: 'show-actor-reaction',
@@ -424,6 +462,27 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
       type: 'set-sprite',
       sprite: '',
       asset: '',
+    }),
+  }, {
+    icon: PlayIcon,
+    name: 'Set Sprite Animation',
+    value: 'set-sprite-animation',
+    keywords: ['sprite', 'animation', 'play'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'set-sprite-animation',
+      sprite: '',
+      animation: '',
+    }),
+  }, {
+    icon: StopIcon,
+    name: 'Stop Sprite Animation',
+    value: 'stop-sprite-animation',
+    keywords: ['sprite', 'animation', 'stop'],
+    parallelizable: true,
+    construct: () => ({
+      type: 'stop-sprite-animation',
+      sprite: '',
     }),
   }],
 }, {

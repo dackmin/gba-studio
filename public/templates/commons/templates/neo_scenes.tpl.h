@@ -518,7 +518,15 @@ namespace neo::scenes
     {{/if}}
     {{#if (hasItems this.events.collide)}}
     {{this.events.collide.length}},
-    {{slug ../this.name}}_sprite_{{@index}}_collide_events
+    {{slug ../this.name}}_sprite_{{@index}}_collide_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
+    // Animations
+    {{#if this._spriteHasAnimations}}
+    {{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}_animations_count,
+    {{getSpriteName @root/sprites (valuedef this.sprite "sprite_default")}}_animations
     {{else}}
     0,
     nullptr

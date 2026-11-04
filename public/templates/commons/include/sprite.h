@@ -19,6 +19,9 @@ namespace neo
 
       void set_position(int tile_x, int tile_y);
       void set_item(const bn::sprite_item& item);
+      void play_animation(bn::string_view animation);
+      void stop_animation();
+      void update_animation();
       void disable();
       void enable();
       void init();
@@ -45,6 +48,11 @@ namespace neo
       // collision group), so collide events fire once per touch instead
       // of on every frame of contact.
       bool player_touching = false;
+
+    private:
+      const neo::types::sprite_animation* current_animation = nullptr;
+      neo::types::animation_playback playback;
+      bool item_replaced = false;
   };
 }
 

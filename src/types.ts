@@ -103,6 +103,7 @@ export interface SpriteAnimation {
   type: 'animation';
   name: string;
   animationType: SpriteAnimationType;
+  loop?: boolean;
   states: {
     fixed?: SpriteAnimationState;
     idle?: {
@@ -136,6 +137,7 @@ export interface SpriteAnimations {
 export interface InternalSpriteAnimation extends Omit<SpriteAnimationState, 'type'> {
   type: 'animation';
   animationType: SpriteAnimationType;
+  loop?: boolean;
   name?: string;
   state?: AnimationType;
   direction?: CharacterDirection;
@@ -290,6 +292,7 @@ export interface GameSprite {
     collide?: SceneEvent[];
   };
   // Internals
+  _spriteHasAnimations?: boolean;
   _collisionRect?: CollisionRect;
   id: string;
 }
@@ -915,6 +918,37 @@ export interface SetSpriteEvent extends SceneEvent {
   type: 'set-sprite';
   sprite: string;
   asset: string;
+}
+
+export interface SetPlayerAnimationEvent extends SceneEvent {
+  type: 'set-player-animation';
+  animation: string;
+}
+
+export interface SetActorAnimationEvent extends SceneEvent {
+  type: 'set-actor-animation';
+  actor: string;
+  animation: string;
+}
+
+export interface SetSpriteAnimationEvent extends SceneEvent {
+  type: 'set-sprite-animation';
+  sprite: string;
+  animation: string;
+}
+
+export interface StopPlayerAnimationEvent extends SceneEvent {
+  type: 'stop-player-animation';
+}
+
+export interface StopActorAnimationEvent extends SceneEvent {
+  type: 'stop-actor-animation';
+  actor: string;
+}
+
+export interface StopSpriteAnimationEvent extends SceneEvent {
+  type: 'stop-sprite-animation';
+  sprite: string;
 }
 
 export interface ShootProjectileEvent extends SceneEvent {

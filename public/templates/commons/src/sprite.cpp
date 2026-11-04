@@ -53,9 +53,82 @@ namespace neo
 
   void sprite::set_item(const bn::sprite_item& item)
   {
+    item_replaced = true;
+    current_animation = nullptr;
     inner_sprite.set_item(item);
     // Dimensions may differ, so re-anchor on the same tile.
     set_position(position.x().right_shift_integer(), position.y().right_shift_integer());
+  }
+
+  void sprite::play_animation(bn::string_view animation)
+  {
+    current_animation = nullptr;
+
+    if (item_replaced)
+    {
+      return;
+    }
+
+    const neo::types::sprite_animation* fallback = nullptr;
+
+    for (int i = 0; i < definition->animations_count; ++i)
+    {
+      const neo::types::sprite_animation* candidate = definition->animations[i];
+
+      if (candidate->_id != animation || candidate->frames_count <= 0)
+      {
+        continue;
+      }
+
+      if (
+        candidate->type == "fixed" ||
+        (candidate->state == neo::types::animation_state::IDLE &&
+          candidate->direction == neo::types::direction::DOWN)
+      )
+      {
+        current_animation = candidate;
+        break;
+      }
+
+      if (fallback == nullptr)
+      {
+        fallback = candidate;
+      }
+    }
+
+    if (current_animation == nullptr)
+    {
+      current_animation = fallback;
+    }
+
+    if (current_animation != nullptr)
+    {
+      bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+      current_animation->reset(playback, inner_sprite, &tiles_item);
+    }
+  }
+
+  void sprite::stop_animation()
+  {
+    if (current_animation == nullptr)
+    {
+      return;
+    }
+
+    current_animation = nullptr;
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+    inner_sprite.set_tiles(tiles_item.create_tiles(0));
+  }
+
+  void sprite::update_animation()
+  {
+    if (current_animation == nullptr || !inner_sprite.visible())
+    {
+      return;
+    }
+
+    bn::sprite_tiles_item tiles_item = definition->sprite.tiles_item();
+    current_animation->play(playback, inner_sprite, &tiles_item, game->variables);
   }
 
   void sprite::disable()
