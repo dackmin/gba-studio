@@ -37,6 +37,19 @@ const AXIS_BINDINGS = [
   'RightStickY',
 ];
 
+export const GBA_BUTTONS: Record<string, string> = {
+  A: 'a',
+  B: 'b',
+  L1: 'l',
+  R1: 'r',
+  Select: 'select',
+  Start: 'start',
+  Up: 'up',
+  Down: 'down',
+  Left: 'left',
+  Right: 'right',
+};
+
 const Gamepad = ({
   children,
   axisMinThreshold = 0.1,

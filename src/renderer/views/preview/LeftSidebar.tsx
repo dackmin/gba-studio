@@ -106,10 +106,46 @@ const LeftSidebar = ({
         </div>
       </div>
       { gamepadConnected && (
-        <div className="flex flex-col gap-2 mt-4 px-2">
+        <div className="flex flex-col gap-2 mt-4 px-4">
           <div className="flex items-center gap-2 justify-center py-2">
             <MixIcon />
             <Text size="1" className="text-slate">Gamepad bindings</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">D-Pad</Kbd>
+            <Text size="1" className="text-slate">or</Text>
+            <Kbd size="3">Left stick</Kbd>
+            <Text size="2">Move</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">A</Kbd>
+            <Text size="2">Button A</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">B</Kbd>
+            <Text size="2">Button B</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">L1</Kbd>
+            <Text size="2">Button L</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">R1</Kbd>
+            <Text size="2">Button R</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">Start</Kbd>
+            <Text size="2">Start</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">Select</Kbd>
+            <Text size="2">Select</Text>
+          </div>
+          <div className="flex items-center gap-2">
+            <Kbd size="3">L2</Kbd>
+            <Text size="1" className="text-slate">or</Text>
+            <Kbd size="3">R2</Kbd>
+            <Text size="2">Speed-up CPU (hold)</Text>
           </div>
         </div>
       ) }

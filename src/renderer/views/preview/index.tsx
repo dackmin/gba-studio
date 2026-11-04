@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import type { BuildCompletedEvent } from '../../../types';
 import { useApp, useBridgeListener, useEmulator, useLogs } from '../../services/hooks';
 import ConstrainedView from '../../windows/editor/ConstrainedView';
-import Gamepad from '../../components/Gamepad';
+import Gamepad, { GBA_BUTTONS } from '../../components/Gamepad';
 
 const Preview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -170,7 +170,9 @@ const Preview = () => {
         emulator?.setFastForwardMultiplier(4);
         break;
       default:
-        emulator?.buttonPress(button.toLowerCase());
+        if (GBA_BUTTONS[button]) {
+          emulator?.buttonPress(GBA_BUTTONS[button]);
+        }
     }
   }, [emulator]);
 
@@ -189,7 +191,9 @@ const Preview = () => {
         emulator?.setFastForwardMultiplier(1);
         break;
       default:
-        emulator?.buttonUnpress(button.toLowerCase());
+        if (GBA_BUTTONS[button]) {
+          emulator?.buttonUnpress(GBA_BUTTONS[button]);
+        }
     }
   }, [emulator]);
 
