@@ -197,7 +197,8 @@ export type GameSceneType =
   | 'side-scroller'
   | 'point-and-click'
   | 'adventure'
-  | 'shoot-em-all';
+  | 'shoot-em-all'
+  | 'racing';
 
 export type GameSceneScrollDirection = 'right' | 'left' | 'up' | 'down';
 export type GameScenePlayerAxis = 'both' | 'horizontal' | 'vertical';

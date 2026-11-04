@@ -110,7 +110,8 @@ namespace neo::types
     SIDE_SCROLLER,
     POINT_AND_CLICK,
     ADVENTURE,
-    SHOOT_EM_ALL
+    SHOOT_EM_ALL,
+    RACING
   };
 
   enum class scroll_direction

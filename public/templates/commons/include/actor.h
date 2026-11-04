@@ -118,7 +118,7 @@ namespace neo
       int attack_frames_left = 0;
       bn::optional<bn::sprite_ptr> weapon_sprite;
       const neo::types::melee_attack_event* attack_definition = nullptr;
-      // Shoot 'em all & adventure
+      // Shoot 'em all, adventure & racing
       bn::fixed_point velocity;
 
       int swing_id = 0;
@@ -134,6 +134,9 @@ namespace neo
       bn::fixed launch_velocity(bn::fixed height);
       void check_input_point_and_click();
       void check_input_adventure();
+      void update_racing_rotation(bn::fixed_point heading_vector);
+      bool is_racing_player();
+      neo::types::direction sprite_direction();
       void check_input_shoot_em_all();
       bool shoot_em_all_blocked_at(int pixel_x, int pixel_y);
       bool adventure_blocked_at(int pixel_x, int pixel_y);

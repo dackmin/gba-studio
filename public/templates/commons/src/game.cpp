@@ -806,7 +806,7 @@ namespace neo
   }
 
   // Solidity depends on the collision group and the scene type:
-  // - top-down, point-and-click & adventure: group 0 (the default) is
+  // - top-down, point-and-click, adventure & racing: group 0 (the default) is
   //   solid like it always was;
   //   same-group actors are pass-through (e.g. teammates)
   // - side-scroller: group 0 is pass-through, groups 1-4 are solid
@@ -821,7 +821,8 @@ namespace neo
     bool top_down = game->active_scene != nullptr && (
       game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
       game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
-      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE
+      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE ||
+      game->active_scene->scene_type == neo::types::scene_type::RACING
     );
     int player_group = game->player != nullptr
       ? game->player->definition->collision_group : 1;

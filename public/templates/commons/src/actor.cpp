@@ -97,23 +97,55 @@ namespace neo
       direction = direction_;
     }
 
-    if (direction == neo::types::direction::LEFT)
+    neo::types::direction visual_direction = sprite_direction();
+
+    if (visual_direction == neo::types::direction::LEFT)
     {
       sprite.set_horizontal_flip(true);
     }
-    else if (direction == neo::types::direction::RIGHT)
+    else if (visual_direction == neo::types::direction::RIGHT)
     {
       sprite.set_horizontal_flip(false);
     }
 
+    if (is_racing_player())
+    {
+      switch (direction)
+      {
+        case neo::types::direction::LEFT:
+          sprite.set_rotation_angle_safe(90);
+          break;
+        case neo::types::direction::RIGHT:
+          sprite.set_rotation_angle_safe(-90);
+          break;
+        case neo::types::direction::DOWN:
+          sprite.set_rotation_angle_safe(180);
+          break;
+        default:
+          sprite.set_rotation_angle_safe(0);
+          break;
+      }
+    }
+
     restart_animation();
+  }
+
+  bool actor::is_racing_player()
+  {
+    return is_player && game->active_scene->scene_type == neo::types::scene_type::RACING;
+  }
+
+  neo::types::direction actor::sprite_direction()
+  {
+    // TODO: Not sure about this one, might add it as an option in the future
+    return is_racing_player() ? neo::types::direction::UP : direction;
   }
 
   void actor::show_direction_tile()
   {
     int index = neo::tileindex::DOWN;
 
-    switch (direction)
+    switch (sprite_direction())
     {
       case neo::types::direction::LEFT:
         index = neo::tileindex::LEFT;
@@ -145,10 +177,10 @@ namespace neo
 
     int x = game->active_scene->map_data->to_pixel_x(game->variables, tile_x)
         - game->active_scene->map_data->pixel_width(game->variables) / 2
-        + sprite.dimensions().width() / 2;
+        + width() / 2;
     int y = game->active_scene->map_data->to_pixel_y(game->variables, tile_y)
         - game->active_scene->map_data->pixel_height(game->variables) / 2
-        + sprite.dimensions().height() / 2;
+        + height() / 2;
 
     sprite.set_x(x);
     sprite.set_y(y);
@@ -373,7 +405,10 @@ namespace neo
       return;
     }
 
-    if (game->active_scene->scene_type == neo::types::scene_type::ADVENTURE)
+    if (
+      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE ||
+      game->active_scene->scene_type == neo::types::scene_type::RACING
+    )
     {
       check_input_adventure();
       return;
@@ -700,6 +735,7 @@ namespace neo
       velocity.set_y(0);
     }
 
+    bn::fixed_point steering = velocity;
     bn::fixed_point next_position = position;
 
     if (velocity.x() != 0)
@@ -730,7 +766,19 @@ namespace neo
 
     if (facing != direction)
     {
+      bn::fixed rotation = sprite.rotation_angle();
+
       set_direction(facing);
+
+      if (is_racing_player())
+      {
+        sprite.set_rotation_angle_safe(rotation);
+      }
+    }
+
+    if (is_racing_player())
+    {
+      update_racing_rotation(steering);
     }
 
     set_anim_state(moved
@@ -746,6 +794,31 @@ namespace neo
     update_sensors();
 
     check_collisions();
+  }
+
+  void actor::update_racing_rotation(bn::fixed_point heading_vector)
+  {
+    // Keep the current angle once the car has stopped
+    if (bn::abs(heading_vector.x()) < bn::fixed(0.1) && bn::abs(heading_vector.y()) < bn::fixed(0.1))
+    {
+      return;
+    }
+
+    bn::fixed heading = bn::degrees_atan2(
+      -(heading_vector.y() * 100).integer(), (heading_vector.x() * 100).integer());
+
+    bn::fixed rotation = heading - 90;
+
+    if (rotation > 180)
+    {
+      rotation -= 360;
+    }
+    else if (rotation < -180)
+    {
+      rotation += 360;
+    }
+
+    sprite.set_rotation_angle_safe(rotation);
   }
 
   bool actor::shoot_em_all_blocked_at(int pixel_x, int pixel_y)
@@ -1280,7 +1353,7 @@ namespace neo
       if (
         candidate->_id == animation &&
         candidate->state == state &&
-        candidate->direction == direction &&
+        candidate->direction == sprite_direction() &&
         candidate->frames_count > 0
       )
       {
@@ -1873,7 +1946,8 @@ namespace neo
     bool top_down =
       game->active_scene->scene_type == neo::types::scene_type::TOP_DOWN ||
       game->active_scene->scene_type == neo::types::scene_type::POINT_AND_CLICK ||
-      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE;
+      game->active_scene->scene_type == neo::types::scene_type::ADVENTURE ||
+      game->active_scene->scene_type == neo::types::scene_type::RACING;
 
     // Player rect, in map pixel coordinates (its position is already
     // tracked in pixels)
@@ -2155,12 +2229,12 @@ namespace neo
 
   int actor::width()
   {
-    return sprite.dimensions().width();
+    return definition->sprite.shape_size().width();
   }
 
   int actor::height()
   {
-    return sprite.dimensions().height();
+    return definition->sprite.shape_size().height();
   }
 
   neo::types::direction actor::opposite_direction()
@@ -2190,8 +2264,8 @@ namespace neo
     set_anim_state(neo::types::animation_state::MOVING, animation);
 
     const neo::types::map* map_data = game->active_scene->map_data;
-    int offset_x = -map_data->pixel_width(game->variables) / 2 + sprite.dimensions().width() / 2;
-    int offset_y = -map_data->pixel_height(game->variables) / 2 + sprite.dimensions().height() / 2;
+    int offset_x = -map_data->pixel_width(game->variables) / 2 + width() / 2;
+    int offset_y = -map_data->pixel_height(game->variables) / 2 + height() / 2;
 
     // speed is in pixels per frame, same unit as PLAYER_SPEED
     int px_per_frame = bn::max(1, speed);
@@ -2386,8 +2460,8 @@ void neo::types::actor_move_event::begin_move(neo::game* game_)
   }
 
   const neo::types::map* map_data = game_->active_scene->map_data;
-  int offset_x = -map_data->pixel_width(game_->variables) / 2 + target->sprite.dimensions().width() / 2;
-  int offset_y = -map_data->pixel_height(game_->variables) / 2 + target->sprite.dimensions().height() / 2;
+  int offset_x = -map_data->pixel_width(game_->variables) / 2 + target->width() / 2;
+  int offset_y = -map_data->pixel_height(game_->variables) / 2 + target->height() / 2;
 
   target_tile_x = x->as_int(game_->variables);
   target_tile_y = y->as_int(game_->variables);

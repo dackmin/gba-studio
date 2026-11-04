@@ -304,7 +304,7 @@
           "type": "string"
         },
         "sceneType": {
-          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click", "adventure", "shoot-em-all"],
+          "enum": ["logos", "2d-top-down", "side-scroller", "point-and-click", "adventure", "shoot-em-all", "racing"],
           "type": "string"
         },
         "scrollDirection": {

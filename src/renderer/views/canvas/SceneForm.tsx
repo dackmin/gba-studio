@@ -338,6 +338,7 @@ const SceneForm = ({
                   <Select.Item value="side-scroller">Platformer/Side Scroller</Select.Item>
                   <Select.Item value="point-and-click">Point & Click</Select.Item>
                   <Select.Item value="shoot-em-all">Shoot &apos;em all</Select.Item>
+                  <Select.Item value="racing">Racing</Select.Item>
                 </Select.Content>
               </Select.Root>
             </div>
@@ -431,7 +432,7 @@ const SceneForm = ({
                     </div>
                   </>
                 ) }
-                { (scene.sceneType === 'shoot-em-all' || scene.sceneType === 'adventure') && (
+                { ['shoot-em-all', 'adventure', 'racing'].includes(scene.sceneType) && (
                   <div className="flex flex-col gap-2">
                     <Text className="block text-slate" size="1">Player inertia</Text>
                     <EventValueField

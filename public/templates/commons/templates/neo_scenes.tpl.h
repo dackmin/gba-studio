@@ -631,6 +631,8 @@ namespace neo::scenes
     neo::types::scene_type::TOP_DOWN,
     {{else if (eq this.sceneType 'shoot-em-all')}}
     neo::types::scene_type::SHOOT_EM_ALL,
+    {{else if (eq this.sceneType 'racing')}}
+    neo::types::scene_type::RACING,
     {{else}}
     neo::types::scene_type::LOGOS,
     {{/if}}
