@@ -12,10 +12,8 @@ BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}(neo::types::event_
 {{>valuePartial prefix=(concat ../prefix "_" @index "_duration") value=this.duration}}
 BN_DATA_EWRAM neo::types::fade_event {{../prefix}}_{{@index}}(neo::types::event_type::FADE_OUT, &{{../prefix}}_{{@index}}_duration_value);
 {{else if (or (eq this.type "wait-for-button") (eq this.type "on-button-press"))}}
-{{#if (eq this.type "on-button-press")}}
-{{#if this.events}}
+{{#if (and (eq this.type "on-button-press") (hasItems this.events))}}
 {{>eventsPartial prefix=(concat ../prefix "_" @index "_event") events=this.events}}
-{{/if}}
 constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{#each this.events}}
   &{{../../prefix}}_{{@../index}}_event_{{@index}}{{#unless @last}},{{/unless}}
@@ -37,7 +35,7 @@ constexpr neo::types::button_event {{../prefix}}_{{@index}}(
   {{else}}
   bn::span<const bn::string_view>(),
   {{/if}}
-  {{#if (eq this.type "on-button-press")}}
+  {{#if (and (eq this.type "on-button-press") (hasItems this.events))}}
   {{this.events.length}},
   {{../prefix}}_{{@index}}_events
   {{else}}
@@ -155,7 +153,7 @@ constexpr neo::types::menu_choice {{../prefix}}_{{@index}}_choices[] = {
   {{#each this.choices}}
   neo::types::menu_choice(
     {{../../prefix}}_{{@../index}}_option_{{@index}}_text,
-    {{this.events.length}},
+    {{valuedef this.events.length 0}},
     {{#if this.events.length}}
     {{../../prefix}}_{{@../index}}_option_{{@index}}_events,
     {{else}}

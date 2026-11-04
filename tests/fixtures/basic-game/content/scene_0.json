@@ -364,6 +364,48 @@
       "destroyOnCollision": true,
       "animation": "",
       "direction": "from_player"
+    },
+    {
+      "type": "on-button-press",
+      "id": "2a9c6e41-8f13-4d70-b5e2-7c4d1a8f3b95",
+      "buttons": ["a"],
+      "events": []
+    },
+    {
+      "type": "on-out-of-camera-bounds",
+      "id": "b4e2c7a9-18d3-4f65-8a0e-3d9f5b2c7164",
+      "events": [
+        {
+          "type": "fade-out",
+          "id": "e6a1f3d8-72b4-4c09-9d5e-1c8b4a7f2e30",
+          "duration": 200
+        }
+      ]
+    },
+    {
+      "type": "if",
+      "id": "3c8e5a21-6b94-4f07-a1d3-9e2b7c40f158",
+      "conditions": [
+        {
+          "type": "condition",
+          "left": {
+            "type": "player-attribute",
+            "name": "x"
+          },
+          "operator": "<",
+          "right": {
+            "type": "camera",
+            "name": "left"
+          }
+        }
+      ],
+      "then": [
+        {
+          "type": "fade-out",
+          "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e940",
+          "duration": 200
+        }
+      ]
     }
   ],
   "id": "d2a023cc-364d-4caf-9638-78937f593e4d",

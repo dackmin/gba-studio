@@ -1269,6 +1269,96 @@ namespace neo::scenes
     &scene_0_event_43_gravity_angle_value,
     &scene_0_event_43_terminal_velocity_value
   );
+  // Event 44: on-button-press
+  constexpr bn::string_view scene_0_event_44_buttons[] = {
+    "a"
+  };
+  constexpr neo::types::button_event scene_0_event_44(
+    neo::types::event_type::ON_BUTTON_PRESS,
+    false,
+    bn::span<const bn::string_view>(scene_0_event_44_buttons),
+    0,
+    nullptr
+  );
+  // Event 45: on-out-of-camera-bounds
+  // Event 0: fade-out
+  constexpr bn::string_view scene_0_event_45_event_0_duration_name = "";
+  constexpr bn::string_view scene_0_event_45_event_0_duration_string_value = "200";
+  constexpr neo::variables::value scene_0_event_45_event_0_duration_raw_value(
+    scene_0_event_45_event_0_duration_name,
+    200,
+    true,
+    scene_0_event_45_event_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view scene_0_event_45_event_0_duration_type = "value";
+  constexpr neo::types::event_value scene_0_event_45_event_0_duration_value(
+    scene_0_event_45_event_0_duration_type,
+    &scene_0_event_45_event_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::fade_event scene_0_event_45_event_0(neo::types::event_type::FADE_OUT, &scene_0_event_45_event_0_duration_value);
+  constexpr const neo::types::event* scene_0_event_45_events[] = {
+    &scene_0_event_45_event_0
+  };
+  constexpr neo::types::camera_bounds_event scene_0_event_45(
+    neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS,
+    1,
+    scene_0_event_45_events
+  );
+  // Event 46: if
+  // Event 0: fade-out
+  constexpr bn::string_view scene_0_event_46_then_0_duration_name = "";
+  constexpr bn::string_view scene_0_event_46_then_0_duration_string_value = "200";
+  constexpr neo::variables::value scene_0_event_46_then_0_duration_raw_value(
+    scene_0_event_46_then_0_duration_name,
+    200,
+    true,
+    scene_0_event_46_then_0_duration_string_value,
+    200
+  );
+  constexpr bn::string_view scene_0_event_46_then_0_duration_type = "value";
+  constexpr neo::types::event_value scene_0_event_46_then_0_duration_value(
+    scene_0_event_46_then_0_duration_type,
+    &scene_0_event_46_then_0_duration_raw_value
+  );
+  
+  BN_DATA_EWRAM neo::types::fade_event scene_0_event_46_then_0(neo::types::event_type::FADE_OUT, &scene_0_event_46_then_0_duration_value);
+  constexpr const neo::types::event* scene_0_event_46_then[] = {
+    &scene_0_event_46_then_0
+  };
+  // If condition 0:
+  constexpr bn::string_view scene_0_event_46_condition_0_left_type = "player-attribute";
+  constexpr bn::string_view scene_0_event_46_condition_0_left_attribute = "x";
+  constexpr neo::types::if_expression_player_attribute scene_0_event_46_condition_0_left(
+    scene_0_event_46_condition_0_left_type,
+    scene_0_event_46_condition_0_left_attribute
+  );
+  constexpr bn::string_view scene_0_event_46_condition_0_right_type = "camera";
+  constexpr neo::types::if_expression_camera scene_0_event_46_condition_0_right(
+    scene_0_event_46_condition_0_right_type,
+    neo::types::camera_edge::LEFT
+  );
+  constexpr bn::string_view scene_0_event_46_condition_0_type = "condition";
+  constexpr bn::string_view scene_0_event_46_condition_0_operator = "<";
+  constexpr neo::types::if_condition scene_0_event_46_condition_0(
+    scene_0_event_46_condition_0_type,
+    scene_0_event_46_condition_0_operator,
+    &scene_0_event_46_condition_0_left,
+    &scene_0_event_46_condition_0_right
+  );
+  constexpr const neo::types::if_condition* scene_0_event_46_conditions[] = {
+    &scene_0_event_46_condition_0
+  };
+  constexpr neo::types::if_event scene_0_event_46(
+    neo::types::event_type::IF,
+    1,
+    scene_0_event_46_conditions,
+    1,
+    scene_0_event_46_then,
+    0,
+    nullptr
+  );
   constexpr const neo::types::event* scene_0_events[] = {
     &scene_0_event_0,
     &scene_0_event_1,
@@ -1314,6 +1404,9 @@ namespace neo::scenes
     &scene_0_event_41,
     &scene_0_event_42,
     &scene_0_event_43,
+    &scene_0_event_44,
+    &scene_0_event_45,
+    &scene_0_event_46,
   };
 
   // Map collisions
@@ -1629,7 +1722,7 @@ namespace neo::scenes
     scene_0_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
     neo::backgrounds::map,
-    44,
+    47,
     scene_0_events,
     true,
     &scene_0_player_actor,
@@ -2746,89 +2839,8 @@ namespace neo::scenes
   );
   
   BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_0(neo::types::event_type::FADE_IN, &shoot_em_all_event_0_duration_value);
-  // Event 1: on-out-of-camera-bounds
-  // Event 0: fade-out
-  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_name = "";
-  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_string_value = "200";
-  constexpr neo::variables::value shoot_em_all_event_1_event_0_duration_raw_value(
-    shoot_em_all_event_1_event_0_duration_name,
-    200,
-    true,
-    shoot_em_all_event_1_event_0_duration_string_value,
-    200
-  );
-  constexpr bn::string_view shoot_em_all_event_1_event_0_duration_type = "value";
-  constexpr neo::types::event_value shoot_em_all_event_1_event_0_duration_value(
-    shoot_em_all_event_1_event_0_duration_type,
-    &shoot_em_all_event_1_event_0_duration_raw_value
-  );
-  
-  BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_1_event_0(neo::types::event_type::FADE_OUT, &shoot_em_all_event_1_event_0_duration_value);
-  constexpr const neo::types::event* shoot_em_all_event_1_events[] = {
-    &shoot_em_all_event_1_event_0
-  };
-  constexpr neo::types::camera_bounds_event shoot_em_all_event_1(
-    neo::types::event_type::ON_OUT_OF_CAMERA_BOUNDS,
-    1,
-    shoot_em_all_event_1_events
-  );
-  // Event 2: if
-  // Event 0: fade-out
-  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_name = "";
-  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_string_value = "200";
-  constexpr neo::variables::value shoot_em_all_event_2_then_0_duration_raw_value(
-    shoot_em_all_event_2_then_0_duration_name,
-    200,
-    true,
-    shoot_em_all_event_2_then_0_duration_string_value,
-    200
-  );
-  constexpr bn::string_view shoot_em_all_event_2_then_0_duration_type = "value";
-  constexpr neo::types::event_value shoot_em_all_event_2_then_0_duration_value(
-    shoot_em_all_event_2_then_0_duration_type,
-    &shoot_em_all_event_2_then_0_duration_raw_value
-  );
-  
-  BN_DATA_EWRAM neo::types::fade_event shoot_em_all_event_2_then_0(neo::types::event_type::FADE_OUT, &shoot_em_all_event_2_then_0_duration_value);
-  constexpr const neo::types::event* shoot_em_all_event_2_then[] = {
-    &shoot_em_all_event_2_then_0
-  };
-  // If condition 0:
-  constexpr bn::string_view shoot_em_all_event_2_condition_0_left_type = "player-attribute";
-  constexpr bn::string_view shoot_em_all_event_2_condition_0_left_attribute = "x";
-  constexpr neo::types::if_expression_player_attribute shoot_em_all_event_2_condition_0_left(
-    shoot_em_all_event_2_condition_0_left_type,
-    shoot_em_all_event_2_condition_0_left_attribute
-  );
-  constexpr bn::string_view shoot_em_all_event_2_condition_0_right_type = "camera";
-  constexpr neo::types::if_expression_camera shoot_em_all_event_2_condition_0_right(
-    shoot_em_all_event_2_condition_0_right_type,
-    neo::types::camera_edge::LEFT
-  );
-  constexpr bn::string_view shoot_em_all_event_2_condition_0_type = "condition";
-  constexpr bn::string_view shoot_em_all_event_2_condition_0_operator = "<";
-  constexpr neo::types::if_condition shoot_em_all_event_2_condition_0(
-    shoot_em_all_event_2_condition_0_type,
-    shoot_em_all_event_2_condition_0_operator,
-    &shoot_em_all_event_2_condition_0_left,
-    &shoot_em_all_event_2_condition_0_right
-  );
-  constexpr const neo::types::if_condition* shoot_em_all_event_2_conditions[] = {
-    &shoot_em_all_event_2_condition_0
-  };
-  constexpr neo::types::if_event shoot_em_all_event_2(
-    neo::types::event_type::IF,
-    1,
-    shoot_em_all_event_2_conditions,
-    1,
-    shoot_em_all_event_2_then,
-    0,
-    nullptr
-  );
   constexpr const neo::types::event* shoot_em_all_events[] = {
     &shoot_em_all_event_0,
-    &shoot_em_all_event_1,
-    &shoot_em_all_event_2,
   };
 
   // Map collisions
@@ -3011,7 +3023,7 @@ namespace neo::scenes
     shoot_em_all_scene_name,
     neo::types::scene_type::SHOOT_EM_ALL,
     neo::backgrounds::map,
-    3,
+    1,
     shoot_em_all_events,
     true,
     &shoot_em_all_player_actor,
@@ -4798,7 +4810,6 @@ namespace neo::types
     neo::types::scroll_direction scroll_direction;
     const event_value* scroll_speed;
     neo::types::player_axis player_axis;
-    // 0-95, percent of the player's movement that lags behind the inputs
     const event_value* player_inertia;
 
     inline bool is (bn::string_view name_) const
