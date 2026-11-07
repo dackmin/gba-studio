@@ -48,7 +48,7 @@ const Sprite = ({
   frame,
   frames,
   direction = 'down',
-  transparencyColor = '#00ff00',
+  transparencyColor = sprite?.transparentColor || '#00ff00',
   scale = 1,
   animated = false,
   keepAspectRatio = false,
