@@ -240,8 +240,25 @@ const ActorForm = ({
             <Inset className="!rounded-none !overflow-visible">
               <Tabs.Root defaultValue="interact">
                 <Tabs.List size="1" className="px-1">
+                  <Tabs.Trigger value="init">
+                    On Init
+                  </Tabs.Trigger>
                   <Tabs.Trigger value="interact">
                     On Interact
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="update">
+                    <div className="flex items-center gap-1">
+                      <Text>On Update</Text>
+                      <Tooltip
+                        content="These events will be executed on every frame, use with caution"
+                      >
+                        <InfoCircledIcon
+                          width={12}
+                          height={12}
+                          className="[&_path]:fill-(--accent-9)"
+                        />
+                      </Tooltip>
+                    </div>
                   </Tabs.Trigger>
                   <Tabs.Trigger value="collide">
                     On Collide
@@ -260,30 +277,27 @@ const ActorForm = ({
                       </Tooltip>
                     </div>
                   </Tabs.Trigger>
-                  <Tabs.Trigger value="init">
-                    On Init
-                  </Tabs.Trigger>
-                  <Tabs.Trigger value="update">
-                    <div className="flex items-center gap-1">
-                      <Text>On Update</Text>
-                      <Tooltip
-                        content="These events will be executed on every frame, use with caution"
-                      >
-                        <InfoCircledIcon
-                          width={12}
-                          height={12}
-                          className="[&_path]:fill-(--accent-9)"
-                        />
-                      </Tooltip>
-                    </div>
-                  </Tabs.Trigger>
                 </Tabs.List>
 
+                <Tabs.Content value="init">
+                  <EventsField
+                    key={actor.id}
+                    value={actor.events?.init ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.init')}
+                  />
+                </Tabs.Content>
                 <Tabs.Content value="interact">
                   <EventsField
                     key={actor.id}
                     value={actor.events?.interact ?? []}
                     onValueChange={onValueChange.bind(null, 'events.interact')}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="update">
+                  <EventsField
+                    key={actor.id}
+                    value={actor.events?.update ?? []}
+                    onValueChange={onValueChange.bind(null, 'events.update')}
                   />
                 </Tabs.Content>
                 <Tabs.Content value="collide">
@@ -298,20 +312,6 @@ const ActorForm = ({
                     key={actor.id}
                     value={actor.events?.hit ?? []}
                     onValueChange={onValueChange.bind(null, 'events.hit')}
-                  />
-                </Tabs.Content>
-                <Tabs.Content value="init">
-                  <EventsField
-                    key={actor.id}
-                    value={actor.events?.init ?? []}
-                    onValueChange={onValueChange.bind(null, 'events.init')}
-                  />
-                </Tabs.Content>
-                <Tabs.Content value="update">
-                  <EventsField
-                    key={actor.id}
-                    value={actor.events?.update ?? []}
-                    onValueChange={onValueChange.bind(null, 'events.update')}
                   />
                 </Tabs.Content>
               </Tabs.Root>
