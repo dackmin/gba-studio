@@ -18,7 +18,7 @@ import {
   TextField,
   Tooltip,
 } from '@radix-ui/themes';
-import { CheckCircledIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { CheckCircledIcon, ExclamationTriangleIcon, InfoCircledIcon } from '@radix-ui/react-icons';
 import { classNames, set } from '@junipero/react';
 
 import type { GameScene } from '../../../types';
@@ -534,12 +534,33 @@ const SceneForm = ({
                         ) }
                       </div>
                     </Tabs.Trigger>
+                    <Tabs.Trigger value="update">
+                      <div className="inline-flex items-center gap-2">
+                        <Text>On Update</Text>
+                        <Tooltip
+                          content="These events will be executed on every frame, use with caution"
+                        >
+                          <InfoCircledIcon
+                            width={12}
+                            height={12}
+                            className="[&_path]:fill-(--accent-9)"
+                          />
+                        </Tooltip>
+                      </div>
+                    </Tabs.Trigger>
                   </Tabs.List>
 
                   <Tabs.Content value="init">
                     <EventsField
                       value={scene.events ?? []}
                       onValueChange={onValueChange.bind(null, 'events')}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="update">
+                    <EventsField
+                      key={scene.id}
+                      value={scene.updateEvents ?? []}
+                      onValueChange={onValueChange.bind(null, 'updateEvents')}
                     />
                   </Tabs.Content>
                 </Tabs.Root>

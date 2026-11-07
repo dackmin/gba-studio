@@ -45,6 +45,7 @@ const VariableForm = ({
 
     for (const scene of scenes) {
       res.push(...collect(scene.events, 'init', { scene }));
+      res.push(...collect(scene.updateEvents, 'update', { scene }));
 
       for (const owner of [
         ...(scene.actors ?? []),

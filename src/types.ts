@@ -221,6 +221,7 @@ export interface GameScene {
   playerAxis?: GameScenePlayerAxis;
   map?: GameMap;
   events?: SceneEvent[];
+  updateEvents?: SceneEvent[];
   actors?: GameActor[];
   sprites?: GameSprite[];
   texts?: GameText[];

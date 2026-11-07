@@ -453,6 +453,12 @@ namespace neo
         }
       }
 
+      // Execute scene update events
+      for (int i = 0; i < active_scene->update_events_count && !scene_changed; ++i)
+      {
+        exec_event(active_scene->update_events[i], true);
+      }
+
       for (int i = 0; i < actors_count; ++i)
       {
         // Execute actors update events

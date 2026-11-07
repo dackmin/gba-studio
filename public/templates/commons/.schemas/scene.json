@@ -342,6 +342,12 @@
           },
           "type": "array"
         },
+        "updateEvents": {
+          "items": {
+            "$ref": "event.json#/definitions/Event"
+          },
+          "type": "array"
+        },
         "name": {
           "type": "string"
         },

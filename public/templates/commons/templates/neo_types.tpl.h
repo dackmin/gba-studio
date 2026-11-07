@@ -1634,6 +1634,8 @@ namespace neo::types
     neo::types::background background;
     int event_count;
     const event* const* events;
+    int update_events_count;
+    const event* const* update_events;
     // Player
     bool has_player;
     const actor* player;

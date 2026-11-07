@@ -327,6 +327,10 @@ export const sanitizeScene = async (
     await sanitizeEvent(event);
   }
 
+  for (const event of scene.updateEvents ?? []) {
+    await sanitizeEvent(event);
+  }
+
   for (const actor of scene.actors ?? []) {
     await sanitizeActor(actor);
   }

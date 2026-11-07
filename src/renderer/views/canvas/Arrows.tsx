@@ -22,7 +22,10 @@ const Arrows = ({
         s,
         getEventsOfType<
           GoToSceneEvent
-        >('go-to-scene', s.events || [], { scripts }),
+        >('go-to-scene', [
+          ...(s.events || []),
+          ...(s.updateEvents || []),
+        ], { scripts }),
       ])
       .filter(([s, events]) => (
         (s.id === selectedScene?.id || s._file === selectedScene?._file) &&

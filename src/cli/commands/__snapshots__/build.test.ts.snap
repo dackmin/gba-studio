@@ -1828,6 +1828,8 @@ namespace neo::scenes
     neo::backgrounds::map,
     51,
     scene_0_events,
+    0,
+    nullptr,
     true,
     &scene_0_player_actor,
     &scene_0_map_data,
@@ -2091,6 +2093,8 @@ namespace neo::scenes
     neo::backgrounds::map,
     1,
     point_and_click_events,
+    0,
+    nullptr,
     true,
     &point_and_click_player_actor,
     &point_and_click_map_data,
@@ -2642,6 +2646,8 @@ namespace neo::scenes
     neo::backgrounds::map,
     2,
     adventure_events,
+    0,
+    nullptr,
     true,
     &adventure_player_actor,
     &adventure_map_data,
@@ -2905,6 +2911,8 @@ namespace neo::scenes
     neo::backgrounds::map,
     1,
     side_scroller_events,
+    0,
+    nullptr,
     true,
     &side_scroller_player_actor,
     &side_scroller_map_data,
@@ -3134,6 +3142,8 @@ namespace neo::scenes
     neo::backgrounds::map,
     1,
     shoot_em_all_events,
+    0,
+    nullptr,
     true,
     &shoot_em_all_player_actor,
     &shoot_em_all_map_data,
@@ -3223,6 +3233,8 @@ namespace neo::scenes
     default_scene_name,
     neo::types::scene_type::LOGOS,
     neo::backgrounds::bg_default,
+    0,
+    nullptr,
     0,
     nullptr,
     false,
@@ -4996,6 +5008,8 @@ namespace neo::types
     neo::types::background background;
     int event_count;
     const event* const* events;
+    int update_events_count;
+    const event* const* update_events;
     // Player
     bool has_player;
     const actor* player;

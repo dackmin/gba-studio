@@ -235,6 +235,14 @@ namespace neo::scenes
     {{/each}}
   };
   {{/if}}
+  {{#if (hasItems this.updateEvents)}}
+  {{>eventsPartial prefix=(concat (slug this.name) "_update_event") events=this.updateEvents}}
+  constexpr const neo::types::event* {{slug this.name}}_update_events[] = {
+    {{#each this.updateEvents}}
+    &{{slug ../this.name}}_update_event_{{@index}},
+    {{/each}}
+  };
+  {{/if}}
 
   // Map collisions
   {{#if (and (isset this.map) (neq this.sceneType 'logos'))}}
@@ -656,6 +664,13 @@ namespace neo::scenes
     0,
     nullptr,
     {{/if}}
+    {{#if (hasItems this.updateEvents)}}
+    {{this.updateEvents.length}},
+    {{slug this.name}}_update_events,
+    {{else}}
+    0,
+    nullptr,
+    {{/if}}
     {{#if (and (isset this.player) (neq this.sceneType 'logos')) }}
     true,
     &{{slug this.name}}_player_actor,
@@ -736,6 +751,8 @@ namespace neo::scenes
     default_scene_name,
     neo::types::scene_type::LOGOS,
     neo::backgrounds::bg_default,
+    0,
+    nullptr,
     0,
     nullptr,
     false,
