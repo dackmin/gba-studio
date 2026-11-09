@@ -6,6 +6,7 @@ import {
   Callout,
   Card,
   Dialog,
+  DropdownMenu,
   IconButton,
   ScrollArea,
   Switch,
@@ -58,8 +59,8 @@ const PluginManagerModal = ({
     }
   }, [project, onProjectChange]);
 
-  const onInstall = useCallback(async () => {
-    const result = await window.electron.pickPlugin(projectPath);
+  const onInstall = useCallback(async (source: 'folder' | 'archive') => {
+    const result = await window.electron.pickPlugin(projectPath, source);
 
     if (!result) {
       return;
@@ -108,10 +109,23 @@ const PluginManagerModal = ({
               Plugin Manager
             </Dialog.Title>
             <div className="flex justify-end">
-              <Button size="1" onClick={onInstall}>
-                <PlusIcon />
-                Install plugin...
-              </Button>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button size="1">
+                    <PlusIcon />
+                    Install plugin
+                    <DropdownMenu.TriggerIcon />
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content size="1">
+                  <DropdownMenu.Item onSelect={() => onInstall('folder')}>
+                    From a folder...
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onSelect={() => onInstall('archive')}>
+                    From an archive (.zip, .tar.gz)...
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             </div>
           </div>
 

@@ -1,7 +1,9 @@
+import os from 'node:os';
 import path from 'node:path';
 
 import fse from 'fs-extra';
 
+import { extractArchive } from './archive';
 import type {
   GamePlugin,
   PluginEventDefinition,
@@ -12,6 +14,7 @@ import type {
 } from '../types';
 
 export const PLUGIN_MANIFEST = 'plugin.json';
+export const PLUGINS_DIR = 'plugins';
 
 const ID_REGEX = /^[a-z0-9][a-z0-9_-]*$/i;
 const KEY_REGEX = /^[a-z_][a-z0-9_]*$/i;
@@ -169,6 +172,46 @@ export const pickPlugin = async (
     return { path: toProjectPluginPath(projectPath, dir) };
   } catch (e: any) {
     return { error: `Could not add plugin: ${e?.message}` };
+  }
+};
+
+const findPluginRoot = async (dir: string) => {
+  if (await fse.pathExists(path.join(dir, PLUGIN_MANIFEST))) {
+    return dir;
+  }
+
+  const entries = (await fse.readdir(dir, { withFileTypes: true }))
+    .filter(e => e.name !== '__MACOSX');
+
+  if (entries.length === 1 && entries[0].isDirectory()) {
+    return path.join(dir, entries[0].name);
+  }
+
+  return dir;
+};
+
+export const installPluginArchive = async (
+  projectPath: string,
+  archivePath: string,
+): Promise<PluginPick> => {
+  const tmp = await fse.mkdtemp(path.join(os.tmpdir(), 'gba-studio-plugin-'));
+
+  try {
+    await extractArchive(archivePath, tmp);
+
+    const root = await findPluginRoot(tmp);
+    const manifest = await readManifest(root);
+    const dir = path.join(
+      path.dirname(projectPath), PLUGINS_DIR, manifest.id);
+
+    await fse.remove(dir);
+    await fse.copy(root, dir);
+
+    return { path: toProjectPluginPath(projectPath, dir) };
+  } catch (e: any) {
+    return { error: `Could not install plugin: ${e?.message}` };
+  } finally {
+    await fse.remove(tmp).catch(() => {});
   }
 };
 

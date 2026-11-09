@@ -169,8 +169,11 @@ contextBridge.exposeInMainWorld('electron', {
     entries?: ProjectPlugin[],
   ): Promise<GamePlugin[]> =>
     ipcRenderer.invoke('get-plugins', projectPath, entries),
-  pickPlugin: (projectPath: string): Promise<PluginPick | null> =>
-    ipcRenderer.invoke('pick-plugin', projectPath),
+  pickPlugin: (
+    projectPath: string,
+    source?: 'folder' | 'archive',
+  ): Promise<PluginPick | null> =>
+    ipcRenderer.invoke('pick-plugin', projectPath, source),
   openPluginFolder: (dir: string): Promise<void> =>
     ipcRenderer.invoke('open-plugin-folder', dir),
 

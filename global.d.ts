@@ -114,7 +114,10 @@ interface AppBridge extends EventTarget {
     projectPath: string,
     entries?: ProjectPlugin[],
   ): Promise<GamePlugin[]>;
-  pickPlugin(projectPath: string): Promise<PluginPick | null>;
+  pickPlugin(
+    projectPath: string,
+    source?: 'folder' | 'archive',
+  ): Promise<PluginPick | null>;
   openPluginFolder(dir: string): Promise<void>;
   platform: string;
   isDarwin: boolean;

@@ -4,7 +4,13 @@ import { type IpcMainInvokeEvent, BrowserWindow, dialog, shell } from 'electron'
 import fse from 'fs-extra';
 
 import type { GamePlugin, PluginPick, ProjectPlugin } from '../../types';
-import { PLUGIN_MANIFEST, loadPlugins, pickPlugin as pick } from '../plugins';
+import { ARCHIVE_EXTENSIONS } from '../archive';
+import {
+  PLUGIN_MANIFEST,
+  installPluginArchive,
+  loadPlugins,
+  pickPlugin as pick,
+} from '../plugins';
 
 export const getPlugins = async (
   _event: IpcMainInvokeEvent,
@@ -15,9 +21,14 @@ export const getPlugins = async (
 export const pickPlugin = async (
   event: IpcMainInvokeEvent,
   projectPath: string,
+  source: 'folder' | 'archive' = 'folder',
 ): Promise<PluginPick | null> => {
   const win = BrowserWindow.fromWebContents(event.sender);
-  const result = await dialog.showOpenDialog(win!, {
+  const result = await dialog.showOpenDialog(win!, source === 'archive' ? {
+    title: 'Select a plugin archive',
+    properties: ['openFile'],
+    filters: [{ name: 'Plugin archive', extensions: ARCHIVE_EXTENSIONS }],
+  } : {
     title: 'Select a plugin folder',
     properties: ['openDirectory'],
   });
@@ -26,7 +37,9 @@ export const pickPlugin = async (
     return null;
   }
 
-  return pick(projectPath, result.filePaths[0]);
+  return source === 'archive'
+    ? installPluginArchive(projectPath, result.filePaths[0])
+    : pick(projectPath, result.filePaths[0]);
 };
 
 export const openPluginFolder = async (
