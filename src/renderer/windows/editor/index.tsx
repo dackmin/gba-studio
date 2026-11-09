@@ -16,6 +16,7 @@ import BackgroundImportModal, { type BackgroundImportModalRef } from './Backgrou
 import FontImportModal, { type FontImportModalRef } from './FontImportModal';
 import SoundImportModal, { type SoundImportModalRef } from './SoundImportModal';
 import MusicImportModal, { type MusicImportModalRef } from './MusicImportModal';
+import PluginManagerModal, { type PluginManagerModalRef } from './PluginManagerModal';
 
 export interface EditorState {
   view: string;
@@ -34,6 +35,7 @@ const Editor = () => {
   const fontModalRef = useRef<FontImportModalRef>(null);
   const soundModalRef = useRef<SoundImportModalRef>(null);
   const musicModalRef = useRef<MusicImportModalRef>(null);
+  const pluginsModalRef = useRef<PluginManagerModalRef>(null);
   const [state, dispatch] = useReducer(mockState<EditorState>, {
     view: localData?.editor?.view ?? 'canvas',
     tileX: undefined,
@@ -174,6 +176,10 @@ const Editor = () => {
     }
   }, []);
 
+  useBridgeListener('open-plugin-manager', () => {
+    pluginsModalRef.current?.open();
+  }, []);
+
   const {
     view: View,
     provider: Provider = defaultView.provider || Fragment,
@@ -257,6 +263,7 @@ const Editor = () => {
             <FontImportModal ref={fontModalRef} />
             <SoundImportModal ref={soundModalRef} />
             <MusicImportModal ref={musicModalRef} />
+            <PluginManagerModal ref={pluginsModalRef} />
           </Provider>
         </LogsStore>
       </LocalDataStore>

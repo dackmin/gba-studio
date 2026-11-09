@@ -32,3 +32,4 @@ export { default as renameSceneFile } from './rename-scene-file';
 export { default as renameScriptFile } from './rename-script-file';
 
 export * from './build-project';
+export * from './plugins';

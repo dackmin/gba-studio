@@ -110,6 +110,12 @@ interface AppBridge extends EventTarget {
   showUnsavedChangesDialog(): Promise<'save' | 'discard' | 'cancel'>;
   confirmClose(): Promise<void>;
   cancelClose(): Promise<void>;
+  getPlugins(
+    projectPath: string,
+    entries?: ProjectPlugin[],
+  ): Promise<GamePlugin[]>;
+  pickPlugin(projectPath: string): Promise<PluginPick | null>;
+  openPluginFolder(dir: string): Promise<void>;
   platform: string;
   isDarwin: boolean;
   isWindows: boolean;

@@ -401,6 +401,11 @@ export interface ProjectConfiguration {
   settings?: ProjectSettings;
 }
 
+export interface ProjectPlugin {
+  path: string;
+  enabled?: boolean;
+}
+
 export interface GameProject {
   name: string;
   romName: string;
@@ -410,6 +415,7 @@ export interface GameProject {
   settings?: ProjectSettings;
   configurations?: ProjectConfiguration[];
   startingScene?: string;
+  plugins?: ProjectPlugin[];
   // Internal
   id?: string;
 }
@@ -512,6 +518,58 @@ export interface GameFontFile {
   $schema?: string;
 }
 
+export type PluginFieldType = 'number' | 'text' | 'boolean' | 'select';
+
+export interface PluginEventField {
+  key: string;
+  type: PluginFieldType;
+  label?: string;
+  default?: string | number | boolean;
+  unit?: string;
+  text?: string;
+  options?: { value: string; label?: string }[];
+}
+
+export interface PluginEventDefinition {
+  id: string;
+  name: string;
+  handler: string;
+  description?: string;
+  keywords?: string[];
+  fields?: PluginEventField[];
+  // Internals
+  _handlerId?: number;
+  _namespace?: string;
+  _function?: string;
+}
+
+export interface PluginManifest {
+  id: string;
+  name: string;
+  events?: PluginEventDefinition[];
+  version?: string;
+  description?: string;
+  author?: string;
+}
+
+export interface GamePlugin extends PluginManifest {
+  enabled: boolean;
+  // Internals
+  _dir: string;
+  _path: string;
+  _error?: string;
+}
+
+export interface PluginPick {
+  path?: string;
+  error?: string;
+}
+
+export interface PluginEvent extends SceneEvent {
+  type: string;
+  params: Record<string, EventValue>;
+}
+
 export declare interface AppPayload {
   project: GameProject;
   scenes: GameScene[];
@@ -523,6 +581,7 @@ export declare interface AppPayload {
   music: GameMusicFile[];
   sounds: GameSoundFile[];
   scripts: GameScript[];
+  plugins?: GamePlugin[];
   // Internals
   _recoveredAutosave?: boolean;
 };

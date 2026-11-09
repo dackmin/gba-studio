@@ -24,5 +24,6 @@ describe('cli/build', () => {
     await expect(readBuiltFile('neo_settings.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_logs.h')).resolves.toMatchSnapshot();
     await expect(readBuiltFile('neo_utils.h')).resolves.toMatchSnapshot();
+    await expect(readBuiltFile('neo_plugin.h')).resolves.toMatchSnapshot();
   });
 });

@@ -1350,6 +1350,22 @@
       ],
       "type": "object"
     },
+    "PluginEvent": {
+      "properties": {
+        "params": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/EventValue" }
+        },
+        "type": {
+          "pattern": "^plugin:[^:]+:[^:]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
     "Event": {
       "anyOf": [
         { "$ref": "#/definitions/WaitEvent" },
@@ -1409,7 +1425,8 @@
         { "$ref": "#/definitions/ShootProjectileEvent" },
         { "$ref": "#/definitions/MeleeAttackEvent" },
         { "$ref": "#/definitions/ShowActorReactionEvent" },
-        { "$ref": "#/definitions/ShowPlayerReactionEvent" }
+        { "$ref": "#/definitions/ShowPlayerReactionEvent" },
+        { "$ref": "#/definitions/PluginEvent" }
       ]
     }
   },

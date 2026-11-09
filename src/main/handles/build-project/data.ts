@@ -1,6 +1,65 @@
 import { findBackground, findSprite, getGridSize } from '../../../helpers';
+import type {
+  Build,
+  EventValue,
+  GamePlugin,
+  InternalSpriteAnimation,
+  SpriteAnimation,
+} from '../../../types';
+import { loadPlugins } from '../../plugins';
 import { getBackgroundLayoutFromFile } from './assets';
-import type { Build, InternalSpriteAnimation, SpriteAnimation } from '../../../types';
+
+const annotatePluginEvents = (node: any, plugins: GamePlugin[]) => {
+  if (Array.isArray(node)) {
+    node.forEach(n => annotatePluginEvents(n, plugins));
+
+    return;
+  }
+
+  if (!node || typeof node !== 'object') {
+    return;
+  }
+
+  if (typeof node.type === 'string' && node.type.startsWith('plugin:')) {
+    const [, pluginId, eventId] = node.type.split(':');
+    const definition = plugins
+      .find(p => p.id === pluginId)?.events?.find(e => e.id === eventId);
+
+    if (definition) {
+      node._plugin = {
+        handlerId: definition._handlerId,
+        params: (definition.fields ?? []).map(field => ({
+          key: field.key,
+          value: (node.params?.[field.key] ?? field.default ?? (
+            field.type === 'number' ? 0 : field.type === 'boolean' ? false : ''
+          )) as EventValue,
+        })),
+      };
+    }
+  }
+
+  Object.values(node).forEach(n => annotatePluginEvents(n, plugins));
+};
+
+const preparePlugins = async (build: Build): Promise<GamePlugin[]> => {
+  const plugins = (await loadPlugins(build.projectPath, build.data?.project?.plugins))
+    .filter(p => p.enabled);
+
+  // avoid string-views and keep some ram by using a numerical id
+  let handlerId = 0;
+
+  for (const plugin of plugins) {
+    for (const event of plugin.events ?? []) {
+      const parts = event.handler.split('::');
+
+      event._handlerId = handlerId++;
+      event._function = parts.pop();
+      event._namespace = parts.join('::');
+    }
+  }
+
+  return plugins;
+};
 
 export const prepareAnimations = async (
   animations: SpriteAnimation[],
@@ -104,6 +163,14 @@ export async function prepareData (build: Build) {
 
       scene.player._collisionRect = sprite?.collisionRect;
     }
+  }
+
+  if (build.data) {
+    build.data.plugins = await preparePlugins(build);
+    annotatePluginEvents(
+      [build.data.scenes, build.data.scripts, build.data.huds],
+      build.data.plugins,
+    );
   }
 
   return build;

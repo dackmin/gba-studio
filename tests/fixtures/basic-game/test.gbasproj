@@ -34,6 +34,9 @@
   ],
   "romName": "MY AWESOME GAME",
   "romCode": "MAG",
+  "plugins": [
+    { "path": "plugins/log-message" }
+  ],
   "id": "40462bc0-cb50-4bb6-88f4-3ac3ad3f13b1",
   "huds": [
     {

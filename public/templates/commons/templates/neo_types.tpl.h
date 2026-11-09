@@ -296,7 +296,8 @@ namespace neo::types
   X(SHOOT_PROJECTILE, "shoot-projectile") \
   X(MELEE_ATTACK, "melee-attack") \
   X(SHOW_ACTOR_REACTION, "show-actor-reaction") \
-  X(SHOW_PLAYER_REACTION, "show-player-reaction")
+  X(SHOW_PLAYER_REACTION, "show-player-reaction") \
+  X(PLUGIN, "plugin")
 
   enum class event_type : unsigned char
   {
@@ -1286,6 +1287,67 @@ namespace neo::types
     using show_reaction_event::show_reaction_event;
 
     void init(neo::game* game_) override;
+  };
+
+  struct plugin_param
+  {
+    bn::string_view key;
+    const event_value* value;
+
+    constexpr plugin_param(bn::string_view key_, const event_value* value_):
+      key(key_), value(value_) {}
+  };
+
+  struct plugin_event: event
+  {
+    int handler_id;
+    bn::span<const plugin_param> params;
+
+    constexpr plugin_event(
+      event_type type_, int handler_id_, bn::span<const plugin_param> params_
+    ):
+      event(type_), handler_id(handler_id_), params(params_) {}
+
+    inline const event_value* find(bn::string_view key) const
+    {
+      for (const plugin_param& param : params)
+      {
+        if (param.key == key)
+        {
+          return param.value;
+        }
+      }
+
+      return nullptr;
+    }
+
+    inline int as_int(neo::variables::registry& variables, bn::string_view key, int fallback = 0) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_int(variables) : fallback;
+    }
+
+    inline bool as_bool(neo::variables::registry& variables, bn::string_view key, bool fallback = false) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_bool(variables) : fallback;
+    }
+
+    inline bn::fixed as_fixed(neo::variables::registry& variables, bn::string_view key, bn::fixed fallback = 0) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_fixed(variables) : fallback;
+    }
+
+    inline bn::string_view as_string(neo::variables::registry& variables, bn::string_view key, bn::string_view fallback = "") const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_string(variables) : fallback;
+    }
   };
 
   struct sensor

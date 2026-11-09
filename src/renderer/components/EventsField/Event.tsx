@@ -69,8 +69,9 @@ import type {
   MeleeAttackEvent,
   ShowActorReactionEvent,
   ShowPlayerReactionEvent,
+  PluginEvent,
 } from '../../../types';
-import { ALL_EVENT_TYPES, getEventDefinition } from '../../services/events';
+import { ALL_EVENT_TYPES, getEventDefinition, isPluginEvent } from '../../services/events';
 import { useApp, useDraggable, useLocalData } from '../../services/hooks';
 import Switch from '../Switch';
 import EventDuration from './EventDuration';
@@ -113,6 +114,7 @@ import EventShootProjectile from './EventShootProjectile';
 import EventMeleeAttack from './EventMeleeAttack';
 import EventShowActorReaction from './EventShowActorReaction';
 import EventShowPlayerReaction from './EventShowPlayerReaction';
+import EventPlugin from './EventPlugin';
 
 export interface EventProps {
   event: SceneEvent;
@@ -139,7 +141,7 @@ const Event = ({
   onAppend,
   onDrop,
 }: EventProps) => {
-  const { clipboard, setClipboard } = useApp();
+  const { clipboard, setClipboard, plugins } = useApp();
   const { data, setData } = useDraggable<SceneEvent>();
   const { collapse, isCollapsed } = useLocalData();
   const nameRef = useRef<HTMLDivElement>(null);
@@ -157,7 +159,9 @@ const Event = ({
 
   const definition = useMemo(() => (
     getEventDefinition(event.type)
-  ), [event.type]);
+    // Plugin events are registered globally and change with plugins
+    // eslint-disable-next-line @eslint-react/exhaustive-deps,react-hooks/exhaustive-deps
+  ), [event.type, plugins]);
 
   const onToggleCollapsibleClick = useCallback((
     e: MouseEvent<HTMLButtonElement>
@@ -402,7 +406,13 @@ const Event = ({
           </div>
           { !isCollapsed(event.id) && (
             <div className="px-3 pb-3" ref={fieldsRef}>
-              <Switch value={event.type}>
+              <Switch value={isPluginEvent(event.type) ? 'plugin' : event.type}>
+                <Switch.Case value="plugin">
+                  <EventPlugin
+                    event={event as PluginEvent}
+                    onValueChange={onValueChange}
+                  />
+                </Switch.Case>
                 <Switch.Case value={['wait', 'fade-in', 'fade-out']}>
                   <EventDuration
                     event={event as WaitEvent}

@@ -274,6 +274,16 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
           { type: 'separator' },
         ] as MenuItemConstructorOptions[] : [],
         { role: 'togglefullscreen' },
+        ...type === 'editor' ? [
+          { type: 'separator' },
+          {
+            label: 'Plugin Manager',
+            click: async () => {
+              BrowserWindow.getFocusedWindow()?.webContents
+                .send('open-plugin-manager');
+            },
+          },
+        ] as MenuItemConstructorOptions[] : [],
       ],
     },
     {

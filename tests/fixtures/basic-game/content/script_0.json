@@ -9,6 +9,15 @@
       "x": 0,
       "y": 0,
       "id": "0d01d9bb-62e4-4d39-bd08-c21729c9e91f"
+    },
+    {
+      "type": "plugin:log-message:log",
+      "params": {
+        "message": "Actor moved",
+        "count": 2,
+        "loud": true
+      },
+      "id": "5f0a0d3e-6a53-4a07-8f0e-1b3c0a9d7a11"
     }
   ],
   "parameters": [

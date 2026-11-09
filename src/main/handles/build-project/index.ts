@@ -30,6 +30,7 @@ import {
   cleanVendorsCache as removeVendorsCache,
 } from '../../vendors';
 import { prepareData } from './data';
+import { getPluginBuildDirs } from '../../plugins';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
 import Storage from '../../storage';
@@ -59,6 +60,8 @@ async function buildMakefile (
 ) {
   const target = path
     .basename(build.projectPath, path.extname(build.projectPath));
+  const pluginDirs = await getPluginBuildDirs(
+    (build.data?.plugins ?? []).filter(p => p.enabled));
   const makefileContent = await compileTemplate(
     await fse.readFile(path.join(
       getResourcesDir(),
@@ -84,6 +87,8 @@ async function buildMakefile (
           getBuildDir(build),
           path.join(getResourcesDir(), './public/templates/commons/src'),
         ),
+        ...pluginDirs.sources.map(dir =>
+          path.relative(getBuildDir(build), dir)),
       ],
       includes: [
         path.relative(
@@ -94,6 +99,8 @@ async function buildMakefile (
           getBuildDir(build),
           path.join(getResourcesDir(), './public/templates/commons/include'),
         ),
+        ...pluginDirs.includes.map(dir =>
+          path.relative(getBuildDir(build), dir)),
       ],
       graphics: [
         './graphics',

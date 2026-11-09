@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "plugin.json",
+  "definitions": {
+    "PluginField": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "enum": ["number", "text", "boolean", "select"],
+          "type": "string"
+        },
+        "default": {
+          "type": ["string", "number", "boolean"]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value"],
+                "properties": {
+                  "value": { "type": "string" },
+                  "label": { "type": "string" }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "required": ["key", "type"],
+      "if": {
+        "properties": { "type": { "const": "select" } }
+      },
+      "then": {
+        "required": ["options"]
+      },
+      "type": "object"
+    },
+    "PluginEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "handler": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(::[A-Za-z_][A-Za-z0-9_]*)*$"
+        },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PluginField" }
+        }
+      },
+      "required": ["id", "handler"],
+      "type": "object"
+    },
+    "Plugin": {
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PluginEvent" }
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  "$ref": "#/definitions/Plugin"
+}

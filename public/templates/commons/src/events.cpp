@@ -15,6 +15,7 @@
 
 #include <neo_types.h>
 #include <neo_variables.h>
+#include <neo_plugin.h>
 
 #include "conditions.h"
 #include "menu.h"
@@ -1381,6 +1382,16 @@ namespace neo::events
       {
         game->update_frame();
       }
+    }
+
+    /**
+     * @name plugin
+     * Event registered by a plugin, run by its native handler
+     */
+    else if (e->type == neo::types::event_type::PLUGIN)
+    {
+      neo::plugins::dispatch(
+        game, static_cast<const neo::types::plugin_event*>(e));
     }
 
     /**

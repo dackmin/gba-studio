@@ -9,8 +9,8 @@ import {
 } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { AVAILABLE_EVENTS, type EventDefinition } from '../../services/events';
-import { useDelayedValue } from '../../services/hooks';
+import { type EventDefinition, AVAILABLE_EVENTS } from '../../services/events';
+import { useApp, useDelayedValue } from '../../services/hooks';
 
 export interface CatalogueProps {
   filter?: (definition: EventDefinition) => boolean;
@@ -22,6 +22,7 @@ const Catalogue = ({
   onSelect,
 }: CatalogueProps) => {
   const [rawSearch, setRawSearch] = useState('');
+  const { plugins } = useApp();
   const [loading, setLoading] = useState(false);
   const search = useDelayedValue(rawSearch, { delay: 200 });
 
@@ -45,7 +46,7 @@ const Catalogue = ({
         )
       )),
     }))
-  ), [search, filter]);
+  ), [search, filter, plugins]);
 
   const eventsCount = useMemo(() => (
     events.flatMap(c => c.items).length

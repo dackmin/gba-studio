@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { type MoveableState, cloneDeep, mockState, pick, useInterval } from '@junipero/react';
+import { type MoveableState, cloneDeep, mockState, pick, useEventListener, useInterval } from '@junipero/react';
 
 import type {
   AppPayload,
@@ -23,6 +23,7 @@ import {
   useQuery,
 } from './services/hooks';
 import { isEditableElementFocused } from './services/helpers';
+import { registerPluginEvents } from './services/events';
 import { load, LocalData } from './services/local-db';
 import EventEmitter from './services/emitter';
 import ProjectSelection from './windows/project-selection';
@@ -62,6 +63,7 @@ const App = () => {
     music: [],
     sounds: [],
     scripts: [],
+    plugins: [],
     project: undefined,
     dirty: false,
     history: [],
@@ -71,6 +73,7 @@ const App = () => {
     isFullscreen: isFullscreen === 'true',
   });
   const autosaveState = useRef(state);
+  const resolvedPluginsKey = useRef<string>(undefined);
 
   useBridgeListener('fullscreen-updated', (isFullscreen: boolean) => {
     dispatch({ isFullscreen });
@@ -104,6 +107,13 @@ const App = () => {
       const editorConfig = await window.electron.getEditorConfig();
       const clipboard = await window.electron.getClipboard();
 
+      // Plugins
+      const plugins = await window.electron
+        .getPlugins(projectPath, data.project?.plugins);
+      resolvedPluginsKey.current = JSON.stringify(data.project?.plugins ?? []);
+      registerPluginEvents(plugins);
+
+      // Autosave
       const recovered = data._recoveredAutosave;
       setRecoveredAutosave(recovered);
 
@@ -116,6 +126,7 @@ const App = () => {
         editorConfig,
         ready: true,
         clipboard,
+        plugins,
         localData: load(data.project?.id || ''),
       });
     }
@@ -128,6 +139,33 @@ const App = () => {
 
     init();
   }, [state.ready, init]);
+
+  const pluginsKey = JSON.stringify(state.project?.plugins ?? []);
+
+  const refreshPlugins = useCallback(async () => {
+    if (!state.ready || !projectPath || resolvedPluginsKey.current === pluginsKey) {
+      return;
+    }
+
+    resolvedPluginsKey.current = pluginsKey;
+    const plugins = await window.electron.getPlugins(projectPath, state.project?.plugins);
+    registerPluginEvents(plugins);
+    dispatch({ plugins });
+  }, [projectPath, pluginsKey, state.ready, state.project?.plugins]);
+
+  useEffect(() => {
+    refreshPlugins();
+  }, [refreshPlugins]);
+
+  useEventListener('focus', async () => {
+    const plugins = await window.electron
+      .getPlugins(projectPath, state.project?.plugins);
+
+    if (JSON.stringify(plugins) !== JSON.stringify(state.plugins)) {
+      registerPluginEvents(plugins);
+      dispatch({ plugins });
+    }
+  }, [], { enabled: state.ready && !!projectPath });
 
   const save = useCallback(async () => {
     if (projectPath) {
@@ -413,6 +451,7 @@ const App = () => {
     music: state.music,
     sounds: state.sounds,
     scripts: state.scripts,
+    plugins: state.plugins,
     projectPath: projectPath || '',
     projectBase: state.projectBase,
     editorConfig: state.editorConfig,
@@ -431,7 +470,7 @@ const App = () => {
     projectPath, resourcesPath,
     state.scenes, state.huds, state.projectBase, state.variables, state.project,
     state.dirty, state.sprites, state.backgrounds, state.fonts, state.sounds,
-    state.scripts, state.music, state.editorConfig,
+    state.scripts, state.music, state.editorConfig, state.plugins,
     state.clipboard, state.localData, state.isFullscreen,
     save, onCanvasChange, onMoveScene, onMoveHud, onProjectChange,
     setEditorConfig, setClipboard,

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/plugin.json",
+  "id": "log-message",
+  "name": "Log Message",
+  "version": "1.0.0",
+  "description": "Prints a message to the emulator log.",
+  "author": "GBA Studio",
+  "events": [
+    {
+      "id": "log",
+      "name": "Log Message",
+      "description": "Writes the message to the log, several times.",
+      "keywords": ["debug", "print"],
+      "handler": "log_message::log",
+      "fields": [
+        { "key": "message", "label": "Message", "type": "text", "default": "Hello" },
+        { "key": "count", "label": "Repeat", "type": "number", "default": 1, "unit": "times" },
+        { "key": "loud", "label": "Loud", "type": "boolean", "default": false, "text": "Add an exclamation mark" },
+        {
+          "key": "level",
+          "label": "Level",
+          "type": "select",
+          "default": "info",
+          "options": [
+            { "value": "info", "label": "Info" },
+            { "value": "warning", "label": "Warning" }
+          ]
+        }
+      ]
+    }
+  ]
+}

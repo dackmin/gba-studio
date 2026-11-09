@@ -11,6 +11,9 @@ import type {
   GameScript,
   GameSoundFile,
   GameSpriteFile,
+  GamePlugin,
+  PluginPick,
+  ProjectPlugin,
   ProjectTemplate,
   RecentProject,
   SpriteBitmap,
@@ -161,6 +164,15 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('confirm-close'),
   cancelClose: (): Promise<void> =>
     ipcRenderer.invoke('cancel-close'),
+  getPlugins: (
+    projectPath: string,
+    entries?: ProjectPlugin[],
+  ): Promise<GamePlugin[]> =>
+    ipcRenderer.invoke('get-plugins', projectPath, entries),
+  pickPlugin: (projectPath: string): Promise<PluginPick | null> =>
+    ipcRenderer.invoke('pick-plugin', projectPath),
+  openPluginFolder: (dir: string): Promise<void> =>
+    ipcRenderer.invoke('open-plugin-folder', dir),
 
   // Info
   platform: process.platform,

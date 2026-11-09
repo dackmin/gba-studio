@@ -47,6 +47,9 @@ import {
   cancelClose,
   renameSceneFile,
   renameScriptFile,
+  getPlugins,
+  pickPlugin,
+  openPluginFolder,
 } from './handles';
 import Storage from './storage';
 
@@ -134,3 +137,6 @@ ipcMain.handle('confirm-close', confirmClose);
 ipcMain.handle('cancel-close', cancelClose);
 ipcMain.handle('rename-scene-file', renameSceneFile);
 ipcMain.handle('rename-script-file', renameScriptFile);
+ipcMain.handle('get-plugins', getPlugins);
+ipcMain.handle('pick-plugin', pickPlugin);
+ipcMain.handle('open-plugin-folder', openPluginFolder);

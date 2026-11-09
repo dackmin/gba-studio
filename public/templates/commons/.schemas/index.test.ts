@@ -7,6 +7,7 @@ import event from './event.json' with { type: 'json' };
 import font from './font.json' with { type: 'json' };
 import hud from './hud.json' with { type: 'json' };
 import music from './music.json' with { type: 'json' };
+import plugin from './plugin.json' with { type: 'json' };
 import scene from './scene.json' with { type: 'json' };
 import script from './script.json' with { type: 'json' };
 import sound from './sound.json' with { type: 'json' };
@@ -24,6 +25,7 @@ describe('JSON Schemas', () => {
         font,
         hud,
         music,
+        plugin,
         scene,
         script,
         sound,

@@ -255,4 +255,8 @@ export const buildTemplates = async (
   build.events.onLog('Building scenes...');
   await buildSingleTemplate('neo_scenes.tpl.h', build);
   build.events.onSuccess('neo_scenes.h built');
+
+  build.events.onLog('Building plugins...');
+  await buildSingleTemplate('neo_plugin.tpl.h', build);
+  build.events.onSuccess('neo_plugin.h built');
 };

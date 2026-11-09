@@ -6,6 +6,7 @@ import {
   CodeIcon,
   ComponentInstanceIcon,
   ComponentNoneIcon,
+  CubeIcon,
   DiscIcon,
   DownloadIcon,
   EyeClosedIcon,
@@ -39,9 +40,11 @@ import { get } from '@junipero/react';
 import type {
   ExecuteScriptEvent,
   GameMenuChoice,
+  GamePlugin,
   GameScript,
   ListCategory,
   ListItem,
+  PluginEventDefinition,
   SceneEvent,
 } from '../../types';
 
@@ -52,6 +55,7 @@ export interface EventDefinition extends ListItem {
   parallelizable?: boolean;
   // Whether this event can be used in a HUD (needs no scene content).
   hud?: boolean;
+  pluginEvent?: PluginEventDefinition;
   construct?: (params?: any) => any;
 }
 
@@ -64,7 +68,7 @@ export const isHudEvent = (definition: EventDefinition): boolean =>
 export const isNotHandler = (definition: EventDefinition) =>
   !definition.value.startsWith('on-');
 
-export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
+const BUILTIN_EVENTS: ListCategory<EventDefinition>[] = [{
   name: 'Input',
   items: [{
     icon: MixIcon,
@@ -674,8 +678,42 @@ export const AVAILABLE_EVENTS: ListCategory<EventDefinition>[] = [{
   }],
 }];
 
-export const ALL_EVENTS = AVAILABLE_EVENTS.flatMap(c => c.items);
-export const ALL_EVENT_TYPES = ALL_EVENTS.map(e => e.value);
+export let AVAILABLE_EVENTS = BUILTIN_EVENTS;
+export let ALL_EVENTS = AVAILABLE_EVENTS.flatMap(c => c.items);
+export let ALL_EVENT_TYPES = ALL_EVENTS.map(e => e.value);
+
+export const isPluginEvent = (type: string) => type.startsWith('plugin:');
+
+export const registerPluginEvents = (plugins: GamePlugin[]) => {
+  AVAILABLE_EVENTS = [
+    ...BUILTIN_EVENTS,
+    ...plugins
+      .filter(p => p.enabled && p.events?.length)
+      .map(plugin => ({
+        name: plugin.name,
+        items: plugin.events!.map(event => ({
+          icon: CubeIcon,
+          name: event.name,
+          value: `plugin:${plugin.id}:${event.id}`,
+          keywords: [plugin.name, ...event.keywords ?? []],
+          pluginEvent: event,
+          construct: () => ({
+            type: `plugin:${plugin.id}:${event.id}`,
+            params: Object.fromEntries((event.fields ?? []).map(f => [
+              f.key,
+              f.default ?? (
+                f.type === 'number' ? 0
+                  : f.type === 'boolean' ? false
+                    : f.type === 'select' ? f.options?.[0]?.value ?? '' : ''
+              ),
+            ])),
+          }),
+        })),
+      })),
+  ];
+  ALL_EVENTS = AVAILABLE_EVENTS.flatMap(c => c.items);
+  ALL_EVENT_TYPES = ALL_EVENTS.map(e => e.value);
+};
 
 export const getEventDefinition = (type: string): EventDefinition =>
   ALL_EVENTS.find(i => i.value === type) ||

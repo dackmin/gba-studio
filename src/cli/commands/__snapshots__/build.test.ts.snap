@@ -3328,8 +3328,81 @@ namespace neo::scenes
     actor_dialogs_script_event_0_animation,
     false
   );
+  // Event 1: plugin:log-message:log
+  constexpr bn::string_view actor_dialogs_script_event_1_param_0_name = "";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_0_string_value = "Actor moved";
+  constexpr neo::variables::value actor_dialogs_script_event_1_param_0_raw_value(
+    actor_dialogs_script_event_1_param_0_name,
+    0,
+    false,
+    actor_dialogs_script_event_1_param_0_string_value,
+    0
+  );
+  constexpr bn::string_view actor_dialogs_script_event_1_param_0_type = "value";
+  constexpr neo::types::event_value actor_dialogs_script_event_1_param_0_value(
+    actor_dialogs_script_event_1_param_0_type,
+    &actor_dialogs_script_event_1_param_0_raw_value
+  );
+  
+  constexpr bn::string_view actor_dialogs_script_event_1_param_1_name = "";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_1_string_value = "2";
+  constexpr neo::variables::value actor_dialogs_script_event_1_param_1_raw_value(
+    actor_dialogs_script_event_1_param_1_name,
+    2,
+    true,
+    actor_dialogs_script_event_1_param_1_string_value,
+    2
+  );
+  constexpr bn::string_view actor_dialogs_script_event_1_param_1_type = "value";
+  constexpr neo::types::event_value actor_dialogs_script_event_1_param_1_value(
+    actor_dialogs_script_event_1_param_1_type,
+    &actor_dialogs_script_event_1_param_1_raw_value
+  );
+  
+  constexpr bn::string_view actor_dialogs_script_event_1_param_2_name = "";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_2_string_value = "true";
+  constexpr neo::variables::value actor_dialogs_script_event_1_param_2_raw_value(
+    actor_dialogs_script_event_1_param_2_name,
+    0,
+    true,
+    actor_dialogs_script_event_1_param_2_string_value,
+    0
+  );
+  constexpr bn::string_view actor_dialogs_script_event_1_param_2_type = "value";
+  constexpr neo::types::event_value actor_dialogs_script_event_1_param_2_value(
+    actor_dialogs_script_event_1_param_2_type,
+    &actor_dialogs_script_event_1_param_2_raw_value
+  );
+  
+  constexpr bn::string_view actor_dialogs_script_event_1_param_3_name = "";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_3_string_value = "info";
+  constexpr neo::variables::value actor_dialogs_script_event_1_param_3_raw_value(
+    actor_dialogs_script_event_1_param_3_name,
+    0,
+    false,
+    actor_dialogs_script_event_1_param_3_string_value,
+    0
+  );
+  constexpr bn::string_view actor_dialogs_script_event_1_param_3_type = "value";
+  constexpr neo::types::event_value actor_dialogs_script_event_1_param_3_value(
+    actor_dialogs_script_event_1_param_3_type,
+    &actor_dialogs_script_event_1_param_3_raw_value
+  );
+  
+  constexpr neo::types::plugin_param actor_dialogs_script_event_1_params[] = {
+    neo::types::plugin_param("message", &actor_dialogs_script_event_1_param_0_value),
+    neo::types::plugin_param("count", &actor_dialogs_script_event_1_param_1_value),
+    neo::types::plugin_param("loud", &actor_dialogs_script_event_1_param_2_value),
+    neo::types::plugin_param("level", &actor_dialogs_script_event_1_param_3_value)
+  };
+  constexpr neo::types::plugin_event actor_dialogs_script_event_1(
+    neo::types::event_type::PLUGIN,
+    0,
+    bn::span<const neo::types::plugin_param>(actor_dialogs_script_event_1_params)
+  );
   constexpr const neo::types::event* actor_dialogs_script_events[] = {
     &actor_dialogs_script_event_0,
+    &actor_dialogs_script_event_1,
   };
   constexpr bn::string_view actor_dialogs_script_id = "0db1c374-9a85-4e15-b816-631039d765f6";
   constexpr bn::string_view actor_dialogs_script_name = "Actor Dialogs";
@@ -3339,7 +3412,7 @@ namespace neo::scenes
   constexpr neo::types::script script_actor_dialogs = {
     actor_dialogs_script_id,
     actor_dialogs_script_name,
-    1,
+    2,
     actor_dialogs_script_events
 ,
     1,
@@ -3670,7 +3743,8 @@ namespace neo::types
   X(SHOOT_PROJECTILE, "shoot-projectile") \\
   X(MELEE_ATTACK, "melee-attack") \\
   X(SHOW_ACTOR_REACTION, "show-actor-reaction") \\
-  X(SHOW_PLAYER_REACTION, "show-player-reaction")
+  X(SHOW_PLAYER_REACTION, "show-player-reaction") \\
+  X(PLUGIN, "plugin")
 
   enum class event_type : unsigned char
   {
@@ -4662,6 +4736,67 @@ namespace neo::types
     void init(neo::game* game_) override;
   };
 
+  struct plugin_param
+  {
+    bn::string_view key;
+    const event_value* value;
+
+    constexpr plugin_param(bn::string_view key_, const event_value* value_):
+      key(key_), value(value_) {}
+  };
+
+  struct plugin_event: event
+  {
+    int handler_id;
+    bn::span<const plugin_param> params;
+
+    constexpr plugin_event(
+      event_type type_, int handler_id_, bn::span<const plugin_param> params_
+    ):
+      event(type_), handler_id(handler_id_), params(params_) {}
+
+    inline const event_value* find(bn::string_view key) const
+    {
+      for (const plugin_param& param : params)
+      {
+        if (param.key == key)
+        {
+          return param.value;
+        }
+      }
+
+      return nullptr;
+    }
+
+    inline int as_int(neo::variables::registry& variables, bn::string_view key, int fallback = 0) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_int(variables) : fallback;
+    }
+
+    inline bool as_bool(neo::variables::registry& variables, bn::string_view key, bool fallback = false) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_bool(variables) : fallback;
+    }
+
+    inline bn::fixed as_fixed(neo::variables::registry& variables, bn::string_view key, bn::fixed fallback = 0) const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_fixed(variables) : fallback;
+    }
+
+    inline bn::string_view as_string(neo::variables::registry& variables, bn::string_view key, bn::string_view fallback = "") const
+    {
+      const event_value* value = find(key);
+
+      return value ? value->as_string(variables) : fallback;
+    }
+  };
+
   struct sensor
   {
     bn::string_view _id;
@@ -5361,5 +5496,45 @@ namespace neo::utils
 }
 
 #endif // NEO_UTILS_H
+"
+`;
+
+exports[`cli/build > should build a basic project successfully 7`] = `
+"#ifndef NEO_PLUGIN_H
+#define NEO_PLUGIN_H
+
+#include <bn_core.h>
+#include <bn_log.h>
+#include <bn_string_view.h>
+
+#include <neo_types.h>
+
+#include "game.h"
+
+// Plugin event: log-message:log
+namespace log_message
+{
+  void log(neo::game* game, const neo::types::plugin_event* e);
+}
+
+namespace neo::plugins
+{
+  inline void dispatch(neo::game* game, const neo::types::plugin_event* e)
+  {
+    (void) game;
+
+    switch (e->handler_id)
+    {
+      case 0: // log-message:log
+        log_message::log(game, e);
+        break;
+      default:
+        BN_LOG("Unknown plugin event handler: ", e->handler_id);
+        break;
+    }
+  }
+}
+
+#endif
 "
 `;

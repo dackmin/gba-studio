@@ -702,6 +702,26 @@ BN_DATA_EWRAM neo::types::show_player_reaction_event {{../prefix}}_{{@index}}(
   {{/if}}
   &{{../prefix}}_{{@index}}_duration_value
 );
+{{else if this._plugin}}
+{{#each this._plugin.params}}
+{{>valuePartial prefix=(concat ../../prefix "_" @../index "_param_" @index) value=this.value}}
+{{/each}}
+{{#if this._plugin.params.length}}
+constexpr neo::types::plugin_param {{../prefix}}_{{@index}}_params[] = {
+  {{#each this._plugin.params}}
+  neo::types::plugin_param("{{escapeCpp this.key}}", &{{../../prefix}}_{{@../index}}_param_{{@index}}_value){{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+constexpr neo::types::plugin_event {{../prefix}}_{{@index}}(
+  neo::types::event_type::PLUGIN,
+  {{this._plugin.handlerId}},
+  {{#if this._plugin.params.length}}
+  bn::span<const neo::types::plugin_param>({{../prefix}}_{{@index}}_params)
+  {{else}}
+  bn::span<const neo::types::plugin_param>()
+  {{/if}}
+);
 {{else}}
 constexpr neo::types::event {{../prefix}}_{{@index}}(neo::types::event_type::UNKNOWN);
 {{/if}}
