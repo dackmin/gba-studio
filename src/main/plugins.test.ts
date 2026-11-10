@@ -7,9 +7,25 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   getPluginAssetName,
   loadPlugins,
+  parseEventField,
   registerPluginDirs,
   resolvePluginFile,
 } from './plugins';
+
+describe('parseEventField', () => {
+  it.each(['sprite', 'background', 'font', 'sound', 'music'])(
+    'accepts %s fields',
+    type => {
+      expect(parseEventField({ key: 'asset', type }, 'evt'))
+        .toMatchObject({ key: 'asset', type });
+    },
+  );
+
+  it('rejects unknown field types', () => {
+    expect(() => parseEventField({ key: 'asset', type: 'palette' }, 'evt'))
+      .toThrow('invalid type');
+  });
+});
 
 describe('main/plugins', () => {
   let tmp: string;

@@ -1462,6 +1462,94 @@ namespace neo::scenes
   constexpr neo::types::event scene_0_event_50(
     neo::types::event_type::STOP_ALL_TIMERS
   );
+  // Event 51: plugin:log-message:log
+  constexpr bn::string_view scene_0_event_51_param_0_name = "";
+  constexpr bn::string_view scene_0_event_51_param_0_string_value = "Hello";
+  constexpr neo::variables::value scene_0_event_51_param_0_raw_value(
+    scene_0_event_51_param_0_name,
+    0,
+    false,
+    scene_0_event_51_param_0_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_event_51_param_0_type = "value";
+  constexpr neo::types::event_value scene_0_event_51_param_0_value(
+    scene_0_event_51_param_0_type,
+    &scene_0_event_51_param_0_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_51_param_1_name = "";
+  constexpr bn::string_view scene_0_event_51_param_1_string_value = "1";
+  constexpr neo::variables::value scene_0_event_51_param_1_raw_value(
+    scene_0_event_51_param_1_name,
+    1,
+    true,
+    scene_0_event_51_param_1_string_value,
+    1
+  );
+  constexpr bn::string_view scene_0_event_51_param_1_type = "value";
+  constexpr neo::types::event_value scene_0_event_51_param_1_value(
+    scene_0_event_51_param_1_type,
+    &scene_0_event_51_param_1_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_51_param_2_name = "";
+  constexpr bn::string_view scene_0_event_51_param_2_string_value = "false";
+  constexpr neo::variables::value scene_0_event_51_param_2_raw_value(
+    scene_0_event_51_param_2_name,
+    0,
+    false,
+    scene_0_event_51_param_2_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_event_51_param_2_type = "value";
+  constexpr neo::types::event_value scene_0_event_51_param_2_value(
+    scene_0_event_51_param_2_type,
+    &scene_0_event_51_param_2_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_51_param_3_name = "";
+  constexpr bn::string_view scene_0_event_51_param_3_string_value = "plugin_log_message_star";
+  constexpr neo::variables::value scene_0_event_51_param_3_raw_value(
+    scene_0_event_51_param_3_name,
+    0,
+    false,
+    scene_0_event_51_param_3_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_event_51_param_3_type = "value";
+  constexpr neo::types::event_value scene_0_event_51_param_3_value(
+    scene_0_event_51_param_3_type,
+    &scene_0_event_51_param_3_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_event_51_param_4_name = "";
+  constexpr bn::string_view scene_0_event_51_param_4_string_value = "info";
+  constexpr neo::variables::value scene_0_event_51_param_4_raw_value(
+    scene_0_event_51_param_4_name,
+    0,
+    false,
+    scene_0_event_51_param_4_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_event_51_param_4_type = "value";
+  constexpr neo::types::event_value scene_0_event_51_param_4_value(
+    scene_0_event_51_param_4_type,
+    &scene_0_event_51_param_4_raw_value
+  );
+  
+  constexpr neo::types::plugin_param scene_0_event_51_params[] = {
+    neo::types::plugin_param("message", &scene_0_event_51_param_0_value),
+    neo::types::plugin_param("count", &scene_0_event_51_param_1_value),
+    neo::types::plugin_param("loud", &scene_0_event_51_param_2_value),
+    neo::types::plugin_param("sprite", &scene_0_event_51_param_3_value, &bn::sprite_items::plugin_log_message_star),
+    neo::types::plugin_param("level", &scene_0_event_51_param_4_value)
+  };
+  constexpr neo::types::plugin_event scene_0_event_51(
+    neo::types::event_type::PLUGIN,
+    0,
+    bn::span<const neo::types::plugin_param>(scene_0_event_51_params)
+  );
   constexpr const neo::types::event* scene_0_events[] = {
     &scene_0_event_0,
     &scene_0_event_1,
@@ -1514,6 +1602,7 @@ namespace neo::scenes
     &scene_0_event_48,
     &scene_0_event_49,
     &scene_0_event_50,
+    &scene_0_event_51,
   };
 
   // Map collisions
@@ -1928,7 +2017,7 @@ namespace neo::scenes
     scene_0_scene_name,
     neo::types::scene_type::SIDE_SCROLLER,
     neo::backgrounds::map,
-    51,
+    52,
     scene_0_events,
     0,
     nullptr,
@@ -3477,7 +3566,7 @@ namespace neo::scenes
   );
   
   constexpr bn::string_view actor_dialogs_script_event_1_param_3_name = "";
-  constexpr bn::string_view actor_dialogs_script_event_1_param_3_string_value = "info";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_3_string_value = "";
   constexpr neo::variables::value actor_dialogs_script_event_1_param_3_raw_value(
     actor_dialogs_script_event_1_param_3_name,
     0,
@@ -3491,11 +3580,27 @@ namespace neo::scenes
     &actor_dialogs_script_event_1_param_3_raw_value
   );
   
+  constexpr bn::string_view actor_dialogs_script_event_1_param_4_name = "";
+  constexpr bn::string_view actor_dialogs_script_event_1_param_4_string_value = "info";
+  constexpr neo::variables::value actor_dialogs_script_event_1_param_4_raw_value(
+    actor_dialogs_script_event_1_param_4_name,
+    0,
+    false,
+    actor_dialogs_script_event_1_param_4_string_value,
+    0
+  );
+  constexpr bn::string_view actor_dialogs_script_event_1_param_4_type = "value";
+  constexpr neo::types::event_value actor_dialogs_script_event_1_param_4_value(
+    actor_dialogs_script_event_1_param_4_type,
+    &actor_dialogs_script_event_1_param_4_raw_value
+  );
+  
   constexpr neo::types::plugin_param actor_dialogs_script_event_1_params[] = {
     neo::types::plugin_param("message", &actor_dialogs_script_event_1_param_0_value),
     neo::types::plugin_param("count", &actor_dialogs_script_event_1_param_1_value),
     neo::types::plugin_param("loud", &actor_dialogs_script_event_1_param_2_value),
-    neo::types::plugin_param("level", &actor_dialogs_script_event_1_param_3_value)
+    neo::types::plugin_param("sprite", &actor_dialogs_script_event_1_param_3_value),
+    neo::types::plugin_param("level", &actor_dialogs_script_event_1_param_4_value)
   };
   constexpr neo::types::plugin_event actor_dialogs_script_event_1(
     neo::types::event_type::PLUGIN,
@@ -3560,6 +3665,8 @@ exports[`cli/build > should build a basic project successfully 2`] = `
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
+#include <bn_sound_item.h>
+#include <bn_music_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_tiles_ptr.h>
 #include <bn_span.h>
@@ -4842,9 +4949,21 @@ namespace neo::types
   {
     bn::string_view key;
     const event_value* value;
+    const bn::sprite_item* sprite = nullptr;
+    const background* bg = nullptr;
 
     constexpr plugin_param(bn::string_view key_, const event_value* value_):
       key(key_), value(value_) {}
+
+    constexpr plugin_param(
+      bn::string_view key_, const event_value* value_, const bn::sprite_item* sprite_
+    ):
+      key(key_), value(value_), sprite(sprite_) {}
+
+    constexpr plugin_param(
+      bn::string_view key_, const event_value* value_, const background* bg_
+    ):
+      key(key_), value(value_), bg(bg_) {}
   };
 
   struct plugin_event: event
@@ -4869,6 +4988,43 @@ namespace neo::types
 
       return nullptr;
     }
+
+    inline const plugin_param* find_param(bn::string_view key) const
+    {
+      for (const plugin_param& param : params)
+      {
+        if (param.key == key)
+        {
+          return &param;
+        }
+      }
+
+      return nullptr;
+    }
+
+    // Sprite & font fields; nullptr when nothing is selected
+    inline const bn::sprite_item* as_sprite(bn::string_view key) const
+    {
+      const plugin_param* param = find_param(key);
+
+      return param ? param->sprite : nullptr;
+    }
+
+    inline const bn::sprite_item* as_font(bn::string_view key) const
+    {
+      return as_sprite(key);
+    }
+
+    inline const background* as_background(bn::string_view key) const
+    {
+      const plugin_param* param = find_param(key);
+
+      return param ? param->bg : nullptr;
+    }
+
+    // Audio items are resolved by name (defined in events.cpp)
+    const bn::sound_item* as_sound(neo::variables::registry& variables, bn::string_view key) const;
+    const bn::music_item* as_music(neo::variables::registry& variables, bn::string_view key) const;
 
     inline int as_int(neo::variables::registry& variables, bn::string_view key, int fallback = 0) const
     {

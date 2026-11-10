@@ -535,7 +535,16 @@ export interface GameFontFile {
   $schema?: string;
 }
 
-export type PluginFieldType = 'number' | 'text' | 'boolean' | 'select';
+export type PluginFieldType =
+  | 'number'
+  | 'text'
+  | 'boolean'
+  | 'select'
+  | 'sprite'
+  | 'background'
+  | 'font'
+  | 'sound'
+  | 'music';
 
 export interface PluginEventField {
   key: string;

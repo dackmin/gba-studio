@@ -1,17 +1,69 @@
-import { findBackground, findSprite, getGridSize } from '../../../helpers';
 import type {
+  AppPayload,
   Build,
   EventValue,
+  GameBackgroundFile,
+  GameFontFile,
+  GameMusicFile,
   GamePlugin,
+  GameSoundFile,
+  GameSpriteFile,
   InternalSpriteAnimation,
   SpriteAnimation,
 } from '../../../types';
-import { loadPlugins } from '../../plugins';
+import {
+  findBackground,
+  findFont,
+  findMusic,
+  findSound,
+  findSprite,
+  getGridSize,
+} from '../../../helpers';
+import { ASSET_EXTENSIONS, loadPlugins } from '../../plugins';
 import { getBackgroundLayoutFromFile } from './assets';
 
-const annotatePluginEvents = (node: any, plugins: GamePlugin[]) => {
+const resolveAssetParam = (
+  type: string,
+  id: string,
+  data: Partial<AppPayload>,
+) => {
+  let asset: GameSpriteFile | GameBackgroundFile | GameFontFile | GameSoundFile | GameMusicFile |
+    undefined;
+
+  switch (type) {
+    case 'sprite': asset = findSprite(data.sprites, id); break;
+    case 'background': asset = findBackground(data.backgrounds, id); break;
+    case 'font': asset = findFont(data.fonts, id); break;
+    case 'sound': asset = findSound(data.sounds, id); break;
+    case 'music': asset = findMusic(data.music, id); break;
+  }
+
+  return asset?._file?.replace(/\.json$/, '')
+    .replace(/^(sprite|background|font|sound|music)_/, '') ?? '';
+};
+
+const getAssetExpression = (type: string, name: string) => {
+  if (!name) {
+    return undefined;
+  }
+
+  switch (type) {
+    case 'sprite':
+    case 'font':
+      return `&bn::sprite_items::${name}`;
+    // backgrounds are split into tiles
+    case 'background':
+      return `&neo::backgrounds::${name}`;
+  }
+};
+
+const annotatePluginEvents = (
+  node: any,
+  plugins: GamePlugin[],
+  data: Partial<AppPayload>,
+) => {
   if (Array.isArray(node)) {
-    node.forEach(n => annotatePluginEvents(n, plugins));
+    node.forEach(n => annotatePluginEvents(n, plugins, data));
 
     return;
   }
@@ -28,17 +80,24 @@ const annotatePluginEvents = (node: any, plugins: GamePlugin[]) => {
     if (definition) {
       node._plugin = {
         handlerId: definition._handlerId,
-        params: (definition.fields ?? []).map(field => ({
-          key: field.key,
-          value: (node.params?.[field.key] ?? field.default ?? (
+        params: (definition.fields ?? []).map(field => {
+          const value = node.params?.[field.key] ?? field.default ?? (
             field.type === 'number' ? 0 : field.type === 'boolean' ? false : ''
-          )) as EventValue,
-        })),
+          );
+          const isAsset = field.type in ASSET_EXTENSIONS;
+          const name = isAsset ? resolveAssetParam(field.type, value, data) : '';
+
+          return {
+            key: field.key,
+            value: (isAsset ? name : value) as EventValue,
+            assetExpr: getAssetExpression(field.type, name),
+          };
+        }),
       };
     }
   }
 
-  Object.values(node).forEach(n => annotatePluginEvents(n, plugins));
+  Object.values(node).forEach(n => annotatePluginEvents(n, plugins, data));
 };
 
 const preparePlugins = async (build: Build): Promise<GamePlugin[]> => {
@@ -201,6 +260,7 @@ export async function prepareData (build: Build) {
     annotatePluginEvents(
       [build.data.scenes, build.data.scripts, build.data.huds],
       build.data.plugins,
+      build.data,
     );
   }
 

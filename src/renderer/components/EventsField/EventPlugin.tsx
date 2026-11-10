@@ -5,6 +5,11 @@ import { set } from '@junipero/react';
 import type { PluginEvent } from '../../../types';
 import { getEventDefinition } from '../../services/events';
 import EventValueField, { EXCLUDE_ALL_EXCEPT_VALUE_AND_VARIABLES } from '../EventValueField';
+import BackgroundsListField from '../BackgroundsListField';
+import FontsListField from '../FontsListField';
+import MusicListField from '../MusicListField';
+import SoundsListField from '../SoundsListField';
+import SpritesListField from '../SpritesListField';
 import Switch from '../Switch';
 
 export interface EventPluginProps {
@@ -78,6 +83,37 @@ const EventPlugin = ({
                     )) }
                   </Select.Content>
                 </Select.Root>
+              </Switch.Case>
+              <Switch.Case value="sprite">
+                <SpritesListField
+                  nullable
+                  value={String(value ?? '')}
+                  onValueChange={onParamChange.bind(null, field.key)}
+                />
+              </Switch.Case>
+              <Switch.Case value="background">
+                <BackgroundsListField
+                  value={String(value ?? '')}
+                  onValueChange={onParamChange.bind(null, field.key)}
+                />
+              </Switch.Case>
+              <Switch.Case value="font">
+                <FontsListField
+                  value={String(value ?? '')}
+                  onValueChange={onParamChange.bind(null, field.key)}
+                />
+              </Switch.Case>
+              <Switch.Case value="sound">
+                <SoundsListField
+                  value={String(value ?? '')}
+                  onValueChange={onParamChange.bind(null, field.key)}
+                />
+              </Switch.Case>
+              <Switch.Case value="music">
+                <MusicListField
+                  value={String(value ?? '')}
+                  onValueChange={onParamChange.bind(null, field.key)}
+                />
               </Switch.Case>
               <Switch.Case default>
                 <EventValueField

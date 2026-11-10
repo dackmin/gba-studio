@@ -11,6 +11,8 @@
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
+#include <bn_sound_item.h>
+#include <bn_music_item.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_tiles_ptr.h>
 #include <bn_span.h>
@@ -1293,9 +1295,21 @@ namespace neo::types
   {
     bn::string_view key;
     const event_value* value;
+    const bn::sprite_item* sprite = nullptr;
+    const background* bg = nullptr;
 
     constexpr plugin_param(bn::string_view key_, const event_value* value_):
       key(key_), value(value_) {}
+
+    constexpr plugin_param(
+      bn::string_view key_, const event_value* value_, const bn::sprite_item* sprite_
+    ):
+      key(key_), value(value_), sprite(sprite_) {}
+
+    constexpr plugin_param(
+      bn::string_view key_, const event_value* value_, const background* bg_
+    ):
+      key(key_), value(value_), bg(bg_) {}
   };
 
   struct plugin_event: event
@@ -1320,6 +1334,41 @@ namespace neo::types
 
       return nullptr;
     }
+
+    inline const plugin_param* find_param(bn::string_view key) const
+    {
+      for (const plugin_param& param : params)
+      {
+        if (param.key == key)
+        {
+          return &param;
+        }
+      }
+
+      return nullptr;
+    }
+
+    inline const bn::sprite_item* as_sprite(bn::string_view key) const
+    {
+      const plugin_param* param = find_param(key);
+
+      return param ? param->sprite : nullptr;
+    }
+
+    inline const bn::sprite_item* as_font(bn::string_view key) const
+    {
+      return as_sprite(key);
+    }
+
+    inline const background* as_background(bn::string_view key) const
+    {
+      const plugin_param* param = find_param(key);
+
+      return param ? param->bg : nullptr;
+    }
+
+    const bn::sound_item* as_sound(neo::variables::registry& variables, bn::string_view key) const;
+    const bn::music_item* as_music(neo::variables::registry& variables, bn::string_view key) const;
 
     inline int as_int(neo::variables::registry& variables, bn::string_view key, int fallback = 0) const
     {

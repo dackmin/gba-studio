@@ -440,6 +440,17 @@
     {
       "type": "stop-all-timers",
       "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e944"
+    },
+    {
+      "type": "plugin:log-message:log",
+      "id": "log-message-1",
+      "params": {
+        "message": "Hello",
+        "count": 1,
+        "loud": false,
+        "sprite": "plugin:log-message:star",
+        "level": "info"
+      }
     }
   ],
   "id": "d2a023cc-364d-4caf-9638-78937f593e4d",

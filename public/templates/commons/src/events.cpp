@@ -45,6 +45,43 @@ namespace neo::scenes
 #include "hud.h"
 #include "events.h"
 
+namespace neo::types
+{
+  const bn::sound_item* plugin_event::as_sound(
+    neo::variables::registry& variables, bn::string_view key
+  ) const
+  {
+    const bn::string_view name = as_string(variables, key);
+
+    for (const auto& [item, item_name] : bn::sound_items_info::span)
+    {
+      if (!name.empty() && item_name == name)
+      {
+        return &item;
+      }
+    }
+
+    return nullptr;
+  }
+
+  const bn::music_item* plugin_event::as_music(
+    neo::variables::registry& variables, bn::string_view key
+  ) const
+  {
+    const bn::string_view name = as_string(variables, key);
+
+    for (const auto& [item, item_name] : bn::music_items_info::span)
+    {
+      if (!name.empty() && item_name == name)
+      {
+        return &item;
+      }
+    }
+
+    return nullptr;
+  }
+}
+
 namespace neo::events
 {
   namespace

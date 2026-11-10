@@ -83,7 +83,9 @@ export const getSoundName = (filePath?: string) => {
 };
 
 export const getAssetUrl = (
-  asset?: GameSpriteFile | GameBackgroundFile | GameFontFile | GameSoundFile | GameMusicFile,
+  asset?: Partial<
+    GameSpriteFile | GameBackgroundFile | GameFontFile | GameSoundFile | GameMusicFile
+  >,
 ) => asset?._url ?? (
   `project://${asset?.path}` + (asset?._version ? `?v=${asset._version}` : '')
 );

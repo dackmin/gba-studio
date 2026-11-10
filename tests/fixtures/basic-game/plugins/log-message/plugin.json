@@ -16,6 +16,7 @@
         { "key": "message", "label": "Message", "type": "text", "default": "Hello" },
         { "key": "count", "label": "Repeat", "type": "number", "default": 1, "unit": "times" },
         { "key": "loud", "label": "Loud", "type": "boolean", "default": false, "text": "Add an exclamation mark" },
+        { "key": "sprite", "label": "Icon", "type": "sprite" },
         {
           "key": "level",
           "label": "Level",

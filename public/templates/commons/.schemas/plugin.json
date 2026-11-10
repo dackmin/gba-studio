@@ -13,7 +13,10 @@
           "type": "string"
         },
         "type": {
-          "enum": ["number", "text", "boolean", "select"],
+          "enum": [
+            "number", "text", "boolean", "select",
+            "sprite", "background", "font", "sound", "music"
+          ],
           "type": "string"
         },
         "default": {

@@ -31,7 +31,17 @@ export const PLUGIN_MANIFEST = 'plugin.json';
 export const ID_REGEX = /^[a-z0-9][a-z0-9_-]*$/i;
 export const KEY_REGEX = /^[a-z_][a-z0-9_]*$/i;
 export const HANDLER_REGEX = /^[a-z_][a-z0-9_]*(::[a-z_][a-z0-9_]*)*$/i;
-export const FIELD_TYPES = ['number', 'text', 'boolean', 'select'];
+export const FIELD_TYPES = [
+  'number',
+  'text',
+  'boolean',
+  'select',
+  'sprite',
+  'background',
+  'font',
+  'sound',
+  'music',
+];
 export const ASSET_EXTENSIONS = {
   sprite: '.bmp',
   background: '.bmp',

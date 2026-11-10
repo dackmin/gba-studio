@@ -709,7 +709,7 @@ BN_DATA_EWRAM neo::types::show_player_reaction_event {{../prefix}}_{{@index}}(
 {{#if this._plugin.params.length}}
 constexpr neo::types::plugin_param {{../prefix}}_{{@index}}_params[] = {
   {{#each this._plugin.params}}
-  neo::types::plugin_param("{{escapeCpp this.key}}", &{{../../prefix}}_{{@../index}}_param_{{@index}}_value){{#unless @last}},{{/unless}}
+  neo::types::plugin_param("{{escapeCpp this.key}}", &{{../../prefix}}_{{@../index}}_param_{{@index}}_value{{#if this.assetExpr}}, {{this.assetExpr}}{{/if}}){{#unless @last}},{{/unless}}
   {{/each}}
 };
 {{/if}}
