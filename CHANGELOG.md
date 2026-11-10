@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.12.0](https://github.com/dackmin/gba-studio/compare/v0.11.0...v0.12.0) (2026-11-10)
+
+### Features
+
+* add install cli menu option ([e043eb9](https://github.com/dackmin/gba-studio/commit/e043eb90277599dcdaddf00eaa55a9a03377de98))
+* allow plugins to add assets to games ([15feda1](https://github.com/dackmin/gba-studio/commit/15feda1b59fdccf15615228ba71e45a420d1797f))
+* allow plugins to have images & sounds fields ([c1e65c3](https://github.com/dackmin/gba-studio/commit/c1e65c3a80390dad9bbd83a3c600fe4d908122cf))
+* got plugins working yay ([65a57b1](https://github.com/dackmin/gba-studio/commit/65a57b103af63f2e79a085e0527f75345a6524a3))
+
+### Bug Fixes
+
+* also allow update events on scenes ([fab4ee5](https://github.com/dackmin/gba-studio/commit/fab4ee58cf9e5674da4cb93f547a6768d30248f8))
+* macos & linux vendor perms ([6d8c34c](https://github.com/dackmin/gba-studio/commit/6d8c34c9ef6d7a46492e6eb9c730e04397648521))
+* reorganize actor events ([955fc5c](https://github.com/dackmin/gba-studio/commit/955fc5ca10d58d3bfabb4e5ece4177b77445c61a))
+* sprites transparency on scene preview ([3eed28e](https://github.com/dackmin/gba-studio/commit/3eed28e1490a1dfdc8c85c8b1f2377d342c9c2f2))
+* upgrade various deps ([be215a7](https://github.com/dackmin/gba-studio/commit/be215a7400628e3be397d1ad4dc219f5141462a1))
+* who tf upset make ([28e38cc](https://github.com/dackmin/gba-studio/commit/28e38cc19194f98058377f56b96f4c0762f9fd6b))
+
 ## [0.11.0](https://github.com/dackmin/gba-studio/compare/v0.10.0...v0.11.0) (2026-11-04)
 
 ### Features
