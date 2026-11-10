@@ -42,8 +42,9 @@ const annotatePluginEvents = (node: any, plugins: GamePlugin[]) => {
 };
 
 const preparePlugins = async (build: Build): Promise<GamePlugin[]> => {
-  const plugins = (await loadPlugins(build.projectPath, build.data?.project?.plugins))
-    .filter(p => p.enabled);
+  const plugins = build.data?.plugins ??
+    (await loadPlugins(build.projectPath, build.data?.project?.plugins))
+      .filter(p => p.enabled);
 
   // avoid string-views and keep some ram by using a numerical id
   let handlerId = 0;
@@ -104,6 +105,36 @@ export const prepareAnimations = async (
     return res;
   }, [] as InternalSpriteAnimation[]);
 };
+
+export async function preparePluginAssets (build: Build) {
+  if (!build.data) {
+    return build;
+  }
+
+  const plugins = (await loadPlugins(build.projectPath, build.data.project?.plugins))
+    .filter(p => p.enabled);
+
+  const assets = plugins.flatMap(p => p._assets ? [p._assets] : []);
+
+  build.data.plugins = plugins;
+  build.data.sprites = [
+    ...build.data.sprites ?? [], ...assets.flatMap(a => a.sprites),
+  ];
+  build.data.backgrounds = [
+    ...build.data.backgrounds ?? [], ...assets.flatMap(a => a.backgrounds),
+  ];
+  build.data.fonts = [
+    ...build.data.fonts ?? [], ...assets.flatMap(a => a.fonts),
+  ];
+  build.data.sounds = [
+    ...build.data.sounds ?? [], ...assets.flatMap(a => a.sounds),
+  ];
+  build.data.music = [
+    ...build.data.music ?? [], ...assets.flatMap(a => a.music),
+  ];
+
+  return build;
+}
 
 export async function prepareData (build: Build) {
   for (const background of build.data?.backgrounds || []) {

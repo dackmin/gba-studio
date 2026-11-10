@@ -8,7 +8,7 @@ import {
 import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameHudSprite } from '../../../types';
-import { useApp, useCanvas, usePreviewCursor } from '../../services/hooks';
+import { useAssets, useCanvas, usePreviewCursor } from '../../services/hooks';
 import { findSprite } from '../../../helpers';
 import InnerSprite from '../../components/Sprite';
 
@@ -30,7 +30,7 @@ const HudSprite = ({
   const { zoom } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { tool, selectedItem } = useCanvas();
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
   const spriteFile = findSprite(sprites, sprite.sprite);
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {

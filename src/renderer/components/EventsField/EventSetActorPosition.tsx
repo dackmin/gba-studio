@@ -4,7 +4,7 @@ import { Text } from '@radix-ui/themes';
 
 import type { SetActorPositionEvent } from '../../../types';
 import { findBackground, getAssetUrl, getImageSize, pixelToTile } from '../../../helpers';
-import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
+import { useAssets, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import ActorListField from '../ActorListField';
 
@@ -19,7 +19,7 @@ const EventSetActorPosition = ({
   event,
   onValueChange,
 }: EventSetActorPositionProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds } = useAssets();
   const { scene } = useSceneForm();
   const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);

@@ -20,8 +20,10 @@ exports[`cli/build > should build a basic project successfully 1`] = `
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_cursor_default.h>
 #include <bn_sprite_items_bubble_default.h>
+#include <bn_sprite_items_plugin_log_message_star.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
+#include <bn_sprite_items_plugin_log_message_star.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
 #include <bn_sprite_items_sprite_default.h>
@@ -53,6 +55,9 @@ namespace neo::scenes
 {
   constexpr bn::string_view STARTING_SCENE = "d2a023cc-364d-4caf-9638-78937f593e4d";
 
+  //////////////////////////
+  // Sprite: Star //
+  //////////////////////////
 
   constexpr bn::string_view bubble_default_animation_frame_0_duration_name = "";
   constexpr bn::string_view bubble_default_animation_frame_0_duration_string_value = "50";
@@ -914,7 +919,7 @@ namespace neo::scenes
     neo::types::event_type::STOP_MUSIC
   );
   // Event 33: play-sound
-  constexpr bn::string_view scene_0_event_33_sound_name = "";
+  constexpr bn::string_view scene_0_event_33_sound_name = "plugin_log_message_talk";
   constexpr neo::types::play_sound_event scene_0_event_33(
     neo::types::event_type::PLAY_SOUND,
     scene_0_event_33_sound_name,
@@ -1670,8 +1675,105 @@ namespace neo::scenes
     0,
     nullptr
   };
+  // -- Actor events
+
+  constexpr bn::string_view scene_0_actor_1_x_name = "";
+  constexpr bn::string_view scene_0_actor_1_x_string_value = "6";
+  constexpr neo::variables::value scene_0_actor_1_x_raw_value(
+    scene_0_actor_1_x_name,
+    6,
+    true,
+    scene_0_actor_1_x_string_value,
+    6
+  );
+  constexpr bn::string_view scene_0_actor_1_x_type = "value";
+  constexpr neo::types::event_value scene_0_actor_1_x_value(
+    scene_0_actor_1_x_type,
+    &scene_0_actor_1_x_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_actor_1_y_name = "";
+  constexpr bn::string_view scene_0_actor_1_y_string_value = "6";
+  constexpr neo::variables::value scene_0_actor_1_y_raw_value(
+    scene_0_actor_1_y_name,
+    6,
+    true,
+    scene_0_actor_1_y_string_value,
+    6
+  );
+  constexpr bn::string_view scene_0_actor_1_y_type = "value";
+  constexpr neo::types::event_value scene_0_actor_1_y_value(
+    scene_0_actor_1_y_type,
+    &scene_0_actor_1_y_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_actor_1_z_name = "";
+  constexpr bn::string_view scene_0_actor_1_z_string_value = "2";
+  constexpr neo::variables::value scene_0_actor_1_z_raw_value(
+    scene_0_actor_1_z_name,
+    2,
+    true,
+    scene_0_actor_1_z_string_value,
+    2
+  );
+  constexpr bn::string_view scene_0_actor_1_z_type = "value";
+  constexpr neo::types::event_value scene_0_actor_1_z_value(
+    scene_0_actor_1_z_type,
+    &scene_0_actor_1_z_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_actor_1_bounce_name = "";
+  constexpr bn::string_view scene_0_actor_1_bounce_string_value = "0";
+  constexpr neo::variables::value scene_0_actor_1_bounce_raw_value(
+    scene_0_actor_1_bounce_name,
+    0,
+    false,
+    scene_0_actor_1_bounce_string_value,
+    0
+  );
+  constexpr bn::string_view scene_0_actor_1_bounce_type = "value";
+  constexpr neo::types::event_value scene_0_actor_1_bounce_value(
+    scene_0_actor_1_bounce_type,
+    &scene_0_actor_1_bounce_raw_value
+  );
+  
+  constexpr bn::string_view scene_0_actor_1_id = "e2a023cc-364d-4caf-9638-78937f593e4f";
+  constexpr bn::string_view scene_0_actor_1_name = "Actor 2";
+  constexpr neo::types::actor scene_0_actor_1 = {
+    scene_0_actor_1_id,
+    scene_0_actor_1_name,
+    &scene_0_actor_1_x_value,
+    &scene_0_actor_1_y_value,
+    &scene_0_actor_1_z_value,
+    neo::types::direction::DOWN,
+    bn::sprite_items::plugin_log_message_star,
+    false,
+    0,
+    0,
+    0,
+    16,
+    16,
+    &scene_0_actor_1_bounce_value,
+    neo::types::bounce_direction::ALL,
+    false,
+    // Events
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    0,
+    nullptr,
+    // Animations
+    0,
+    nullptr
+  };
   constexpr const neo::types::actor* scene_0_actors[] = {
-    &scene_0_actor_0
+    &scene_0_actor_0,
+    &scene_0_actor_1
   };
 
 
@@ -1833,7 +1935,7 @@ namespace neo::scenes
     true,
     &scene_0_player_actor,
     &scene_0_map_data,
-    1,
+    2,
     scene_0_actors,
     0,
     nullptr,

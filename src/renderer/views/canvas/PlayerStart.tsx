@@ -9,7 +9,7 @@ import {
 import type { GameScene } from '../../../types';
 import { findSprite, tileToPixel } from '../../../helpers';
 import { DEFAULT_SPRITE_SIZE } from '../../../commons';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useAssets, useCanvas } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 
 export interface PlayerStartProps extends MoveableProps {
@@ -27,7 +27,7 @@ const PlayerStart = ({
 }: PlayerStartProps) => {
   const { zoom } = useInfiniteCanvas();
   const { tool, selectedItem } = useCanvas();
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
 
   const onSelect_ = useCallback((e: MouseEvent<HTMLElement>) => {
     if (tool === 'collisions') {

@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Avatar, Card, DropdownMenu, Text } from '@radix-ui/themes';
 
-import { useApp } from '../../services/hooks';
-import { findBackground, getAssetUrl, getGraphicName } from '../../../helpers';
+import { useAssets, usePluginAssets } from '../../services/hooks';
+import { findBackground, getAssetUrl } from '../../../helpers';
+import Item from './Item';
 
 export interface BackgroundsListFieldProps {
   value?: string;
@@ -15,7 +16,8 @@ const BackgroundsListField = ({
   defaultValue,
   onValueChange,
 }: BackgroundsListFieldProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds } = useAssets();
+  const pluginBackgrounds = usePluginAssets('backgrounds');
   const val = value ?? defaultValue ?? '';
 
   const selected = useMemo(() => (
@@ -38,9 +40,7 @@ const BackgroundsListField = ({
         </Card>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
-        <DropdownMenu.Item
-          onClick={() => onValueChange?.('')}
-        >
+        <DropdownMenu.Item onClick={onValueChange?.bind(null, '')}>
           <div className="flex items-center gap-2">
             <Avatar
               src={`resources://public/templates` +
@@ -51,21 +51,26 @@ const BackgroundsListField = ({
             <Text>Default background</Text>
           </div>
         </DropdownMenu.Item>
-        { backgrounds.map(bg => (
-          <DropdownMenu.Item
+        { backgrounds.filter(bg => !bg._plugin).map(bg => (
+          <Item
             key={bg._file}
-            onClick={() => onValueChange?.(bg.id || bg.name)}
-          >
-            <div className="flex items-center gap-2">
-              <Avatar
-                src={getAssetUrl(bg)}
-                fallback=""
-                size="1"
+            value={bg}
+            onValueChange={onValueChange}
+          />
+        )) }
+        { pluginBackgrounds.map(({ plugin, items }) => (
+          <Fragment key={plugin.id}>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Label>{ plugin.name }</DropdownMenu.Label>
+            { items.map(bg => (
+              <Item
+                key={bg._file}
+                value={bg}
+                onValueChange={onValueChange}
               />
-              <Text>{ bg.name || getGraphicName(bg._file) }</Text>
-            </div>
-          </DropdownMenu.Item>
-        ))}
+            )) }
+          </Fragment>
+        )) }
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );

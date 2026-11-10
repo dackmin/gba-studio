@@ -179,6 +179,10 @@
         "path": {
           "type": "string"
         },
+        "discoverable": {
+          "type": "boolean",
+          "default": true
+        },
         "animations": {
           "type": "array",
           "items": { "$ref": "#/definitions/Animation" }

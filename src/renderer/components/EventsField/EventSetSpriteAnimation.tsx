@@ -4,7 +4,7 @@ import { Select, Text } from '@radix-ui/themes';
 
 import type { SetSpriteAnimationEvent } from '../../../types';
 import { findSprite } from '../../../helpers';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useAssets, useCanvas } from '../../services/hooks';
 import AnimationsListField from '../AnimationsListField';
 
 export interface EventSetSpriteAnimationProps {
@@ -18,7 +18,7 @@ const EventSetSpriteAnimation = ({
   event,
   onValueChange,
 }: EventSetSpriteAnimationProps) => {
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
   const { selectedScene, selectedItem } = useCanvas();
 
   const onValueChange_ = useCallback((name: string, value: any) => {

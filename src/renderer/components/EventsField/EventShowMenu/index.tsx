@@ -7,7 +7,7 @@ import { set } from '@junipero/react';
 import type { GameMenuChoice, ShowMenuEvent } from '../../../../types';
 import { findFont } from '../../../../helpers';
 import { SceneFormContext } from '../../../services/contexts';
-import { useApp, useCanvas } from '../../../services/hooks';
+import { useApp, useAssets, useCanvas } from '../../../services/hooks';
 import DirectionField from '../../DirectionField';
 import FontsListField from '../../FontsListField';
 import Choice from './Choice';
@@ -25,7 +25,8 @@ const EventShowMenu = ({
   onValueChange,
 }: EventShowMenuProps) => {
   const { selectedScene } = useCanvas();
-  const { fonts, project } = useApp();
+  const { project } = useApp();
+  const { fonts } = useAssets();
   const font = useMemo(() => (
     event.font ? findFont(fonts, event.font) : undefined
   ), [fonts, event.font]);

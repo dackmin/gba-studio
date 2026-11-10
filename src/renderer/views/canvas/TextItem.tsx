@@ -9,7 +9,13 @@ import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameText } from '../../../types';
 import { TEXT_MAX_LENGTH } from '../../../commons';
-import { useApp, useCanvas, usePreviewCursor, useProjectFont } from '../../services/hooks';
+import {
+  useApp,
+  useAssets,
+  useCanvas,
+  usePreviewCursor,
+  useProjectFont,
+} from '../../services/hooks';
 import { findFont, getAssetUrl } from '../../../helpers';
 import { getTextPreview, hexToRgb } from '../../services/helpers';
 import PixelText, { getTextWidth } from '../../components/PixelText';
@@ -32,7 +38,8 @@ const TextItem = ({
   const { zoom } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
   const { tool, selectedItem } = useCanvas();
-  const { variables, fonts } = useApp();
+  const { variables } = useApp();
+  const { fonts } = useAssets();
   const projectFont = useProjectFont();
   const text = useMemo(() => (
     getTextPreview(item.text, variables).slice(0, TEXT_MAX_LENGTH)

@@ -29,7 +29,7 @@ import {
   getVendorExecutable,
   cleanVendorsCache as removeVendorsCache,
 } from '../../vendors';
-import { prepareData } from './data';
+import { prepareData, preparePluginAssets } from './data';
 import { getPluginBuildDirs } from '../../plugins';
 import { serialize } from '../../serialize';
 import { sanitize } from '../../sanitize';
@@ -171,6 +171,7 @@ export async function buildProject (
 
   build.events.onStep('Preparing assets...');
   build.events.onLog(`Copying assets...`);
+  await preparePluginAssets(build);
   await copyAssets(build);
   build.events.onSuccess('Assets copied successfully.');
 

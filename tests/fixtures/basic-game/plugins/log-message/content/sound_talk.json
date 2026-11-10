@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/sound.json",
+  "type": "sound",
+  "id": "talk",
+  "name": "Talk",
+  "format": "wav",
+  "path": "audio/talk.wav"
+}

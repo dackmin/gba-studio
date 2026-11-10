@@ -4,13 +4,24 @@ import { type IpcMainInvokeEvent, BrowserWindow, dialog, shell } from 'electron'
 import fse from 'fs-extra';
 
 import type { GamePlugin, PluginPick, ProjectPlugin } from '../../types';
-import { PLUGIN_MANIFEST, loadPlugins, pickPlugin as pick } from '../plugins';
+import {
+  PLUGIN_MANIFEST,
+  loadPlugins,
+  pickPlugin as pick,
+  registerPluginDirs,
+} from '../plugins';
 
 export const getPlugins = async (
   _event: IpcMainInvokeEvent,
   projectPath: string,
   entries?: ProjectPlugin[],
-): Promise<GamePlugin[]> => loadPlugins(projectPath, entries);
+): Promise<GamePlugin[]> => {
+  const plugins = await loadPlugins(projectPath, entries);
+
+  registerPluginDirs(projectPath, plugins);
+
+  return plugins;
+};
 
 export const pickPlugin = async (
   event: IpcMainInvokeEvent,

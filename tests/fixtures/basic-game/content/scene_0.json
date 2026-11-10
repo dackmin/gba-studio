@@ -248,7 +248,7 @@
     {
       "type": "play-sound",
       "id": "i890607d-6f49-4229-b14b-8ea3216c9727",
-      "name": "",
+      "name": "plugin:log-message:talk",
       "volume": 100,
       "speed": 1,
       "pan": 0,
@@ -500,6 +500,18 @@
       "width": 1,
       "height": 1,
       "collisionGroup": 0
+    },
+    {
+      "id": "e2a023cc-364d-4caf-9638-78937f593e4f",
+      "type": "actor",
+      "name": "Actor 2",
+      "sprite": "plugin:log-message:star",
+      "x": 6,
+      "y": 6,
+      "width": 1,
+      "height": 1,
+      "collisionGroup": 0,
+      "discoverable": true
     }
   ],
   "hud": "6be3d29c-8619-49d6-b313-e9d9b78b0b3f"

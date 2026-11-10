@@ -11,6 +11,9 @@ import type {
   BackgroundLayout,
   Build,
   GameBackgroundFile,
+  GameFontFile,
+  GameMusicFile,
+  GameSoundFile,
   GameSpriteFile,
 } from '../../../types';
 import {
@@ -25,6 +28,13 @@ import {
 } from '../../images';
 import { BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
 import { getBuildDir } from './utils';
+
+export const getAssetBaseName = (
+  asset: GameBackgroundFile | GameSpriteFile | GameFontFile | GameSoundFile | GameMusicFile,
+) => asset._plugin && asset._file
+  ? asset._file.replace(/\.json$/, '')
+    .replace(/^(sprite|background|font|sound|music)_/, '')
+  : path.basename(asset.path, path.extname(asset.path));
 
 export async function getShasum (filePath: string) {
   const hash = createHash('sha256');
@@ -49,8 +59,8 @@ export async function getBackgroundLayoutFromFile (
   build: Build,
   background: GameBackgroundFile,
 ): Promise<BackgroundLayout> {
-  const source = path.join(path.dirname(build.projectPath), background.path);
-  const fileName = path.basename(background.path, path.extname(background.path));
+  const source = path.resolve(path.dirname(build.projectPath), background.path);
+  const fileName = getAssetBaseName(background);
   const { width, height } = await imageSizeFromFile(source);
   const layout = getBackgroundLayout(fileName, width, height);
 
@@ -65,9 +75,9 @@ async function cutBackground (
   layout: BackgroundLayout,
   graphicsOutputDir: string,
 ) {
-  const source = path.join(path.dirname(build.projectPath), background.path);
+  const source = path.resolve(path.dirname(build.projectPath), background.path);
   const image = decodeIndexedBmp(await fs.readFile(source));
-  const fileName = path.basename(background.path, path.extname(background.path));
+  const fileName = getAssetBaseName(background);
   const expected = new Set<string>();
   const jsonContent = JSON.stringify({ type: 'regular_bg' }, null, 2);
   let written = 0;
@@ -152,8 +162,8 @@ export async function copyAssets (
 
   // Copy sprites
   for (const sprite of build.data?.sprites || []) {
-    const source = path.join(projectDir, sprite.path);
-    const fileName = path.basename(sprite.path, path.extname(sprite.path));
+    const source = path.resolve(projectDir, sprite.path);
+    const fileName = getAssetBaseName(sprite);
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
@@ -183,8 +193,8 @@ export async function copyAssets (
 
   // Copy backgrounds
   for (const background of build.data?.backgrounds || []) {
-    const source = path.join(projectDir, background.path);
-    const fileName = path.basename(background.path, path.extname(background.path));
+    const source = path.resolve(projectDir, background.path);
+    const fileName = getAssetBaseName(background);
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
     const layout = await getBackgroundLayoutFromFile(build, background);
 
@@ -220,8 +230,8 @@ export async function copyAssets (
 
   // Copy fonts
   for (const font of build.data?.fonts || []) {
-    const source = path.join(projectDir, font.path);
-    const fileName = path.basename(font.path, path.extname(font.path));
+    const source = path.resolve(projectDir, font.path);
+    const fileName = getAssetBaseName(font);
     const destination = path.join(graphicsOutputDir, fileName + '.bmp');
 
     if (await isSame(source, destination)) {
@@ -248,8 +258,8 @@ export async function copyAssets (
 
   // Copy sounds
   for (const sound of build.data?.sounds || []) {
-    const source = path.join(projectDir, sound.path);
-    const fileName = path.basename(sound.path, path.extname(sound.path));
+    const source = path.resolve(projectDir, sound.path);
+    const fileName = getAssetBaseName(sound);
     const destination = path.join(audioOutputDir, fileName + '.' + (sound.format || 'wav'));
 
     if (await isSame(source, destination)) {
@@ -263,8 +273,8 @@ export async function copyAssets (
 
   // Copy music
   for (const music of build.data?.music || []) {
-    const source = path.join(projectDir, music.path);
-    const fileName = path.basename(music.path, path.extname(music.path));
+    const source = path.resolve(projectDir, music.path);
+    const fileName = getAssetBaseName(music);
     const destination = path.join(audioOutputDir, fileName + '.' + (music.format || 'mod'));
 
     if (await isSame(source, destination)) {

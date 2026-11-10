@@ -85,6 +85,9 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'resources', privileges: {
     standard: true, bypassCSP: true, supportFetchAPI: true, corsEnabled: true,
   } },
+  { scheme: 'plugin', privileges: {
+    standard: true, bypassCSP: true, supportFetchAPI: true, corsEnabled: true,
+  } },
   { scheme: 'app', privileges: {
     standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true,
   } },
