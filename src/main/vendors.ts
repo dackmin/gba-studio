@@ -166,17 +166,21 @@ export async function cleanVendorsCache () {
 
 const getUserVendorsDir = () => {
   switch (process.platform) {
-    case 'win32':
+    case 'win32': {
+      const base = process.env.LOCALAPPDATA ??
+        path.join(os.homedir(), 'AppData', 'Local');
+
       return path.join(
-        process.env.LOCALAPPDATA ??
-          path.join(os.homedir(), 'AppData', 'Local'),
+        // Make doesn't like spaces in paths
+        /\s/.test(base) && process.env.ProgramData
+          ? process.env.ProgramData
+          : base,
         'GBAStudio',
         'vendors'
       );
+    }
     case 'darwin':
-      return path.join(
-        os.homedir(), 'Library', 'Application Support', 'GBAStudio', 'vendors'
-      );
+      return path.join(os.homedir(), '.gba-studio', 'vendors');
     default:
       return path.join(
         process.env.XDG_DATA_HOME ?? path.join(os.homedir(), '.local', 'share'),
