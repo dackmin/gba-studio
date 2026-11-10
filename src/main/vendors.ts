@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 
@@ -6,7 +8,7 @@ import * as tar from 'tar';
 
 import type { Build, ProjectConfiguration } from '../types';
 import { runCommand } from './handles/build-project/utils';
-import { getResourcesDir } from './utils';
+import { getResourcesDir, isDev } from './utils';
 
 const packagesShasum: Record<string, Record<string, string>> = {
   devkitPro: {
@@ -98,10 +100,13 @@ export async function downloadPackagedVendor (
     throw new Error(`Hash mismatch for downloaded ${vendorName} package`);
   }
 
-  await fsp.writeFile(
-    targetPath || path.join(getResourcesDir(), `./public/vendors/${vendorName}/${platform}.tar.gz`),
-    buffer
+  const destination = targetPath || path.join(
+    getResourcesDir(),
+    `./public/vendors/${vendorName}/${platform}.tar.gz`
   );
+
+  await fsp.mkdir(path.dirname(destination), { recursive: true });
+  await fsp.writeFile(destination, buffer);
 }
 
 async function checkPackagedVendor (
@@ -131,7 +136,11 @@ async function checkPackagedVendor (
       try {
         await fsp.unlink(vendorPath + '.tar.gz').catch(() => {});
         build.events.onLog(`${vendorName} package not found, downloading from GitHub...`);
-        await downloadPackagedVendor(vendorName, process.platform);
+        await downloadPackagedVendor(
+          vendorName,
+          process.platform,
+          vendorPath + '.tar.gz'
+        );
         build.events.onLog(`extracting ${vendorName} from downloaded archive...`);
         await uncompressFile(vendorPath + '.tar.gz', vendorPath);
       } catch (e) {
@@ -155,11 +164,39 @@ export async function cleanVendorsCache () {
   }));
 }
 
+const getUserVendorsDir = () => {
+  switch (process.platform) {
+    case 'win32':
+      return path.join(
+        process.env.LOCALAPPDATA ??
+          path.join(os.homedir(), 'AppData', 'Local'),
+        'GBAStudio',
+        'vendors'
+      );
+    case 'darwin':
+      return path.join(
+        os.homedir(), 'Library', 'Application Support', 'GBAStudio', 'vendors'
+      );
+    default:
+      return path.join(
+        process.env.XDG_DATA_HOME ?? path.join(os.homedir(), '.local', 'share'),
+        'GBAStudio',
+        'vendors'
+      );
+  }
+};
+
 export function getVendorPath (vendorName: string) {
-  return path.join(
+  const bundled = path.join(
     getResourcesDir(),
     `./public/vendors/${vendorName}/${process.platform}`
   );
+
+  if (isDev() || existsSync(bundled) || existsSync(bundled + '.tar.gz')) {
+    return bundled;
+  }
+
+  return path.join(getUserVendorsDir(), vendorName, process.platform);
 }
 
 export function getVendorExecutable (vendorName: string) {
