@@ -33,6 +33,7 @@ namespace neo
       const neo::types::text* definition;
 
       void set_content(const neo::types::event_value* content);
+      void set_blending_enabled(bool enabled);
       void update();
 
     private:

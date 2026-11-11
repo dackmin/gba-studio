@@ -58,6 +58,7 @@ namespace neo
       bn::vector<neo::sensor*, 50> sensors;
 
       bool is_input_enabled;
+      bool blending_enabled = false;
 
       // Point-and-click
       inline constexpr static int CURSOR_SPEED = 3;
@@ -94,6 +95,7 @@ namespace neo
       void run();
       void enable_blending();
       void disable_blending();
+      void toggle_text_blending(bool enabled);
       void update_active_parallel_events();
       void update_timers();
       // Advances one frame, including any active parallel effects. Every

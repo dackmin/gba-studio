@@ -48,6 +48,14 @@ namespace neo
     content = content_;
   }
 
+  void text::set_blending_enabled(bool enabled)
+  {
+    for (int i = 0; i < sprites.size(); ++i)
+    {
+      sprites[i].set_blending_enabled(enabled);
+    }
+  }
+
   void text::update()
   {
     bn::string<MAX_LENGTH> value;
@@ -108,5 +116,7 @@ namespace neo
     {
       sprites[i].set_palette(palette);
     }
+
+    set_blending_enabled(game->blending_enabled);
   }
 }
