@@ -14,7 +14,7 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameFontFile, SpriteBitmap } from '../../../types';
-import { findFont, toFileSlug } from '../../../helpers';
+import { findFont, getFileBaseName, toFileSlug } from '../../../helpers';
 import { useApp, useModal, useSprite } from '../../services/hooks';
 import { hexToRgb } from '../../services/helpers';
 import ChecklistItem from '../../components/ChecklistItem';
@@ -81,8 +81,8 @@ const FontImportForm = ({
     dispatch({
       path: file,
       ...firstInit && {
-        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+        fileName: getFileBaseName(file) + '.bmp',
+        name: toFileSlug(getFileBaseName(file)),
       },
       transparentColor: rgba2hex({
         r: imageContent.transparentColor?.[0] ?? 0,

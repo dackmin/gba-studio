@@ -30,7 +30,7 @@ import {
   useEditor,
   useLocalData,
 } from '../../services/hooks';
-import { findScene } from '../../../helpers';
+import { findScene, getFileBaseName } from '../../../helpers';
 import views from '../../views';
 
 export interface LeftSidebarProps extends ResizableProps {}
@@ -116,8 +116,7 @@ const LeftSidebar = ({
       return;
     }
 
-    const romName = (await window.electron.getRomPath(projectPath))
-      .split('/').pop();
+    const romName = getFileBaseName(await window.electron.getRomPath(projectPath)) + '.gba';
     const exportPath = await window.electron.browseSaveFile({
       defaultPath: romName,
       filters: [{ name: 'GBA ROM', extensions: ['gba'] }],
