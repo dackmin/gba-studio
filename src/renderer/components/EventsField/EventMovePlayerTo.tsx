@@ -10,7 +10,7 @@ import {
   getImageSize,
   pixelToTile,
 } from '../../../helpers';
-import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
+import { useAssets, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
 
@@ -25,7 +25,7 @@ const EventMovePlayerTo = ({
   event,
   onValueChange,
 }: EventMovePlayerToProps) => {
-  const { backgrounds, sprites } = useApp();
+  const { backgrounds, sprites } = useAssets();
   const { scene } = useSceneForm();
   const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);

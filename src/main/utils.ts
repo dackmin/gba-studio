@@ -16,6 +16,15 @@ export const getResourcesDir = () => {
       return url;
     }
   } else {
-    return process.resourcesPath;
+    return process.resourcesPath ??
+      // needed by CLI
+      process.env.GBAS_RESOURCES_PATH;
   }
 };
+
+export const shQuote = (value: string) =>
+  `'${value.replace(/'/g, `'\\''`)}'`;
+
+export const isOnPath = (dir: string, p?: string) => (p ?? '')
+  .split(path.delimiter)
+  .includes(dir);

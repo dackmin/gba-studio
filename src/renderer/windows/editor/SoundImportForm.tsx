@@ -13,7 +13,7 @@ import {
 } from '@radix-ui/themes';
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
-import { findSound, toFileSlug } from '../../../helpers';
+import { findSound, getFileBaseName, toFileSlug } from '../../../helpers';
 import { useApp, useAudio, useModal } from '../../services/hooks';
 import { GameSoundFile } from '../../../types';
 
@@ -60,8 +60,8 @@ const SoundImportForm = ({
     dispatch({
       path: file,
       ...firstInit && {
-        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.wav',
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+        fileName: getFileBaseName(file) + '.wav',
+        name: toFileSlug(getFileBaseName(file)),
       },
     });
   }, []);

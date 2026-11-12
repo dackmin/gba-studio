@@ -15,7 +15,7 @@ import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameBackgroundFile, SpriteBitmap } from '../../../types';
 import {  BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
-import { findBackground, toFileSlug } from '../../../helpers';
+import { findBackground, getFileBaseName, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import ChecklistItem from '../../components/ChecklistItem';
 import Background from '../../components/Background';
@@ -76,8 +76,8 @@ const BackgroundImportForm = ({
     dispatch({
       path: file,
       ...firstInit && {
-        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+        fileName: getFileBaseName(file) + '.bmp',
+        name: toFileSlug(getFileBaseName(file)),
       },
       preview: imageContent,
       width,

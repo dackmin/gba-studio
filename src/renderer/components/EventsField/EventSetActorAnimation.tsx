@@ -4,7 +4,7 @@ import { Text } from '@radix-ui/themes';
 
 import type { SetActorAnimationEvent } from '../../../types';
 import { findSprite } from '../../../helpers';
-import { useApp, useSceneForm } from '../../services/hooks';
+import { useAssets, useSceneForm } from '../../services/hooks';
 import ActorListField from '../ActorListField';
 import AnimationsListField from '../AnimationsListField';
 
@@ -19,7 +19,7 @@ const EventSetActorAnimation = ({
   event,
   onValueChange,
 }: EventSetActorAnimationProps) => {
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
   const { scene } = useSceneForm();
 
   const onValueChange_ = useCallback((name: string, value: any) => {

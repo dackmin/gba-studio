@@ -27,6 +27,7 @@ import type {
 } from '../../../types';
 import {
   useApp,
+  useAssets,
   useCanvas,
   useEditor,
   usePreviewCursor,
@@ -112,7 +113,8 @@ const Scene = ({
   const lastTileRef = useRef<[number, number] | null>(null);
   const { zoom, offsetX, offsetY } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
-  const { eventEmitter, project, scenes, backgrounds } = useApp();
+  const { eventEmitter, project, scenes } = useApp();
+  const { backgrounds } = useAssets();
   const { selectedScene, selectedItem, tool, collisionBrush } = useCanvas();
   const { tileX, tileY, setTilePosition } = useEditor();
   const [state, dispatch] = useReducer(mockState<SceneState>, {

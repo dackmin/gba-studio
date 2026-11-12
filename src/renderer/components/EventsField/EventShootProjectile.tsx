@@ -3,7 +3,7 @@ import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 import { set } from '@junipero/react';
 
 import type { Direction, ShootProjectileEvent } from '../../../types';
-import { useApp } from '../../services/hooks';
+import { useAssets } from '../../services/hooks';
 import { findSprite } from '../../../helpers';
 import ActorListField from '../ActorListField';
 import SpritesListField from '../SpritesListField';
@@ -25,7 +25,7 @@ const EventShootProjectile = ({
   event,
   onValueChange,
 }: EventShootProjectileProps) => {
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);

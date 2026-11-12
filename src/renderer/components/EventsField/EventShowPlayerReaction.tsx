@@ -3,7 +3,7 @@ import { Text, TextField } from '@radix-ui/themes';
 import { set } from '@junipero/react';
 
 import type { ShowPlayerReactionEvent } from '../../../types';
-import { useApp } from '../../services/hooks';
+import { useAssets } from '../../services/hooks';
 import { findSprite } from '../../../helpers';
 import SpritesListField from '../SpritesListField';
 import AnimationsListField from '../AnimationsListField';
@@ -22,7 +22,7 @@ const EventShowPlayerReaction = ({
   event,
   onValueChange,
 }: EventShowPlayerReactionProps) => {
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
 
   const onValueChange_ = useCallback((name: string, value: any) => {
     set(event, name, value);

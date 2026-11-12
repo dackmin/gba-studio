@@ -170,23 +170,11 @@ const PluginManagerModal = ({
                           { plugin.description }
                         </Text>
                       ) }
-                      { plugin._error ? (
+                      { plugin._error && (
                         <Callout.Root color="red" size="1" className="mt-2">
                           <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
                           <Callout.Text>{ plugin._error }</Callout.Text>
                         </Callout.Root>
-                      ) : (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          { !plugin.events?.length ? (
-                            <Text size="1" className="text-slate">
-                              No events
-                            </Text>
-                          ) : plugin.events.map(event => (
-                            <Badge key={event.id} variant="outline">
-                              { event.name }
-                            </Badge>
-                          )) }
-                        </div>
                       ) }
                     </div>
                     <div className="flex flex-none items-center gap-3">

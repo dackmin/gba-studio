@@ -11,7 +11,7 @@ import {
   pixelToTile,
   tileToPixel,
 } from '../../../helpers';
-import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
+import { useApp, useAssets, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 import AnimationsListField from '../AnimationsListField';
 import ActorListField from '../ActorListField';
@@ -27,7 +27,8 @@ const EventMoveActorTo = ({
   event,
   onValueChange,
 }: EventMoveActorToProps) => {
-  const { eventEmitter, backgrounds, sprites } = useApp();
+  const { eventEmitter } = useApp();
+  const { backgrounds, sprites } = useAssets();
   const { scene } = useSceneForm();
   const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);

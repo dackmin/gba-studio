@@ -5,7 +5,7 @@ import { Tooltip } from 'radix-ui';
 
 import type { ShowDialogEvent } from '../../../types';
 import { findFont, findSprite } from '../../../helpers';
-import { useApp, useDelayedCallback } from '../../services/hooks';
+import { useApp, useAssets, useDelayedCallback } from '../../services/hooks';
 import DialogPreview from '../DialogPreview';
 import DirectionField from '../DirectionField';
 import FontsListField from '../FontsListField';
@@ -26,7 +26,8 @@ const EventShowDialog = ({
 }: EventShowDialogProps) => {
   const [event, setEvent] = useState(eventProp);
   const [opened, setOpened] = useState(false);
-  const { sprites, fonts, project } = useApp();
+  const { project } = useApp();
+  const { sprites, fonts } = useAssets();
 
   const portrait = useMemo(() => (
     event.portrait ? findSprite(sprites, event.portrait) : undefined

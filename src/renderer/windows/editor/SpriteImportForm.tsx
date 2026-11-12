@@ -14,7 +14,7 @@ import {
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 import type { GameSpriteFile, SpriteBitmap } from '../../../types';
-import { findSprite, getTilesCount, toFileSlug } from '../../../helpers';
+import { findSprite, getFileBaseName, getTilesCount, toFileSlug } from '../../../helpers';
 import { useApp, useDelayedValue, useModal, useSprite } from '../../services/hooks';
 import Sprite from '../../components/Sprite';
 import ChecklistItem from '../../components/ChecklistItem';
@@ -74,8 +74,8 @@ const SpriteImportForm = ({
     dispatch({
       path: file,
       ...firstInit && {
-        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.bmp',
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+        fileName: getFileBaseName(file) + '.bmp',
+        name: toFileSlug(getFileBaseName(file)),
       },
       transparentColor: rgba2hex({
         r: imageContent.transparentColor?.[0] ?? 0,

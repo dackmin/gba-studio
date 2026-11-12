@@ -1,10 +1,11 @@
-import { type ReactNode, useMemo } from 'react';
+import { Fragment, type ReactNode, useMemo } from 'react';
 import { Card, CardProps, DropdownMenu, Text } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
-import { useApp } from '../../services/hooks';
-import { findSprite, getGraphicName } from '../../../helpers';
+import { useAssets, usePluginAssets } from '../../services/hooks';
+import { findSprite } from '../../../helpers';
 import Sprite from '../Sprite';
+import Item from './Item';
 
 export interface SpritesListFieldProps extends CardProps {
   value?: string;
@@ -24,7 +25,8 @@ const SpritesListField = ({
   defaultGraphic = 'sprite_default',
   onValueChange,
 }: SpritesListFieldProps) => {
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
+  const pluginSprites = usePluginAssets('sprites');
   const val = value ?? defaultValue ?? '';
   const defaultPath = `resources://public/templates/commons/graphics/${defaultGraphic}.bmp`;
 
@@ -78,21 +80,25 @@ const SpritesListField = ({
             </>
           ) }
         </DropdownMenu.Item>
-        { sprites.map(sprite => (
-          <DropdownMenu.Item
+        { sprites.filter(sprite => !sprite._plugin).map(sprite => (
+          <Item
             key={sprite._file}
-            onClick={() => onValueChange?.(sprite.id || sprite.name)}
-          >
-            <div className="flex items-center gap-2">
-              <Sprite
-                sprite={sprite}
-                className="w-6 h-6"
-                keepAspectRatio
-                transparencyColor={sprite.transparentColor}
+            value={sprite}
+            onValueChange={onValueChange}
+          />
+        )) }
+        { pluginSprites.map(({ plugin, items }) => (
+          <Fragment key={plugin.id}>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Label>{ plugin.name }</DropdownMenu.Label>
+            { items.map(sprite => (
+              <Item
+                key={sprite._file}
+                value={sprite}
+                onValueChange={onValueChange}
               />
-              <Text>{ sprite.name || getGraphicName(sprite._file) }</Text>
-            </div>
-          </DropdownMenu.Item>
+            )) }
+          </Fragment>
         )) }
       </DropdownMenu.Content>
     </DropdownMenu.Root>

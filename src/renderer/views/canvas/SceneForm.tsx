@@ -39,7 +39,7 @@ import {
   resizeCollisions,
 } from '../../../helpers';
 import { SceneFormContext } from '../../services/contexts';
-import { useApp } from '../../services/hooks';
+import { useApp, useAssets } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
 import BackgroundsListField from '../../components/BackgroundsListField';
 import SpritesListField from '../../components/SpritesListField';
@@ -63,9 +63,10 @@ const SceneForm = ({
   onChange,
 }: SceneFormProps) => {
   const {
-    backgrounds, huds, projectPath, onCanvasChange, onProjectChange,
+    huds, projectPath, onCanvasChange, onProjectChange,
     ...appPayload
   } = useApp();
+  const { backgrounds } = useAssets();
   const isStartingScene = getStartingSceneId(
     appPayload.project, appPayload.scenes) === scene.id;
 

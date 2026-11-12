@@ -26,6 +26,10 @@
         },
         "id": {
           "type": "string"
+        },
+        "discoverable": {
+          "type": "boolean",
+          "default": true
         }
       }
     }

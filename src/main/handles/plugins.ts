@@ -9,6 +9,7 @@ import {
   PLUGIN_MANIFEST,
   installPluginArchive,
   loadPlugins,
+  registerPluginDirs,
   pickPlugin as pick,
 } from '../plugins';
 
@@ -16,7 +17,13 @@ export const getPlugins = async (
   _event: IpcMainInvokeEvent,
   projectPath: string,
   entries?: ProjectPlugin[],
-): Promise<GamePlugin[]> => loadPlugins(projectPath, entries);
+): Promise<GamePlugin[]> => {
+  const plugins = await loadPlugins(projectPath, entries);
+
+  registerPluginDirs(projectPath, plugins);
+
+  return plugins;
+};
 
 export const pickPlugin = async (
   event: IpcMainInvokeEvent,

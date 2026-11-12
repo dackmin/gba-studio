@@ -424,6 +424,7 @@ export interface GameSpriteFile {
   type: 'sprite';
   name: string;
   path: string;
+  discoverable?: boolean;
   width?: number;
   height?: number;
   transparentColor?: string;
@@ -438,6 +439,8 @@ export interface GameSpriteFile {
   _fileName?: string;
   _version?: number;
   _animations?: InternalSpriteAnimation[];
+  _plugin?: string;
+  _url?: string;
   $schema?: string;
 }
 
@@ -462,6 +465,7 @@ export interface GameBackgroundFile {
   type: 'background';
   name: string;
   path: string;
+  discoverable?: boolean;
   width?: number;
   height?: number;
   format?: string;
@@ -473,6 +477,8 @@ export interface GameBackgroundFile {
   _file?: string;
   _fileName?: string;
   _version?: number;
+  _plugin?: string;
+  _url?: string;
   $schema?: string;
 }
 
@@ -480,11 +486,15 @@ export interface GameSoundFile {
   type: 'sound';
   name: string;
   path: string;
+  discoverable?: boolean;
   format?: string;
   // Internals
   id?: string;
   _file?: string;
   _fileName?: string;
+  _version?: number;
+  _plugin?: string;
+  _url?: string;
   $schema?: string;
 }
 
@@ -492,11 +502,15 @@ export interface GameMusicFile {
   type: 'music';
   name: string;
   path: string;
+  discoverable?: boolean;
   format?: string;
   // Internals
   id?: string;
   _file?: string;
   _fileName?: string;
+  _version?: number;
+  _plugin?: string;
+  _url?: string;
   $schema?: string;
 }
 
@@ -504,6 +518,7 @@ export interface GameFontFile {
   type: 'font';
   name: string;
   path: string;
+  discoverable?: boolean;
   width?: number;
   height?: number;
   transparentColor?: string;
@@ -515,10 +530,21 @@ export interface GameFontFile {
   _file?: string;
   _fileName?: string;
   _version?: number;
+  _plugin?: string;
+  _url?: string;
   $schema?: string;
 }
 
-export type PluginFieldType = 'number' | 'text' | 'boolean' | 'select';
+export type PluginFieldType =
+  | 'number'
+  | 'text'
+  | 'boolean'
+  | 'select'
+  | 'sprite'
+  | 'background'
+  | 'font'
+  | 'sound'
+  | 'music';
 
 export interface PluginEventField {
   key: string;
@@ -543,6 +569,14 @@ export interface PluginEventDefinition {
   _function?: string;
 }
 
+export interface PluginAssets {
+  sprites: GameSpriteFile[];
+  backgrounds: GameBackgroundFile[];
+  fonts: GameFontFile[];
+  sounds: GameSoundFile[];
+  music: GameMusicFile[];
+}
+
 export interface PluginManifest {
   id: string;
   name: string;
@@ -558,6 +592,7 @@ export interface GamePlugin extends PluginManifest {
   _dir: string;
   _path: string;
   _error?: string;
+  _assets?: PluginAssets;
 }
 
 export interface PluginPick {

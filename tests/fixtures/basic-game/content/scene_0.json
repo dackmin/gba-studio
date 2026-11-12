@@ -248,7 +248,7 @@
     {
       "type": "play-sound",
       "id": "i890607d-6f49-4229-b14b-8ea3216c9727",
-      "name": "",
+      "name": "plugin:log-message:talk",
       "volume": 100,
       "speed": 1,
       "pan": 0,
@@ -440,6 +440,17 @@
     {
       "type": "stop-all-timers",
       "id": "9f1d4b72-0a35-4c68-b2e7-5d8a3c61e944"
+    },
+    {
+      "type": "plugin:log-message:log",
+      "id": "log-message-1",
+      "params": {
+        "message": "Hello",
+        "count": 1,
+        "loud": false,
+        "sprite": "plugin:log-message:star",
+        "level": "info"
+      }
     }
   ],
   "id": "d2a023cc-364d-4caf-9638-78937f593e4d",
@@ -500,6 +511,18 @@
       "width": 1,
       "height": 1,
       "collisionGroup": 0
+    },
+    {
+      "id": "e2a023cc-364d-4caf-9638-78937f593e4f",
+      "type": "actor",
+      "name": "Actor 2",
+      "sprite": "plugin:log-message:star",
+      "x": 6,
+      "y": 6,
+      "width": 1,
+      "height": 1,
+      "collisionGroup": 0,
+      "discoverable": true
     }
   ],
   "hud": "6be3d29c-8619-49d6-b313-e9d9b78b0b3f"

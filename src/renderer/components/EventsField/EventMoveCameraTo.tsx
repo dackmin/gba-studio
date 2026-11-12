@@ -4,7 +4,7 @@ import { Select, Switch, Text, TextField } from '@radix-ui/themes';
 
 import type { MoveCameraToEvent } from '../../../types';
 import { findBackground, getAssetUrl, getImageSize } from '../../../helpers';
-import { useApp, useSceneForm } from '../../services/hooks';
+import { useApp, useAssets, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
 export interface EventMoveCameraToProps {
@@ -18,7 +18,8 @@ const EventMoveCameraTo = ({
   event,
   onValueChange,
 }: EventMoveCameraToProps) => {
-  const { eventEmitter, backgrounds } = useApp();
+  const { eventEmitter } = useApp();
+  const { backgrounds } = useAssets();
   const { scene } = useSceneForm();
   const [size, setSize] = useState([240, 160]);
 

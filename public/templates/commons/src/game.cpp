@@ -382,6 +382,11 @@ namespace neo
 
     BN_LOG("Scene events count:", active_scene->event_count);
 
+    // Reset blending for fade effects
+    bn::blending::set_black_fade_color();
+    bn::blending::set_fade_alpha(1);
+    enable_blending();
+
     // Execute HUD init events
     if (active_scene->hud_data != nullptr)
     {
@@ -716,8 +721,30 @@ namespace neo
     neo::events::exec_event(this, e, is_loop);
   }
 
+
+  void game::toggle_text_blending(bool enabled)
+  {
+    for (int i = 0; i < this->texts.size(); ++i)
+    {
+      this->texts[i]->set_blending_enabled(enabled);
+    }
+
+    for (int i = 0; i < this->hud_texts.size(); ++i)
+    {
+      this->hud_texts[i]->set_blending_enabled(enabled);
+    }
+
+    for (int i = 0; i < this->hud_sprites.size(); ++i)
+    {
+      this->hud_sprites[i].set_blending_enabled(enabled);
+    }
+  }
+
   void game::enable_blending ()
   {
+    blending_enabled = true;
+    toggle_text_blending(true);
+
     if (player != nullptr)
     {
       player->sprite.set_blending_enabled(true);
@@ -736,6 +763,9 @@ namespace neo
 
   void game::disable_blending ()
   {
+    blending_enabled = false;
+    toggle_text_blending(false);
+
     if (player != nullptr)
     {
       player->sprite.set_blending_enabled(false);

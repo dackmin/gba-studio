@@ -13,7 +13,7 @@ import {
 } from '@radix-ui/themes';
 import { InfoCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
-import { findMusic, toFileSlug } from '../../../helpers';
+import { findMusic, getFileBaseName, toFileSlug } from '../../../helpers';
 import { useApp, useAudio, useModal } from '../../services/hooks';
 import { GameMusicFile } from '../../../types';
 
@@ -60,8 +60,8 @@ const MusicImportForm = ({
     dispatch({
       path: file,
       ...firstInit && {
-        fileName: (file.split('/').pop()?.split('.').shift() ?? 'untitled') + '.mod',
-        name: toFileSlug(file.split('/').pop()?.split('.').shift() ?? 'untitled'),
+        fileName: getFileBaseName(file) + '.mod',
+        name: toFileSlug(getFileBaseName(file)),
       },
     });
   }, []);

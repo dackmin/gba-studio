@@ -4,6 +4,7 @@ import url from 'node:url';
 import { net, session, BrowserWindow, nativeTheme, app, Menu } from 'electron';
 
 import { getResourcesDir } from './utils';
+import { resolvePluginFile, clearPluginsDirs } from './plugins';
 // import { createAudioFileWatcher, createGraphicsFileWatcher } from './events';
 import { editorMenu, projectSelectionMenu } from './menus';
 
@@ -210,6 +211,17 @@ export const createProjectWindow = async (projectPath: string) => {
       .join(path.dirname(projectPath), filePath)).toString());
   });
 
+  ses.protocol.handle('plugin', req => {
+    // plugin://asset/<pluginId>/<path inside the plugin folder>
+    const [pluginId, ...segments] = new URL(req.url).pathname
+      .split('/').filter(Boolean).map(decodeURIComponent);
+    const filePath = resolvePluginFile(projectPath, pluginId, segments.join('/'));
+
+    return filePath
+      ? net.fetch(url.pathToFileURL(filePath).toString())
+      : new Response(null, { status: 404 });
+  });
+
   ses.protocol.handle('resources', req => {
     const filePath = req.url.replace('resources://', '');
 
@@ -249,7 +261,10 @@ export const createProjectWindow = async (projectPath: string) => {
       return;
     }
 
+    clearPluginsDirs(projectPath);
+
     ses.protocol.unhandle('project');
+    ses.protocol.unhandle('plugin');
     ses.protocol.unhandle('resources');
     ses.protocol.unhandle('app');
     abortController.abort();

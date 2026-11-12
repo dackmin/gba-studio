@@ -82,8 +82,13 @@ export const getSoundName = (filePath?: string) => {
   return filePath.replace(/\.(wav|mod|json)$/, '');
 };
 
-export const getAssetUrl = (asset?: { path?: string; _version?: number }) =>
-  `project://${asset?.path}` + (asset?._version ? `?v=${asset._version}` : '');
+export const getAssetUrl = (
+  asset?: Partial<
+    GameSpriteFile | GameBackgroundFile | GameFontFile | GameSoundFile | GameMusicFile
+  >,
+) => asset?._url ?? (
+  `project://${asset?.path}` + (asset?._version ? `?v=${asset._version}` : '')
+);
 
 export const loadImage = async (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -269,3 +274,6 @@ export const duplicateSensor = (scene: GameScene, sensor: GameSensor): GameSenso
 
   return newSensor;
 };
+
+export const getFileBaseName = (filePath: string) =>
+  (filePath.split(/[\\/]/).pop() ?? '').replace(/\.[^.]*$/, '') || 'untitled';

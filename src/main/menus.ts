@@ -7,6 +7,7 @@ import {
 } from 'electron';
 
 import { createSelectionWindow } from './windows';
+import { installCliTools } from './cli';
 
 export const createMenus = (type: 'project-selection' | 'editor') => {
   const isMac = process.platform === 'darwin';
@@ -17,6 +18,13 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
       label: app.name,
       submenu: [
         { role: 'about' },
+        { type: 'separator' },
+        {
+          label: 'Install CLI Tools',
+          click: async () => {
+            await installCliTools();
+          },
+        },
         { type: 'separator' },
         { role: 'services' },
         { type: 'separator' },
@@ -303,6 +311,15 @@ export const createMenus = (type: 'project-selection' | 'editor') => {
     {
       role: 'help',
       submenu: [
+        ...!isMac ? [
+          {
+            label: 'Install CLI Tools',
+            click: async () => {
+              await installCliTools();
+            },
+          },
+          { type: 'separator' },
+        ] as MenuItemConstructorOptions[] : [],
         {
           label: 'Learn More',
           click: async () => {

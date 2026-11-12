@@ -4,7 +4,7 @@ import { Text } from '@radix-ui/themes';
 
 import type { SetPlayerPositionEvent } from '../../../types';
 import { findBackground, getAssetUrl, getImageSize, pixelToTile } from '../../../helpers';
-import { useApp, useGridSize, useSceneForm } from '../../services/hooks';
+import { useAssets, useGridSize, useSceneForm } from '../../services/hooks';
 import EventValueField from '../EventValueField';
 
 export interface EventSetPlayerPositionProps {
@@ -18,7 +18,7 @@ const EventSetPlayerPosition = ({
   event,
   onValueChange,
 }: EventSetPlayerPositionProps) => {
-  const { backgrounds } = useApp();
+  const { backgrounds } = useAssets();
   const { scene } = useSceneForm();
   const gridSize = useGridSize(scene);
   const [size, setSize] = useState([240, 160]);

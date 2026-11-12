@@ -8,7 +8,7 @@ import {
 import { ContextMenu } from '@radix-ui/themes';
 
 import type { GameActor } from '../../../types';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useAssets, useCanvas } from '../../services/hooks';
 import { findSprite, tileToPixel } from '../../../helpers';
 import { DEFAULT_SPRITE_SIZE } from '../../../commons';
 import { usePreviewCursor } from '../../services/hooks';
@@ -33,7 +33,7 @@ const Actor = ({
 }: ActorProps) => {
   const { zoom } = useInfiniteCanvas();
   const cursor = usePreviewCursor(preview);
-  const { sprites } = useApp();
+  const { sprites } = useAssets();
   const { tool, selectedItem } = useCanvas();
 
   const onSelect_ = useCallback((e?: MouseEvent<HTMLElement>) => {

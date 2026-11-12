@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/sprite.json",
+  "type": "sprite",
+  "id": "star",
+  "name": "Star",
+  "width": 16,
+  "height": 16,
+  "transparentColor": "#00ff00",
+  "path": "graphics/star.bmp",
+  "format": "bmp",
+  "animations": []
+}

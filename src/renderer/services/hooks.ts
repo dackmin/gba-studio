@@ -4,6 +4,7 @@ import {
   use,
   useDeferredValue,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -11,7 +12,7 @@ import {
 import { useInfiniteCanvas, useTimeout } from '@junipero/react';
 
 import { findFont, getAssetUrl, getGridSize } from '../../helpers';
-import type { GameScene } from '../../types';
+import type { GameScene, PluginAssets } from '../../types';
 import { hexToRgb } from './helpers';
 import {
   AppContext,
@@ -81,6 +82,37 @@ export const useQuery = <T = Record<string, string>>(init: T = {} as T) => {
 
 export const useApp = () => use(AppContext);
 
+export const useAssets = () => {
+  const { sprites, backgrounds, fonts, sounds, music, plugins } = useApp();
+
+  return useMemo(() => {
+    const provided = (plugins ?? [])
+      .filter(p => p.enabled && p._assets)
+      .map(p => p._assets!);
+
+    return {
+      sprites: [...sprites, ...provided.flatMap(a => a.sprites)],
+      backgrounds: [...backgrounds, ...provided.flatMap(a => a.backgrounds)],
+      fonts: [...fonts, ...provided.flatMap(a => a.fonts)],
+      sounds: [...sounds, ...provided.flatMap(a => a.sounds)],
+      music: [...music, ...provided.flatMap(a => a.music)],
+    };
+  }, [sprites, backgrounds, fonts, sounds, music, plugins]);
+};
+
+export const usePluginAssets = <T extends keyof PluginAssets>(name: T) => {
+  const { plugins } = useApp();
+
+  return useMemo(() => (plugins ?? [])
+    .map(p => ({
+      plugin: p,
+      items: (p._assets?.[name] ?? [])
+        .filter(item => item.discoverable !== false) as PluginAssets[T],
+    }))
+    .filter(({ plugin, items }) => plugin.enabled && items.length),
+  [plugins, name]);
+};
+
 export const useGridSize = (scene?: GameScene) => getGridSize(scene?.map?.gridSize);
 export const useEditor = () => use(EditorContext);
 export const useCanvas = () => use(CanvasContext);
@@ -99,7 +131,8 @@ export const useAudio = () => use(AudioContext);
 export const useDraggable = <T>() => use<DraggableContextType<T>>(DraggableContext);
 
 export const useProjectFont = () => {
-  const { project, fonts } = useApp();
+  const { project } = useApp();
+  const { fonts } = useAssets();
   const selected = findFont(fonts, project?.settings?.font);
 
   return {
