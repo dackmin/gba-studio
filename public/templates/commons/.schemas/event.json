@@ -62,6 +62,10 @@
       "enum": ["left", "right", "top", "bottom"],
       "type": "string"
     },
+    "CollisionSide": {
+      "enum": ["none", "up", "down", "left", "right"],
+      "type": "string"
+    },
     "DynamicCameraValue": {
       "type": "object",
       "additionalProperties": false,
@@ -112,6 +116,9 @@
         "type": {
           "type": "string",
           "const": "collision-side"
+        },
+        "name": {
+          "$ref": "#/definitions/CollisionSide"
         }
       }
     },
