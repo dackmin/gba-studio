@@ -7,6 +7,7 @@ import {
   cropIndexedImage,
   decodeIndexedBmp,
   encodeIndexedBmp,
+  normalizeBackgroundBmp,
   getBackgroundLayoutForImage,
   quantizeToPalette,
   resizeToFit,
@@ -89,6 +90,23 @@ describe('main/images', () => {
       const outside = cropIndexedImage(decoded, decoded.width - 4, 0, 16, 8);
       expect(outside.indices[4]).toBe(0);
       expect(outside.indices[0]).toBe(decoded.indices[decoded.width - 4]);
+    });
+  });
+
+  describe('normalizeBackgroundBmp', () => {
+    it('should free the first palette color without changing how the image looks', async () => {
+      const image = await Jimp.read(path.resolve('./tests/fixtures/sprite.png')) as any;
+      const { buffer } = await toBmp(image, { transparentColor: '#00ff00' });
+      const before = decodeIndexedBmp(buffer);
+      const normalized = normalizeBackgroundBmp(buffer, '#000000');
+      const after = decodeIndexedBmp(normalized);
+
+      expect(before.indices.includes(0)).toBe(true);
+      expect(after.palette[0]).toEqual([0, 0, 0]);
+      expect(after.indices.includes(0)).toBe(false);
+      expect(Array.from(after.indices, i => after.palette[i].join())).toEqual(
+        Array.from(before.indices, i => before.palette[i].join()));
+      expect(normalizeBackgroundBmp(normalized, '#000000')).toBe(normalized);
     });
   });
 

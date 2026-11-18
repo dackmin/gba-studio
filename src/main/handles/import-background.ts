@@ -8,6 +8,7 @@ import { Jimp } from 'jimp';
 import type { GameBackgroundFile } from '../../types';
 import { sanitizeBackground } from '../sanitize';
 import { toFileSlug } from '../../helpers';
+import { BACKGROUND_TRANSPARENT_COLOR } from '../../commons';
 import { resizeToFit, toBmp } from '../images';
 
 export default async function (
@@ -31,11 +32,14 @@ export default async function (
   // @ts-expect-error - jimp is weird
   resizeToFit(image, 'background');
 
-  // Backgrounds can't be customized by users (no transparency color picker), so artwork pixels
-  // matching the reserved palette color must never be keyed out: only actually transparent
-  // pixels (transparent PNG holes and resize padding) are.
+  // Backgrounds can't be customized by users (no transparency color picker), so the transparent
+  // color is always the default one, and artwork pixels matching it must never be keyed out: only
+  // actually transparent pixels (transparent PNG holes and resize padding) are.
   // @ts-expect-error - jimp is weird
-  const { buffer: bmpBuffer } = await toBmp(image, { matchTransparent: false });
+  const { buffer: bmpBuffer } = await toBmp(image, {
+    transparentColor: BACKGROUND_TRANSPARENT_COLOR,
+    matchTransparent: false,
+  });
 
   await fsp.writeFile(path.join(graphicsDir, fileName + '.bmp'), bmpBuffer);
 

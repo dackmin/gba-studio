@@ -297,6 +297,58 @@ export function decodeIndexedBmp (bmp: Buffer): QuantizedImage {
   return { width, height, indices, palette };
 }
 
+export function normalizeBackgroundBmp (bmp: Buffer, color: string): Buffer {
+  try {
+    const image = decodeIndexedBmp(bmp);
+    const rgb = hexToRgb(color);
+    const [previous] = image.palette;
+
+    if (previous[0] === rgb[0] && previous[1] === rgb[1] && previous[2] === rgb[2]) {
+      return bmp;
+    }
+
+    const used = new Uint32Array(256);
+
+    for (const index of image.indices) {
+      used[index]++;
+    }
+
+    if (used[0] > 0) {
+      const distance = (c: number[]) =>
+        (c[0] - previous[0]) ** 2 + (c[1] - previous[1]) ** 2 + (c[2] - previous[2]) ** 2;
+      // The same color may already exist, otherwise take a free slot (or the closest color when
+      // the palette is full)
+      let target = image.palette.findIndex((c, i) => i > 0 && distance(c) === 0);
+
+      if (target < 0) {
+        const free = image.palette.findIndex((_, i) => i > 0 && used[i] === 0);
+
+        target = free >= 0 ? free : image.palette.length < 256 ? image.palette.length : -1;
+
+        if (target >= 0) {
+          image.palette[target] = previous;
+        } else {
+          target = image.palette.reduce((best, c, i) => (
+            i > 0 && (best < 0 || distance(c) < distance(image.palette[best])) ? i : best
+          ), -1);
+        }
+      }
+
+      for (let i = 0; i < image.indices.length; i++) {
+        if (image.indices[i] === 0) {
+          image.indices[i] = target;
+        }
+      }
+    }
+
+    image.palette[0] = rgb;
+
+    return encodeIndexedBmp(image, image.palette.length <= 16 ? 16 : 256);
+  } catch {
+    return bmp;
+  }
+}
+
 export interface BackgroundTilesCount {
   largest: number;
   loaded: number;

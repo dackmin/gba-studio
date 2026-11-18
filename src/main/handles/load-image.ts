@@ -2,6 +2,7 @@ import type { IpcMainInvokeEvent } from 'electron';
 import { Jimp } from 'jimp';
 
 import type { SpriteBitmap } from '../../types';
+import { BACKGROUND_TRANSPARENT_COLOR } from '../../commons';
 import {
   countBackgroundTiles,
   decodeIndexedBmp,
@@ -26,11 +27,11 @@ export default async function (
   // @ts-expect-error - jimp is weird
   const { resized } = resizeToFit(image, mode);
 
-  // Backgrounds can't be customized by users (no transparency color picker), so artwork pixels
-  // matching the reserved palette color must never be keyed out: only actually transparent
-  // pixels (transparent PNG holes and resize padding) are.
+  // Backgrounds can't be customized by users (no transparency color picker), so the transparent
+  // color is always the default one, and artwork pixels matching it must never be keyed out: only
+  // actually transparent pixels (transparent PNG holes and resize padding) are.
   const bmpOptions = mode === 'background'
-    ? { matchTransparent: false }
+    ? { transparentColor: BACKGROUND_TRANSPARENT_COLOR, matchTransparent: false }
     : { transparentColor: opts?.transparencyColor };
 
   // @ts-expect-error - jimp is weird

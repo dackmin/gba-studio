@@ -23,10 +23,11 @@ import {
   decodeIndexedBmp,
   encodeIndexedBmp,
   getBackgroundLayoutForImage,
+  normalizeBackgroundBmp,
   toBmp,
   getBackgroundLayout,
 } from '../../images';
-import { BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
+import { BACKGROUND_TRANSPARENT_COLOR, BACKGROUND_VRAM_TILES_BUDGET } from '../../../commons';
 import { getBuildDir } from './utils';
 
 export const getAssetBaseName = (
@@ -36,15 +37,15 @@ export const getAssetBaseName = (
     .replace(/^(sprite|background|font|sound|music)_/, '')
   : path.basename(asset.path, path.extname(asset.path));
 
-export async function getShasum (filePath: string) {
+export async function getShasum (file: string | Buffer) {
   const hash = createHash('sha256');
-  const fileBuffer = await fs.readFile(filePath);
+  const fileBuffer = typeof file === 'string' ? await fs.readFile(file) : file;
   hash.update(fileBuffer);
 
   return hash.digest('hex');
 }
 
-export async function isSame (source: string, destination: string) {
+export async function isSame (source: string | Buffer, destination: string) {
   try {
     const sourceShasum = await getShasum(source);
     const destinationShasum = await getShasum(destination);
@@ -76,7 +77,8 @@ async function cutBackground (
   graphicsOutputDir: string,
 ) {
   const source = path.resolve(path.dirname(build.projectPath), background.path);
-  const image = decodeIndexedBmp(await fs.readFile(source));
+  const image = decodeIndexedBmp(
+    normalizeBackgroundBmp(await fs.readFile(source), BACKGROUND_TRANSPARENT_COLOR));
   const fileName = getAssetBaseName(background);
   const expected = new Set<string>();
   const jsonContent = JSON.stringify({ type: 'regular_bg' }, null, 2);
@@ -213,7 +215,9 @@ export async function copyAssets (
     await removeStaleBackgroundFiles(
       graphicsOutputDir, fileName, new Set([fileName + '.bmp', fileName + '.json']));
 
-    if (await isSame(source, destination)) {
+    const bmp = normalizeBackgroundBmp(await fs.readFile(source), BACKGROUND_TRANSPARENT_COLOR);
+
+    if (await isSame(bmp, destination)) {
       build.events.onLog(`Skipping ${background.name}, cached`);
       continue;
     }
@@ -224,7 +228,7 @@ export async function copyAssets (
       'utf-8'
     );
 
-    await fse.copyFile(source, destination);
+    await fs.writeFile(destination, bmp);
     build.events.onLog(`Copied background: ${background.name} (${fileName}.json)`);
   }
 
