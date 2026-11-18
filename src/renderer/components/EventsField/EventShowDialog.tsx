@@ -85,31 +85,33 @@ const EventShowDialog = ({
       <div className="flex flex-col gap-2">
         <Text size="1" className="text-slate">Text</Text>
         <div className="relative">
-          <Tooltip.Root
-            open={opened}
-            delayDuration={0}
-          >
-            <Tooltip.Trigger asChild>
-              <TextArea
-                rows={4}
-                value={event.text}
-                onChange={onChange.bind(null, 'text')}
-                onFocus={() => setOpened(true)}
-                onBlur={() => setOpened(false)}
-              />
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content side="left" align="center" sideOffset={20}>
-                <DialogPreview
-                  className="absolute top-1/2 right-full -translate-y-1/2 ml-4"
-                  text={event.text}
-                  portrait={portrait}
-                  portraitPosition={event.portraitPosition}
-                  font={font}
+          <Tooltip.Provider>
+            <Tooltip.Root
+              open={opened}
+              delayDuration={0}
+            >
+              <Tooltip.Trigger asChild>
+                <TextArea
+                  rows={4}
+                  value={event.text}
+                  onChange={onChange.bind(null, 'text')}
+                  onFocus={() => setOpened(true)}
+                  onBlur={() => setOpened(false)}
                 />
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content side="left" align="center" sideOffset={20}>
+                  <DialogPreview
+                    className="absolute top-1/2 right-full -translate-y-1/2 ml-4"
+                    text={event.text}
+                    portrait={portrait}
+                    portraitPosition={event.portraitPosition}
+                    font={font}
+                  />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
         </div>
       </div>
       <div className="flex flex-col gap-2">

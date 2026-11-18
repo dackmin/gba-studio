@@ -172,25 +172,27 @@ const Choice = ({
           </div>
           <div className="flex flex-col gap-2" ref={textFieldRef}>
             <Text size="1" className="text-slate">Text</Text>
-            <Tooltip.Root open={opened} delayDuration={0}>
-              <Tooltip.Trigger asChild>
-                <TextField.Root
-                  value={choice.text}
-                  onChange={onTextChange.bind(null, 'text')}
-                  onFocus={() => setOpened(true)}
-                  onBlur={() => setOpened(false)}
-                />
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content side="left" align="center" sideOffset={20}>
-                  <DialogMenuPreview
-                    items={choices.map(c => c.text)}
-                    current={index}
-                    font={font}
+            <Tooltip.Provider>
+              <Tooltip.Root open={opened} delayDuration={0}>
+                <Tooltip.Trigger asChild>
+                  <TextField.Root
+                    value={choice.text}
+                    onChange={onTextChange.bind(null, 'text')}
+                    onFocus={() => setOpened(true)}
+                    onBlur={() => setOpened(false)}
                   />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content side="left" align="center" sideOffset={20}>
+                    <DialogMenuPreview
+                      items={choices.map(c => c.text)}
+                      current={index}
+                      font={font}
+                    />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="flex flex-col gap-2" ref={conditionsRef}>
             <Text size="1" className="text-slate">Condition</Text>
