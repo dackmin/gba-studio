@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.13.0](https://github.com/dackmin/gba-studio/compare/v0.12.0...v0.13.0) (2026-11-18)
+
+### Features
+
+* allow plugins to have scripts & variables ([8f4680f](https://github.com/dackmin/gba-studio/commit/8f4680fd6d8620a36e51bc54efd97e4b0e95f1b8))
+* also allow to add plugin zip/tar ([73af091](https://github.com/dackmin/gba-studio/commit/73af0916420244e192c63b3b41449a8f1f416415))
+
+### Bug Fixes
+
+* another radix explosion ([8bd7ec5](https://github.com/dackmin/gba-studio/commit/8bd7ec5bf7c19bb38077305a0c6cd9356b667bd1))
+* can finally update radix yay ([635165e](https://github.com/dackmin/gba-studio/commit/635165e2df0d1da18760bcdf00d072efd0210bb5))
+* correctly blend sprites & texts ([3462b30](https://github.com/dackmin/gba-studio/commit/3462b307eab55ce95dbf661334073df9a125b092))
+* correctly escape variable names inside cpp ([867aae5](https://github.com/dackmin/gba-studio/commit/867aae50bfee2a6dd0f2c4065c79740d39b67807))
+* for a previous fix that fucked backgrounds colors ([8c6973d](https://github.com/dackmin/gba-studio/commit/8c6973d908b3eb99ae614742a7784813915709f6))
+* handle windows reversed slashes ([0b37461](https://github.com/dackmin/gba-studio/commit/0b374616e8baed428cc205daf06928e7e6f8f188))
+* im a dumbfuck ([4941b75](https://github.com/dackmin/gba-studio/commit/4941b75958373f6a69b2a7f5be1a6e5508caf339))
+* plugins variables access ([c5f0bc5](https://github.com/dackmin/gba-studio/commit/c5f0bc5424f18c8f575e6913bec142ff9bedf011))
+* schemas ([72b738a](https://github.com/dackmin/gba-studio/commit/72b738abe680fc84d11a1e7dd7f67219726c4b82))
+* upgrade various deps ([d7e65ca](https://github.com/dackmin/gba-studio/commit/d7e65ca266850fcc922be36773ecf9549c0ea958))
+
 ## [0.12.0](https://github.com/dackmin/gba-studio/compare/v0.11.0...v0.12.0) (2026-11-10)
 
 ### Features
