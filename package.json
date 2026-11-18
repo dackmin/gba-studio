@@ -45,7 +45,7 @@
     "handlebars": "4.7.10",
     "image-size": "2.1.0",
     "jimp": "1.6.1",
-    "radix-ui": "1.4.3",
+    "radix-ui": "1.8.1",
     "re-resizable": "6.11.2",
     "react": "19.3.1",
     "react-colorful": "5.8.1",
@@ -84,13 +84,13 @@
     "commit-and-tag-version": "13.3.0",
     "commitlint": "21.2.4",
     "debug": "4.4.3",
-    "electron": "45.3.3",
+    "electron": "45.3.4",
     "eslint": "10.15.0",
     "oxlint": "1.94.0",
     "tailwindcss": "4.3.5",
     "typescript": "7.0.2",
     "vite": "8.3.8",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "build": {
     "electronLanguages": [
