@@ -11,7 +11,7 @@ constexpr neo::types::if_expression_value {{../prefix}}(
 );
 {{else if (eq this.type "variable")}}
 constexpr bn::string_view {{../prefix}}_type = "variable";
-constexpr bn::string_view {{../prefix}}_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{else}}""{{/with}};
+constexpr bn::string_view {{../prefix}}_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{escapeCpp variable.name}}"{{else}}""{{/with}};
 constexpr neo::types::if_expression_variable {{../prefix}}(
   {{../prefix}}_type,
   {{../prefix}}_name

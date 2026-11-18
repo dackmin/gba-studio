@@ -147,7 +147,7 @@ namespace neo::variables
         "{{this.defaultValue}}",
         {{fixed this.defaultValue}}
       );
-      all.insert_or_assign("{{this.name}}", &items[next++]);
+      all.insert_or_assign("{{escapeCpp this.name}}", &items[next++]);
       {{/each}}
       {{/each}}
       {{#each scripts}}
@@ -203,7 +203,7 @@ namespace neo::variables
     {
       {{#each variables}}
       {{#each this.values}}
-      set_raw("{{this.name}}", {{int this.defaultValue}}, {{bool this.defaultValue}}, "{{this.defaultValue}}", {{fixed this.defaultValue}});
+      set_raw("{{escapeCpp this.name}}", {{int this.defaultValue}}, {{bool this.defaultValue}}, "{{this.defaultValue}}", {{fixed this.defaultValue}});
       {{/each}}
       {{/each}}
       {{#each scripts}}

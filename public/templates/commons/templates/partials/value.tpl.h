@@ -1,6 +1,6 @@
 constexpr bn::string_view {{prefix}}_name = "";
 {{#if (eq value.type "variable")}}
-constexpr bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{variable.name}}"{{else}}"{{escapeCpp value.name}}"{{/with}};
+constexpr bn::string_view {{prefix}}_string_value = {{#with (getVariable @root/variables value.name) as | variable |}}"{{escapeCpp variable.name}}"{{else}}"{{escapeCpp value.name}}"{{/with}};
 {{else if (eq value.type "actor")}}
 constexpr bn::string_view {{prefix}}_string_value = "{{escapeCpp value.name}}";
 {{else if (not (isInt value.value))}}

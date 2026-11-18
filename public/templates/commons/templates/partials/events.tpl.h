@@ -219,7 +219,7 @@ constexpr const neo::types::event* {{../prefix}}_{{@index}}_events[] = {
   {{/each}}
 };
 {{/if}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.variable) as | variable |}}"{{variable.name}}"{{else}}""{{/with}};
+constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.variable) as | variable |}}"{{escapeCpp variable.name}}"{{else}}""{{/with}};
 constexpr neo::types::variable_change_event {{../prefix}}_{{@index}}(
   neo::types::event_type::ON_VARIABLE_CHANGE,
   {{../prefix}}_{{@index}}_variable_name,
@@ -251,7 +251,7 @@ constexpr neo::types::camera_bounds_event {{../prefix}}_{{@index}}(
   {{/if}}
 );
 {{else if (eq this.type "set-variable")}}
-constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{variable.name}}"{{/with}};
+constexpr bn::string_view {{../prefix}}_{{@index}}_variable_name = {{#with (getVariable @root/variables this.name) as | variable |}}"{{escapeCpp variable.name}}"{{/with}};
 constexpr bn::string_view {{../prefix}}_{{@index}}_string_value = "{{escapeCpp this.value}}";
 constexpr neo::variables::value {{../prefix}}_{{@index}}_value(
   {{../prefix}}_{{@index}}_variable_name,
