@@ -8,6 +8,7 @@
 #include <bn_blending.h>
 #include <bn_blending_actions.h>
 #include <bn_optional.h>
+#include <bn_string.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
@@ -1315,12 +1316,34 @@ namespace neo::types
   struct plugin_event: event
   {
     int handler_id;
+    bn::string_view plugin_id;
     bn::span<const plugin_param> params;
 
     constexpr plugin_event(
-      event_type type_, int handler_id_, bn::span<const plugin_param> params_
+      event_type type_, int handler_id_, bn::string_view plugin_id_, bn::span<const plugin_param> params_
     ):
-      event(type_), handler_id(handler_id_), params(params_) {}
+      event(type_), handler_id(handler_id_), plugin_id(plugin_id_), params(params_) {}
+
+    // variables declared by the plugin are namespaced
+    inline bool has_variable(neo::variables::registry& variables, bn::string_view name) const
+    {
+      bn::string<64> key;
+      key.append(plugin_id);
+      key.append('_');
+      key.append(name);
+
+      return variables.has(key);
+    }
+
+    inline neo::variables::variable& variable(neo::variables::registry& variables, bn::string_view name) const
+    {
+      bn::string<64> key;
+      key.append(plugin_id);
+      key.append('_');
+      key.append(name);
+
+      return variables.get(key);
+    }
 
     inline const event_value* find(bn::string_view key) const
     {

@@ -713,9 +713,11 @@ constexpr neo::types::plugin_param {{../prefix}}_{{@index}}_params[] = {
   {{/each}}
 };
 {{/if}}
+constexpr bn::string_view {{../prefix}}_{{@index}}_plugin_id = "{{escapeCpp this._plugin.pluginId}}";
 constexpr neo::types::plugin_event {{../prefix}}_{{@index}}(
   neo::types::event_type::PLUGIN,
   {{this._plugin.handlerId}},
+  {{../prefix}}_{{@index}}_plugin_id,
   {{#if this._plugin.params.length}}
   bn::span<const neo::types::plugin_param>({{../prefix}}_{{@index}}_params)
   {{else}}

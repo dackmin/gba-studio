@@ -1603,9 +1603,11 @@ namespace neo::scenes
     neo::types::plugin_param("sprite", &scene_0_event_52_param_3_value, &bn::sprite_items::plugin_log_message_star),
     neo::types::plugin_param("level", &scene_0_event_52_param_4_value)
   };
+  constexpr bn::string_view scene_0_event_52_plugin_id = "log-message";
   constexpr neo::types::plugin_event scene_0_event_52(
     neo::types::event_type::PLUGIN,
     0,
+    scene_0_event_52_plugin_id,
     bn::span<const neo::types::plugin_param>(scene_0_event_52_params)
   );
   constexpr const neo::types::event* scene_0_events[] = {
@@ -3661,9 +3663,11 @@ namespace neo::scenes
     neo::types::plugin_param("sprite", &actor_dialogs_script_event_1_param_3_value),
     neo::types::plugin_param("level", &actor_dialogs_script_event_1_param_4_value)
   };
+  constexpr bn::string_view actor_dialogs_script_event_1_plugin_id = "log-message";
   constexpr neo::types::plugin_event actor_dialogs_script_event_1(
     neo::types::event_type::PLUGIN,
     0,
+    actor_dialogs_script_event_1_plugin_id,
     bn::span<const neo::types::plugin_param>(actor_dialogs_script_event_1_params)
   );
   constexpr const neo::types::event* actor_dialogs_script_events[] = {
@@ -3690,7 +3694,7 @@ namespace neo::scenes
   constexpr neo::variables::value plugin_log_message_log_twice_script_event_0_value(
     plugin_log_message_log_twice_script_event_0_variable_name,
     1,
-    false,
+    true,
     plugin_log_message_log_twice_script_event_0_string_value,
     1
   );
@@ -3700,209 +3704,218 @@ namespace neo::scenes
     &plugin_log_message_log_twice_script_event_0_value,
     neo::types::variable_operation::INCREMENT
   );
-  // Event 1: wait
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_duration_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_duration_string_value = "__script_param_plugin:log-message:script-log-twice:amount";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_duration_raw_value(
-    plugin_log_message_log_twice_script_event_1_duration_name,
+  // Event 1: plugin:log-message:log
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_0_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_0_string_value = "First log";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_param_0_raw_value(
+    plugin_log_message_log_twice_script_event_1_param_0_name,
     0,
+    false,
+    plugin_log_message_log_twice_script_event_1_param_0_string_value,
+    0
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_0_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_param_0_value(
+    plugin_log_message_log_twice_script_event_1_param_0_type,
+    &plugin_log_message_log_twice_script_event_1_param_0_raw_value
+  );
+  
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_1_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_1_string_value = "1";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_param_1_raw_value(
+    plugin_log_message_log_twice_script_event_1_param_1_name,
+    1,
     true,
-    plugin_log_message_log_twice_script_event_1_duration_string_value,
-    0
+    plugin_log_message_log_twice_script_event_1_param_1_string_value,
+    1
   );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_duration_type = "variable";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_duration_value(
-    plugin_log_message_log_twice_script_event_1_duration_type,
-    &plugin_log_message_log_twice_script_event_1_duration_raw_value
-  );
-  
-  constexpr neo::types::wait_event plugin_log_message_log_twice_script_event_1(neo::types::event_type::WAIT, &plugin_log_message_log_twice_script_event_1_duration_value);
-  // Event 2: fade-in
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_2_duration_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_2_duration_string_value = "__script_param_plugin:log-message:script-log-twice:source";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_2_duration_raw_value(
-    plugin_log_message_log_twice_script_event_2_duration_name,
-    0,
-    true,
-    plugin_log_message_log_twice_script_event_2_duration_string_value,
-    0
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_2_duration_type = "variable";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_2_duration_value(
-    plugin_log_message_log_twice_script_event_2_duration_type,
-    &plugin_log_message_log_twice_script_event_2_duration_raw_value
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_1_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_param_1_value(
+    plugin_log_message_log_twice_script_event_1_param_1_type,
+    &plugin_log_message_log_twice_script_event_1_param_1_raw_value
   );
   
-  BN_DATA_EWRAM neo::types::fade_event plugin_log_message_log_twice_script_event_2(neo::types::event_type::FADE_IN, &plugin_log_message_log_twice_script_event_2_duration_value);
-  // Event 3: move-actor-to
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_x_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_x_string_value = "0";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_x_raw_value(
-    plugin_log_message_log_twice_script_event_3_x_name,
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_2_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_2_string_value = "false";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_param_2_raw_value(
+    plugin_log_message_log_twice_script_event_1_param_2_name,
     0,
     false,
-    plugin_log_message_log_twice_script_event_3_x_string_value,
+    plugin_log_message_log_twice_script_event_1_param_2_string_value,
     0
   );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_x_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_x_value(
-    plugin_log_message_log_twice_script_event_3_x_type,
-    &plugin_log_message_log_twice_script_event_3_x_raw_value
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_2_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_param_2_value(
+    plugin_log_message_log_twice_script_event_1_param_2_type,
+    &plugin_log_message_log_twice_script_event_1_param_2_raw_value
   );
   
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_y_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_y_string_value = "0";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_y_raw_value(
-    plugin_log_message_log_twice_script_event_3_y_name,
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_3_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_3_string_value = "";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_param_3_raw_value(
+    plugin_log_message_log_twice_script_event_1_param_3_name,
     0,
     false,
-    plugin_log_message_log_twice_script_event_3_y_string_value,
+    plugin_log_message_log_twice_script_event_1_param_3_string_value,
     0
   );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_y_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_y_value(
-    plugin_log_message_log_twice_script_event_3_y_type,
-    &plugin_log_message_log_twice_script_event_3_y_raw_value
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_3_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_param_3_value(
+    plugin_log_message_log_twice_script_event_1_param_3_type,
+    &plugin_log_message_log_twice_script_event_1_param_3_raw_value
   );
   
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_speed_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_speed_string_value = "2";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_speed_raw_value(
-    plugin_log_message_log_twice_script_event_3_speed_name,
-    2,
-    true,
-    plugin_log_message_log_twice_script_event_3_speed_string_value,
-    2
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_speed_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_speed_value(
-    plugin_log_message_log_twice_script_event_3_speed_type,
-    &plugin_log_message_log_twice_script_event_3_speed_raw_value
-  );
-  
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_actor = "__script_param_plugin:log-message:script-log-twice:target";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_direction_priority = "horizontal";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_animation = "";
-  BN_DATA_EWRAM neo::types::move_actor_to_event plugin_log_message_log_twice_script_event_3(
-    neo::types::event_type::MOVE_ACTOR_TO,
-    plugin_log_message_log_twice_script_event_3_actor,
-    &plugin_log_message_log_twice_script_event_3_x_value,
-    &plugin_log_message_log_twice_script_event_3_y_value,
-    &plugin_log_message_log_twice_script_event_3_speed_value,
-    plugin_log_message_log_twice_script_event_3_direction_priority,
-    plugin_log_message_log_twice_script_event_3_animation,
-    false
-  );
-  // Event 4: plugin:log-message:log
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_0_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_0_string_value = "Twice";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_4_param_0_raw_value(
-    plugin_log_message_log_twice_script_event_4_param_0_name,
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_4_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_4_string_value = "info";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_1_param_4_raw_value(
+    plugin_log_message_log_twice_script_event_1_param_4_name,
     0,
     false,
-    plugin_log_message_log_twice_script_event_4_param_0_string_value,
+    plugin_log_message_log_twice_script_event_1_param_4_string_value,
     0
   );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_0_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_4_param_0_value(
-    plugin_log_message_log_twice_script_event_4_param_0_type,
-    &plugin_log_message_log_twice_script_event_4_param_0_raw_value
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_param_4_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_1_param_4_value(
+    plugin_log_message_log_twice_script_event_1_param_4_type,
+    &plugin_log_message_log_twice_script_event_1_param_4_raw_value
   );
   
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_1_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_1_string_value = "2";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_4_param_1_raw_value(
-    plugin_log_message_log_twice_script_event_4_param_1_name,
-    2,
-    true,
-    plugin_log_message_log_twice_script_event_4_param_1_string_value,
-    2
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_1_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_4_param_1_value(
-    plugin_log_message_log_twice_script_event_4_param_1_type,
-    &plugin_log_message_log_twice_script_event_4_param_1_raw_value
-  );
-  
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_2_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_2_string_value = "false";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_4_param_2_raw_value(
-    plugin_log_message_log_twice_script_event_4_param_2_name,
-    0,
-    false,
-    plugin_log_message_log_twice_script_event_4_param_2_string_value,
-    0
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_2_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_4_param_2_value(
-    plugin_log_message_log_twice_script_event_4_param_2_type,
-    &plugin_log_message_log_twice_script_event_4_param_2_raw_value
-  );
-  
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_3_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_3_string_value = "";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_4_param_3_raw_value(
-    plugin_log_message_log_twice_script_event_4_param_3_name,
-    0,
-    false,
-    plugin_log_message_log_twice_script_event_4_param_3_string_value,
-    0
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_3_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_4_param_3_value(
-    plugin_log_message_log_twice_script_event_4_param_3_type,
-    &plugin_log_message_log_twice_script_event_4_param_3_raw_value
-  );
-  
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_4_name = "";
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_4_string_value = "info";
-  constexpr neo::variables::value plugin_log_message_log_twice_script_event_4_param_4_raw_value(
-    plugin_log_message_log_twice_script_event_4_param_4_name,
-    0,
-    false,
-    plugin_log_message_log_twice_script_event_4_param_4_string_value,
-    0
-  );
-  constexpr bn::string_view plugin_log_message_log_twice_script_event_4_param_4_type = "value";
-  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_4_param_4_value(
-    plugin_log_message_log_twice_script_event_4_param_4_type,
-    &plugin_log_message_log_twice_script_event_4_param_4_raw_value
-  );
-  
-  constexpr neo::types::plugin_param plugin_log_message_log_twice_script_event_4_params[] = {
-    neo::types::plugin_param("message", &plugin_log_message_log_twice_script_event_4_param_0_value),
-    neo::types::plugin_param("count", &plugin_log_message_log_twice_script_event_4_param_1_value),
-    neo::types::plugin_param("loud", &plugin_log_message_log_twice_script_event_4_param_2_value),
-    neo::types::plugin_param("sprite", &plugin_log_message_log_twice_script_event_4_param_3_value),
-    neo::types::plugin_param("level", &plugin_log_message_log_twice_script_event_4_param_4_value)
+  constexpr neo::types::plugin_param plugin_log_message_log_twice_script_event_1_params[] = {
+    neo::types::plugin_param("message", &plugin_log_message_log_twice_script_event_1_param_0_value),
+    neo::types::plugin_param("count", &plugin_log_message_log_twice_script_event_1_param_1_value),
+    neo::types::plugin_param("loud", &plugin_log_message_log_twice_script_event_1_param_2_value),
+    neo::types::plugin_param("sprite", &plugin_log_message_log_twice_script_event_1_param_3_value),
+    neo::types::plugin_param("level", &plugin_log_message_log_twice_script_event_1_param_4_value)
   };
-  constexpr neo::types::plugin_event plugin_log_message_log_twice_script_event_4(
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_1_plugin_id = "log-message";
+  constexpr neo::types::plugin_event plugin_log_message_log_twice_script_event_1(
     neo::types::event_type::PLUGIN,
     0,
-    bn::span<const neo::types::plugin_param>(plugin_log_message_log_twice_script_event_4_params)
+    plugin_log_message_log_twice_script_event_1_plugin_id,
+    bn::span<const neo::types::plugin_param>(plugin_log_message_log_twice_script_event_1_params)
+  );
+  // Event 2: set-variable
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_2_variable_name = "log-message_Counter";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_2_string_value = "1";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_2_value(
+    plugin_log_message_log_twice_script_event_2_variable_name,
+    1,
+    true,
+    plugin_log_message_log_twice_script_event_2_string_value,
+    1
+  );
+  constexpr neo::types::set_variable_event plugin_log_message_log_twice_script_event_2(
+    neo::types::event_type::SET_VARIABLE,
+    plugin_log_message_log_twice_script_event_2_variable_name,
+    &plugin_log_message_log_twice_script_event_2_value,
+    neo::types::variable_operation::INCREMENT
+  );
+  // Event 3: plugin:log-message:log
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_0_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_0_string_value = "Second log";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_param_0_raw_value(
+    plugin_log_message_log_twice_script_event_3_param_0_name,
+    0,
+    false,
+    plugin_log_message_log_twice_script_event_3_param_0_string_value,
+    0
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_0_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_param_0_value(
+    plugin_log_message_log_twice_script_event_3_param_0_type,
+    &plugin_log_message_log_twice_script_event_3_param_0_raw_value
+  );
+  
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_1_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_1_string_value = "1";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_param_1_raw_value(
+    plugin_log_message_log_twice_script_event_3_param_1_name,
+    1,
+    true,
+    plugin_log_message_log_twice_script_event_3_param_1_string_value,
+    1
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_1_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_param_1_value(
+    plugin_log_message_log_twice_script_event_3_param_1_type,
+    &plugin_log_message_log_twice_script_event_3_param_1_raw_value
+  );
+  
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_2_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_2_string_value = "false";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_param_2_raw_value(
+    plugin_log_message_log_twice_script_event_3_param_2_name,
+    0,
+    false,
+    plugin_log_message_log_twice_script_event_3_param_2_string_value,
+    0
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_2_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_param_2_value(
+    plugin_log_message_log_twice_script_event_3_param_2_type,
+    &plugin_log_message_log_twice_script_event_3_param_2_raw_value
+  );
+  
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_3_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_3_string_value = "";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_param_3_raw_value(
+    plugin_log_message_log_twice_script_event_3_param_3_name,
+    0,
+    false,
+    plugin_log_message_log_twice_script_event_3_param_3_string_value,
+    0
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_3_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_param_3_value(
+    plugin_log_message_log_twice_script_event_3_param_3_type,
+    &plugin_log_message_log_twice_script_event_3_param_3_raw_value
+  );
+  
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_4_name = "";
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_4_string_value = "info";
+  constexpr neo::variables::value plugin_log_message_log_twice_script_event_3_param_4_raw_value(
+    plugin_log_message_log_twice_script_event_3_param_4_name,
+    0,
+    false,
+    plugin_log_message_log_twice_script_event_3_param_4_string_value,
+    0
+  );
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_param_4_type = "value";
+  constexpr neo::types::event_value plugin_log_message_log_twice_script_event_3_param_4_value(
+    plugin_log_message_log_twice_script_event_3_param_4_type,
+    &plugin_log_message_log_twice_script_event_3_param_4_raw_value
+  );
+  
+  constexpr neo::types::plugin_param plugin_log_message_log_twice_script_event_3_params[] = {
+    neo::types::plugin_param("message", &plugin_log_message_log_twice_script_event_3_param_0_value),
+    neo::types::plugin_param("count", &plugin_log_message_log_twice_script_event_3_param_1_value),
+    neo::types::plugin_param("loud", &plugin_log_message_log_twice_script_event_3_param_2_value),
+    neo::types::plugin_param("sprite", &plugin_log_message_log_twice_script_event_3_param_3_value),
+    neo::types::plugin_param("level", &plugin_log_message_log_twice_script_event_3_param_4_value)
+  };
+  constexpr bn::string_view plugin_log_message_log_twice_script_event_3_plugin_id = "log-message";
+  constexpr neo::types::plugin_event plugin_log_message_log_twice_script_event_3(
+    neo::types::event_type::PLUGIN,
+    0,
+    plugin_log_message_log_twice_script_event_3_plugin_id,
+    bn::span<const neo::types::plugin_param>(plugin_log_message_log_twice_script_event_3_params)
   );
   constexpr const neo::types::event* plugin_log_message_log_twice_script_events[] = {
     &plugin_log_message_log_twice_script_event_0,
     &plugin_log_message_log_twice_script_event_1,
     &plugin_log_message_log_twice_script_event_2,
     &plugin_log_message_log_twice_script_event_3,
-    &plugin_log_message_log_twice_script_event_4,
   };
   constexpr bn::string_view plugin_log_message_log_twice_script_id = "plugin:log-message:script-log-twice";
   constexpr bn::string_view plugin_log_message_log_twice_script_name = "plugin_log_message_log_twice";
-  constexpr bn::string_view plugin_log_message_log_twice_script_parameters[] = {
-    "__script_param_plugin:log-message:script-log-twice:amount",
-    "__script_param_plugin:log-message:script-log-twice:source",
-    "__script_param_plugin:log-message:script-log-twice:target"
-  };
   constexpr neo::types::script script_plugin_log_message_log_twice = {
     plugin_log_message_log_twice_script_id,
     plugin_log_message_log_twice_script_name,
-    5,
+    4,
     plugin_log_message_log_twice_script_events
 ,
-    3,
-    plugin_log_message_log_twice_script_parameters
+    0,
+    nullptr
   };
 
   // Default script
@@ -3942,6 +3955,7 @@ exports[`cli/build > should build a basic project successfully 2`] = `
 #include <bn_blending.h>
 #include <bn_blending_actions.h>
 #include <bn_optional.h>
+#include <bn_string.h>
 #include <bn_regular_bg_ptr.h>
 #include <bn_regular_bg_item.h>
 #include <bn_sprite_item.h>
@@ -5249,12 +5263,34 @@ namespace neo::types
   struct plugin_event: event
   {
     int handler_id;
+    bn::string_view plugin_id;
     bn::span<const plugin_param> params;
 
     constexpr plugin_event(
-      event_type type_, int handler_id_, bn::span<const plugin_param> params_
+      event_type type_, int handler_id_, bn::string_view plugin_id_, bn::span<const plugin_param> params_
     ):
-      event(type_), handler_id(handler_id_), params(params_) {}
+      event(type_), handler_id(handler_id_), plugin_id(plugin_id_), params(params_) {}
+
+    // variables declared by the plugin are namespaced
+    inline bool has_variable(neo::variables::registry& variables, bn::string_view name) const
+    {
+      bn::string<64> key;
+      key.append(plugin_id);
+      key.append('_');
+      key.append(name);
+
+      return variables.has(key);
+    }
+
+    inline neo::variables::variable& variable(neo::variables::registry& variables, bn::string_view name) const
+    {
+      bn::string<64> key;
+      key.append(plugin_id);
+      key.append('_');
+      key.append(name);
+
+      return variables.get(key);
+    }
 
     inline const event_value* find(bn::string_view key) const
     {
@@ -5850,9 +5886,9 @@ namespace neo::variables
 
   struct registry
   {
-    static constexpr int COUNT = 7;
+    static constexpr int COUNT = 4;
 
-    bn::unordered_map<bn::string_view, neo::variables::variable*, 8> all;
+    bn::unordered_map<bn::string_view, neo::variables::variable*, 4> all;
     neo::variables::variable* items;
 
     registry(): all(), items(new neo::variables::variable[COUNT > 0 ? COUNT : 1])
@@ -5875,20 +5911,14 @@ namespace neo::variables
       );
       all.insert_or_assign("GlobalFadeDuration", &items[next++]);
       items[next].init(
-        2,
+        0,
         false,
-        "2",
-        2
+        "0",
+        0
       );
       all.insert_or_assign("log-message_Counter", &items[next++]);
       items[next].init(0, false, "", 0);
       all.insert_or_assign("__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", &items[next++]);
-      items[next].init(0, false, "", 0);
-      all.insert_or_assign("__script_param_plugin:log-message:script-log-twice:amount", &items[next++]);
-      items[next].init(0, false, "", 0);
-      all.insert_or_assign("__script_param_plugin:log-message:script-log-twice:source", &items[next++]);
-      items[next].init(0, false, "", 0);
-      all.insert_or_assign("__script_param_plugin:log-message:script-log-twice:target", &items[next++]);
     }
 
     registry(const registry&) = delete;
@@ -5936,11 +5966,8 @@ namespace neo::variables
     {
       set_raw("ForegroundDrawingPriority", 1, false, "1", 1);
       set_raw("GlobalFadeDuration", 200, false, "200", 200);
-      set_raw("log-message_Counter", 2, false, "2", 2);
+      set_raw("log-message_Counter", 0, false, "0", 0);
       set_raw("__script_param_74cdc1b4-da05-4b51-9f20-6dc15dde4814", 0, false, "", 0);
-      set_raw("__script_param_plugin:log-message:script-log-twice:amount", 0, false, "", 0);
-      set_raw("__script_param_plugin:log-message:script-log-twice:source", 0, false, "", 0);
-      set_raw("__script_param_plugin:log-message:script-log-twice:target", 0, false, "", 0);
     }
 
     inline void set_raw(bn::string_view key, int int_val, bool bool_val, bn::string_view str_val, bn::fixed fixed_val)

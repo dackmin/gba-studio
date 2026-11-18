@@ -80,6 +80,7 @@ const annotatePluginEvents = (
     if (definition) {
       node._plugin = {
         handlerId: definition._handlerId,
+        pluginId,
         params: (definition.fields ?? []).map(field => {
           const value = node.params?.[field.key] ?? field.default ?? (
             field.type === 'number' ? 0 : field.type === 'boolean' ? false : ''

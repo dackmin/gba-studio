@@ -13,13 +13,16 @@ namespace log_message
   void log(neo::game* game, const neo::types::plugin_event* e)
   {
     const int count = e->as_int(game->variables, "count", 1);
+    const int counter = e->has_variable(game->variables, "Counter")
+      ? e->variable(game->variables, "Counter").as_int() : 0;
 
     for (int i = 0; i < count; ++i)
     {
       BN_LOG(
         e->as_string(game->variables, "level", "info"), ": ",
         e->as_string(game->variables, "message"),
-        e->as_bool(game->variables, "loud") ? "!" : ""
+        e->as_bool(game->variables, "loud") ? "!" : "",
+        counter
       );
     }
 

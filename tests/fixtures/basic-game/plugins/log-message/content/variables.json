@@ -2,6 +2,6 @@
   "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/variable.json",
   "type": "variables",
   "values": [
-    { "id": "counter", "type": "variable", "name": "Counter", "defaultValue": "2" }
+    { "id": "counter", "type": "variable", "name": "Counter", "defaultValue": "0" }
   ]
 }
