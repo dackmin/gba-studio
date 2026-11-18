@@ -8,6 +8,8 @@ export const BACKGROUND_MAX_SINGLE_SIZE = 512;
 // for each 256x256 tile) of every loaded background. A screen can overlap up to 2x2 tiles.
 export const BACKGROUND_VRAM_TILES_BUDGET = (64 * 1024 - 4 * 2048) / 64;
 
+export const BACKGROUND_TRANSPARENT_COLOR = '#000000';
+
 // Butano big maps (regular backgrounds bigger than 512x512) are limited to 16384px and must be a
 // multiple of 256px.
 export const BACKGROUND_MAX_BIG_SIZE = 16384;
