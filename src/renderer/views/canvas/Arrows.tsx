@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import type { GameScene, GameSensor, GoToSceneEvent } from '../../../types';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useApp, useCanvas, useScripts } from '../../services/hooks';
 import { getEventsOfType } from '../../services/events';
 import { getGridSize } from '../../../helpers';
 import Arrow from './Arrow';
@@ -13,7 +13,8 @@ export interface ArrowsProps {
 const Arrows = ({
   gridSize,
 }: ArrowsProps) => {
-  const { scenes, scripts } = useApp();
+  const { scenes } = useApp();
+  const scripts = useScripts();
   const { selectedScene } = useCanvas();
 
   const sceneArrows = useMemo<[GameScene, GoToSceneEvent[]][]>(() => (

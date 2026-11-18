@@ -1,5 +1,4 @@
-import { Button, Select, Text } from '@radix-ui/themes';
-import { Select as SelectPrimitive } from 'radix-ui';
+import { Select, Text } from '@radix-ui/themes';
 
 import { useCanvas, useSceneForm, useScriptForm } from '../../services/hooks';
 
@@ -21,18 +20,14 @@ const ActorListField = ({
   ));
 
   return (
-    <Select.Root value={value} { ...rest }>
+    <Select.Root size={compact ? '1' : undefined} value={value} { ...rest }>
       { compact ? (
-        <SelectPrimitive.Trigger asChild>
-          <Button variant="ghost" size="1">
-            <SelectPrimitive.Value>
-              <Text size="1" className="dark:text-seashell">
-                { actors.find(actor => actor.id === value)?.name ||
-                  selectedParameter?.name || 'Select Actor' }
-              </Text>
-            </SelectPrimitive.Value>
-          </Button>
-        </SelectPrimitive.Trigger>
+        <Select.Trigger variant="ghost" className="[&_.rt-SelectIcon]:hidden">
+          <Text size="1" className="dark:text-seashell">
+            { actors.find(actor => actor.id === value)?.name ||
+              selectedParameter?.name || 'Select Actor' }
+          </Text>
+        </Select.Trigger>
       ) : (
         <Select.Trigger placeholder="Select Actor" />
       ) }

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { Button, Select, Text } from '@radix-ui/themes';
-import { Select as SelectPrimitive } from 'radix-ui';
+import { Select, Text } from '@radix-ui/themes';
 
 import { useApp } from '../../services/hooks';
 import { findScene } from '../../../helpers';
@@ -21,17 +20,13 @@ const SceneListField = ({
   ), [scenes, value]);
 
   return (
-    <Select.Root value={selected?.id || value || undefined} { ...rest }>
+    <Select.Root size={compact ? '1' : undefined} value={selected?.id || value || undefined} { ...rest }>
       { compact ? (
-        <SelectPrimitive.Trigger asChild>
-          <Button variant="ghost" size="1">
-            <SelectPrimitive.Value>
-              <Text size="1" className="dark:text-seashell">
-                { selected?.name || 'Select Scene' }
-              </Text>
-            </SelectPrimitive.Value>
-          </Button>
-        </SelectPrimitive.Trigger>
+        <Select.Trigger variant="ghost" className="[&_.rt-SelectIcon]:hidden">
+          <Text size="1" className="dark:text-seashell">
+            { selected?.name || 'Select Scene' }
+          </Text>
+        </Select.Trigger>
       ) : (
         <Select.Trigger placeholder="Select" />
       ) }

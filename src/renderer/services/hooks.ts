@@ -100,6 +100,24 @@ export const useAssets = () => {
   }, [sprites, backgrounds, fonts, sounds, music, plugins]);
 };
 
+export const useScripts = () => {
+  const { scripts, plugins } = useApp();
+
+  return useMemo(() => [
+    ...scripts,
+    ...(plugins ?? []).filter(p => p.enabled).flatMap(p => p._scripts ?? []),
+  ], [scripts, plugins]);
+};
+
+export const useVariables = () => {
+  const { variables, plugins } = useApp();
+
+  return useMemo(() => [
+    ...variables,
+    ...(plugins ?? []).filter(p => p.enabled).flatMap(p => p._variables ?? []),
+  ], [variables, plugins]);
+};
+
 export const usePluginAssets = <T extends keyof PluginAssets>(name: T) => {
   const { plugins } = useApp();
 

@@ -149,6 +149,7 @@ export interface GameVariable {
   defaultValue: EventValue;
   // Internals
   id: string;
+  _label?: string;
 }
 
 export interface GameVariables {
@@ -157,6 +158,7 @@ export interface GameVariables {
   // Internals
   id: string;
   _file?: string;
+  _plugin?: string;
   $schema?: string;
 }
 
@@ -240,6 +242,7 @@ export interface GameScript {
   // Internals
   id: string;
   _file?: string;
+  _plugin?: string;
   $schema?: string;
 }
 
@@ -593,6 +596,8 @@ export interface GamePlugin extends PluginManifest {
   _path: string;
   _error?: string;
   _assets?: PluginAssets;
+  _scripts?: GameScript[];
+  _variables?: GameVariables[];
 }
 
 export interface PluginPick {

@@ -19,7 +19,7 @@ import {
   findSprite,
   getGridSize,
 } from '../../../helpers';
-import { ASSET_EXTENSIONS, loadPlugins } from '../../plugins';
+import { ASSET_EXTENSIONS, getPluginAssetName, loadPlugins, resolveScriptParams } from '../../plugins';
 import { getBackgroundLayoutFromFile } from './assets';
 
 const resolveAssetParam = (
@@ -192,10 +192,26 @@ export async function preparePluginAssets (build: Build) {
     ...build.data.music ?? [], ...assets.flatMap(a => a.music),
   ];
 
+  build.data.variables = [
+    ...build.data.variables ?? [], ...plugins.flatMap(p => p._variables ?? []),
+  ];
+
+  build.data.scripts = [
+    ...build.data.scripts ?? [],
+    ...plugins.flatMap(p => p._scripts ?? []).map(script => ({
+      ...script,
+      name: getPluginAssetName(script._plugin!, script.name),
+    })),
+  ];
+
   return build;
 }
 
 export async function prepareData (build: Build) {
+  if (build.data?.scripts) {
+    build.data.scripts = build.data.scripts.map(resolveScriptParams);
+  }
+
   for (const background of build.data?.backgrounds || []) {
     background._layout ??= await getBackgroundLayoutFromFile(build, background);
   }

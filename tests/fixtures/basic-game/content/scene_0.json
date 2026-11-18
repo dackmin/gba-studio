@@ -328,6 +328,22 @@
       "id": "61e77f0c-0520-4f39-ad4e-1f42fa593930"
     },
     {
+      "type": "execute-script",
+      "script": "plugin:log-message:script-log-twice",
+      "parameters": [
+        "30",
+        {
+          "type": "variable",
+          "name": "988e1070-3fca-40cf-b35f-e298484fdf02"
+        },
+        {
+          "type": "actor",
+          "name": "d2a023cc-364d-4caf-9638-78937f593e4e"
+        }
+      ],
+      "id": "61e77f0c-0520-4f39-ad4e-1f42fa593931"
+    },
+    {
       "type": "save-game",
       "id": "i890607d-6f49-4229-b14b-8ea3216c9735"
     },

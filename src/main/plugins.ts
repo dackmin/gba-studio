@@ -9,8 +9,10 @@ import type {
   GameFontFile,
   GameMusicFile,
   GamePlugin,
+  GameScript,
   GameSoundFile,
   GameSpriteFile,
+  GameVariables,
   PluginAssets,
   PluginEventDefinition,
   PluginEventField,
@@ -18,12 +20,19 @@ import type {
   PluginPick,
   ProjectPlugin,
 } from '../types';
-import { toFileSlug } from '../helpers';
-import { getAudioFiles, getGraphicFileSize, getGraphicsFiles } from './files';
+import { toFileSlug, toPluginId } from '../helpers';
+import {
+  getAudioFiles,
+  getGraphicFileSize,
+  getGraphicsFiles,
+  getScriptsFiles,
+  getVariableFiles,
+} from './files';
 import {
   sanitizeBackground,
   sanitizeFont,
   sanitizeMusic,
+  sanitizeScript,
   sanitizeSound,
   sanitizeSprite,
 } from './sanitize';
@@ -52,6 +61,15 @@ export const ASSET_EXTENSIONS = {
   sound: '.wav',
   music: '.mod',
 } as const;
+
+const PLUGIN_REFERENCES: Record<string, string[]> = {
+  'variable': ['name', 'variables'],
+  'set-variable': ['name', 'variables'],
+  'on-variable-change': ['variable', 'variables'],
+  'execute-script': ['script', 'scripts'],
+};
+
+export type PluginReferences = Record<string, Map<string, string>>;
 
 // Avoids re-reading plugins list manifests on every plugin:// call (essentially a plugins cache)
 const pluginDirs = new Map<string, Map<string, string>>();
@@ -159,6 +177,14 @@ const readManifest = async (dir: string): Promise<PluginManifest> => {
   return manifest;
 };
 
+const readContentJson = async (dir: string, file: string) => {
+  try {
+    return await fse.readJson(path.join(dir, 'content', file));
+  } catch (e: any) {
+    throw new Error(`Invalid content/${file}: ${e?.message}`);
+  }
+};
+
 const resolveAssets = async (
   projectPath: string,
   manifest: PluginManifest,
@@ -174,14 +200,7 @@ const resolveAssets = async (
   ];
 
   for (const file of files) {
-    let raw: any;
-
-    try {
-      raw = await fse.readJson(path.join(dir, 'content', file));
-    } catch (e: any) {
-      throw new Error(`Invalid content/${file}: ${e?.message}`);
-    }
-
+    const raw = await readContentJson(dir, file);
     const type = raw?.type as keyof typeof ASSET_EXTENSIONS;
     const extension = ASSET_EXTENSIONS[type];
 
@@ -219,7 +238,7 @@ const resolveAssets = async (
 
     const common = {
       ...raw,
-      id: `plugin:${manifest.id}:${raw.id ?? key}`,
+      id: toPluginId(manifest.id, raw.id ?? key),
       name: raw.name || key,
       path: path.relative(projectDir, absolute).split(path.sep).join('/'),
       _file: `${type}_${itemName}.json`,
@@ -272,6 +291,171 @@ const resolveAssets = async (
   return assets;
 };
 
+const remapReferences = (node: any, refs: PluginReferences): any => {
+  if (typeof node === 'string') {
+    return refs.params.get(node) ?? node;
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(n => remapReferences(n, refs));
+  }
+
+  if (!node || typeof node !== 'object') {
+    return node;
+  }
+
+  const res = Object.fromEntries(Object.entries(node)
+    .map(([k, v]) => [k, remapReferences(v, refs)]));
+  const [key, kind] = PLUGIN_REFERENCES[node.type] ?? [];
+
+  if (key && kind && refs[kind].has(res[key])) {
+    res[key] = refs[kind!].get(res[key]);
+  }
+
+  return res;
+};
+
+export const resolveScriptParams = (script: GameScript): GameScript => {
+  const params = new Map((script.parameters ?? []).map(({ id }) => [
+    `param:${id}`, `__script_param_${id}`,
+  ]));
+
+  if (!params.size) {
+    return script;
+  }
+
+  return {
+    ...script,
+    events: remapReferences(script.events ?? [], {
+      variables: new Map(), scripts: new Map(), params,
+    }),
+  };
+};
+
+const resolveVariables = async (manifest: PluginManifest, dir: string) => {
+  const registries: GameVariables[] = [];
+  const ids = new Map<string, string>();
+  const names = new Set<string>();
+
+  for (const file of await getVariableFiles(dir)) {
+    const raw = await readContentJson(dir, file);
+    const key = file.replace(/\.json$/, '');
+
+    registries.push({
+      ...raw,
+      type: 'variables',
+      id: toPluginId(manifest.id, raw.id ?? key),
+      _file: `variables_${getPluginAssetName(manifest.id, key)}.json`,
+      _plugin: manifest.id,
+      values: (raw.values ?? []).map((value: any) => {
+        if (!value?.name) {
+          throw new Error(`content/${file}: a variable has no name`);
+        }
+
+        if (names.has(value.name)) {
+          throw new Error(`content/${file}: another variable is already named "${value.name}"`);
+        }
+
+        const id = toPluginId(manifest.id, value.id ?? value.name);
+
+        names.add(value.name);
+        ids.set(value.name, id);
+        ids.set(value.id ?? value.name, id);
+
+        return {
+          ...value,
+          type: 'variable',
+          id,
+          name: `${manifest.id}_${value.name}`,
+          _label: value.name,
+        };
+      }),
+    });
+  }
+
+  return { registries, ids };
+};
+
+const assignEventIds = (events: any[] | undefined, prefix: string) => {
+  (events ?? []).forEach((event, index) => {
+    if (!event || typeof event !== 'object') {
+      return;
+    }
+
+    event.id ??= `${prefix}:${index}`;
+
+    for (const key of ['events', 'then', 'else']) {
+      if (Array.isArray(event[key])) {
+        assignEventIds(event[key], `${event.id}:${key}`);
+      }
+    }
+
+    (Array.isArray(event.choices) ? event.choices : []).forEach((choice: any, i: number) => {
+      choice.id ??= `${event.id}:choice:${i}`;
+      assignEventIds(choice.events, `${choice.id}:events`);
+    });
+  });
+};
+
+const resolveScripts = async (
+  manifest: PluginManifest,
+  dir: string,
+  variables: Map<string, string>,
+): Promise<GameScript[]> => {
+  // read everything first so scripts can reference each other
+  const raws = await Promise.all((await getScriptsFiles(dir)).map(async file => {
+    const raw = await readContentJson(dir, file);
+    const key = file.replace(/\.json$/, '').replace(/^script_/, '');
+
+    return { file, key, raw, id: toPluginId(manifest.id, raw.id ?? key) };
+  }));
+  const scripts = new Map(raws.flatMap(({ key, raw, id }) => [[key, id], [raw.id ?? key, id]]));
+  const names = new Set<string>();
+
+  const resolved = raws.map(({ file, key, raw, id }) => {
+    const name = raw.name || key;
+
+    if (names.has(toFileSlug(name))) {
+      throw new Error(`content/${file}: another script is already named "${name}"`);
+    }
+
+    names.add(toFileSlug(name));
+
+    const params = new Map<string, string>();
+    const parameters = (raw.parameters ?? []).map((parameter: any, index: number) => {
+      const paramId = parameter.id ?? `p${index}`;
+
+      if (!ID_REGEX.test(paramId)) {
+        throw new Error(`content/${file}: invalid parameter id "${paramId}"`);
+      }
+
+      const resolved = `__script_param_${id}:${paramId}`;
+      params.set(`param:${paramId}`, resolved);
+      params.set(`__script_param_${paramId}`, resolved);
+
+      return { ...parameter, id: `${id}:${paramId}` };
+    });
+
+    return {
+      ...raw,
+      type: 'script',
+      id,
+      name,
+      parameters,
+      events: remapReferences(raw.events ?? [], { variables, scripts, params }),
+      _file: `script_${getPluginAssetName(manifest.id, key)}.json`,
+      _plugin: manifest.id,
+    };
+  });
+
+  for (const script of resolved) {
+    assignEventIds(script.events, script.id);
+    await sanitizeScript(script);
+  }
+
+  return resolved;
+};
+
 export const loadPlugins = async (
   projectPath: string,
   entries: ProjectPlugin[] = [],
@@ -297,6 +481,8 @@ export const loadPlugins = async (
       }
 
       const _assets = await resolveAssets(projectPath, manifest, dir);
+      const { registries: _variables, ids: variableIds } = await resolveVariables(manifest, dir);
+      const _scripts = await resolveScripts(manifest, dir, variableIds);
 
       ids.add(manifest.id);
       slugs.add(toFileSlug(manifest.id));
@@ -306,6 +492,8 @@ export const loadPlugins = async (
         _dir: dir,
         _path: entry.path,
         _assets,
+        _scripts,
+        _variables,
       });
     } catch (e) {
       plugins.push({

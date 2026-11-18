@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { set } from '@junipero/react';
-import { Select, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 
 import type { EventValue, ExecuteScriptEvent } from '../../../types';
-import { useApp } from '../../services/hooks';
+import { useScripts, useVariables } from '../../services/hooks';
 import EventValueField from '../EventValueField';
+import ScriptsListField from '../ScriptsListField';
 import VariablesListField from '../VariablesListField';
 import ActorListField from '../ActorListField';
 
@@ -19,7 +20,8 @@ const EventScript = ({
   event,
   onValueChange,
 }: EventScriptProps) => {
-  const { scripts, variables } = useApp();
+  const scripts = useScripts();
+  const variables = useVariables();
   const script = scripts.find(item => item.id === event.script || item._file === event.script);
 
   const onScriptChange = useCallback((id: string) => {
@@ -55,7 +57,7 @@ const EventScript = ({
           : { type: 'actor', name: '' };
       }
 
-      return typeof current === 'object' ? '' : current ?? '';
+      return current ?? '';
     }) ?? []
   ), [script?.parameters, event.parameters, variables]);
 
@@ -69,19 +71,10 @@ const EventScript = ({
   return (
     <div className="flex flex-col gap-2">
       <Text size="1" className="text-slate">Script</Text>
-      <Select.Root
+      <ScriptsListField
         value={event.script || ''}
         onValueChange={onScriptChange}
-      >
-        <Select.Trigger placeholder="Select" />
-        <Select.Content>
-          { scripts.map(script => (
-            <Select.Item key={script.id} value={script.id}>
-              { script.name }
-            </Select.Item>
-          )) }
-        </Select.Content>
-      </Select.Root>
+      />
       { script?.parameters?.map((parameter, index) => (
         <div key={parameter.id} className="flex flex-col gap-2">
           <Text size="1" className="text-slate">{ parameter.name }</Text>
@@ -99,7 +92,7 @@ const EventScript = ({
             <EventValueField
               type="text"
               excludeTypes={[
-                'variable', 'saved-game', 'player-attribute', 'direction', 'collision-side',
+                'saved-game', 'player-attribute', 'direction', 'collision-side',
                 'scene', 'camera',
               ]}
               value={parameterValues[index] ?? ''}

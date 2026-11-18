@@ -1,14 +1,14 @@
 import { type ChangeEvent, useCallback, useMemo } from 'react';
-import { Button, Select, Text, TextField } from '@radix-ui/themes';
-import { Select as SelectPrimitive } from 'radix-ui';
+import { Select, Text, TextField } from '@radix-ui/themes';
 import { classNames } from '@junipero/react';
 
 import type { DynamicValue, EventValue } from '../../../types';
-import { useApp, useHudForm, useScriptForm } from '../../services/hooks';
+import { useApp, useHudForm, useScriptForm, useVariables } from '../../services/hooks';
 import Switch from '../Switch';
 import DirectionField from '../DirectionField';
 import SceneListField from '../SceneListField';
 import ActorListField from '../ActorListField';
+import VariablesListField from '../VariablesListField';
 
 export interface EventValueFieldProps
   extends Omit<TextField.RootProps, 'value' | 'defaultValue'> {
@@ -39,7 +39,8 @@ const EventValueField = ({
   onValueChange,
   ...rest
 }: EventValueFieldProps) => {
-  const { variables, scenes } = useApp();
+  const { scenes } = useApp();
+  const variables = useVariables();
   const { script } = useScriptForm();
   const { hud } = useHudForm();
   const excludeTypes = hud ? HUD_EXCLUDED_TYPES : excludeTypesProp;
@@ -52,7 +53,7 @@ const EventValueField = ({
     [
       ...variables.flatMap(v => v.values),
       ...(script?.parameters ?? []).map(parameter => ({
-        id: `__script_param_${parameter.id}`,
+        id: `param:${parameter.id}`,
         name: `${parameter.name} (parameter)`,
       })),
     ]
@@ -71,7 +72,7 @@ const EventValueField = ({
     } else if (type === 'variable') {
       onValueChange?.({
         type,
-        name: allVariables[0]?.id || allVariables[0]?.name || '',
+        name: allVariables[0]?.id || allVariables[0]?.name || undefined,
       });
     } else if (type === 'player-attribute') {
       onValueChange?.({
@@ -123,10 +124,6 @@ const EventValueField = ({
     }
   }, [onValueChange, isDynamicValue, val]);
 
-  const getVariableById = useCallback((id?: string) => {
-    return allVariables.find(v => v.id === id || v.name === id);
-  }, [allVariables]);
-
   return (
     <TextField.Root
       { ...rest }
@@ -146,31 +143,31 @@ const EventValueField = ({
     >
       <TextField.Slot side="left" className="!mx-[2px]">
         <Select.Root
+          size="1"
           value={!isDynamicValue ? 'value' : (val as DynamicValue).type}
           onValueChange={onTypeChange}
         >
-          <SelectPrimitive.Trigger asChild>
-            <Button variant="ghost" size="1" className="px-1.5!">
-              <SelectPrimitive.Value>
-                <Text size="1" className="font-bold dark:text-seashell">
-                  <Switch
-                    value={!isDynamicValue
-                      ? 'value' : (val as DynamicValue).type}
-                  >
-                    <Switch.Case value="variable">$</Switch.Case>
-                    <Switch.Case value="saved-game">↓</Switch.Case>
-                    <Switch.Case value="player-attribute">P</Switch.Case>
-                    <Switch.Case value="direction">▲</Switch.Case>
-                    <Switch.Case value="collision-side">✚</Switch.Case>
-                    <Switch.Case value="scene">S</Switch.Case>
-                    <Switch.Case value="actor">A</Switch.Case>
-                    <Switch.Case value="camera">C</Switch.Case>
-                    <Switch.Case default>#</Switch.Case>
-                  </Switch>
-                </Text>
-              </SelectPrimitive.Value>
-            </Button>
-          </SelectPrimitive.Trigger>
+          <Select.Trigger
+            variant="ghost"
+            className="px-1.5! [&_.rt-SelectIcon]:hidden"
+          >
+            <Text size="1" className="font-bold dark:text-seashell">
+              <Switch
+                value={!isDynamicValue
+                  ? 'value' : (val as DynamicValue).type}
+              >
+                <Switch.Case value="variable">$</Switch.Case>
+                <Switch.Case value="saved-game">↓</Switch.Case>
+                <Switch.Case value="player-attribute">P</Switch.Case>
+                <Switch.Case value="direction">▲</Switch.Case>
+                <Switch.Case value="collision-side">✚</Switch.Case>
+                <Switch.Case value="scene">S</Switch.Case>
+                <Switch.Case value="actor">A</Switch.Case>
+                <Switch.Case value="camera">C</Switch.Case>
+                <Switch.Case default>#</Switch.Case>
+              </Switch>
+            </Text>
+          </Select.Trigger>
           <Select.Content>
             <Select.Item value="value">
               <Text className="text-slate">#</Text> Value
@@ -218,30 +215,12 @@ const EventValueField = ({
       </TextField.Slot>
       { isDynamicValue && (val as DynamicValue).type === 'variable' && (
         <TextField.Slot side="left">
-          <Select.Root
+          <VariablesListField
             value={(val as DynamicValue).name}
             onValueChange={onValueChange_}
-          >
-            <SelectPrimitive.Trigger asChild>
-              <Button variant="ghost" size="1">
-                <SelectPrimitive.Value>
-                  <Text size="1" className="dark:text-seashell">
-                    {
-                      getVariableById((val as DynamicValue).name)?.name ||
-                      'Select Variable'
-                    }
-                  </Text>
-                </SelectPrimitive.Value>
-              </Button>
-            </SelectPrimitive.Trigger>
-            <Select.Content>
-              { allVariables.map(v => (
-                <Select.Item key={v.id} value={v.id || v.name}>
-                  <Text>{ v.name }</Text>
-                </Select.Item>
-              )) }
-            </Select.Content>
-          </Select.Root>
+            insideField
+            includeParameters
+          />
         </TextField.Slot>
       ) }
       { isDynamicValue && (val as DynamicValue).type === 'saved-game' && (
@@ -255,25 +234,22 @@ const EventValueField = ({
         (val as DynamicValue).type === 'player-attribute' && (
         <TextField.Slot side="left">
           <Select.Root
+            size="1"
             value={(val as DynamicValue).name || 'x'}
             onValueChange={onAttributeChange}
           >
-            <SelectPrimitive.Trigger asChild>
-              <Button variant="ghost" size="1">
-                <SelectPrimitive.Value>
-                  <Text size="1" className="dark:text-seashell">
-                    {
-                      {
-                        x: 'X',
-                        y: 'Y',
-                        direction: 'Direction',
-                        scene: 'Current Scene',
-                      }[(val as DynamicValue).name || 'x']
-                    }
-                  </Text>
-                </SelectPrimitive.Value>
-              </Button>
-            </SelectPrimitive.Trigger>
+            <Select.Trigger variant="ghost" className="[&_.rt-SelectIcon]:hidden">
+              <Text size="1" className="dark:text-seashell">
+                {
+                  {
+                    x: 'X',
+                    y: 'Y',
+                    direction: 'Direction',
+                    scene: 'Current Scene',
+                  }[(val as DynamicValue).name || 'x']
+                }
+              </Text>
+            </Select.Trigger>
             <Select.Content>
               <Select.Item value="x">
                 <Text>X</Text>
@@ -329,25 +305,22 @@ const EventValueField = ({
       { isDynamicValue && (val as DynamicValue).type === 'camera' && (
         <TextField.Slot side="left">
           <Select.Root
+            size="1"
             value={(val as DynamicValue).name || 'left'}
             onValueChange={onValueChange_}
           >
-            <SelectPrimitive.Trigger asChild>
-              <Button variant="ghost" size="1">
-                <SelectPrimitive.Value>
-                  <Text size="1" className="dark:text-seashell">
-                    {
-                      {
-                        left: 'Left',
-                        right: 'Right',
-                        top: 'Top',
-                        bottom: 'Bottom',
-                      }[(val as DynamicValue).name || 'left']
-                    }
-                  </Text>
-                </SelectPrimitive.Value>
-              </Button>
-            </SelectPrimitive.Trigger>
+            <Select.Trigger variant="ghost" className="[&_.rt-SelectIcon]:hidden">
+              <Text size="1" className="dark:text-seashell">
+                {
+                  {
+                    left: 'Left',
+                    right: 'Right',
+                    top: 'Top',
+                    bottom: 'Bottom',
+                  }[(val as DynamicValue).name || 'left']
+                }
+              </Text>
+            </Select.Trigger>
             <Select.Content>
               <Select.Item value="left">
                 <Text>Left</Text>

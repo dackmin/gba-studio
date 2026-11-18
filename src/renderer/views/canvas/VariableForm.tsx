@@ -10,7 +10,7 @@ import type {
   VariableUpdate,
 } from '../../../types';
 import { getEventsOfType } from '../../services/events';
-import { useApp, useCanvas } from '../../services/hooks';
+import { useApp, useCanvas, useVariables } from '../../services/hooks';
 
 export interface VariableFormProps {
   variable: GameVariable;
@@ -21,7 +21,8 @@ const VariableForm = ({
   variable,
   onChange,
 }: VariableFormProps) => {
-  const { scenes, scripts, huds, variables } = useApp();
+  const { scenes, scripts, huds } = useApp();
+  const variables = useVariables();
   const { selectScene, selectScript, selectItem, selectHud } = useCanvas();
 
   const collect = useCallback((
@@ -77,12 +78,12 @@ const VariableForm = ({
     }
 
     switch (value.type) {
-      case 'variable':
-        return '$' + (
-          variables.flatMap(v => v.values)
-            .find(v => v.id === value.name || v.name === value.name)?.name ??
-          value.name
-        );
+      case 'variable': {
+        const found = variables.flatMap(v => v.values)
+          .find(v => v.id === value.name || v.name === value.name);
+
+        return '$' + (found?._label ?? found?.name ?? value.name);
+      }
       case 'scene':
         return scenes.find(s => s.id === value.name)?.name ?? 'Scene';
       case 'player-attribute':

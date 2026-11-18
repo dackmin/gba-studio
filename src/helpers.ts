@@ -277,3 +277,5 @@ export const duplicateSensor = (scene: GameScene, sensor: GameSensor): GameSenso
 
 export const getFileBaseName = (filePath: string) =>
   (filePath.split(/[\\/]/).pop() ?? '').replace(/\.[^.]*$/, '') || 'untitled';
+
+export const toPluginId = (pluginId: string, id: string) => `plugin:${pluginId}:${id}`;

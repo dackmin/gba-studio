@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dackmin/gba-studio/main/public/templates/commons/.schemas/script.json",
+  "type": "script",
+  "name": "Log Twice",
+  "id": "script-log-twice",
+  "parameters": [
+    {
+      "id": "amount",
+      "name": "Amount",
+      "type": "value"
+    },
+    {
+      "id": "source",
+      "name": "Source",
+      "type": "variable"
+    },
+    {
+      "id": "target",
+      "name": "Target",
+      "type": "actor"
+    }
+  ],
+  "events": [
+    {
+      "id": "log-twice-increment",
+      "type": "set-variable",
+      "name": "counter",
+      "operation": "increment",
+      "value": "1"
+    },
+    {
+      "id": "log-twice-wait",
+      "type": "wait",
+      "duration": {
+        "type": "variable",
+        "name": "param:amount"
+      }
+    },
+    {
+      "id": "log-twice-fade",
+      "type": "fade-in",
+      "duration": {
+        "type": "variable",
+        "name": "param:source"
+      }
+    },
+    {
+      "id": "log-twice-move",
+      "type": "move-actor-to",
+      "actor": "param:target",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "log-twice-log",
+      "type": "plugin:log-message:log",
+      "params": {
+        "message": "Twice",
+        "count": 2
+      }
+    }
+  ]
+}
